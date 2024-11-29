@@ -11,8 +11,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
+import FilterComponent from "./components/MainPageFilter";
+import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
+import { MainPageVoyageCard } from "./components/MainPageVoyageCard";
 import { cardData } from "./components/cardData";
-import { DatePicker } from "./components/MainPageDatePicker";
 
 function App() {
   const userId = "43242342432342342342";
@@ -216,118 +218,90 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div
-          className="flex mainpage_Container"
-          style={{
-            flexDirection: "column",
-            width: "100%",
-            height: "100vh",
-          }}
+          className="grid sm:grid-rows-9 sm:grid-cols-8
+         grid-rows-[auto,auto,1fr] 
+         grid-cols-1 w-full h-screen"
         >
+          {/*  top left  */}
           <div
-            className="flex mainpage_TopRow"
-            style={{
-              backgroundColor: "red",
-              padding: ".1rem",
-              flexDirection: "row",
-            }}
+            className="sm:row-span-1 sm:col-span-3 sm:bg-gray-800 
+           row-span-1 col-span-1 bg-blue-100 
+           text-white flex items-center 
+           sm:justify-start justify-center p-4 h-[100px] sm:h-auto"
           >
-            <div
-              className="flex mainpage_TopLeft"
-              style={{
-                height: "3rem",
-                backgroundColor: "orange",
-                width: "33%",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={parrotsLogo} alt="Logo" className="w-10 h-10 mr-4" />
-              <div>
-                <span className="text-lg font-semibold">
-                  Welcome to Parrots
-                </span>
-                <span className="text-lg text-yellow-400"> Username</span>
-              </div>
-            </div>
-            <div
-              className="flex mainpage_TopRight"
-              style={{
-                height: "3rem",
-                backgroundColor: "pink",
-                width: "65%",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <nav className="flex space-x-6 sm:space-x-6 overflow-x-auto sm:overflow-x-visible">
-                <a href="#home" className="hover:text-gray-300">
-                  Home
-                </a>
-                <a href="#profile" className="hover:text-gray-300">
-                  Profile
-                </a>
-                <a href="#voyage" className="hover:text-gray-300">
-                  Voyage
-                </a>
-                <a href="#favorites" className="hover:text-gray-300">
-                  Favorites
-                </a>
-                <a href="#connect" className="hover:text-gray-300">
-                  Connect
-                </a>
-                <a href="#logout" className="hover:text-gray-300">
-                  Logout
-                </a>
-              </nav>
+            <img src={parrotsLogo} alt="Logo" className="w-10 h-10 mr-4" />
+            <div>
+              <span className="text-lg font-semibold">Welcome to Parrots</span>
+              <span className="text-lg text-yellow-400"> Username</span>
             </div>
           </div>
 
+          {/*  top right  */}
+
           <div
-            className="flex mainpage_BottomRow"
-            style={{
-              flexGrow: 1, // Make this grow to take all remaining height
-              width: "100%",
-            }}
+            className="sm:row-span-1 sm:col-span-5 sm:bg-gray-700 
+           row-span-1 col-span-1 bg-blue-200 
+           text-white flex items-center justify-center sm:justify-end p-4 h-[100px] sm:h-auto"
+          >
+            <nav className="flex space-x-6 sm:space-x-6 overflow-x-auto sm:overflow-x-visible">
+              <a href="#home" className="hover:text-gray-300">
+                Home
+              </a>
+              <a href="#profile" className="hover:text-gray-300">
+                Profile
+              </a>
+              <a href="#voyage" className="hover:text-gray-300">
+                Voyage
+              </a>
+              <a href="#favorites" className="hover:text-gray-300">
+                Favorites
+              </a>
+              <a href="#connect" className="hover:text-gray-300">
+                Connect
+              </a>
+              <a href="#logout" className="hover:text-gray-300">
+                Logout
+              </a>
+            </nav>
+          </div>
+
+          {/*  bottom left  */}
+
+          <div
+            className="sm:row-span-8 sm:col-span-3 sm:bg-amber-600 
+           row-span-6 col-span-1 bg-blue-300 
+           flex  order-4 sm:order-3 h-[500px] sm:h-auto
+           flex-col"
+          >
+            <FilterComponent />
+            {/* <MainPageCardSwiper /> */}
+          </div>
+
+          {/*  bottom right  */}
+
+          <div
+            className="sm:row-span-8 sm:col-span-5 sm:bg-amber-100 
+                    row-span-6 col-span-1 bg-green-600 
+                    flex items-center justify-center order-3 sm:order-4"
+            style={{ height: "100%" }}
           >
             <div
-              className="flex mainpage_BottomLeft"
               style={{
-                backgroundColor: "orange",
-                width: "33%",
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
               }}
             >
-              <div>
-                <DatePicker />
-                {/* <MainPageDatePicker /> */}
-              </div>
-            </div>
-
-            <div
-              className="flex mainpage_BottomRight"
-              style={{
-                backgroundColor: "orange",
-                width: "67%",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <LoadScript googleMapsApiKey={myApiKey}>
-                  <GoogleMap
-                    mapContainerStyle={{
-                      width: "100%",
-                      height: "100%",
-                    }}
-                    center={center}
-                    zoom={10}
-                  />
-                </LoadScript>
-              </div>
+              <LoadScript googleMapsApiKey={myApiKey}>
+                <GoogleMap
+                  mapContainerStyle={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  center={center}
+                  zoom={10}
+                />
+              </LoadScript>
             </div>
           </div>
         </div>

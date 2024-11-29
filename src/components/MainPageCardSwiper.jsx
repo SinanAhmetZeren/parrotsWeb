@@ -37,10 +37,12 @@ export function MainPageCardSwiper({ cardData }) {
           modifier: 1,
           slideShadows: false,
         }}
-        navigation={{
-          prevEl: ".custom-prev",
-          nextEl: ".custom-next",
-        }}
+        navigation={
+          {
+            // prevEl: ".custom-prev",
+            // nextEl: ".custom-next",
+          }
+        }
         modules={[EffectCoverflow, Navigation]}
         style={{ padding: "2rem 0", marginTop: "-7rem" }}
       >
@@ -54,8 +56,7 @@ export function MainPageCardSwiper({ cardData }) {
           </SwiperSlide>
         ))}
       </Swiper>
-
-      {/* Custom arrows */}
+      {/* 
       <div
         className="custom-prev"
         style={{
@@ -86,7 +87,7 @@ export function MainPageCardSwiper({ cardData }) {
         }}
       >
         <img src={rightArrow} alt="Next" />
-      </div>
+      </div> */}
     </>
   );
 }
