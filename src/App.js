@@ -1,16 +1,260 @@
 import parrotsLogo from "./assets/parrots-logo-mini.png";
-import randomImage from "./assets/amazonForest.jpg";
+import parrot1 from "./assets/parrot-looks.jpg";
+import parrot2 from "./assets/parrot-looks2.jpg";
+import parrot3 from "./assets/parrot-looks3.jpg";
+import parrot4 from "./assets/parrot-looks4.jpg";
+import leftArrow from "./assets/mainPageArrow.png";
+import rightArrow from "./assets/mainPageArrow.png";
 import "./App.css";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import * as React from "react";
+import "swiper/css/pagination";
+import "swiper/css/effect-coverflow";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, EffectCoverflow } from "swiper/modules";
+import FilterComponent from "./components/MainPageFilter";
+import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
+import { MainPageVoyageCard } from "./components/MainPageVoyageCard";
 
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-  const containerStyle = {
+
+  const slideContainerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    marginLeft: "-4rem",
+  };
+
+  const cardContainerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    overflow: "hidden",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+    width: "67%", // Use percentage width
+    maxWidth: "600px", // Optional max width for larger screens
+    maxHeight: "700px",
+    backgroundColor: "#fff",
+    margin: "1rem",
+  };
+
+  const cardImageStyle = {
+    width: "100%",
+    height: "15rem",
+    objectFit: "cover",
+    borderBottom: "1px solid #ddd",
+  };
+
+  const imageStyle = {
     width: "100%",
     height: "100%",
+    objectFit: "cover",
+    // borderRadius: "8px",
   };
+
+  const cardContentStyle = {
+    padding: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  };
+
+  const cardTitleStyle = {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    margin: "0.5rem 0",
+    color: "green",
+  };
+
+  const cardSubtitleStyle = {
+    fontSize: "1.2rem",
+    fontWeight: "400",
+    margin: "0.25rem 0",
+    color: "purple",
+  };
+
+  const cardDescriptionStyle = {
+    fontSize: "1rem",
+    color: "#555",
+    margin: "0.5rem 0",
+  };
+
+  const cardDatesStyle = {
+    marginTop: "0.5rem",
+    fontSize: "0.9rem",
+    color: "#777",
+  };
+
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "1rem",
+    marginTop: "1rem",
+  };
+
+  const buttonStyle = {
+    fontFamily: "'Roboto', sans-serif",
+    backgroundColor: "#007bff",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "800",
+    borderRadius: "20px",
+    padding: "10px 20px",
+    border: "none",
+    cursor: "pointer",
+    boxShadow: `
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+    `,
+    transition: "box-shadow 0.2s ease",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+    textShadow: `
+    -1px -1px 0 #000d5a, /* Top-left shadow */
+    1px -1px 0 #000d5a,  /* Top-right shadow */
+    -1px 1px 0 #000d5a,  /* Bottom-left shadow */
+    1px 1px 0 #000d5a    /* Bottom-right shadow */
+  `,
+  };
+
+  const cardData = [
+    {
+      image: parrot1,
+      title: "parrot 1 title",
+      subtitle: "parrot 1 sub title",
+      description: "parrot 1 sub description",
+      dates: "Jan 13, 25 to Jan 13, 25",
+      lastDate: "Auction ends in 1 month",
+    },
+    {
+      image: parrot2,
+      title: "parrot 2 title",
+      subtitle: "parrot 2 sub title",
+      description: "parrot 2 sub description",
+      dates: "Jan 13, 25 to Jan 13, 25",
+      lastDate: "Auction ends in 1 month",
+    },
+    {
+      image: parrot3,
+      title: "parrot 3 title",
+      subtitle: "parrot 3 sub title",
+      description: "parrot 3 sub description",
+      dates: "Jan 13, 25 to Jan 13, 25",
+      lastDate: "Auction ends in 1 month",
+    },
+    {
+      image: parrot4,
+      title: "parrot 4 title",
+      subtitle: "parrot 4 sub title",
+      description: "parrot 4 sub description",
+      dates: "Jan 13, 25 to Jan 13, 25",
+      lastDate: "Auction ends in 1 month",
+    },
+  ];
+
+  function MyParrotCard({ cardData }) {
+    return (
+      <div className="card" style={cardContainerStyle}>
+        <div className="card-image" style={cardImageStyle}>
+          <img src={cardData.image} style={imageStyle} alt="Boat tour" />
+        </div>
+        <div className="card-content" style={cardContentStyle}>
+          <h2 style={cardTitleStyle}>{cardData.title}</h2>
+          <h3 style={cardSubtitleStyle}>{cardData.subtitle}</h3>
+          <p style={cardDescriptionStyle}>{cardData.description}</p>
+          <div style={cardDatesStyle}>
+            <p>{cardData.dates}</p>
+            <p>{cardData.lastDate}</p>
+          </div>
+          <div className="card-buttons" style={buttonContainerStyle}>
+            <button style={buttonStyle}>Trip Details</button>
+            <button style={buttonStyle}>See on Map</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function MyCardSwiper() {
+    return (
+      <>
+        <Swiper
+          effect="coverflow"
+          onSlideChangeTransitionEnd={(swiper) => {
+            console.log("Slide transition completed:", swiper.activeIndex);
+          }}
+          onSlideChangeTransitionStart={() => {
+            console.log("Slide transition started");
+          }}
+          speed={1000}
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView="auto"
+          spaceBetween={-30}
+          // loop={true}
+          coverflowEffect={{
+            rotate: 0,
+            stretch: 100,
+            depth: 200,
+            modifier: 1,
+            slideShadows: false,
+          }}
+          navigation={{
+            prevEl: ".custom-prev",
+            nextEl: ".custom-next",
+          }}
+          modules={[EffectCoverflow, Navigation]}
+          style={{ padding: "2rem 0", marginTop: "-7rem" }}
+        >
+          {cardData.map((data, index) => (
+            <SwiperSlide key={index} style={slideContainerStyle}>
+              <MyParrotCard cardData={data} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Custom arrows */}
+        <div
+          className="custom-prev"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: ".5rem",
+            zIndex: 10,
+            height: "2.5rem",
+            width: "2.5rem",
+            cursor: "pointer",
+            transform: "scaleX(-1)", // Flipping horizontally
+            marginTop: "-4rem",
+          }}
+        >
+          <img src={leftArrow} alt="Previous" />
+        </div>
+        <div
+          className="custom-next"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "29rem",
+            zIndex: 10,
+            height: "3rem",
+            width: "3rem",
+            cursor: "pointer",
+            marginTop: "-4rem",
+          }}
+        >
+          <img src={rightArrow} alt="Next" />
+        </div>
+      </>
+    );
+  }
 
   const center = {
     lat: 37.7749,
@@ -21,9 +265,11 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div
-          className="grid sm:grid-rows-9 sm:grid-cols-9
-         grid-rows-[auto,auto,1fr] grid-cols-1 w-full h-screen"
+          className="grid sm:grid-rows-9 sm:grid-cols-8
+         grid-rows-[auto,auto,1fr] 
+         grid-cols-1 w-full h-screen"
         >
+          {/*  top left  */}
           <div
             className="sm:row-span-1 sm:col-span-3 sm:bg-gray-800 
            row-span-1 col-span-1 bg-blue-100 
@@ -37,8 +283,10 @@ function App() {
             </div>
           </div>
 
+          {/*  top right  */}
+
           <div
-            className="sm:row-span-1 sm:col-span-6 sm:bg-gray-700 
+            className="sm:row-span-1 sm:col-span-5 sm:bg-gray-700 
            row-span-1 col-span-1 bg-blue-200 
            text-white flex items-center justify-center sm:justify-end p-4 h-[100px] sm:h-auto"
           >
@@ -64,43 +312,39 @@ function App() {
             </nav>
           </div>
 
+          {/*  bottom left  */}
+
           <div
             className="sm:row-span-8 sm:col-span-3 sm:bg-amber-600 
            row-span-6 col-span-1 bg-blue-300 
-           flex items-center justify-center order-4 sm:order-3 h-[500px] sm:h-auto"
+           flex items-center justify-center order-4 sm:order-3 h-[500px] sm:h-auto
+           flex-col"
           >
-            <div class="max-w-sm rounded overflow-hidden shadow-lg bg-white ">
-              <img class="w-full h-96 object-cover" src={randomImage} alt="" />
-              <div class="px-6 py-4">
-                <h2 class="text-xl font-bold mb-2 text-purple-800">
-                  Card Title
-                </h2>
-                <h3 class="text-lg text-gray-700 mb-2">Card Subtitle</h3>
-                <p class="text-gray-600">
-                  This is an explanation for the card. It provides some
-                  additional details about the content shown in the card.
-                </p>
-              </div>
-            </div>
+            <FilterComponent />
+            <MyCardSwiper />
           </div>
 
+          {/*  bottom right  */}
+
           <div
-            className="sm:row-span-8 sm:col-span-6 sm:bg-amber-100 
-                    row-span-6 col-span-1 bg-blue-300 
-                    flex items-center justify-center order-4 sm:order-3"
-            style={{ height: "100%", padding: ".1rem" }}
+            className="sm:row-span-8 sm:col-span-5 sm:bg-amber-100 
+                    row-span-6 col-span-1 bg-green-600 
+                    flex items-center justify-center order-3 sm:order-4"
+            style={{ height: "100%" }}
           >
             <div
               style={{
                 width: "100%",
                 height: "100%",
-                borderRadius: "1rem",
                 overflow: "hidden",
               }}
             >
               <LoadScript googleMapsApiKey={myApiKey}>
                 <GoogleMap
-                  mapContainerStyle={containerStyle}
+                  mapContainerStyle={{
+                    width: "100%",
+                    height: "100%",
+                  }}
                   center={center}
                   zoom={10}
                 />

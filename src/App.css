@@ -16,6 +16,12 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  background-image: url("./assets/seafromsky.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  margin: 0;
+  height: 100vh;
 }
 
 .App-link {
@@ -29,4 +35,34 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Swiper Slide styling */
+.parrot-image-style {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  background-size: 3rem 3rem;
+  width: 3rem;
+  height: 3rem;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.7; /* Lower opacity */
+  filter: brightness(0.8); /* Make darker */
+  transition: all 5s ease-in-out; /* Smooth transition */
 }
