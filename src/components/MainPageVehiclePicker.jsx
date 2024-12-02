@@ -44,10 +44,11 @@ export const MainPageVehiclePicker = () => {
         }}
       >
         <input
+          className="font-bold text-base "
           type="text"
           readOnly
           value={selectedVehicle} // Display the selected vehicle name
-          placeholder="Select a Vehicle"
+          placeholder="Vehicle"
           style={{
             width: "100%",
             padding: ".1rem",
@@ -62,6 +63,7 @@ export const MainPageVehiclePicker = () => {
 
       {open && (
         <div
+          className="font-bold text-xl "
           ref={dropdownRef}
           style={{
             position: "absolute",

@@ -1,6 +1,6 @@
 /* Set global font style for the calendar */
 .rdrCalendarWrapper {
-  font-family: "Arial", sans-serif; /* Replace 'Arial' with your desired font */
+  /* font-family: "Arial", sans-serif; Replace 'Arial' with your desired font */
   font-size: 16px; /* Set font size globally */
   font-weight: bold; /* Make text bold globally */
   max-width: 90vw; /* Ensure it doesn't overflow on smaller screens */

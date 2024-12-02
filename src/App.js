@@ -15,7 +15,7 @@ import { cardData } from "./components/cardData";
 import { MainPageDatePicker } from "./components/MainPageDatePicker";
 import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
 import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
-
+import { MainPageApplyClearButtons } from "./components/MainPageApplyClearButtons";
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -246,7 +246,7 @@ function App() {
                 <span className="text-xl font-bold">Welcome to Parrots</span>
                 <span className="text-xl font-bold text-yellow-100">
                   {" "}
-                  Username
+                  {"Peter Parker".toUpperCase()}
                 </span>
               </div>
             </div>
@@ -260,22 +260,40 @@ function App() {
               }}
             >
               <nav className="flex space-x-6 sm:space-x-6 overflow-x-auto sm:overflow-x-visible">
-                <a href="#home" className="hover:text-gray-300">
+                <a
+                  href="#home"
+                  className="hover:text-gray-300 font-bold text-xl"
+                >
                   Home
                 </a>
-                <a href="#profile" className="hover:text-gray-300">
+                <a
+                  href="#profile"
+                  className="hover:text-gray-300 font-bold text-xl "
+                >
                   Profile
                 </a>
-                <a href="#voyage" className="hover:text-gray-300">
+                <a
+                  href="#voyage"
+                  className="hover:text-gray-300 font-bold text-xl"
+                >
                   Voyage
                 </a>
-                <a href="#favorites" className="hover:text-gray-300">
+                <a
+                  href="#favorites"
+                  className="hover:text-gray-300 font-bold text-xl"
+                >
                   Favorites
                 </a>
-                <a href="#connect" className="hover:text-gray-300">
+                <a
+                  href="#connect"
+                  className="hover:text-gray-300 font-bold text-xl"
+                >
                   Connect
                 </a>
-                <a href="#logout" className="hover:text-gray-300">
+                <a
+                  href="#logout"
+                  className="hover:text-gray-300 font-bold text-xl"
+                >
                   Logout
                 </a>
               </nav>
@@ -292,26 +310,47 @@ function App() {
             <div
               className="flex mainpage_BottomLeft"
               style={{
+                display: "flex",
+                flexDirection: "column",
                 width: "33%",
               }}
             >
-              <div>
-                <MainPageDatePicker />
-
+              <div // FILTER COMPONENT
+                style={{
+                  backgroundColor: "rgba(5, 8, 58, 0.85)",
+                  height: "17vh",
+                  width: "88%",
+                  padding: "1vh",
+                  borderRadius: "1rem",
+                }}
+              >
                 <div
                   style={{
-                    display: "flex", // Flexbox to place inputs side by side
-                    gap: ".5rem", // Gap between the two inputs
+                    paddingTop: "0.2rem",
+                  }}
+                >
+                  <MainPageDatePicker />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: ".5rem",
                     paddingLeft: ".5rem",
                     paddingRight: ".5rem",
                     cursor: "pointer",
                     width: "100%",
+                    paddingTop: "0.2rem",
                   }}
                 >
                   <MainPageVehiclePicker />
                   <MainPageVacancyPicker />
                 </div>
-                {/* <MainPageCardSwiper /> */}
+                <div>
+                  <MainPageApplyClearButtons />
+                </div>
+              </div>
+              <div style={{ backgroundColor: "red", height: "60vh" }}>
+                <MainPageCardSwiper />
               </div>
             </div>
 

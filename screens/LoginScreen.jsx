@@ -927,7 +927,7 @@ const styles2 = StyleSheet.create({
   },
   formContainer: {
     marginTop: 50,
-    width: "80%",
+    width: "100%",
     backgroundColor: "white",
   },
 });

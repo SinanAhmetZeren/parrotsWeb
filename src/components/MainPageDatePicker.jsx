@@ -56,6 +56,7 @@ export const MainPageDatePicker = () => {
         }}
       >
         <input
+          className="font-bold text-base "
           type="text"
           readOnly
           value={`${formatDate(state[0].startDate)}`}
@@ -70,13 +71,13 @@ export const MainPageDatePicker = () => {
           }}
         />
         <input
+          className="font-bold text-base "
           type="text"
           readOnly
           value={`${formatDate(state[0].endDate)}`}
           placeholder="End Date" // Placeholder text
           style={{
             width: "50%",
-            // padding: "10px",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",

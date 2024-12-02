@@ -1,5 +1,3 @@
-import leftArrow from "../assets/mainPageArrow.png";
-import rightArrow from "../assets/mainPageArrow.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { MainPageVoyageCard } from "../components/MainPageVoyageCard";
@@ -15,7 +13,7 @@ const slideContainerStyle = {
 
 export function MainPageCardSwiper({ cardData }) {
   return (
-    <>
+    <div>
       <Swiper
         effect="coverflow"
         onSlideChangeTransitionEnd={(swiper) => {
@@ -46,10 +44,6 @@ export function MainPageCardSwiper({ cardData }) {
         modules={[EffectCoverflow, Navigation]}
         style={{ padding: "2rem 0", marginTop: "-7rem" }}
       >
-        {/* <SwiperSlide style={slideContainerStyle}>
-            <img src={parrot4} style={parrotImageStyle} alt="Slide 4" />
-          </SwiperSlide> */}
-
         {cardData.map((data, index) => (
           <SwiperSlide key={index} style={slideContainerStyle}>
             <MainPageVoyageCard cardData={data} />
@@ -88,6 +82,6 @@ export function MainPageCardSwiper({ cardData }) {
       >
         <img src={rightArrow} alt="Next" />
       </div> */}
-    </>
+    </div>
   );
 }
