@@ -1,8 +1,27 @@
-import * as React from "react";
-import "swiper/css/pagination";
-import "swiper/css/effect-coverflow";
-import "swiper/css";
-import "swiper/css/navigation";
+export function MainPageVoyageCard({ cardData }) {
+  return (
+    <div className="card" style={cardContainerStyle}>
+      <div className="card-image" style={cardImageStyle}>
+        <img src={cardData.image} style={imageStyle} alt="Boat tour" />
+      </div>
+      <div className="card-content" style={cardContentStyle}>
+        <h2 style={cardTitleStyle}>{cardData.name}</h2>
+        <p style={cardSubtitleStyle}>{cardData.brief}</p>
+        <p style={cardDescriptionStyle}>
+          vehicle: {cardData.vehicle}
+          <br />
+          dates: {cardData.dates}
+          <br />
+          vacancy: {cardData.vacancy}
+        </p>
+        <div className="card-buttons" style={buttonContainerStyle}>
+          <button style={buttonStyle}>Trip Details</button>
+          <button style={buttonStyle}>See on Map</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const cardContainerStyle = {
   display: "flex",
@@ -11,18 +30,15 @@ const cardContainerStyle = {
   borderRadius: "8px",
   overflow: "hidden",
   boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-  maxWidth: "600px", // Optional max width for larger screens
+  width: "24rem",
+  maxWidth: "600px",
   maxHeight: "700px",
   backgroundColor: "#fff",
   margin: "1rem",
-  width: "21rem",
-};
-
-const cardImageStyle = {
-  width: "100%",
-  height: "13rem",
-  objectFit: "cover",
-  borderBottom: "1px solid #ddd",
+  boxShadow: `
+  0 4px 6px rgba(0, 0, 0, 0.9),
+  inset 0 -4px 6px rgba(0, 0, 0, 0.9)
+`,
 };
 
 const imageStyle = {
@@ -31,38 +47,46 @@ const imageStyle = {
   objectFit: "cover",
 };
 
+const cardImageStyle = {
+  width: "100%",
+  height: "16rem",
+  objectFit: "cover",
+  borderBottom: "1px solid #ddd",
+};
+
 const cardContentStyle = {
-  height: "13rem",
-  padding: "1rem",
   display: "flex",
+  height: "16rem",
+  backgroundColor: "white",
   flexDirection: "column",
-  justifyContent: "space-between",
+  boxShadow: `
+  0 4px 6px rgba(0, 0, 0, 0.4),
+  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
+`,
 };
 
 const cardTitleStyle = {
-  fontSize: "1.5rem",
+  fontSize: "1.3rem",
   fontWeight: "bold",
-  margin: "0.5rem 0",
   color: "green",
 };
 
 const cardSubtitleStyle = {
-  fontSize: "1.2rem",
-  fontWeight: "400",
-  margin: "0.25rem 0",
-  color: "red",
+  fontSize: "1rem",
+  color: "black",
+  display: "-webkit-box",
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+  WebkitLineClamp: 5,
+  textOverflow: "ellipsis",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
 };
 
 const cardDescriptionStyle = {
   fontSize: "1rem",
-  color: "#555",
-  margin: "0.5rem 0",
-};
-
-const cardDatesStyle = {
-  marginTop: "0.5rem",
-  fontSize: "0.9rem",
-  color: "#777",
+  color: "blue",
+  fontWeight: "600",
 };
 
 const buttonContainerStyle = {
@@ -71,10 +95,11 @@ const buttonContainerStyle = {
   alignItems: "center",
   gap: "1rem",
   marginTop: "1rem",
+  marginTop: "auto",
+  paddingBottom: "0.6rem",
 };
 
 const buttonStyle = {
-  fontFamily: "'Roboto', sans-serif",
   backgroundColor: "#007bff",
   color: "white",
   fontSize: "16px",
@@ -84,39 +109,57 @@ const buttonStyle = {
   border: "none",
   cursor: "pointer",
   boxShadow: `
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-    `,
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+  `,
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
-  textShadow: `
-    -1px -1px 0 #000d5a, /* Top-left shadow */
-    1px -1px 0 #000d5a,  /* Top-right shadow */
-    -1px 1px 0 #000d5a,  /* Bottom-left shadow */
-    1px 1px 0 #000d5a    /* Bottom-right shadow */
-  `,
 };
 
-export function MainPageVoyageCard({ cardData }) {
-  return (
-    <div className="card" style={cardContainerStyle}>
-      <div className="card-image" style={cardImageStyle}>
-        <img src={cardData.image} style={imageStyle} alt="Boat tour" />
-      </div>
-      <div className="card-content" style={cardContentStyle}>
-        <h2 style={cardTitleStyle}>{cardData.title}</h2>
-        <h3 style={cardSubtitleStyle}>{cardData.subtitle}</h3>
-        <p style={cardDescriptionStyle}>{cardData.description}</p>
-        <div style={cardDatesStyle}>
-          <p>{cardData.dates}</p>
-          <p>{cardData.lastDate}</p>
-        </div>
-        <div className="card-buttons" style={buttonContainerStyle}>
-          <button style={buttonStyle}>Trip Details</button>
-          <button style={buttonStyle}>See on Map</button>
-        </div>
-      </div>
-    </div>
-  );
+/* TODO:
+1. Vehicle type emoji - case
+2. Vacancy emoji
+3. Calendar emoji
+
+
+
+switch (vehicletype) {
+  case 0:
+    icon = (
+      <FontAwesome6
+        name="sailboat"
+        size={16}
+        color="rgba(10, 119, 234,1)"
+        style={styles.icon}
+      />
+    );
+    break;
+  case 1:
+    icon = (
+      <AntDesign
+        name="car"
+        size={16}
+        color="rgba(10, 119, 234,1)"
+        style={styles.icon}
+      />
+    );
+    break;
+  case 2:
+    icon = (
+      <FontAwesome5
+        name="caravan"
+        size={16}
+        color="rgba(10, 119, 234,1)"
+        style={styles.icon}
+      />
+    );
+    break;
+
+  default:
+    icon = "help-circle";
+    break;
 }
+
+
+*/

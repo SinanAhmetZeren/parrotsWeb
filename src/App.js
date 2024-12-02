@@ -1,7 +1,4 @@
 import parrotsLogo from "./assets/parrots-logo-mini.png";
-
-import leftArrow from "./assets/mainPageArrow.png";
-import rightArrow from "./assets/mainPageArrow.png";
 import "./App.css";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import * as React from "react";
@@ -9,208 +6,15 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, EffectCoverflow } from "swiper/modules";
-import { cardData } from "./components/cardData";
 import { MainPageDatePicker } from "./components/MainPageDatePicker";
 import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
 import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
 import { MainPageApplyClearButtons } from "./components/MainPageApplyClearButtons";
-import { MainPageVoyageCard } from "./components/MainPageVoyageCard";
+import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
 
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-
-  const slideContainerStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
-
-  const cardContainerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    overflow: "hidden",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-    // width: "100%", // Use percentage width
-    width: "20rem",
-    maxWidth: "600px", // Optional max width for larger screens
-    maxHeight: "700px",
-    backgroundColor: "#fff",
-    margin: "1rem",
-  };
-
-  const imageStyle = {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    // borderRadius: "8px",
-  };
-
-  const cardImageStyle = {
-    width: "100%",
-    height: "11rem",
-    objectFit: "cover",
-    borderBottom: "1px solid #ddd",
-  };
-
-  const cardContentStyle = {
-    display: "flex",
-    height: "11rem",
-    backgroundColor: "white",
-    flexDirection: "column",
-  };
-
-  const cardTitleStyle = {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    color: "green",
-  };
-
-  const cardSubtitleStyle = {
-    fontSize: "1.2rem",
-    fontWeight: "400",
-    color: "red",
-  };
-
-  const cardDescriptionStyle = {
-    fontSize: "1rem",
-    color: "#555",
-  };
-
-  const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1rem",
-    marginTop: "1rem",
-  };
-
-  const buttonStyle = {
-    fontFamily: "'Roboto', sans-serif",
-    backgroundColor: "#007bff",
-    color: "white",
-    fontSize: "16px",
-    fontWeight: "800",
-    borderRadius: "20px",
-    padding: "10px 20px",
-    border: "none",
-    cursor: "pointer",
-    boxShadow: `
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-    `,
-    transition: "box-shadow 0.2s ease",
-    WebkitFontSmoothing: "antialiased",
-    MozOsxFontSmoothing: "grayscale",
-    textShadow: `
-    -1px -1px 0 #000d5a, /* Top-left shadow */
-    1px -1px 0 #000d5a,  /* Top-right shadow */
-    -1px 1px 0 #000d5a,  /* Bottom-left shadow */
-    1px 1px 0 #000d5a    /* Bottom-right shadow */
-  `,
-  };
-
-  function MainPageVoyageCard({ cardData }) {
-    return (
-      <div className="card" style={cardContainerStyle}>
-        <div className="card-image" style={cardImageStyle}>
-          <img src={cardData.image} style={imageStyle} alt="Boat tour" />
-        </div>
-        <div className="card-content" style={cardContentStyle}>
-          <h2 style={cardTitleStyle}>{cardData.name}</h2>
-          <h3 style={cardSubtitleStyle}>{cardData.brief}</h3>
-          <p style={cardDescriptionStyle}>
-            {cardData.description}
-
-            {cardData.dates}
-
-            {cardData.lastDate}
-          </p>
-          <div className="card-buttons" style={buttonContainerStyle}>
-            <button style={buttonStyle}>Trip Details</button>
-            <button style={buttonStyle}>See on Map</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function MainPageCardSwiper() {
-    return (
-      <div>
-        <div style={{ width: "90%" }}>
-          <Swiper
-            effect="coverflow"
-            onSlideChangeTransitionEnd={(swiper) => {
-              console.log("Slide transition completed:", swiper.activeIndex);
-            }}
-            onSlideChangeTransitionStart={() => {
-              console.log("Slide transition started");
-            }}
-            speed={1000}
-            grabCursor={true}
-            centeredSlides={true}
-            slidesPerView="auto"
-            // loop={true}
-            coverflowEffect={{
-              rotate: 0,
-              stretch: 100,
-              depth: 200,
-              modifier: 1,
-              slideShadows: false,
-            }}
-            navigation={{
-              prevEl: ".custom-prev",
-              nextEl: ".custom-next",
-            }}
-            modules={[EffectCoverflow, Navigation]}
-            style={{ width: "25rem" }}
-          >
-            {cardData.map((data, index) => (
-              <SwiperSlide key={index} style={slideContainerStyle}>
-                <MainPageVoyageCard cardData={data} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-        <div
-          className="custom-prev"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "01%",
-            zIndex: 10,
-            height: "2.5rem",
-            width: "2.5rem",
-            cursor: "pointer",
-            transform: "scaleX(-1)", // Flipping horizontally
-            marginTop: "-4rem",
-          }}
-        >
-          <img src={leftArrow} alt="Previous" />
-        </div>
-        <div
-          className="custom-next"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "27%",
-            zIndex: 10,
-            height: "3rem",
-            width: "3rem",
-            cursor: "pointer",
-            marginTop: "-4rem",
-          }}
-        >
-          <img src={rightArrow} alt="Next" />
-        </div>
-      </div>
-    );
-  }
 
   const center = {
     lat: 37.7749,
@@ -306,7 +110,7 @@ function App() {
           <div
             className="flex mainpage_BottomRow"
             style={{
-              flexGrow: 1, // Make this grow to take all remaining height
+              flexGrow: 1,
               width: "100%",
             }}
           >
@@ -322,7 +126,7 @@ function App() {
                 style={{
                   backgroundColor: "rgba(5, 8, 58, 0.85)",
                   height: "17vh",
-                  width: "83%",
+                  width: "67%",
                   padding: "1vh",
                   borderRadius: "1rem",
                   alignSelf: "center",
