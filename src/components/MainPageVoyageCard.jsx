@@ -15,8 +15,12 @@ export function MainPageVoyageCard({ cardData }) {
           vacancy: {cardData.vacancy}
         </p>
         <div className="card-buttons" style={buttonContainerStyle}>
-          <button style={buttonStyle}>Trip Details</button>
-          <button style={buttonStyle}>See on Map</button>
+          <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
+            Trip Details
+          </button>
+          <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
+            See on Map
+          </button>
         </div>
       </div>
     </div>
@@ -94,24 +98,24 @@ const buttonContainerStyle = {
   justifyContent: "center",
   alignItems: "center",
   gap: "1rem",
-  marginTop: "1rem",
   marginTop: "auto",
-  paddingBottom: "0.6rem",
+  paddingBottom: "1rem",
 };
 
 const buttonStyle = {
-  backgroundColor: "#007bff",
+  width: "35%", // Match the input width
+  padding: "0.3rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
   color: "white",
-  fontSize: "16px",
-  fontWeight: "800",
-  borderRadius: "20px",
-  padding: "10px 20px",
-  border: "none",
+  fontWeight: "bold",
   cursor: "pointer",
+  fontSize: "16px",
+  border: "none",
   boxShadow: `
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-  `,
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+    `,
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",

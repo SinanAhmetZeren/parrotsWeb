@@ -7,12 +7,11 @@ import "../assets/css/date-range-custom.css";
 
 export const MainPageApplyClearButtons = () => {
   const buttonStyle = {
-    width: "50%", // Match the input width
+    width: "65%", // Match the input width
     padding: "0.3rem",
     borderRadius: "1.5rem",
     textAlign: "center",
     color: "white",
-
     fontWeight: "bold",
     cursor: "pointer",
     fontSize: "16px",
@@ -35,25 +34,42 @@ export const MainPageApplyClearButtons = () => {
         paddingRight: ".5rem",
         cursor: "pointer",
         width: "100%",
-        paddingTop: "0.2rem",
+        paddingTop: "0.5rem",
       }}
     >
-      <button
-        onClick={() => {
-          console.log("clear");
+      <div
+        style={{
+          width: "50%",
+          display: "flex", // Enable flexbox
+          justifyContent: "flex-end", // Align items to the right
         }}
-        style={{ ...buttonStyle, backgroundColor: "green" }}
       >
-        Clear
-      </button>
-      <button
-        onClick={() => {
-          console.log("apply");
+        <button
+          onClick={() => {
+            console.log("clear");
+          }}
+          style={{ ...buttonStyle, backgroundColor: "green" }}
+        >
+          Clear
+        </button>
+      </div>
+
+      <div
+        style={{
+          width: "50%",
+          display: "flex", // Enable flexbox
+          justifyContent: "flex-end", // Align items to the right
         }}
-        style={{ ...buttonStyle, backgroundColor: "#007bff" }}
       >
-        Apply
-      </button>
+        <button
+          onClick={() => {
+            console.log("apply");
+          }}
+          style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+        >
+          Apply
+        </button>
+      </div>
     </div>
   );
 };

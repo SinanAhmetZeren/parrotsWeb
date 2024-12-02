@@ -126,7 +126,7 @@ function App() {
                 style={{
                   backgroundColor: "rgba(5, 8, 58, 0.85)",
                   height: "17vh",
-                  width: "67%",
+                  width: "95%",
                   padding: "1vh",
                   borderRadius: "1rem",
                   alignSelf: "center",
@@ -150,8 +150,12 @@ function App() {
                     paddingTop: "0.2rem",
                   }}
                 >
-                  <MainPageVehiclePicker />
-                  <MainPageVacancyPicker />
+                  <div style={{ width: "50%" }}>
+                    <MainPageVehiclePicker />
+                  </div>
+                  <div style={{ width: "50%" }}>
+                    <MainPageVacancyPicker />
+                  </div>
                 </div>
                 <div>
                   <MainPageApplyClearButtons />

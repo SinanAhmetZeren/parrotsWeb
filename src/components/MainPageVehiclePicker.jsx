@@ -41,6 +41,16 @@ export const MainPageVehiclePicker = () => {
           position: "relative",
         }}
       >
+        <span
+          className="text-lg font-bold"
+          style={{
+            width: "35%",
+            display: "inline-block", // Make the width apply
+            textAlign: "end", // Optional: Align the text inside the span
+          }}
+        >
+          Vehicle&nbsp;
+        </span>
         <input
           className="font-bold text-base "
           type="text"
@@ -48,7 +58,7 @@ export const MainPageVehiclePicker = () => {
           value={selectedVehicle}
           placeholder="Vehicle"
           style={{
-            width: "100%",
+            width: "65%",
             padding: ".3rem",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",

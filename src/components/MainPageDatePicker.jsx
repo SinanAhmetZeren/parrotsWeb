@@ -55,43 +55,71 @@ export const MainPageDatePicker = () => {
           width: "100%",
         }}
       >
-        <input
-          className="font-bold text-base "
-          type="text"
-          readOnly
-          value={`${formatDate(state[0].startDate)}`}
-          placeholder="Start Date" // Placeholder text
-          style={{
-            width: "50%",
-            padding: ".3rem",
-            border: "1px solid #ccc",
-            borderRadius: "1.5rem",
-            textAlign: "center",
-            color: "black",
-            boxShadow: `
+        <div style={{ width: "50%" }}>
+          <span
+            className="text-lg font-bold"
+            style={{
+              width: "35%",
+              display: "inline-block", // Make the width apply
+              textAlign: "end", // Optional: Align the text inside the span
+            }}
+          >
+            From&nbsp;
+          </span>
+          <input
+            className="font-bold text-base "
+            type="text"
+            readOnly
+            value={`${formatDate(state[0].startDate)}`}
+            placeholder="Start Date" // Placeholder text
+            style={{
+              width: "65%",
+              padding: ".3rem",
+              border: "1px solid #ccc",
+              borderRadius: "1.5rem",
+              textAlign: "center",
+              color: "black",
+              boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
             inset 0 -4px 6px rgba(0, 0, 0, 0.3)
           `,
-          }}
-        />
-        <input
-          className="font-bold text-base "
-          type="text"
-          readOnly
-          value={`${formatDate(state[0].endDate)}`}
-          placeholder="End Date" // Placeholder text
-          style={{
-            width: "50%",
-            border: "1px solid #ccc",
-            borderRadius: "1.5rem",
-            textAlign: "center",
-            color: "black",
-            boxShadow: `
+            }}
+          />
+        </div>
+
+        <div style={{ width: "50%" }}>
+          <span
+            className="text-lg font-bold"
+            style={{
+              width: "35%",
+              display: "inline-block", // Make the width apply
+              textAlign: "end", // Optional: Align the text inside the span
+            }}
+          >
+            Until&nbsp;
+          </span>
+
+          <input
+            className="font-bold text-base "
+            type="text"
+            readOnly
+            value={`${formatDate(state[0].endDate)}`}
+            placeholder="End Date" // Placeholder text
+            style={{
+              width: "65%",
+              border: "1px solid #ccc",
+              padding: ".3rem",
+
+              borderRadius: "1.5rem",
+              textAlign: "center",
+              color: "black",
+              boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
             inset 0 -4px 6px rgba(0, 0, 0, 0.3)
           `,
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
 
       {open && (

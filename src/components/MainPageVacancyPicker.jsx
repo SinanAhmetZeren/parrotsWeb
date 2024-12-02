@@ -30,14 +30,25 @@ export const MainPageVacancyPicker = () => {
           position: "relative", // Necessary for dropdown positioning
         }}
       >
+        <span
+          className="text-lg font-bold"
+          style={{
+            width: "35%",
+            display: "inline-block", // Make the width apply
+            textAlign: "end", // Optional: Align the text inside the span
+          }}
+        >
+          Vacancy&nbsp;
+        </span>
+
         <input
           className="font-bold text-base "
           type="text"
           readOnly
           value={selectedVacancy} // Display the selected vacancy number
-          placeholder="Select a Vacancy"
+          placeholder="Vacancy"
           style={{
-            width: "100%",
+            width: "65%",
             padding: ".3rem",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
