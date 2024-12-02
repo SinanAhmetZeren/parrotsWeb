@@ -1,0 +1,40 @@
+/* Set global font style for the calendar */
+.rdrCalendarWrapper {
+  font-family: "Arial", sans-serif; /* Replace 'Arial' with your desired font */
+  font-size: 16px; /* Set font size globally */
+  font-weight: bold; /* Make text bold globally */
+  max-width: 90vw; /* Ensure it doesn't overflow on smaller screens */
+  border-radius: 0.5rem; /* Rounded edges */
+}
+
+/* Ensure headers also follow the global font style */
+.rdrMonthAndYearWrapper,
+.rdrMonthAndYearPickers select,
+.rdrWeekDays,
+.rdrDayNumber span,
+.rdrDayNumber {
+  font-size: 16px !important; /* Ensure consistency for all elements */
+  font-weight: bold !important;
+}
+
+/* Change header color and font */
+.rdrMonthAndYearWrapper {
+  color: #007bff; /* Custom text color */
+}
+
+/* Customize date cells */
+.rdrDayNumber {
+  font-size: 16px; /* Adjust font size */
+  font-weight: bold;
+}
+
+/* Customize selected range */
+.rdrSelected {
+  background-color: #00bcd4 !important; /* Change selected range color */
+}
+
+/* Customize hover effect */
+.rdrDay:hover .rdrDayNumber span {
+  color: greenyellow !important; /* Change hover text color */
+  font-weight: bold;
+}

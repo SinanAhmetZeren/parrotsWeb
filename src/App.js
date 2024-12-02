@@ -12,7 +12,9 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { cardData } from "./components/cardData";
-import { DatePicker } from "./components/MainPageDatePicker";
+import { MainPageDatePicker } from "./components/MainPageDatePicker";
+import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
+import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
 
 function App() {
   const userId = "43242342432342342342";
@@ -226,7 +228,6 @@ function App() {
           <div
             className="flex mainpage_TopRow"
             style={{
-              backgroundColor: "red",
               padding: ".1rem",
               flexDirection: "row",
             }}
@@ -235,7 +236,6 @@ function App() {
               className="flex mainpage_TopLeft"
               style={{
                 height: "3rem",
-                backgroundColor: "orange",
                 width: "33%",
                 alignItems: "center",
                 justifyContent: "center",
@@ -243,17 +243,17 @@ function App() {
             >
               <img src={parrotsLogo} alt="Logo" className="w-10 h-10 mr-4" />
               <div>
-                <span className="text-lg font-semibold">
-                  Welcome to Parrots
+                <span className="text-xl font-bold">Welcome to Parrots</span>
+                <span className="text-xl font-bold text-yellow-100">
+                  {" "}
+                  Username
                 </span>
-                <span className="text-lg text-yellow-400"> Username</span>
               </div>
             </div>
             <div
               className="flex mainpage_TopRight"
               style={{
                 height: "3rem",
-                backgroundColor: "pink",
                 width: "65%",
                 alignItems: "center",
                 justifyContent: "flex-end",
@@ -292,20 +292,32 @@ function App() {
             <div
               className="flex mainpage_BottomLeft"
               style={{
-                backgroundColor: "orange",
                 width: "33%",
               }}
             >
               <div>
-                <DatePicker />
-                {/* <MainPageDatePicker /> */}
+                <MainPageDatePicker />
+
+                <div
+                  style={{
+                    display: "flex", // Flexbox to place inputs side by side
+                    gap: ".5rem", // Gap between the two inputs
+                    paddingLeft: ".5rem",
+                    paddingRight: ".5rem",
+                    cursor: "pointer",
+                    width: "100%",
+                  }}
+                >
+                  <MainPageVehiclePicker />
+                  <MainPageVacancyPicker />
+                </div>
+                {/* <MainPageCardSwiper /> */}
               </div>
             </div>
 
             <div
               className="flex mainpage_BottomRight"
               style={{
-                backgroundColor: "orange",
                 width: "67%",
                 alignItems: "center",
                 justifyContent: "center",

@@ -3,8 +3,9 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from "react-date-range";
 import { useState, useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
+import "../assets/css/date-range-custom.css";
 
-export const DatePicker = () => {
+export const MainPageDatePicker = () => {
   const [state, setState] = useState([
     {
       startDate: null, // Start date is null initially
@@ -47,21 +48,21 @@ export const DatePicker = () => {
         onClick={() => setOpen(!open)} // Toggle the calendar on date field click
         style={{
           display: "flex", // Flexbox to place inputs side by side
-          gap: "1px", // Gap between the two inputs
-          padding: "10px",
-          border: "1px solid #ccc",
+          gap: ".5rem", // Gap between the two inputs
+          paddingLeft: ".5rem",
+          paddingRight: ".5rem",
           cursor: "pointer",
-          width: "320px",
+          width: "100%",
         }}
       >
         <input
           type="text"
           readOnly
           value={`${formatDate(state[0].startDate)}`}
-          placeholder="Select Start Date" // Placeholder text
+          placeholder="Start Date" // Placeholder text
           style={{
-            width: "10rem",
-            padding: "10px",
+            width: "50%",
+            padding: ".1rem",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
@@ -72,9 +73,9 @@ export const DatePicker = () => {
           type="text"
           readOnly
           value={`${formatDate(state[0].endDate)}`}
-          placeholder="Select End Date" // Placeholder text
+          placeholder="End Date" // Placeholder text
           style={{
-            width: "10rem",
+            width: "50%",
             // padding: "10px",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
@@ -86,15 +87,21 @@ export const DatePicker = () => {
 
       {open && (
         <div
-          ref={calendarRef} // Attach the ref to the calendar container
-          style={{ position: "absolute", zIndex: 1000 }}
+          ref={calendarRef}
+          style={{
+            position: "absolute",
+            zIndex: 1000,
+            paddingTop: "1rem",
+            width: "33%",
+          }}
         >
           <DateRange
             editableDateInputs={true}
             onChange={handleDateChange}
             moveRangeOnFirstSelection={false}
             ranges={state}
-            locale={enUS} // Set locale to English (US)
+            locale={enUS}
+            style={{ width: "33rem" }}
           />
         </div>
       )}

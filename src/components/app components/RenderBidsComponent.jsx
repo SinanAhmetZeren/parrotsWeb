@@ -318,7 +318,6 @@ const styles = StyleSheet.create({
     width: vw(19),
     textAlign: "right",
     color: "#3c9dde",
-    // backgroundColor: "red",
     alignSelf: "center",
   },
 });
