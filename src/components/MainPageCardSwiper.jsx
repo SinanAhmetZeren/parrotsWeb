@@ -13,7 +13,7 @@ const slideContainerStyle = {
 
 export function MainPageCardSwiper({ cardData }) {
   return (
-    <div>
+    <>
       <Swiper
         effect="coverflow"
         onSlideChangeTransitionEnd={(swiper) => {
@@ -50,38 +50,6 @@ export function MainPageCardSwiper({ cardData }) {
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* 
-      <div
-        className="custom-prev"
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: ".5rem",
-          zIndex: 10,
-          height: "2.5rem",
-          width: "2.5rem",
-          cursor: "pointer",
-          transform: "scaleX(-1)", // Flipping horizontally
-          marginTop: "-4rem",
-        }}
-      >
-        <img src={leftArrow} alt="Previous" />
-      </div>
-      <div
-        className="custom-next"
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "29rem",
-          zIndex: 10,
-          height: "3rem",
-          width: "3rem",
-          cursor: "pointer",
-          marginTop: "-4rem",
-        }}
-      >
-        <img src={rightArrow} alt="Next" />
-      </div> */}
-    </div>
+    </>
   );
 }

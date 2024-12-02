@@ -38,12 +38,16 @@ export const MainPageVacancyPicker = () => {
           placeholder="Select a Vacancy"
           style={{
             width: "100%",
-            padding: ".1rem",
+            padding: ".3rem",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
             color: "black",
             cursor: "pointer",
+            boxShadow: `
+            0 4px 6px rgba(0, 0, 0, 0.3),
+            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+          `,
           }}
         />
       </div>

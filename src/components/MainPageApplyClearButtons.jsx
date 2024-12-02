@@ -8,7 +8,7 @@ import "../assets/css/date-range-custom.css";
 export const MainPageApplyClearButtons = () => {
   const buttonStyle = {
     width: "50%", // Match the input width
-    padding: "0.1rem",
+    padding: "0.3rem",
     borderRadius: "1.5rem",
     textAlign: "center",
     color: "white",

@@ -50,7 +50,7 @@ const cardSubtitleStyle = {
   fontSize: "1.2rem",
   fontWeight: "400",
   margin: "0.25rem 0",
-  color: "purple",
+  color: "red",
 };
 
 const cardDescriptionStyle = {

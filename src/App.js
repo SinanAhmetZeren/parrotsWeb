@@ -16,6 +16,8 @@ import { MainPageDatePicker } from "./components/MainPageDatePicker";
 import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
 import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
 import { MainPageApplyClearButtons } from "./components/MainPageApplyClearButtons";
+import { MainPageVoyageCard } from "./components/MainPageVoyageCard";
+
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -71,7 +73,7 @@ function App() {
   const cardSubtitleStyle = {
     fontSize: "1.2rem",
     fontWeight: "400",
-    color: "purple",
+    color: "red",
   };
 
   const cardDescriptionStyle = {
@@ -119,8 +121,8 @@ function App() {
           <img src={cardData.image} style={imageStyle} alt="Boat tour" />
         </div>
         <div className="card-content" style={cardContentStyle}>
-          <h2 style={cardTitleStyle}>{cardData.title}</h2>
-          <h3 style={cardSubtitleStyle}>{cardData.subtitle}</h3>
+          <h2 style={cardTitleStyle}>{cardData.name}</h2>
+          <h3 style={cardSubtitleStyle}>{cardData.brief}</h3>
           <p style={cardDescriptionStyle}>
             {cardData.description}
 
@@ -140,46 +142,47 @@ function App() {
   function MainPageCardSwiper() {
     return (
       <div>
-        <Swiper
-          effect="coverflow"
-          onSlideChangeTransitionEnd={(swiper) => {
-            console.log("Slide transition completed:", swiper.activeIndex);
-          }}
-          onSlideChangeTransitionStart={() => {
-            console.log("Slide transition started");
-          }}
-          speed={1000}
-          grabCursor={true}
-          centeredSlides={true}
-          slidesPerView="auto"
-          // loop={true}
-          coverflowEffect={{
-            rotate: 0,
-            stretch: 100,
-            depth: 200,
-            modifier: 1,
-            slideShadows: false,
-          }}
-          navigation={{
-            prevEl: ".custom-prev",
-            nextEl: ".custom-next",
-          }}
-          modules={[EffectCoverflow, Navigation]}
-          style={{ padding: "0rem 0", marginTop: "-7rem", width: "25rem" }}
-        >
-          {cardData.map((data, index) => (
-            <SwiperSlide key={index} style={slideContainerStyle}>
-              <MainPageVoyageCard cardData={data} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
+        <div style={{ width: "90%" }}>
+          <Swiper
+            effect="coverflow"
+            onSlideChangeTransitionEnd={(swiper) => {
+              console.log("Slide transition completed:", swiper.activeIndex);
+            }}
+            onSlideChangeTransitionStart={() => {
+              console.log("Slide transition started");
+            }}
+            speed={1000}
+            grabCursor={true}
+            centeredSlides={true}
+            slidesPerView="auto"
+            // loop={true}
+            coverflowEffect={{
+              rotate: 0,
+              stretch: 100,
+              depth: 200,
+              modifier: 1,
+              slideShadows: false,
+            }}
+            navigation={{
+              prevEl: ".custom-prev",
+              nextEl: ".custom-next",
+            }}
+            modules={[EffectCoverflow, Navigation]}
+            style={{ width: "25rem" }}
+          >
+            {cardData.map((data, index) => (
+              <SwiperSlide key={index} style={slideContainerStyle}>
+                <MainPageVoyageCard cardData={data} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
         <div
           className="custom-prev"
           style={{
             position: "absolute",
             top: "50%",
-            left: "0rem",
+            left: "01%",
             zIndex: 10,
             height: "2.5rem",
             width: "2.5rem",
@@ -195,7 +198,7 @@ function App() {
           style={{
             position: "absolute",
             top: "50%",
-            left: "35%",
+            left: "27%",
             zIndex: 10,
             height: "3rem",
             width: "3rem",
@@ -319,9 +322,10 @@ function App() {
                 style={{
                   backgroundColor: "rgba(5, 8, 58, 0.85)",
                   height: "17vh",
-                  width: "88%",
+                  width: "83%",
                   padding: "1vh",
                   borderRadius: "1rem",
+                  alignSelf: "center",
                 }}
               >
                 <div
@@ -349,7 +353,7 @@ function App() {
                   <MainPageApplyClearButtons />
                 </div>
               </div>
-              <div style={{ backgroundColor: "red", height: "60vh" }}>
+              <div style={{ height: "60vh" }}>
                 <MainPageCardSwiper />
               </div>
             </div>

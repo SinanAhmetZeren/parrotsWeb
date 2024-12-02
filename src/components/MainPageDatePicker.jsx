@@ -63,11 +63,15 @@ export const MainPageDatePicker = () => {
           placeholder="Start Date" // Placeholder text
           style={{
             width: "50%",
-            padding: ".1rem",
+            padding: ".3rem",
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
             color: "black",
+            boxShadow: `
+            0 4px 6px rgba(0, 0, 0, 0.3),
+            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+          `,
           }}
         />
         <input
@@ -82,6 +86,10 @@ export const MainPageDatePicker = () => {
             borderRadius: "1.5rem",
             textAlign: "center",
             color: "black",
+            boxShadow: `
+            0 4px 6px rgba(0, 0, 0, 0.3),
+            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+          `,
           }}
         />
       </div>
