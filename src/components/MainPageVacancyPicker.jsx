@@ -71,12 +71,19 @@ export const MainPageVacancyPicker = () => {
               border: "1px solid #ccc",
               borderRadius: "1.5rem",
               marginTop: "2.5rem",
-              width: "100%", // Dropdown width
+
+              width: "65%",
+              right: "0rem",
+
               boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
               maxHeight: "53vh", // Optional: Limit height for large lists
               overflowY: "auto", // Enable scrolling if content exceeds height
               scrollbarWidth: "none", // For Firefox (hide scrollbar)
               msOverflowStyle: "none", // For IE/Edge (hide scrollbar)
+              boxShadow: `
+              0 4px 6px rgba(0, 0, 0, 0.3),
+              inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+            `,
             }}
           >
             <style>
@@ -99,6 +106,11 @@ export const MainPageVacancyPicker = () => {
                   padding: ".5rem 1rem",
                   cursor: "pointer",
                   color: "black",
+
+                  boxShadow: `
+                  inset 0 -3px 8px rgba(0, 0, 0, 0.05)
+                `,
+
                   borderBottom:
                     index !== vacancies.length - 1 ? "1px solid #eee" : "none",
                 }}

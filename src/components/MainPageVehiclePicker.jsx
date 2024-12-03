@@ -83,8 +83,12 @@ export const MainPageVehiclePicker = () => {
               border: "1px solid #ccc",
               borderRadius: "1.5rem",
               marginTop: "2.5rem",
-              width: "100%",
-              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+              width: "65%",
+              right: "0rem",
+              boxShadow: `
+              0 4px 6px rgba(0, 0, 0, 0.3),
+              inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+            `,
             }}
           >
             {vehicles.map((vehicle, index) => (
@@ -98,6 +102,9 @@ export const MainPageVehiclePicker = () => {
                   padding: ".5rem 1rem",
                   cursor: "pointer",
                   color: "black",
+                  boxShadow: `
+                  inset 0 -3px 8px rgba(0, 0, 0, 0.05)
+                `,
                   borderBottom:
                     index !== vehicles.length - 1 ? "1px solid #eee" : "none",
                 }}

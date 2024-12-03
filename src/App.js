@@ -1,7 +1,8 @@
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import "./App.css";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -11,15 +12,76 @@ import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
 import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
 import { MainPageApplyClearButtons } from "./components/MainPageApplyClearButtons";
 import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
+import {
+  useGetVoyagesByLocationMutation,
+  useGetFilteredVoyagesMutation,
+} from "./slices/VoyageSlice";
 
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-
-  const center = {
-    lat: 37.7749,
-    lng: -122.4194,
+  const mapRef = useRef(null);
+  const handleMapLoad = (map) => {
+    mapRef.current = map;
   };
+  const [userLocation, setUserLocation] = useState({});
+  const [initialLatitude, setInitialLatitude] = useState();
+  const [initialLongitude, setInitialLongitude] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialVoyages, setInitialVoyages] = useState([]);
+
+  const [locationError, setLocationError] = useState(null);
+  const [xDelta, setXDelta] = useState(null);
+  const [yDelta, setYDelta] = useState(null);
+
+  const [
+    getVoyagesByLocation,
+    {
+      isError: isErrorVoyages,
+      isLoading: isLoadingVoyages,
+      isSuccess: isSuccessVoyages,
+    },
+  ] = useGetVoyagesByLocationMutation();
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setInitialLatitude(latitude);
+          setInitialLongitude(longitude);
+          setUserLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          setLocationError("Unable to retrieve your location.");
+          console.error(error.message);
+        }
+      );
+    } else {
+      setLocationError("Geolocation is not supported by your browser.");
+    }
+  }, []);
+
+  useEffect(() => {
+    const getVoyages = async () => {
+      const lat1 = initialLatitude - 0.15;
+      const lat2 = initialLatitude + 0.15;
+      const lon1 = initialLongitude - 0.2;
+      const lon2 = initialLongitude + 0.2;
+
+      setIsLoading(true);
+
+      const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
+      setInitialVoyages(voyages.data || []);
+      console.log("voyages data: ..........");
+      console.log(voyages.data);
+      setIsLoading(false);
+    };
+
+    if (initialLatitude !== 0 && initialLongitude !== 0) {
+      getVoyages();
+    }
+  }, [initialLatitude, initialLongitude, getVoyagesByLocation]);
 
   return (
     <div className="App">
@@ -170,7 +232,35 @@ function App() {
                 </div>
               </div>
               <div style={{ height: "60vh" }}>
-                <MainPageCardSwiper />
+                {isLoading ? (
+                  <div
+                    style={{
+                      justifyContent: "center",
+                      alignContent: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <div className="spinner"></div>
+                  </div>
+                ) : (
+                  <MainPageCardSwiper voyagesData={initialVoyages} />
+                )}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <button
+                  onClick={() => {
+                    console.log("apply");
+                  }}
+                  style={buttonStyle}
+                >
+                  New Voyage
+                </button>
               </div>
             </div>
 
@@ -194,8 +284,27 @@ function App() {
                       width: "100%",
                       height: "100%",
                     }}
-                    center={center}
+                    center={userLocation}
                     zoom={10}
+                    onLoad={handleMapLoad} // This initializes the map reference
+                    onIdle={() => {
+                      if (mapRef.current) {
+                        const center = mapRef.current.getCenter();
+                        const zoom = mapRef.current.getZoom();
+                        const bounds = mapRef.current.getBounds();
+
+                        if (bounds) {
+                          const ne = bounds.getNorthEast();
+                          const sw = bounds.getSouthWest();
+                          console.log("Bounds:", {
+                            northEast: { lat: ne.lat(), lng: ne.lng() },
+                            southWest: { lat: sw.lat(), lng: sw.lng() },
+                          });
+                          setXDelta(ne.lng() - sw.lng());
+                          setYDelta(ne.lat() - sw.lat());
+                        }
+                      }
+                    }}
                   />
                 </LoadScript>
               </div>
@@ -208,3 +317,29 @@ function App() {
 }
 
 export default App;
+
+const buttonStyle = {
+  width: "40%",
+  backgroundColor: "#007bff",
+  padding: "0.6rem",
+  marginTop: "2rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
+  color: "white",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1.4rem",
+  border: "none",
+  boxShadow: `
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+    `,
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+};
+/* 
+TODO:
+
+3. api request to get voyages
+*/
