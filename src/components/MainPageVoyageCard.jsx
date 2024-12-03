@@ -5,21 +5,27 @@ export function MainPageVoyageCard({ cardData }) {
         <img src={cardData.image} style={imageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
-        <h2 style={cardTitleStyle}>{cardData.name}</h2>
-        <p style={cardSubtitleStyle}>{cardData.brief}</p>
-        <p style={cardDescriptionStyle}>
-          <div>
-            <span style={{ backgroundColor: "lightblue" }}>
+        <div style={cardTitleStyle}>{cardData.name}</div>
+
+        {/* DETAILS */}
+        <div style={cardDescriptionStyle}>
+          <div style={{}}>
+            <span style={voyageDetailSpan}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
               {cardData.vehicle}
             </span>
-            <span style={{ backgroundColor: "lightgreen" }}>
+            <span style={voyageDetailSpan}>
               👨‍👨‍👦‍👦
               {cardData.vacancy}
             </span>
           </div>
-          <span style={{ backgroundColor: "yellow" }}>📅{cardData.dates}</span>
-        </p>
+          <span style={voyageDetailSpan}>📅{cardData.dates}</span>
+        </div>
+
+        {/* BRIEF */}
+        <div style={cardBriefStyle}>{cardData.brief}</div>
+
+        {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
           <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
             Trip Details
@@ -51,15 +57,22 @@ export default function VehicleIcon({ vehicleType }) {
     if (typeIndex >= 0 && typeIndex < vehicles.length) {
       return vehicles[typeIndex];
     }
-    return "❓"; // Fallback for invalid index
+    return "❓";
   };
 
   return (
-    <span style={{ fontSize: "2rem", textAlign: "center" }}>
-      {getVehicleEmoji(vehicleType)}
-    </span>
+    <span style={{ textAlign: "center" }}>{getVehicleEmoji(vehicleType)}</span>
   );
 }
+
+const voyageDetailSpan = {
+  backgroundColor: "rgba(0, 119, 234,0.1)",
+  color: "#007bff",
+  borderRadius: "1rem",
+  padding: "0.2rem",
+  paddingLeft: "0.5rem",
+  paddingRight: "0.5rem",
+};
 
 const cardContainerStyle = {
   display: "flex",
@@ -67,15 +80,14 @@ const cardContainerStyle = {
   border: "1px solid #ddd",
   borderRadius: "8px",
   overflow: "hidden",
-  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   width: "24rem",
   maxWidth: "600px",
   maxHeight: "700px",
   backgroundColor: "#fff",
   margin: "1rem",
   boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.9),
-  inset 0 -4px 6px rgba(0, 0, 0, 0.9)
+  0 4px 6px rgba(0, 0, 0, 0.3),
+  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
 `,
 };
 
@@ -95,7 +107,7 @@ const cardImageStyle = {
 const cardContentStyle = {
   display: "flex",
   height: "16rem",
-  backgroundColor: "white",
+  // backgroundColor: "yellow",
   flexDirection: "column",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.4),
@@ -109,7 +121,7 @@ const cardTitleStyle = {
   color: "rgba(10, 119, 234,1)",
 };
 
-const cardSubtitleStyle = {
+const cardBriefStyle = {
   fontSize: "1rem",
   color: "black",
   display: "-webkit-box",
@@ -119,12 +131,14 @@ const cardSubtitleStyle = {
   textOverflow: "ellipsis",
   paddingLeft: "1rem",
   paddingRight: "1rem",
+  // backgroundColor: "pink",
 };
 
 const cardDescriptionStyle = {
   fontSize: "1rem",
   color: "blue",
   fontWeight: "600",
+  // backgroundColor: "red",
 };
 
 const buttonContainerStyle = {
@@ -154,50 +168,3 @@ const buttonStyle = {
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 };
-
-/* TODO:
-1. Vehicle type emoji - case
-2. Vacancy emoji
-3. Calendar emoji
-
-
-
-switch (vehicletype) {
-  case 0:
-    icon = (
-      <FontAwesome6
-        name="sailboat"
-        size={16}
-        color="rgba(10, 119, 234,1)"
-        style={styles.icon}
-      />
-    );
-    break;
-  case 1:
-    icon = (
-      <AntDesign
-        name="car"
-        size={16}
-        color="rgba(10, 119, 234,1)"
-        style={styles.icon}
-      />
-    );
-    break;
-  case 2:
-    icon = (
-      <FontAwesome5
-        name="caravan"
-        size={16}
-        color="rgba(10, 119, 234,1)"
-        style={styles.icon}
-      />
-    );
-    break;
-
-  default:
-    icon = "help-circle";
-    break;
-}
-
-
-*/
