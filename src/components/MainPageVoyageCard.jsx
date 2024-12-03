@@ -8,11 +8,17 @@ export function MainPageVoyageCard({ cardData }) {
         <h2 style={cardTitleStyle}>{cardData.name}</h2>
         <p style={cardSubtitleStyle}>{cardData.brief}</p>
         <p style={cardDescriptionStyle}>
-          vehicle: {cardData.vehicle}
-          <br />
-          dates: {cardData.dates}
-          <br />
-          vacancy: {cardData.vacancy}
+          <div>
+            <span style={{ backgroundColor: "lightblue" }}>
+              <VehicleIcon vehicleType={cardData.vehicleType} />
+              {cardData.vehicle}
+            </span>
+            <span style={{ backgroundColor: "lightgreen" }}>
+              👨‍👨‍👦‍👦
+              {cardData.vacancy}
+            </span>
+          </div>
+          <span style={{ backgroundColor: "yellow" }}>📅{cardData.dates}</span>
         </p>
         <div className="card-buttons" style={buttonContainerStyle}>
           <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
@@ -24,6 +30,34 @@ export function MainPageVoyageCard({ cardData }) {
         </div>
       </div>
     </div>
+  );
+}
+
+const vehicles = [
+  "⛵", // Boat
+  "🚗", // Car
+  "🏕️", // Caravan
+  "🚌", // Bus
+  "🚶", // Walk
+  "🏃", // Run
+  "🏍️", // Motorcycle
+  "🚲", // Bicycle
+  "🏠", // Tinyhouse
+  "✈️", // Airplane
+];
+
+export default function VehicleIcon({ vehicleType }) {
+  const getVehicleEmoji = (typeIndex) => {
+    if (typeIndex >= 0 && typeIndex < vehicles.length) {
+      return vehicles[typeIndex];
+    }
+    return "❓"; // Fallback for invalid index
+  };
+
+  return (
+    <span style={{ fontSize: "2rem", textAlign: "center" }}>
+      {getVehicleEmoji(vehicleType)}
+    </span>
   );
 }
 
@@ -72,7 +106,7 @@ const cardContentStyle = {
 const cardTitleStyle = {
   fontSize: "1.3rem",
   fontWeight: "bold",
-  color: "green",
+  color: "rgba(10, 119, 234,1)",
 };
 
 const cardSubtitleStyle = {

@@ -50,8 +50,16 @@ function App() {
             >
               <img src={parrotsLogo} alt="Logo" className="w-10 h-10 mr-4" />
               <div>
-                <span className="text-xl font-bold">Welcome to Parrots</span>
-                <span className="text-xl font-bold text-yellow-100">
+                <span
+                  className="text-xl font-bold"
+                  style={{ color: "rgba(10, 119, 234,1)" }}
+                >
+                  Welcome to Parrots
+                </span>
+                <span
+                  className="text-xl font-bold "
+                  style={{ color: "#2ac898" }}
+                >
                   {" "}
                   {"Peter Parker".toUpperCase()}
                 </span>
