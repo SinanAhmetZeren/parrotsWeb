@@ -1,8 +1,10 @@
+import parrot1 from "../assets/sailboat.jpg";
+
 export function MainPageVoyageCard({ cardData }) {
   return (
     <div className="card" style={cardContainerStyle}>
       <div className="card-image" style={cardImageStyle}>
-        <img src={cardData.image} style={imageStyle} alt="Boat tour" />
+        <img src={parrot1} style={imageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle}>{cardData.name}</div>
@@ -12,14 +14,15 @@ export function MainPageVoyageCard({ cardData }) {
           <div style={{}}>
             <span style={voyageDetailSpan}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
-              {cardData.vehicle}
+              {cardData.vehicle.name}
             </span>
             <span style={voyageDetailSpan}>
               👨‍👨‍👦‍👦
               {cardData.vacancy}
             </span>
           </div>
-          <span style={voyageDetailSpan}>📅{cardData.dates}</span>
+          {/* <span style={voyageDetailSpan}>📅{cardData.dates}</span> */}
+          <span style={voyageDetailSpan}>📅{cardData.endDate}</span>
         </div>
 
         {/* BRIEF */}

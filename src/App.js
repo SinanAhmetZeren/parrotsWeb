@@ -1,6 +1,6 @@
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import "./App.css";
-import { GoogleMap, LoadScript } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import React, { useState, useEffect, useRef } from "react";
 
 import "swiper/css/pagination";
@@ -16,6 +16,7 @@ import {
   useGetVoyagesByLocationMutation,
   useGetFilteredVoyagesMutation,
 } from "./slices/VoyageSlice";
+import { TopBarMenu } from "./components/TopBarMenu";
 
 function App() {
   const userId = "43242342432342342342";
@@ -64,10 +65,10 @@ function App() {
 
   useEffect(() => {
     const getVoyages = async () => {
-      const lat1 = initialLatitude - 0.15;
-      const lat2 = initialLatitude + 0.15;
-      const lon1 = initialLongitude - 0.2;
-      const lon2 = initialLongitude + 0.2;
+      const lat1 = initialLatitude - 10.15;
+      const lat2 = initialLatitude + 10.15;
+      const lon1 = initialLongitude - 10.2;
+      const lon2 = initialLongitude + 10.2;
 
       setIsLoading(true);
 
@@ -75,6 +76,7 @@ function App() {
       setInitialVoyages(voyages.data || []);
       console.log("voyages data: ..........");
       console.log(voyages.data);
+      console.log("waypoint0 lat: ", voyages.data[0].waypoints[0].latitude);
       setIsLoading(false);
     };
 
@@ -114,13 +116,13 @@ function App() {
               <div>
                 <span
                   className="text-xl font-bold"
-                  style={{ color: "rgba(10, 119, 234,1)" }}
+                  style={{ color: "rgba(10, 119, 234,1)", fontWeight: "900" }}
                 >
                   Welcome to Parrots
                 </span>
                 <span
-                  className="text-xl font-bold "
-                  style={{ color: "#2ac898" }}
+                  className="text-xl "
+                  style={{ color: "#2ac898", fontWeight: "900" }}
                 >
                   {" "}
                   {"Peter Parker".toUpperCase()}
@@ -136,44 +138,7 @@ function App() {
                 justifyContent: "flex-end",
               }}
             >
-              <nav className="flex space-x-6 sm:space-x-6 overflow-x-auto sm:overflow-x-visible">
-                <a
-                  href="#home"
-                  className="hover:text-gray-300 font-bold text-xl"
-                >
-                  Home
-                </a>
-                <a
-                  href="#profile"
-                  className="hover:text-gray-300 font-bold text-xl "
-                >
-                  Profile
-                </a>
-                <a
-                  href="#voyage"
-                  className="hover:text-gray-300 font-bold text-xl"
-                >
-                  Voyage
-                </a>
-                <a
-                  href="#favorites"
-                  className="hover:text-gray-300 font-bold text-xl"
-                >
-                  Favorites
-                </a>
-                <a
-                  href="#connect"
-                  className="hover:text-gray-300 font-bold text-xl"
-                >
-                  Connect
-                </a>
-                <a
-                  href="#logout"
-                  className="hover:text-gray-300 font-bold text-xl"
-                >
-                  Logout
-                </a>
-              </nav>
+              <TopBarMenu />
             </div>
           </div>
 
@@ -289,8 +254,8 @@ function App() {
                     onLoad={handleMapLoad} // This initializes the map reference
                     onIdle={() => {
                       if (mapRef.current) {
-                        const center = mapRef.current.getCenter();
-                        const zoom = mapRef.current.getZoom();
+                        // const center = mapRef.current.getCenter();
+                        // const zoom = mapRef.current.getZoom();
                         const bounds = mapRef.current.getBounds();
 
                         if (bounds) {
@@ -305,7 +270,33 @@ function App() {
                         }
                       }
                     }}
-                  />
+                  >
+                    {isSuccessVoyages && (
+                      <Marker
+                        key={2}
+                        // position={{ lat: 41.11384, lng: 28.94966 }}
+                        position={{
+                          lat: initialVoyages[0].waypoints[0].latitude,
+                          lng: initialVoyages[0].waypoints[0].longitude,
+                        }}
+                        icon={{
+                          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                          scaledSize: new window.google.maps.Size(50, 50),
+                        }}
+                        onClick={() => console.log("Marker clicked!")}
+                      />
+                    )}
+
+                    <Marker
+                      key={3}
+                      position={{ lat: 41.11384, lng: 28.94966 }}
+                      icon={{
+                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                        scaledSize: new window.google.maps.Size(50, 50),
+                      }}
+                      onClick={() => console.log("Marker clicked!")}
+                    />
+                  </GoogleMap>
                 </LoadScript>
               </div>
             </div>
@@ -341,5 +332,6 @@ const buttonStyle = {
 /* 
 TODO:
 
-3. api request to get voyages
+1. adjust xDelta yDelta for request
+2. pins on map for voyages
 */

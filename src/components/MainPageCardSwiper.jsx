@@ -9,9 +9,10 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { cardData } from "../components/cardData";
-import { MainPageVoyageCard } from "../components/MainPageVoyageCard";
+import { MainPageVoyageCard } from "./MainPageVoyageCard";
 
 export function MainPageCardSwiper({ voyagesData }) {
+  console.log("...", voyagesData);
   // console.log("card data", cardData[0].name);
   // console.log("card data", cardData[0].image);
   // console.log("card data", cardData[0].brief);
@@ -22,28 +23,27 @@ export function MainPageCardSwiper({ voyagesData }) {
   // console.log("voyages data", voyagesData[0].brief);
   // console.log("voyages data", voyagesData[0].startDate);
   // console.log("voyages data", voyagesData[0].endDate);
-  console.log("-------->", voyagesData[0]);
 
-  let newVoyageData = {
-    name: voyagesData[0]?.name ?? "Unknown Voyage",
-    dates:
-      voyagesData[0]?.endDate && voyagesData[0]?.startDate
-        ? `${voyagesData[0].startDate} to ${voyagesData[0].endDate}`
-        : "Dates not available",
-    brief: voyagesData[0]?.brief ?? "No brief available",
-    image: voyagesData[0]?.profileImage ?? "/path/to/default-image.jpg",
-    description: voyagesData[0]?.description ?? "No description provided",
-    lastDate: voyagesData[0]?.endDate ?? "End date not available",
-    vehicle: voyagesData[0]?.vehicle?.name ?? "Vehicle name not available",
-    vacancy: voyagesData[0]?.vacancy ?? "Vacancy not specified",
-    vehicleType: voyagesData[0]?.vehicleType ?? "Vehicle type not specified",
-  };
+  // let newVoyageData = {
+  //   name: voyagesData[0]?.name ?? "Unknown Voyage",
+  //   dates:
+  //     voyagesData[0]?.endDate && voyagesData[0]?.startDate
+  //       ? `${voyagesData[0].startDate} to ${voyagesData[0].endDate}`
+  //       : "Dates not available",
+  //   brief: voyagesData[0]?.brief ?? "No brief available",
+  //   image: voyagesData[0]?.profileImage ?? "/path/to/default-image.jpg",
+  //   description: voyagesData[0]?.description ?? "No description provided",
+  //   lastDate: voyagesData[0]?.endDate ?? "End date not available",
+  //   vehicle: voyagesData[0]?.vehicle?.name ?? "Vehicle name not available",
+  //   vacancy: voyagesData[0]?.vacancy ?? "Vacancy not specified",
+  //   vehicleType: voyagesData[0]?.vehicleType ?? "Vehicle type not specified",
+  // };
 
-  let voyagesData2 = { ...cardData };
-  if (voyagesData[0]) {
-    voyagesData2 = { ...cardData, newVoyageData };
-  }
-  console.log("voyages Data 2: ", voyagesData2);
+  // let voyagesData2 = { ...cardData };
+  // if (voyagesData[0]) {
+  //   voyagesData2 = { ...cardData, newVoyageData };
+  // }
+  // console.log("voyages Data 2: ", voyagesData2);
 
   return (
     <div>
@@ -76,7 +76,7 @@ export function MainPageCardSwiper({ voyagesData }) {
           modules={[EffectCoverflow, Navigation]}
           style={{ width: "33rem" }}
         >
-          {voyagesData2.map((data, index) => (
+          {voyagesData.map((data, index) => (
             <SwiperSlide key={index} style={slideContainerStyle}>
               <MainPageVoyageCard cardData={data} />
             </SwiperSlide>
