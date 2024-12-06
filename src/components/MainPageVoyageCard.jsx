@@ -1,6 +1,7 @@
 import parrot1 from "../assets/sailboat.jpg";
 
-export function MainPageVoyageCard({ cardData }) {
+export function MainPageVoyageCard({ cardData, panToLocation }) {
+  // console.log("naber lan...", cardData.waypoints[0].latitude);
   return (
     <div className="card" style={cardContainerStyle}>
       <div className="card-image" style={cardImageStyle}>
@@ -11,8 +12,13 @@ export function MainPageVoyageCard({ cardData }) {
 
         {/* DETAILS */}
         <div style={cardDescriptionStyle}>
-          <div style={{}}>
-            <span style={voyageDetailSpan}>
+          <div
+            style={{
+              marginTop: "0.2rem",
+              marginBottom: "0.2rem",
+            }}
+          >
+            <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
               {cardData.vehicle.name}
             </span>
@@ -21,8 +27,10 @@ export function MainPageVoyageCard({ cardData }) {
               {cardData.vacancy}
             </span>
           </div>
-          {/* <span style={voyageDetailSpan}>📅{cardData.dates}</span> */}
-          <span style={voyageDetailSpan}>📅{cardData.endDate}</span>
+          <span style={voyageDetailSpan}>
+            📅From {formatCustomDate(cardData.startDate)} to To{" "}
+            {formatCustomDate(cardData.endDate)}
+          </span>
         </div>
 
         {/* BRIEF */}
@@ -33,7 +41,15 @@ export function MainPageVoyageCard({ cardData }) {
           <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
             Trip Details
           </button>
-          <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
+          <button
+            onClick={() =>
+              panToLocation(
+                cardData.waypoints[0].latitude,
+                cardData.waypoints[0].longitude
+              )
+            }
+            style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+          >
             See on Map
           </button>
         </div>
@@ -72,9 +88,9 @@ const voyageDetailSpan = {
   backgroundColor: "rgba(0, 119, 234,0.1)",
   color: "#007bff",
   borderRadius: "1rem",
-  padding: "0.2rem",
-  paddingLeft: "0.5rem",
-  paddingRight: "0.5rem",
+  padding: "0.1rem",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
 };
 
 const cardContainerStyle = {
@@ -171,3 +187,13 @@ const buttonStyle = {
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 };
+
+function formatCustomDate(dateString) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "2-digit",
+  })
+    .format(new Date(dateString))
+    .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
+}

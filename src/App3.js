@@ -1,21 +1,12 @@
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import parrotMarker from "./assets/parrotMarker4.png";
 import "./App.css";
-// import {
-//   GoogleMap,
-//   LoadScript,
-//   Marker,
-//   InfoWindow,
-// } from "@react-google-maps/api";
-
-// import {
-//   GoogleMap,
-//   LoadScript,
-//   Marker,
-//   AdvancedMarker,
-// } from "@vis.gl/react-google-maps";
-
-import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
 
 import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
@@ -308,22 +299,36 @@ function App() {
                   height: "100%",
                 }}
               >
-                <APIProvider apiKey={myApiKey}>
-                  <Map
-                    initialViewState={{
-                      longitude: -122.4194, // Longitude for San Francisco
-                      latitude: 37.7749, // Latitude for San Francisco
-                      zoom: 5, // Zoom level
+                <LoadScript googleMapsApiKey={myApiKey}>
+                  <GoogleMap
+                    mapContainerStyle={{
+                      width: "100%",
+                      height: "100%",
                     }}
-                    style={{ width: "100%", height: "100%" }}
-                    mapId="map"
+                    center={userLocation}
+                    zoom={10}
+                    onLoad={handleMapLoad} // This initializes the map reference
+                    onIdle={() => {
+                      if (mapRef.current) {
+                        // const center = mapRef.current.getCenter();
+                        // const zoom = mapRef.current.getZoom();
+                        const bounds = mapRef.current.getBounds();
+
+                        if (bounds) {
+                          const ne = bounds.getNorthEast();
+                          const sw = bounds.getSouthWest();
+                          setXDelta(ne.lng() - sw.lng());
+                          setYDelta(ne.lat() - sw.lat());
+                        }
+                      }
+                    }}
                   >
                     {isSuccessVoyages &&
                       initialVoyages?.length > 0 &&
                       initialVoyages.map((voyage, index) => {
                         return (
                           voyage.waypoints?.[0] && (
-                            <AdvancedMarker
+                            <Marker
                               key={index}
                               position={{
                                 lat: voyage.waypoints[0].latitude,
@@ -346,8 +351,8 @@ function App() {
                           )
                         );
                       })}
-                  </Map>
-                </APIProvider>
+                  </GoogleMap>
+                </LoadScript>
               </div>
             </div>
           </div>
