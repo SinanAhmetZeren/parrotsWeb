@@ -1,12 +1,12 @@
 import parrot1 from "../assets/sailboat.jpg";
 
-export function MainPageVoyageCard({ cardData, panToLocation }) {
+export function MainPageMapVoyageCard({ cardData }) {
   return (
-    <div className="card" style={cardContainerStyle}>
-      <div className="card-image" style={cardImageStyle}>
+    <div className="" style={cardContainerStyle}>
+      <div className="" style={cardImageStyle}>
         <img src={parrot1} style={imageStyle} alt="Boat tour" />
       </div>
-      <div className="card-content" style={cardContentStyle}>
+      <div className="" style={cardContentStyle}>
         <div style={cardTitleStyle}>{cardData.name}</div>
 
         {/* DETAILS */}
@@ -34,24 +34,6 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
 
         {/* BRIEF */}
         <div style={cardBriefStyle}>{cardData.brief}</div>
-
-        {/* BUTTONS */}
-        <div className="card-buttons" style={buttonContainerStyle}>
-          <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
-            Trip Details
-          </button>
-          <button
-            onClick={() =>
-              panToLocation(
-                cardData.waypoints[0].latitude,
-                cardData.waypoints[0].longitude
-              )
-            }
-            style={{ ...buttonStyle, backgroundColor: "#007bff" }}
-          >
-            See on Map
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -92,99 +74,16 @@ const voyageDetailSpan = {
   paddingRight: "1rem",
 };
 
-const cardContainerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  overflow: "hidden",
-  width: "24rem",
-  maxWidth: "600px",
-  maxHeight: "700px",
-  backgroundColor: "#fff",
-  margin: "1rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
-`,
-};
-
 const imageStyle = {
   width: "100%",
   height: "100%",
   objectFit: "cover",
 };
 
-const cardImageStyle = {
-  width: "100%",
-  height: "16rem",
-  objectFit: "cover",
-  borderBottom: "1px solid #ddd",
-};
-
-const cardContentStyle = {
-  display: "flex",
-  height: "16rem",
-  // backgroundColor: "yellow",
-  flexDirection: "column",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.4),
-  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
-`,
-};
-
 const cardTitleStyle = {
   fontSize: "1.3rem",
   fontWeight: "bold",
   color: "rgba(10, 119, 234,1)",
-};
-
-const cardBriefStyle = {
-  fontSize: "1rem",
-  color: "black",
-  display: "-webkit-box",
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-  WebkitLineClamp: 5,
-  textOverflow: "ellipsis",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  // backgroundColor: "pink",
-};
-
-const cardDescriptionStyle = {
-  fontSize: "1rem",
-  color: "blue",
-  fontWeight: "600",
-  // backgroundColor: "red",
-};
-
-const buttonContainerStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "1rem",
-  marginTop: "auto",
-  paddingBottom: "1rem",
-};
-
-const buttonStyle = {
-  width: "35%", // Match the input width
-  padding: "0.3rem",
-  borderRadius: "1.5rem",
-  textAlign: "center",
-  color: "white",
-  fontWeight: "bold",
-  cursor: "pointer",
-  fontSize: "16px",
-  border: "none",
-  boxShadow: `
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-    `,
-  transition: "box-shadow 0.2s ease",
-  WebkitFontSmoothing: "antialiased",
-  MozOsxFontSmoothing: "grayscale",
 };
 
 function formatCustomDate(dateString) {
@@ -196,3 +95,53 @@ function formatCustomDate(dateString) {
     .format(new Date(dateString))
     .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
 }
+
+const cardContainerStyle = {
+  display: "flex", // Flex for horizontal layout
+  flexDirection: "row", // Ensure content is side-by-side
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  overflow: "hidden",
+  width: "30rem",
+  backgroundColor: "#fff",
+  margin: "0rem",
+  boxShadow: `
+  0 4px 6px rgba(0, 0, 0, 0.3),
+  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
+`,
+};
+
+const cardImageStyle = {
+  width: "50%", // Image takes half the width
+  height: "auto", // Maintain aspect ratio
+  objectFit: "cover",
+};
+
+const cardContentStyle = {
+  display: "flex",
+  flexDirection: "column",
+  width: "50%", // Text content takes half the width
+  padding: "1rem",
+  boxShadow: `
+  0 4px 6px rgba(0, 0, 0, 0.4),
+  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
+`,
+  backgroundColor: "#fff", // Neutral background
+};
+
+const cardBriefStyle = {
+  fontSize: "1rem",
+  color: "black",
+  display: "-webkit-box",
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+  WebkitLineClamp: 5,
+  textOverflow: "ellipsis",
+};
+
+const cardDescriptionStyle = {
+  fontSize: "1rem",
+  color: "blue",
+  fontWeight: "600",
+  marginTop: "0.5rem",
+};

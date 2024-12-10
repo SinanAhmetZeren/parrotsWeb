@@ -1,23 +1,11 @@
 /* eslint-disable no-undef */
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import parrotMarker from "./assets/parrotMarker4.png";
-import parrotMarker2 from "./assets/parrotMarker2.png";
-import parrotMarker3 from "./assets/parrotMarker6.png";
-import parrotMarker4 from "./assets/parrotMarker7.png";
-import parrotMarker5 from "./assets/parrotMarker8.png";
-import parrotMarker6 from "./assets/parrotMarker9.png";
 import "./App.css";
 import "./assets/css/advancedmarker.css";
 
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  CollisionBehavior,
-  InfoWindow,
-  useAdvancedMarkerRef,
-} from "@vis.gl/react-google-maps";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -136,6 +124,43 @@ function App() {
     }
   };
 
+  const renderCustomPin = (voyageId) => {
+    return (
+      <>
+        <div className="custom-pin">
+          <button className="close-button">
+            <span
+              className="material-symbols-outlined"
+              style={{ backgroundColor: "red" }}
+            >
+              {voyageId} close{" "}
+            </span>
+          </button>
+
+          <div className="image-container">
+            <div className="image-container">
+              <span
+                className={classNames("map-icon", {
+                  clicked: voyageId === clicked,
+                })}
+                onClick={() => {
+                  console.log("clicked: ", clicked);
+                  console.log("voyageid: ", voyageId);
+                  if (voyageId === clicked) setClicked(null);
+                  else setClicked(voyageId);
+                }}
+              >
+                <img src={parrotsLogo} alt="Map Icon" width="50" height="50" />
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="tip" />
+      </>
+    );
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -246,6 +271,15 @@ function App() {
                 <div>
                   <MainPageApplyClearButtons />
                 </div>
+                <div
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    position: "absolute",
+                  }}
+                >
+                  <span>clicked : {clicked}</span>
+                </div>
               </div>
               <div style={{ height: "60vh" }}>
                 {isLoading ? (
@@ -301,7 +335,7 @@ function App() {
                   <Map
                     mapId={"bf51a910020fa25a"}
                     defaultZoom={10}
-                    style={{ width: "100%", height: "100%", zIndex: 5 }}
+                    style={{ width: "100%", height: "100%" }}
                     defaultCenter={{
                       lat: initialLatitude || 37.7749, // Default to San Francisco if `initialLatitude` is undefined
                       lng: initialLongitude || -122.4194,
@@ -312,25 +346,126 @@ function App() {
                     {isSuccessVoyages &&
                       initialVoyages?.length > 0 &&
                       initialVoyages.map((voyage, index) => {
-                        const isSelected = voyage.id === clicked;
-
                         return (
                           voyage.waypoints?.[0] && (
-                            <div>
-                              <MarkerWithInfoWindow
-                                index={index}
-                                position={{
-                                  lat: voyage.waypoints[0].latitude,
-                                  lng: voyage.waypoints[0].longitude,
-                                }}
-                                voyage={voyage}
-                              />
-                            </div>
+                            <AdvancedMarker
+                              style={{
+                                backgroundColor: "pink",
+                                padding: "2rem",
+                              }}
+                              key={voyage.id || index} // Use a unique key
+                              position={{
+                                lat: voyage.waypoints[0].latitude,
+                                lng: voyage.waypoints[0].longitude,
+                              }}
+                              title={"AdvancedMarker with custom html content."}
+                              onMouseEnter={() => {
+                                setHovered(true);
+                              }}
+                              onMouseLeave={() => {
+                                setHovered(false);
+                              }}
+                              className={classNames("real-estate-marker", {
+                                clicked,
+                                hovered,
+                              })}
+                              onClick={() => {
+                                console.log("clicked: ", clicked);
+                                console.log("voyageid: ", voyage.id);
+                                if (voyage.id === clicked) setClicked(null);
+                                else setClicked(voyage.id);
+                              }}
+                            >
+                              <>
+                                <div className="custom-pin">
+                                  <button className="close-button">
+                                    <span
+                                      className="material-symbols-outlined"
+                                      style={{ backgroundColor: "red" }}
+                                    >
+                                      {voyage.id} close{" "}
+                                    </span>
+                                  </button>
+
+                                  <div className="image-container">
+                                    <div className="image-container">
+                                      <span
+                                        className={classNames("map-icon", {
+                                          clicked: voyage.id === clicked,
+                                        })}
+                                        onClick={() => {
+                                          if (voyage.id === clicked)
+                                            setClicked(null);
+                                          else setClicked(voyage.id);
+                                        }}
+                                      >
+                                        <img
+                                          src={parrotsLogo}
+                                          alt="Map Icon"
+                                          width="50"
+                                          height="50"
+                                          onClick={(e) => {
+                                            e.stopPropagation(); // Prevent the click from bubbling up
+                                            if (voyage.id === clicked)
+                                              setClicked(null);
+                                            else setClicked(voyage.id);
+                                          }}
+                                        />
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="tip" />
+                              </>
+                              <MainPageMapVoyageCard cardData={voyage} />
+                            </AdvancedMarker>
                           )
                         );
                       })}
                   </Map>
                 </APIProvider>
+
+                {/* 
+                <APIProvider apiKey={myApiKey}>
+                  <Map
+                    defaultCenter={{
+                      lat: initialLatitude || 37.7749, // Default to San Francisco if `initialLatitude` is undefined
+                      lng: initialLongitude || -122.4194,
+                    }}
+                    defaultZoom={8}
+                    mapId="map"
+                  >
+                    {isSuccessVoyages &&
+                      initialVoyages?.length > 0 &&
+                      initialVoyages.map((voyage, index) => {
+                        return (
+                          voyage.waypoints?.[0] && (
+                            <AdvancedMarker
+                              key={index}
+                              position={{
+                                lat: voyage.waypoints[0].latitude,
+                                lng: voyage.waypoints[0].longitude,
+                              }}
+                              icon={{
+                                url: parrotMarker,
+                                scaledSize: window.google?.maps?.Size
+                                  ? new window.google.maps.Size(80, 80)
+                                  : null,
+                              }}
+                              onClick={() => {
+                                handleMarkerClick(
+                                  voyage.id,
+                                  voyage.waypoints[0].latitude,
+                                  voyage.waypoints[0].longitude
+                                );
+                              }}
+                            />
+                          )
+                        );
+                      })}
+                  </Map>
+                </APIProvider> */}
               </div>
             </div>
           </div>
@@ -361,77 +496,4 @@ const buttonStyle = {
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
-};
-
-const MarkerWithInfoWindow = ({ position, voyage, index }) => {
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  const [infoWindowShown, setInfoWindowShown] = useState(false);
-
-  const handleMarkerClick = useCallback(
-    () => setInfoWindowShown((isShown) => !isShown),
-    []
-  );
-
-  const handleClose = useCallback(() => setInfoWindowShown(false), []);
-
-  return (
-    <>
-      <AdvancedMarker
-        ref={markerRef}
-        position={position}
-        onClick={handleMarkerClick}
-      >
-        <img
-          alt={"pin"}
-          src={
-            index % 6 === 0
-              ? parrotMarker
-              : index % 6 === 1
-              ? parrotMarker2
-              : index % 6 === 2
-              ? parrotMarker3
-              : index % 6 === 3
-              ? parrotMarker4
-              : index % 6 === 4
-              ? parrotMarker5
-              : parrotMarker6
-          }
-          width={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-          height={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-        />
-      </AdvancedMarker>
-      {infoWindowShown && (
-        <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
-          <div className="info-window-custom">
-            <MainPageMapVoyageCard cardData={voyage} />
-          </div>
-        </InfoWindow>
-      )}
-    </>
-  );
 };

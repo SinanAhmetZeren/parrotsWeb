@@ -1,11 +1,6 @@
 /* eslint-disable no-undef */
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import parrotMarker from "./assets/parrotMarker4.png";
-import parrotMarker2 from "./assets/parrotMarker2.png";
-import parrotMarker3 from "./assets/parrotMarker6.png";
-import parrotMarker4 from "./assets/parrotMarker7.png";
-import parrotMarker5 from "./assets/parrotMarker8.png";
-import parrotMarker6 from "./assets/parrotMarker9.png";
 import "./App.css";
 import "./assets/css/advancedmarker.css";
 
@@ -15,9 +10,8 @@ import {
   AdvancedMarker,
   CollisionBehavior,
   InfoWindow,
-  useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -317,14 +311,61 @@ function App() {
                         return (
                           voyage.waypoints?.[0] && (
                             <div>
-                              <MarkerWithInfoWindow
-                                index={index}
+                              <AdvancedMarker
+                                collisionBehavior={
+                                  CollisionBehavior.OPTIONAL_AND_HIDES_LOWER_PRIORITY
+                                }
+                                key={voyage.id || index}
                                 position={{
                                   lat: voyage.waypoints[0].latitude,
                                   lng: voyage.waypoints[0].longitude,
                                 }}
-                                voyage={voyage}
-                              />
+                                title={
+                                  "AdvancedMarker with custom html content."
+                                }
+                                onMouseEnter={() => setHovered(true)}
+                                onMouseLeave={() => setHovered(false)}
+                                className={classNames("real-estate-marker", {
+                                  clicked,
+                                  hovered,
+                                })}
+                                onClick={() => {
+                                  setClicked(isSelected ? null : voyage.id);
+                                }}
+                              >
+                                <div>
+                                  <div
+                                    className={classNames("card-container", {
+                                      visible: isSelected,
+                                    })}
+                                  >
+                                    <MainPageMapVoyageCard cardData={voyage} />
+                                  </div>
+
+                                  <div
+                                    className="custom-pin"
+                                    style={{
+                                      justifyItems: "center",
+                                      position: "relative",
+                                    }}
+                                  >
+                                    <div className="image-container">
+                                      <span
+                                        className={classNames("map-icon", {
+                                          clicked: isSelected,
+                                        })}
+                                      >
+                                        <img
+                                          src={parrotMarker}
+                                          alt="Map Icon"
+                                          width="70"
+                                          height="70"
+                                        />
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </AdvancedMarker>
                             </div>
                           )
                         );
@@ -361,77 +402,4 @@ const buttonStyle = {
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
-};
-
-const MarkerWithInfoWindow = ({ position, voyage, index }) => {
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  const [infoWindowShown, setInfoWindowShown] = useState(false);
-
-  const handleMarkerClick = useCallback(
-    () => setInfoWindowShown((isShown) => !isShown),
-    []
-  );
-
-  const handleClose = useCallback(() => setInfoWindowShown(false), []);
-
-  return (
-    <>
-      <AdvancedMarker
-        ref={markerRef}
-        position={position}
-        onClick={handleMarkerClick}
-      >
-        <img
-          alt={"pin"}
-          src={
-            index % 6 === 0
-              ? parrotMarker
-              : index % 6 === 1
-              ? parrotMarker2
-              : index % 6 === 2
-              ? parrotMarker3
-              : index % 6 === 3
-              ? parrotMarker4
-              : index % 6 === 4
-              ? parrotMarker5
-              : parrotMarker6
-          }
-          width={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-          height={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-        />
-      </AdvancedMarker>
-      {infoWindowShown && (
-        <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
-          <div className="info-window-custom">
-            <MainPageMapVoyageCard cardData={voyage} />
-          </div>
-        </InfoWindow>
-      )}
-    </>
-  );
 };

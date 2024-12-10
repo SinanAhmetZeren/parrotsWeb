@@ -37,6 +37,14 @@
   }
 }
 
+/* Swiper Slide styling */
+.parrot-image-style {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
 .slide-container {
   display: flex;
   justify-content: center;
@@ -78,59 +86,50 @@
   }
 }
 
-/* 
+.map-icon img {
+  transition: transform 1s ease-in-out;
+}
+
+.map-icon:hover img {
+  /* transform: scale(1.5); */
+}
+
+.map-icon.clicked img {
+  /* transform: scale(1.5); */
+}
+
 img {
-   pointer-events: auto; 
-} */
+  pointer-events: auto;
+}
+
+.tip {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 1s ease-in-out;
+}
+
+.tip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tip.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
 
 .card-container {
-  /* visibility: hidden; */
-  transform: scale(0.3) translateY(0%);
-  opacity: 1;
+  visibility: hidden;
+  transform: scale(0.1) translateY(0%);
+  opacity: 0;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out,
     visibility 0s linear 0.3s;
   transform-origin: bottom center;
 }
 
 .card-container.visible {
-  /* visibility: visible; */
+  visibility: visible;
   transform: scale(1) translateY(0);
   opacity: 1;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-.card-container {
-  position: relative;
-  z-index: 9999; /* Ensure the card is in front */
-}
-
-.custom-pin {
-  position: relative;
-  z-index: 0; /* Ensure the image is behind the card */
-}
-
-/* Remove default InfoWindow styles */
-.gm-style-iw,
-.gm-style-iw-d,
-.gm-ui-hover-effect {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: visible !important;
-  color: transparent !important;
-}
-
-.gm-ui-hover-effect {
-  display: none !important;
-}
-
-/* Custom content container for the InfoWindow */
-.info-window-custom {
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  display: inline-block;
-  overflow: visible;
 }

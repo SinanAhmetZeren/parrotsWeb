@@ -1,24 +1,23 @@
-/* eslint-disable no-undef */
 import parrotsLogo from "./assets/parrots-logo-mini.png";
 import parrotMarker from "./assets/parrotMarker4.png";
-import parrotMarker2 from "./assets/parrotMarker2.png";
-import parrotMarker3 from "./assets/parrotMarker6.png";
-import parrotMarker4 from "./assets/parrotMarker7.png";
-import parrotMarker5 from "./assets/parrotMarker8.png";
-import parrotMarker6 from "./assets/parrotMarker9.png";
 import "./App.css";
-import "./assets/css/advancedmarker.css";
+// import {
+//   GoogleMap,
+//   LoadScript,
+//   Marker,
+//   InfoWindow,
+// } from "@react-google-maps/api";
 
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  CollisionBehavior,
-  InfoWindow,
-  useAdvancedMarkerRef,
-} from "@vis.gl/react-google-maps";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import classNames from "classnames";
+// import {
+//   GoogleMap,
+//   LoadScript,
+//   Marker,
+//   AdvancedMarker,
+// } from "@vis.gl/react-google-maps";
+
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+
+import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -28,7 +27,6 @@ import { MainPageVehiclePicker } from "./components/MainPageVehiclePicker";
 import { MainPageVacancyPicker } from "./components/MainPageVacancyPicker";
 import { MainPageApplyClearButtons } from "./components/MainPageApplyClearButtons";
 import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
-import { MainPageMapVoyageCard } from "./components/MainPageMapVoyageCard ";
 import {
   useGetVoyagesByLocationMutation,
   useGetFilteredVoyagesMutation,
@@ -48,8 +46,8 @@ function App() {
   const [selectedMarker, setSelectedMarker] = useState(null);
 
   const [locationError, setLocationError] = useState(null);
-  const [clicked, setClicked] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [xDelta, setXDelta] = useState(null);
+  const [yDelta, setYDelta] = useState(null);
 
   const [
     getVoyagesByLocation,
@@ -134,6 +132,17 @@ function App() {
 
       requestAnimationFrame(animatePan);
     }
+  };
+
+  const handleMarkerClick = (id, lat, lng) => {
+    console.log("clicked voyage id: ", id);
+    panToLocation(lat, lng);
+    setSelectedMarker({ id, lat, lng });
+  };
+
+  const handleCloseClick = () => {
+    console.log("selected marker2: ", selectedMarker);
+    setSelectedMarker(null);
   };
 
   return (
@@ -297,35 +306,41 @@ function App() {
                   height: "100%",
                 }}
               >
-                <APIProvider apiKey={myApiKey} libraries={["marker"]}>
+                <APIProvider apiKey={myApiKey}>
                   <Map
-                    mapId={"bf51a910020fa25a"}
-                    defaultZoom={10}
-                    style={{ width: "100%", height: "100%", zIndex: 5 }}
                     defaultCenter={{
                       lat: initialLatitude || 37.7749, // Default to San Francisco if `initialLatitude` is undefined
                       lng: initialLongitude || -122.4194,
                     }}
-                    gestureHandling={"greedy"}
-                    disableDefaultUI
+                    defaultZoom={8}
+                    style={{ width: "100%", height: "100%" }}
+                    mapId="map"
                   >
                     {isSuccessVoyages &&
                       initialVoyages?.length > 0 &&
                       initialVoyages.map((voyage, index) => {
-                        const isSelected = voyage.id === clicked;
-
                         return (
                           voyage.waypoints?.[0] && (
-                            <div>
-                              <MarkerWithInfoWindow
-                                index={index}
-                                position={{
-                                  lat: voyage.waypoints[0].latitude,
-                                  lng: voyage.waypoints[0].longitude,
-                                }}
-                                voyage={voyage}
-                              />
-                            </div>
+                            <AdvancedMarker
+                              key={index}
+                              position={{
+                                lat: voyage.waypoints[0].latitude,
+                                lng: voyage.waypoints[0].longitude,
+                              }}
+                              icon={{
+                                url: parrotMarker,
+                                scaledSize: window.google?.maps?.Size
+                                  ? new window.google.maps.Size(80, 80)
+                                  : null,
+                              }}
+                              onClick={() => {
+                                handleMarkerClick(
+                                  voyage.id,
+                                  voyage.waypoints[0].latitude,
+                                  voyage.waypoints[0].longitude
+                                );
+                              }}
+                            />
                           )
                         );
                       })}
@@ -362,76 +377,8 @@ const buttonStyle = {
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 };
+/* 
+TODO:
 
-const MarkerWithInfoWindow = ({ position, voyage, index }) => {
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  const [infoWindowShown, setInfoWindowShown] = useState(false);
-
-  const handleMarkerClick = useCallback(
-    () => setInfoWindowShown((isShown) => !isShown),
-    []
-  );
-
-  const handleClose = useCallback(() => setInfoWindowShown(false), []);
-
-  return (
-    <>
-      <AdvancedMarker
-        ref={markerRef}
-        position={position}
-        onClick={handleMarkerClick}
-      >
-        <img
-          alt={"pin"}
-          src={
-            index % 6 === 0
-              ? parrotMarker
-              : index % 6 === 1
-              ? parrotMarker2
-              : index % 6 === 2
-              ? parrotMarker3
-              : index % 6 === 3
-              ? parrotMarker4
-              : index % 6 === 4
-              ? parrotMarker5
-              : parrotMarker6
-          }
-          width={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-          height={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-        />
-      </AdvancedMarker>
-      {infoWindowShown && (
-        <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
-          <div className="info-window-custom">
-            <MainPageMapVoyageCard cardData={voyage} />
-          </div>
-        </InfoWindow>
-      )}
-    </>
-  );
-};
+1. adjust xDelta yDelta for request
+*/
