@@ -1,22 +1,13 @@
 /* eslint-disable no-undef */
 import parrotsLogo from "./assets/parrots-logo-mini.png";
-import parrotMarker from "./assets/parrotMarker4.png";
+import parrotMarker1 from "./assets/parrotMarker1.png";
 import parrotMarker2 from "./assets/parrotMarker2.png";
-import parrotMarker3 from "./assets/parrotMarker6.png";
-import parrotMarker4 from "./assets/parrotMarker7.png";
-import parrotMarker5 from "./assets/parrotMarker8.png";
-import parrotMarker6 from "./assets/parrotMarker9.png";
+import parrotMarker3 from "./assets/parrotMarker3.png";
+import parrotMarker4 from "./assets/parrotMarker4.png";
+import parrotMarker5 from "./assets/parrotMarker5.png";
+import parrotMarker6 from "./assets/parrotMarker6.png";
 import "./App.css";
 import "./assets/css/advancedmarker.css";
-
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  CollisionBehavior,
-  InfoWindow,
-  useAdvancedMarkerRef,
-} from "@vis.gl/react-google-maps";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import classNames from "classnames";
 import "swiper/css/pagination";
@@ -34,22 +25,27 @@ import {
   useGetFilteredVoyagesMutation,
 } from "./slices/VoyageSlice";
 import { TopBarMenu } from "./components/TopBarMenu";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  CollisionBehavior,
+  InfoWindow,
+  useAdvancedMarkerRef,
+} from "@vis.gl/react-google-maps";
 
 function App() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const mapRef = useRef(null);
+  const clustererRef = useRef(null);
 
-  const [userLocation, setUserLocation] = useState({});
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [initialVoyages, setInitialVoyages] = useState([]);
-  const [selectedMarker, setSelectedMarker] = useState(null);
-
   const [locationError, setLocationError] = useState(null);
-  const [clicked, setClicked] = useState(false);
-  const [hovered, setHovered] = useState(false);
 
   const [
     getVoyagesByLocation,
@@ -80,6 +76,7 @@ function App() {
     getVoyages();
   }, [initialLatitude, initialLongitude, getVoyagesByLocation]);
 
+  /*
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -87,7 +84,6 @@ function App() {
           const { latitude, longitude } = position.coords;
           setInitialLatitude(latitude);
           setInitialLongitude(longitude);
-          setUserLocation({ lat: latitude, lng: longitude });
         },
         (error) => {
           console.error(error.message);
@@ -100,39 +96,33 @@ function App() {
       setLocationError("Geolocation is not supported by your browser.");
     }
   }, []);
+*/
+  useEffect(() => {
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setInitialLatitude(latitude);
+            setInitialLongitude(longitude);
+            setLocationError(null); // Clear any previous errors
+          },
+          (error) => {
+            console.error(error.message);
+            setLocationError("Unable to retrieve your location.");
+            setTimeout(getLocation, 5000); // Retry after 5 seconds
+          }
+        );
+      } else {
+        setLocationError("Geolocation is not supported by your browser.");
+      }
+    };
+    getLocation(); // Initial location request
+  }, []);
 
   const panToLocation = (lat, lng) => {
     if (mapRef.current) {
-      const map = mapRef.current;
-      const currentCenter = map.getCenter();
-      const targetCenter = new window.google.maps.LatLng(lat, lng);
-
-      const startLat = currentCenter.lat();
-      const startLng = currentCenter.lng();
-      const endLat = targetCenter.lat();
-      const endLng = targetCenter.lng();
-
-      let startTime = null;
-
-      const animatePan = (timestamp) => {
-        if (!startTime) {
-          startTime = timestamp;
-        }
-
-        const elapsedTime = timestamp - startTime;
-        const progress = Math.min(elapsedTime, 1);
-
-        const newLat = startLat + (endLat - startLat) * progress;
-        const newLng = startLng + (endLng - startLng) * progress;
-
-        map.panTo(new window.google.maps.LatLng(newLat, newLng));
-
-        if (progress < 1) {
-          requestAnimationFrame(animatePan);
-        }
-      };
-
-      requestAnimationFrame(animatePan);
+      console.log("hello from pan to location");
     }
   };
 
@@ -308,15 +298,16 @@ function App() {
                     }}
                     gestureHandling={"greedy"}
                     disableDefaultUI
+                    ref={mapRef}
                   >
                     {isSuccessVoyages &&
                       initialVoyages?.length > 0 &&
                       initialVoyages.map((voyage, index) => {
-                        const isSelected = voyage.id === clicked;
-
                         return (
                           voyage.waypoints?.[0] && (
-                            <div>
+                            <div
+                              key={`${voyage.waypoints[0].latitude}-${index}`}
+                            >
                               <MarkerWithInfoWindow
                                 index={index}
                                 position={{
@@ -386,7 +377,7 @@ const MarkerWithInfoWindow = ({ position, voyage, index }) => {
           alt={"pin"}
           src={
             index % 6 === 0
-              ? parrotMarker
+              ? parrotMarker1
               : index % 6 === 1
               ? parrotMarker2
               : index % 6 === 2
@@ -397,32 +388,8 @@ const MarkerWithInfoWindow = ({ position, voyage, index }) => {
               ? parrotMarker5
               : parrotMarker6
           }
-          width={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
-          height={
-            index % 6 === 0
-              ? 70
-              : index % 6 === 1
-              ? 70
-              : index % 6 === 2
-              ? 60
-              : index % 6 === 3
-              ? 60
-              : index % 6 === 4
-              ? 70
-              : 60
-          }
+          width={50}
+          height={60}
         />
       </AdvancedMarker>
       {infoWindowShown && (
