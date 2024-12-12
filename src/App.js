@@ -170,11 +170,11 @@ function App() {
                     }}
                     gestureHandling={"greedy"}
                     disableDefaultUI
-                    onCameraChanged={handleCameraChange}
+                    onCameraChanged={() => setTargetLocation(null)}
                   >
                     <MainPageMapPanComponent
-                      targetLat={targetLocation.lat}
-                      targetLng={targetLocation.lng}
+                      targetLat={targetLocation?.lat}
+                      targetLng={targetLocation?.lng}
                     />
 
                     {isSuccessVoyages &&

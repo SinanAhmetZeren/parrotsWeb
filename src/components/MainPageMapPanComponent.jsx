@@ -16,8 +16,8 @@ export function MainPageMapPanComponent({ targetLat, targetLng }) {
     }
 
     if (map && targetLat && targetLng) {
-      map.setCenter({ lat: targetLat, lng: targetLng });
-      map.setZoom(13);
+      map.panTo({ lat: targetLat, lng: targetLng });
+      map.setZoom(16);
     }
   }, [map, targetLat, targetLng]);
 
