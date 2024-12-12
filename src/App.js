@@ -29,6 +29,7 @@ import { MainPageFiltersComponent } from "./components/MainPageFiltersComponent"
 import { TopLeftComponent } from "./components/TopLeftComponent";
 import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
 import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
+import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
 
 function App() {
   const userId = "43242342432342342342";
@@ -62,23 +63,6 @@ function App() {
       isSuccess: isSuccessVoyages,
     },
   ] = useGetVoyagesByLocationMutation();
-
-  function MapChildComponent({ targetLat, targetLng }) {
-    const map = useMap();
-
-    useEffect(() => {
-      if (map) {
-        console.log("Map instance is available:", map);
-      }
-
-      if (map && targetLat && targetLng) {
-        map.setCenter({ lat: targetLat, lng: targetLng });
-        map.setZoom(15);
-      }
-    }, [map, targetLat, targetLng]);
-
-    return null;
-  }
 
   useEffect(() => {
     const getVoyages = async () => {
@@ -188,7 +172,7 @@ function App() {
                     disableDefaultUI
                     onCameraChanged={handleCameraChange}
                   >
-                    <MapChildComponent
+                    <MainPageMapPanComponent
                       targetLat={targetLocation.lat}
                       targetLng={targetLocation.lng}
                     />
@@ -208,16 +192,18 @@ function App() {
                                   lng: voyage.waypoints[0].longitude,
                                 }}
                                 voyage={voyage}
+                                onClick={() =>
+                                  handlePanToLocation(
+                                    voyage.waypoints[0].latitude,
+                                    voyage.waypoints[0].longitude
+                                  )
+                                }
                               />
                             </div>
                           )
                         );
                       })}
                   </Map>
-
-                  <button onClick={() => handlePanToLocation(40.7128, -74.006)}>
-                    Pan to New York
-                  </button>
                 </APIProvider>
               </div>
             </div>
