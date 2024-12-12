@@ -8,60 +8,25 @@ import parrotMarker3 from "../assets/parrotMarker3.png";
 import parrotMarker4 from "../assets/parrotMarker4.png";
 import parrotMarker5 from "../assets/parrotMarker5.png";
 import parrotMarker6 from "../assets/parrotMarker6.png";
-import ReactDOM from "react-dom/client"; // Updated import for React 18
+import ReactDOM from "react-dom"; // Ensure you import ReactDOM
 import parrot1 from "../assets/sailboat.jpg";
-import * as d3 from "d3"; // Make sure d3 is installed
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const [markers, setMarkers] = useState({});
+  const [selectedVoyageKey, setSelectedVoyageKey] = useState(null);
+
+  const selectedVoyage = useMemo(
+    () =>
+      voyages && selectedVoyageKey
+        ? voyages.find((v) => v.key === selectedVoyageKey)
+        : null,
+    [voyages, selectedVoyageKey]
+  );
 
   const map = useMap();
   const clusterer = useMemo(() => {
     if (!map) return null;
-
-    const palette = (ratio) => {
-      return d3.interpolateRgb("red", "blue")(ratio);
-    };
-    const customRenderer = ({ count, position }, stats) => {
-      // Use d3-interpolateRgb to interpolate between red and blue
-      const color = palette(count / stats.clusters.markers.max);
-
-      const radiusInner = Math.min(20 + count * 5, 150); // Inner circle size
-      const radiusMedium = radiusInner + 15; // Outer circle is slightly larger than inner circle
-      const radiusOuter = radiusInner + 25; // Outer circle is slightly larger than inner circle
-
-      // Create SVG with fill color and dynamic radius for both inner and outer circles
-      const svg = window.btoa(`
-        <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-          <circle cx="120" cy="120" opacity=".3" r="${radiusOuter}" fill="${color}" /> <!-- Outer circle -->
-          <circle cx="120" cy="120" opacity=".7" r="${radiusMedium}" fill="${color}" /> <!-- Inner circle -->
-          <circle cx="120" cy="120" opacity="1" r="${radiusInner}" fill="${color}" /> <!-- Inner circle -->
-        </svg>
-      `);
-
-      // Create marker with SVG icon
-      return new window.google.maps.Marker({
-        position,
-        icon: {
-          url: `data:image/svg+xml;base64,${svg}`,
-          scaledSize: new window.google.maps.Size(75, 75), // Adjust size as needed
-        },
-        label: {
-          text: String(count),
-          color: "rgba(255,255,255,0.9)",
-          fontSize: "12px", // Adjust font size as needed
-        },
-        zIndex: 99999, // Ensure z-index is correct
-      });
-    };
-
-    return new MarkerClusterer({
-      map,
-
-      renderer: {
-        render: customRenderer, // Use your custom renderer function
-      },
-    });
+    return new MarkerClusterer({ map });
   }, [map]);
 
   useEffect(() => {
@@ -71,6 +36,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     clusterer.addMarkers(Object.values(markers));
   }, [clusterer, markers]);
 
+  // This callback will be passed as ref to the markers to keep track of markers currently on the map
   const setMarkerRef = useCallback((marker, key) => {
     setMarkers((markers) => {
       if ((marker && markers[key]) || (!marker && !markers[key]))
@@ -85,6 +51,14 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     });
   }, []);
 
+  const handleInfoWindowClose = useCallback(() => {
+    setSelectedVoyageKey(null);
+  }, []);
+
+  const handleMarkerClick = useCallback((voyage) => {
+    setSelectedVoyageKey(voyage.key);
+  }, []);
+
   const handlePanToLocation = useCallback(
     (lat, lng) => {
       if (map) {
@@ -94,6 +68,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     [map]
   );
 
+  // Create an array of markers that will be added to the clusterer
   const voyageMarkers = useMemo(() => {
     return voyages
       .map((voyage, index) => {
@@ -129,6 +104,47 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           gmpClickable: true,
         });
 
+        const parrotMarkerImg2a = document.createElement("img");
+        parrotMarkerImg2a.src = markerName;
+        parrotMarkerImg2a.style.width = "15rem";
+        parrotMarkerImg2a.style.height = "20rem";
+        const parrotMarkerImg2b = document.createElement("img");
+        parrotMarkerImg2b.src = parrotMarker1;
+        parrotMarkerImg2b.style.width = "5rem";
+        parrotMarkerImg2b.style.height = "14rem";
+        const parrotDiv2 = document.createElement("div");
+        parrotDiv2.appendChild(parrotMarkerImg2a);
+        parrotDiv2.appendChild(parrotMarkerImg2b);
+
+        const parrotContent2 = () => {
+          return (
+            <>
+              {voyages.map((voyage, index) => {
+                return (
+                  voyage.waypoints?.[0] && (
+                    <div key={`${voyage.waypoints[0].latitude}-${index}`}>
+                      <MarkerWithInfoWindow
+                        index={index}
+                        position={{
+                          lat: voyage.waypoints[0].latitude,
+                          lng: voyage.waypoints[0].longitude,
+                        }}
+                        voyage={voyage}
+                        onClick={() =>
+                          handlePanToLocation(
+                            voyage.waypoints[0].latitude,
+                            voyage.waypoints[0].longitude
+                          )
+                        }
+                      />
+                    </div>
+                  )
+                );
+              })}
+            </>
+          );
+        };
+
         const parrotContent = (cardData) => {
           return (
             <div className="" style={cardContainerStyle}>
@@ -137,6 +153,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
               </div>
               <div className="" style={cardContentStyle}>
                 <div style={cardTitleStyle}>{cardData.name}</div>
+
                 <div style={cardDescriptionStyle}>
                   <div
                     style={{
@@ -171,12 +188,14 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           content: document.createElement("div"), // Creating a container div
         });
 
-        const containerDiv = document.createElement("div"); // Creating a container div for JSX
-        const root = ReactDOM.createRoot(containerDiv); // Create the React root inside the container div
-        root.render(parrotContent(voyage)); // Render the JSX content into the div
+        const containerDiv = document.createElement("div"); // Creating a container div to hold your JSX content
+        ReactDOM.render(parrotContent(), containerDiv); // Render your JSX content into this div
 
         infoWindow.setContent(containerDiv); // Set the content of InfoWindow
 
+        const infoWindow2 = new window.google.maps.InfoWindow({
+          content: parrotDiv2,
+        });
         let isInfoWindowOpen = false;
 
         marker.addListener("click", () => {
@@ -210,7 +229,32 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     console.log("clustersWithIds.", clustersWithIds);
   }, [clusterer, voyageMarkers]);
 
-  return <></>;
+  return (
+    <>
+      {/* {voyages.map((voyage, index) => {
+        return (
+          voyage.waypoints?.[0] && (
+            <div key={`${voyage.waypoints[0].latitude}-${index}`}>
+              <MarkerWithInfoWindow
+                index={index}
+                position={{
+                  lat: voyage.waypoints[0].latitude,
+                  lng: voyage.waypoints[0].longitude,
+                }}
+                voyage={voyage}
+                onClick={() =>
+                  handlePanToLocation(
+                    voyage.waypoints[0].latitude,
+                    voyage.waypoints[0].longitude
+                  )
+                }
+              />
+            </div>
+          )
+        );
+      })} */}
+    </>
+  );
 };
 
 const voyageDetailSpan = {
