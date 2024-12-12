@@ -20,7 +20,6 @@ import { TopLeftComponent } from "./components/TopLeftComponent";
 import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
 import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
-import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
 
 function App() {
   const userId = "43242342432342342342";
@@ -108,29 +107,19 @@ function App() {
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
-      // Create new markers using your custom MarkerWithInfoWindow component
+      // Create new markers
       const newMarkers = initialVoyages
-        .map((voyage, index) => {
+        .map((voyage) => {
           const waypoint = voyage.waypoints?.[0];
           if (!waypoint) return null;
 
-          return (
-            <MarkerWithInfoWindow
-              key={`${voyage.waypoints[0].latitude}-${index}`}
-              index={index}
-              position={{
-                lat: waypoint.latitude,
-                lng: waypoint.longitude,
-              }}
-              voyage={voyage}
-              onClick={() =>
-                handlePanToLocation(
-                  voyage.waypoints[0].latitude,
-                  voyage.waypoints[0].longitude
-                )
-              }
-            />
-          );
+          return new google.maps.Marker({
+            position: {
+              lat: waypoint.latitude,
+              lng: waypoint.longitude,
+            },
+            map: mapRef.current, // Temporarily set markers on map
+          });
         })
         .filter(Boolean);
 
@@ -145,7 +134,7 @@ function App() {
         markerClustererRef.current.addMarkers(newMarkers);
       }
 
-      // Save markers to the ref (optional, depending on your needs)
+      // Save markers to the ref
       markersRef.current = newMarkers;
     }
   }, [initialVoyages, isSuccessVoyages]);
@@ -209,7 +198,7 @@ function App() {
                       targetLng={targetLocation?.lng}
                     />
 
-                    {/* {isSuccessVoyages &&
+                    {isSuccessVoyages &&
                       initialVoyages?.length > 0 &&
                       initialVoyages.map((voyage, index) => {
                         return (
@@ -234,11 +223,7 @@ function App() {
                             </div>
                           )
                         );
-                      })} */}
-
-                    {isSuccessVoyages && initialVoyages?.length > 0 && (
-                      <ClusteredVoyageMarkers voyages={initialVoyages} />
-                    )}
+                      })}
                   </Map>
                 </APIProvider>
               </div>
