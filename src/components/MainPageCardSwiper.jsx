@@ -8,7 +8,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
-import { cardData } from "../components/cardData";
 import { MainPageVoyageCard } from "./MainPageVoyageCard";
 
 export function MainPageCardSwiper({ voyagesData, panToLocation }) {

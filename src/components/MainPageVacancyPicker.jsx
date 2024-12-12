@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
-export const MainPageVacancyPicker = () => {
-  const [selectedVacancy, setSelectedVacancy] = useState(""); // State to track selected vacancy
+export const MainPageVacancyPicker = ({
+  selectedVacancy,
+  setSelectedVacancy,
+}) => {
+  // const [selectedVacancy, setSelectedVacancy] = useState(""); // State to track selected vacancy
   const [open, setOpen] = useState(false); // State to toggle the dropdown visibility
   const dropdownRef = useRef(null); // Ref for the dropdown container
 

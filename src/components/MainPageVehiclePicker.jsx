@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
-export const MainPageVehiclePicker = () => {
-  const [selectedVehicle, setSelectedVehicle] = useState("");
+export const MainPageVehiclePicker = ({
+  selectedVehicle,
+  setSelectedVehicle,
+}) => {
+  // const [selectedVehicle, setSelectedVehicle] = useState("");
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 

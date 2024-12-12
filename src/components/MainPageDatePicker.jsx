@@ -5,21 +5,21 @@ import { useState, useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 
-export const MainPageDatePicker = () => {
-  const [state, setState] = useState([
-    {
-      startDate: null, // Start date is null initially
-      endDate: null, // End date is null initially
-      key: "selection",
-    },
-  ]);
+export const MainPageDatePicker = ({ dates, setDates }) => {
+  // const [dates, setDates] = useState([
+  //   {
+  //     startDate: null, // Start date is null initially
+  //     endDate: null, // End date is null initially
+  //     key: "selection",
+  //   },
+  // ]);
   const [open, setOpen] = useState(false); // State to toggle the calendar visibility
 
   const calendarRef = useRef(null); // Ref for the calendar container
 
   // Update the date range when the calendar is used
   const handleDateChange = (item) => {
-    setState([item.selection]);
+    setDates([item.selection]);
   };
 
   // Format the date in a readable way
@@ -70,7 +70,7 @@ export const MainPageDatePicker = () => {
             className="font-bold text-base "
             type="text"
             readOnly
-            value={`${formatDate(state[0].startDate)}`}
+            value={`${formatDate(dates[0].startDate)}`}
             placeholder="Start Date" // Placeholder text
             style={{
               width: "65%",
@@ -103,7 +103,7 @@ export const MainPageDatePicker = () => {
             className="font-bold text-base "
             type="text"
             readOnly
-            value={`${formatDate(state[0].endDate)}`}
+            value={`${formatDate(dates[0].endDate)}`}
             placeholder="End Date" // Placeholder text
             style={{
               width: "65%",
@@ -136,7 +136,7 @@ export const MainPageDatePicker = () => {
             editableDateInputs={true}
             onChange={handleDateChange}
             moveRangeOnFirstSelection={false}
-            ranges={state}
+            ranges={dates}
             locale={enUS}
             style={{ width: "33rem" }}
           />
