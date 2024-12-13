@@ -56,10 +56,10 @@ function App() {
   useEffect(() => {
     const getVoyages = async () => {
       if (!initialLatitude || !initialLongitude) return;
-      const lat1 = initialLatitude - 10.15;
-      const lat2 = initialLatitude + 10.15;
-      const lon1 = initialLongitude - 10.2;
-      const lon2 = initialLongitude + 10.2;
+      const lat1 = initialLatitude - 1.15;
+      const lat2 = initialLatitude + 1.15;
+      const lon1 = initialLongitude - 1.2;
+      const lon2 = initialLongitude + 1.2;
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });

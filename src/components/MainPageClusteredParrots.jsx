@@ -20,22 +20,36 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     if (!map) return null;
 
     const palette = (ratio) => {
-      return d3.interpolateRgb("red", "blue")(ratio);
+      return d3.interpolateRgb("blue", "cyan")(ratio);
     };
     const customRenderer = ({ count, position }, stats) => {
-      // Use d3-interpolateRgb to interpolate between red and blue
       const color = palette(count / stats.clusters.markers.max);
+      const minRadiusInner = 37;
+      const maxRadiusInner = 50;
 
-      const radiusInner = Math.min(20 + count * 5, 150); // Inner circle size
-      const radiusMedium = radiusInner + 15; // Outer circle is slightly larger than inner circle
-      const radiusOuter = radiusInner + 25; // Outer circle is slightly larger than inner circle
+      const min = stats.clusters.markers.min;
+      const max = stats.clusters.markers.max;
+      let normalizedCount;
+      if (max !== min && !isNaN(count) && !isNaN(min) && !isNaN(max)) {
+        normalizedCount = (count - min) / (max - min);
+      } else {
+        normalizedCount = 0;
+      }
 
-      // Create SVG with fill color and dynamic radius for both inner and outer circles
+      const radiusInner =
+        minRadiusInner + normalizedCount * (maxRadiusInner - minRadiusInner);
+      const radiusMedium = radiusInner + 20;
+      const radiusOuter = radiusInner + 40;
+
+      console.log(radiusInner, radiusMedium, radiusOuter);
+
       const svg = window.btoa(`
         <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-          <circle cx="120" cy="120" opacity=".3" r="${radiusOuter}" fill="${color}" /> <!-- Outer circle -->
-          <circle cx="120" cy="120" opacity=".7" r="${radiusMedium}" fill="${color}" /> <!-- Inner circle -->
-          <circle cx="120" cy="120" opacity="1" r="${radiusInner}" fill="${color}" /> <!-- Inner circle -->
+          <circle cx="120" cy="120" opacity=".2" r="${radiusOuter}" fill="${color}" /> <!-- Outer circle -->
+          <circle cx="120" cy="120" opacity=".5" r="${radiusMedium}" fill="${color}" /> <!-- Inner circle -->
+          <circle cx="120" cy="120" opacity="1" r="${
+            radiusInner + 3
+          }" fill="${color}" /> <!-- Inner circle -->
         </svg>
       `);
 
@@ -44,22 +58,21 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         position,
         icon: {
           url: `data:image/svg+xml;base64,${svg}`,
-          scaledSize: new window.google.maps.Size(75, 75), // Adjust size as needed
+          scaledSize: new window.google.maps.Size(75, 75),
         },
         label: {
           text: String(count),
-          color: "rgba(255,255,255,0.9)",
-          fontSize: "12px", // Adjust font size as needed
+          color: "rgba(255,255,255,1)",
+          fontSize: "16px",
         },
-        zIndex: 99999, // Ensure z-index is correct
+        zIndex: 99999,
       });
     };
 
     return new MarkerClusterer({
       map,
-
       renderer: {
-        render: customRenderer, // Use your custom renderer function
+        render: customRenderer,
       },
     });
   }, [map]);
@@ -210,7 +223,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     console.log("clustersWithIds.", clustersWithIds);
   }, [clusterer, voyageMarkers]);
 
-  return <></>;
+  return;
 };
 
 const voyageDetailSpan = {
