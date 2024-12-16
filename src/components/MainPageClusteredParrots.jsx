@@ -1,29 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { useMap } from "@vis.gl/react-google-maps";
+import ReactDOM from "react-dom/client";
+import parrot1 from "../assets/sailboat.jpg";
+import * as d3 from "d3";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import { MarkerWithInfoWindow } from "./MainPageMarkerWithInfoWindow";
 import parrotMarker1 from "../assets/parrotMarker1.png";
 import parrotMarker2 from "../assets/parrotMarker2.png";
 import parrotMarker3 from "../assets/parrotMarker3.png";
 import parrotMarker4 from "../assets/parrotMarker4.png";
 import parrotMarker5 from "../assets/parrotMarker5.png";
 import parrotMarker6 from "../assets/parrotMarker6.png";
-import ReactDOM from "react-dom/client"; // Updated import for React 18
-import parrot1 from "../assets/sailboat.jpg";
-import * as d3 from "d3"; // Make sure d3 is installed
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const [markers, setMarkers] = useState({});
-
+  const [infoWindow, setInfoWindow] = useState(null); // Track the current InfoWindow
   const map = useMap();
   const clusterer = useMemo(() => {
     if (!map) return null;
-
     const palette = (ratio) => {
-      return d3.interpolateRgb("blue", "cyan")(ratio);
+      return d3.interpolateRgb("blue", "#26b170")(ratio);
     };
     const customRenderer = ({ count, position }, stats) => {
       const color = palette(count / stats.clusters.markers.max);
+
       const minRadiusInner = 37;
       const maxRadiusInner = 50;
 
@@ -38,10 +37,8 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
 
       const radiusInner =
         minRadiusInner + normalizedCount * (maxRadiusInner - minRadiusInner);
-      const radiusMedium = radiusInner + 20;
+      const radiusMedium = radiusInner + 25;
       const radiusOuter = radiusInner + 40;
-
-      console.log(radiusInner, radiusMedium, radiusOuter);
 
       const svg = window.btoa(`
         <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
@@ -53,7 +50,6 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         </svg>
       `);
 
-      // Create marker with SVG icon
       return new window.google.maps.Marker({
         position,
         icon: {
@@ -68,7 +64,6 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         zIndex: 99999,
       });
     };
-
     return new MarkerClusterer({
       map,
       renderer: {
@@ -79,7 +74,6 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
 
   useEffect(() => {
     if (!clusterer) return;
-
     clusterer.clearMarkers();
     clusterer.addMarkers(Object.values(markers));
   }, [clusterer, markers]);
@@ -88,7 +82,6 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     setMarkers((markers) => {
       if ((marker && markers[key]) || (!marker && !markers[key]))
         return markers;
-
       if (marker) {
         return { ...markers, [key]: marker };
       } else {
@@ -111,12 +104,10 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     return voyages
       .map((voyage, index) => {
         if (!voyage.waypoints?.[0]) return null;
-
         const position = {
           lat: voyage.waypoints[0].latitude,
           lng: voyage.waypoints[0].longitude,
         };
-
         let markerName =
           index % 6 === 0
             ? parrotMarker1
@@ -129,12 +120,10 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
             : index % 6 === 4
             ? parrotMarker5
             : parrotMarker6;
-
         const parrotMarkerImg = document.createElement("img");
         parrotMarkerImg.src = markerName;
         parrotMarkerImg.style.width = "3rem";
         parrotMarkerImg.style.height = "4rem";
-
         const marker = new window.google.maps.marker.AdvancedMarkerElement({
           position,
           title: voyage.id.toString(),
@@ -158,7 +147,10 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                     }}
                   >
                     <span
-                      style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}
+                      style={{
+                        ...voyageDetailSpan,
+                        marginRight: "0.5rem",
+                      }}
                     >
                       <VehicleIcon vehicleType={cardData.vehicleType} />
                       {cardData.vehicle.name}
@@ -169,12 +161,22 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                     </span>
                   </div>
                   <span style={voyageDetailSpan}>
-                    📅From {formatCustomDate(cardData.startDate)} to To{" "}
+                    📅 {formatCustomDate(cardData.startDate)} to{" "}
                     {formatCustomDate(cardData.endDate)}
                   </span>
                 </div>
 
                 <div style={cardBriefStyle}>{cardData.brief}</div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "10px", // 10px from the bottom of the card
+                    right: "10px", // 10px from the right of the card
+                    ...buttonStyle,
+                  }}
+                >
+                  <span>click to see details</span>
+                </div>
               </div>
             </div>
           );
@@ -187,21 +189,20 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         const containerDiv = document.createElement("div"); // Creating a container div for JSX
         const root = ReactDOM.createRoot(containerDiv); // Create the React root inside the container div
         root.render(parrotContent(voyage)); // Render the JSX content into the div
-
         infoWindow.setContent(containerDiv); // Set the content of InfoWindow
 
-        let isInfoWindowOpen = false;
-
         marker.addListener("click", () => {
-          if (isInfoWindowOpen) {
-            infoWindow.close();
-          } else {
+          if (infoWindow) {
+            if (infoWindow !== window.infoWindow) {
+              window.infoWindow?.close(); // Close the previous InfoWindow
+            }
             infoWindow.open({
               anchor: marker,
               map,
             });
+            window.infoWindow = infoWindow; // Store the current InfoWindow globally
+            setInfoWindow(infoWindow); // Set the opened infoWindow in state
           }
-          isInfoWindowOpen = !isInfoWindowOpen; // Toggle the state
         });
 
         setMarkerRef(marker, `${voyage.waypoints[0].latitude}-${index}`);
@@ -212,18 +213,26 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
   }, [voyages, handlePanToLocation, setMarkerRef]);
 
   useEffect(() => {
+    if (!map || !infoWindow) return;
+
+    const closeInfoWindowIfClickedOutside = () => {
+      infoWindow.close(); // Close the infoWindow if click is outside of the InfoWindow
+      setInfoWindow(null);
+    };
+    map.addListener("click", closeInfoWindowIfClickedOutside);
+    return () => {
+      window.google.maps.event.clearListeners(map, "click");
+    };
+  }, [map, infoWindow]);
+
+  useEffect(() => {
     if (!clusterer || voyageMarkers.length === 0) return;
 
     clusterer.clearMarkers();
     clusterer.addMarkers(voyageMarkers);
-
-    const clustersWithIds = clusterer.clusters.map((cluster) =>
-      cluster.markers.map((marker) => marker.id)
-    );
-    console.log("clustersWithIds.", clustersWithIds);
   }, [clusterer, voyageMarkers]);
 
-  return;
+  return null;
 };
 
 const voyageDetailSpan = {
@@ -263,7 +272,8 @@ const cardContainerStyle = {
   border: "1px solid #ddd",
   borderRadius: "8px",
   overflow: "hidden",
-  width: "30rem",
+  width: "33rem",
+  height: "15rem",
   backgroundColor: "#fff",
   margin: "0rem",
   boxShadow: `
@@ -272,8 +282,10 @@ const cardContainerStyle = {
 `,
 };
 
+// 12 & 18 -> 15 & 18
+
 const cardImageStyle = {
-  width: "50%", // Image takes half the width
+  width: "45.45%", // Image takes half the width
   height: "auto", // Maintain aspect ratio
   objectFit: "cover",
 };
@@ -281,7 +293,7 @@ const cardImageStyle = {
 const cardContentStyle = {
   display: "flex",
   flexDirection: "column",
-  width: "50%", // Text content takes half the width
+  width: "54.54%", // Text content takes half the width
   padding: "1rem",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.4),
@@ -332,3 +344,13 @@ const vehicles = [
   "🏠", // Tinyhouse
   "✈️", // Airplane
 ];
+
+const buttonStyle = {
+  width: "55%", // Match the input width
+  textAlign: "end",
+  color: "#007bff",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "16px",
+  marginTop: "auto",
+};

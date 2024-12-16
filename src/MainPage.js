@@ -20,8 +20,10 @@ import { TopLeftComponent } from "./components/TopLeftComponent";
 import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
 import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
+import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
+import { MainPageMapStyles } from "./components/MainPageMapStyles";
 
-function App() {
+function MainPage() {
   const userId = "43242342432342342342";
   const mapRef = useRef();
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -55,10 +57,10 @@ function App() {
   useEffect(() => {
     const getVoyages = async () => {
       if (!initialLatitude || !initialLongitude) return;
-      const lat1 = initialLatitude - 10.15;
-      const lat2 = initialLatitude + 10.15;
-      const lon1 = initialLongitude - 10.2;
-      const lon2 = initialLongitude + 10.2;
+      const lat1 = initialLatitude - 11.15;
+      const lat2 = initialLatitude + 11.15;
+      const lon1 = initialLongitude - 11.2;
+      const lon2 = initialLongitude + 11.2;
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
@@ -107,19 +109,29 @@ function App() {
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
-      // Create new markers
+      // Create new markers using your custom MarkerWithInfoWindow component
       const newMarkers = initialVoyages
-        .map((voyage) => {
+        .map((voyage, index) => {
           const waypoint = voyage.waypoints?.[0];
           if (!waypoint) return null;
 
-          return new google.maps.Marker({
-            position: {
-              lat: waypoint.latitude,
-              lng: waypoint.longitude,
-            },
-            map: mapRef.current, // Temporarily set markers on map
-          });
+          return (
+            <MarkerWithInfoWindow
+              key={`${voyage.waypoints[0].latitude}-${index}`}
+              index={index}
+              position={{
+                lat: waypoint.latitude,
+                lng: waypoint.longitude,
+              }}
+              voyage={voyage}
+              onClick={() =>
+                handlePanToLocation(
+                  voyage.waypoints[0].latitude,
+                  voyage.waypoints[0].longitude
+                )
+              }
+            />
+          );
         })
         .filter(Boolean);
 
@@ -134,7 +146,7 @@ function App() {
         markerClustererRef.current.addMarkers(newMarkers);
       }
 
-      // Save markers to the ref
+      // Save markers to the ref (optional, depending on your needs)
       markersRef.current = newMarkers;
     }
   }, [initialVoyages, isSuccessVoyages]);
@@ -192,38 +204,16 @@ function App() {
                     gestureHandling={"greedy"}
                     disableDefaultUI
                     onCameraChanged={() => setTargetLocation(null)}
+                    options={MainPageMapStyles}
                   >
                     <MainPageMapPanComponent
                       targetLat={targetLocation?.lat}
                       targetLng={targetLocation?.lng}
                     />
 
-                    {isSuccessVoyages &&
-                      initialVoyages?.length > 0 &&
-                      initialVoyages.map((voyage, index) => {
-                        return (
-                          voyage.waypoints?.[0] && (
-                            <div
-                              key={`${voyage.waypoints[0].latitude}-${index}`}
-                            >
-                              <MarkerWithInfoWindow
-                                index={index}
-                                position={{
-                                  lat: voyage.waypoints[0].latitude,
-                                  lng: voyage.waypoints[0].longitude,
-                                }}
-                                voyage={voyage}
-                                onClick={() =>
-                                  handlePanToLocation(
-                                    voyage.waypoints[0].latitude,
-                                    voyage.waypoints[0].longitude
-                                  )
-                                }
-                              />
-                            </div>
-                          )
-                        );
-                      })}
+                    {isSuccessVoyages && initialVoyages?.length > 0 && (
+                      <ClusteredVoyageMarkers voyages={initialVoyages} />
+                    )}
                   </Map>
                 </APIProvider>
               </div>
@@ -235,4 +225,15 @@ function App() {
   );
 }
 
-export default App;
+export default MainPage;
+
+/* 
+TODO: 
+- get current map bounds
+- map refresh button 
+- username from fixed userId
+- clear filter button
+- get filtered voyages
+
+
+*/

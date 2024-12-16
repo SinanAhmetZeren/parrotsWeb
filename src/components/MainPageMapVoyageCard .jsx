@@ -15,9 +15,18 @@ export function MainPageMapVoyageCard({ cardData }) {
             style={{
               marginTop: "0.2rem",
               marginBottom: "0.2rem",
+              backgroundColor: "pink",
+              padding: "2rem",
             }}
           >
-            <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
+            <span
+              style={{
+                ...voyageDetailSpan,
+                marginRight: "0.5rem",
+
+                backgroundColor: "red",
+              }}
+            >
               <VehicleIcon vehicleType={cardData.vehicleType} />
               {cardData.vehicle.name}
             </span>
@@ -84,6 +93,7 @@ const cardTitleStyle = {
   fontSize: "1.3rem",
   fontWeight: "bold",
   color: "rgba(10, 119, 234,1)",
+  backgroundColor: "red",
 };
 
 function formatCustomDate(dateString) {
