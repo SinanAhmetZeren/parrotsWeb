@@ -25,7 +25,7 @@ import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
 
 function MainPage() {
   const userId = "43242342432342342342";
-  // const mapRef = useRef();
+  const mapRef = useRef();
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
@@ -103,10 +103,7 @@ function MainPage() {
   }, []);
 
   useEffect(() => {
-    if (
-      isSuccessVoyages
-      //  && mapRef.current
-    ) {
+    if (isSuccessVoyages && mapRef.current) {
       markersRef.current = [];
 
       const newMarkers = initialVoyages
@@ -134,11 +131,11 @@ function MainPage() {
         })
         .filter(Boolean);
 
-      // console.log(mapRef.current);
+      console.log(mapRef.current);
 
       if (!markerClustererRef.current) {
         markerClustererRef.current = new MarkerClusterer({
-          // map: mapRef.current,
+          map: mapRef.current,
           markers: newMarkers,
         });
       } else {
