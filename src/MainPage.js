@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import "./App.css";
 import "./assets/css/advancedmarker.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -21,14 +21,16 @@ import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
 import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
-// import { MainPageMapStyles } from "./components/MainPageMapStyles";
+import { convertDateFormat } from "./components/ConvertDateFormat";
 
 function MainPage() {
   const userId = "43242342432342342342";
-  // const mapRef = useRef();
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
+  const [initialLatDelta, setInitialLatDelta] = useState(5);
+  const [initialLngDelta, setInitialLngDelta] = useState(5);
+
   const [isLoading, setIsLoading] = useState(false);
   const [initialVoyages, setInitialVoyages] = useState([]);
   const [locationError, setLocationError] = useState(null);
@@ -42,8 +44,10 @@ function MainPage() {
       key: "selection",
     },
   ]);
-  const [selectedVacancy, setSelectedVacancy] = useState("");
-  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [selectedVacancy, setSelectedVacancy] = useState();
+  const [selectedVehicle, setSelectedVehicle] = useState();
+
+  const [bounds, setBounds] = useState(null);
 
   const [
     getVoyagesByLocation,
@@ -54,13 +58,49 @@ function MainPage() {
     },
   ] = useGetVoyagesByLocationMutation();
 
+  const [
+    getFilteredVoyages,
+    {
+      isError: isErrorVoyagesFiltered,
+      isLoading: isLoadingVoyagesFiltered,
+      isSuccess: isSuccessVoyagesFiltered,
+    },
+  ] = useGetFilteredVoyagesMutation();
+
+  const applyFilter = useCallback(async () => {
+    const formattedStartDate = convertDateFormat(dates.startDate, "startDate");
+    const formattedEndDate = convertDateFormat(dates.endDate, "endDate");
+
+    const data = {
+      latitude: (bounds.lat.northEast + bounds.lat.southWest) / 2,
+      longitude: (bounds.lng.northEast + bounds.lng.southWest) / 2,
+      latitudeDelta: bounds.lat.northEast - bounds.lat.southWest,
+      longitudeDelta: bounds.lng.northEast - bounds.lng.southWest,
+      count: selectedVacancy ?? 1,
+      selectedVehicleType: selectedVehicle,
+      formattedStartDate: formattedStartDate,
+      formattedEndDate: formattedEndDate,
+    };
+
+    const filteredVoyages = await getFilteredVoyages(data);
+    console.log("filtered voyages", filteredVoyages);
+    setInitialVoyages(filteredVoyages.data || []);
+  }, [
+    bounds,
+    dates.startDate,
+    dates.endDate,
+    selectedVacancy,
+    selectedVehicle,
+    getFilteredVoyages,
+  ]);
+
   useEffect(() => {
     const getVoyages = async () => {
       if (!initialLatitude || !initialLongitude) return;
-      const lat1 = initialLatitude - 11.15;
-      const lat2 = initialLatitude + 11.15;
-      const lon1 = initialLongitude - 11.2;
-      const lon2 = initialLongitude + 11.2;
+      const lat1 = initialLatitude - initialLatDelta;
+      const lat2 = initialLatitude + initialLatDelta;
+      const lon1 = initialLongitude - initialLngDelta;
+      const lon2 = initialLongitude + initialLngDelta;
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
@@ -72,7 +112,13 @@ function MainPage() {
       }
     };
     getVoyages();
-  }, [initialLatitude, initialLongitude, getVoyagesByLocation]);
+  }, [
+    initialLatitude,
+    initialLongitude,
+    getVoyagesByLocation,
+    initialLatDelta,
+    initialLngDelta,
+  ]);
 
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
@@ -172,6 +218,7 @@ function MainPage() {
                   setSelectedVehicle={setSelectedVehicle}
                   selectedVacancy={selectedVacancy}
                   setSelectedVacancy={setSelectedVacancy}
+                  applyFilter={applyFilter}
                 />
               </div>
               <div style={{ height: "60vh" }}>
@@ -207,6 +254,7 @@ function MainPage() {
                     onCameraChanged={() => setTargetLocation(null)}
                   >
                     <MainPageMapPanComponent
+                      setBounds={setBounds}
                       targetLat={targetLocation?.lat}
                       targetLng={targetLocation?.lng}
                     />
@@ -229,7 +277,6 @@ export default MainPage;
 
 /* 
 TODO: 
-- get current map bounds
 - map refresh button 
 - username from fixed userId
 - clear filter button

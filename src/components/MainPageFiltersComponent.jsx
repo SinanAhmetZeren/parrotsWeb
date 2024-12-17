@@ -13,6 +13,7 @@ export const MainPageFiltersComponent = ({
   setSelectedVehicle,
   selectedVacancy,
   setSelectedVacancy,
+  applyFilter,
 }) => {
   return (
     <div // FILTER COMPONENT
@@ -57,7 +58,7 @@ export const MainPageFiltersComponent = ({
         </div>
       </div>
       <div>
-        <MainPageApplyClearButtons />
+        <MainPageApplyClearButtons applyFilter={applyFilter} />
       </div>
     </div>
   );

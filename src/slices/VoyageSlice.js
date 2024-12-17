@@ -192,6 +192,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           formattedEndDate,
         } = data;
 
+        console.log("data: ", data);
+
         const queryParams = new URLSearchParams({
           Lat1: (latitude - latitudeDelta / 2).toString(),
           Lat2: (latitude + latitudeDelta / 2).toString(),
@@ -199,8 +201,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           Lon2: (longitude + longitudeDelta / 2).toString(),
           Vacancy: count.toString(),
         });
-
-        console.log("query params: ", queryParams);
 
         if (selectedVehicleType !== undefined && selectedVehicleType !== null) {
           queryParams.append("VehicleType", selectedVehicleType);
@@ -214,6 +214,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           queryParams.append("EndDate", formattedEndDate);
         }
 
+        console.log("queryParams:", queryParams);
         const endpoint = `/api/Voyage/GetFilteredVoyages?${queryParams.toString()}`;
 
         return endpoint;

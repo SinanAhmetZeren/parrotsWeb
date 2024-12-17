@@ -1,11 +1,8 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
-import { DateRange } from "react-date-range";
-import { useState, useRef, useEffect } from "react";
-import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 
-export const MainPageApplyClearButtons = () => {
+export const MainPageApplyClearButtons = ({ applyFilter }) => {
   const buttonStyle = {
     width: "65%", // Match the input width
     padding: "0.3rem",
@@ -64,6 +61,7 @@ export const MainPageApplyClearButtons = () => {
         <button
           onClick={() => {
             console.log("apply");
+            applyFilter();
           }}
           style={{ ...buttonStyle, backgroundColor: "#007bff" }}
         >
