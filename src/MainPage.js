@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import "./App.css";
 import "./assets/css/advancedmarker.css";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -21,7 +21,7 @@ import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
 import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
-import { MainPageMapStyles } from "./components/MainPageMapStyles";
+// import { MainPageMapStyles } from "./components/MainPageMapStyles";
 
 function MainPage() {
   const userId = "43242342432342342342";
@@ -83,7 +83,6 @@ function MainPage() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log("position:", position);
             const { latitude, longitude } = position.coords;
             setInitialLatitude(latitude);
             setInitialLongitude(longitude);
@@ -196,7 +195,6 @@ function MainPage() {
                   <Map
                     mapId={"mainpageMap"}
                     defaultZoom={10}
-                    style={{ width: "100%", height: "100%", zIndex: 5 }}
                     defaultCenter={{
                       lat: initialLatitude || 37.7749,
                       lng: initialLongitude || -122.4194,
@@ -204,7 +202,6 @@ function MainPage() {
                     gestureHandling={"greedy"}
                     disableDefaultUI
                     onCameraChanged={() => setTargetLocation(null)}
-                    options={MainPageMapStyles}
                   >
                     <MainPageMapPanComponent
                       targetLat={targetLocation?.lat}

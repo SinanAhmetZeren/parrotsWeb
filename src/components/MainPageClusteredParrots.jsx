@@ -50,20 +50,39 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         </svg>
       `);
 
-      return new window.google.maps.Marker({
+      return new window.google.maps.marker.AdvancedMarkerElement({
         position,
-        icon: {
-          url: `data:image/svg+xml;base64,${svg}`,
-          scaledSize: new window.google.maps.Size(75, 75),
-        },
-        label: {
-          text: String(count),
-          color: "rgba(255,255,255,1)",
-          fontSize: "16px",
-        },
+
+        content: (() => {
+          const markerContainer = document.createElement("div");
+          const img = document.createElement("img");
+          img.src = `data:image/svg+xml;base64,${svg}`;
+          img.width = 75;
+          img.height = 75;
+          img.alt = "Marker";
+          markerContainer.appendChild(img);
+
+          // Create the label as a custom HTML element
+          const label = document.createElement("div");
+          label.textContent = String(count);
+          label.style.position = "absolute";
+          label.style.top = "50%";
+          label.style.left = "50%";
+          label.style.transform = "translate(-50%, -50%)";
+          label.style.color = "white"; // Ensure visibility
+          label.style.fontSize = "16px"; // Customize font size
+          label.style.fontWeight = "bold"; // Optional: make the text bold
+          label.style.zIndex = "1000"; // Ensure the label is above the marker
+
+          markerContainer.appendChild(label);
+
+          return markerContainer;
+        })(),
+
         zIndex: 99999,
       });
     };
+
     return new MarkerClusterer({
       map,
       renderer: {

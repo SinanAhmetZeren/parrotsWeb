@@ -41,5 +41,8 @@ const styles = [
 
 export const MainPageMapStyles = {
   styles: styles,
-  clickableIcons: false, // Corrected to boolean false
+  clickableIcons: false,
+  width: "100%",
+  height: "100%",
+  zIndex: 5,
 };

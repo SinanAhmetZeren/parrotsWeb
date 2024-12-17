@@ -31,11 +31,12 @@ export const MarkerWithInfoWindow = ({
   const handleMarkerClick = () => setInfoWindowShown((isShown) => !isShown);
   const handleClose = () => setInfoWindowShown(false);
 
-  useEffect(() => {
-    if (clusterer) {
-      clusterer.addMarker(new google.maps.Marker({ position }));
-    }
-  }, [position, clusterer]);
+  // useEffect(() => {
+  //   if (clusterer) {
+  //     clusterer.addMarker(new google.maps.Marker({ position }));
+  //     console.log("hello");
+  //   }
+  // }, [position, clusterer]);
 
   return (
     <div onClick={onClick}>
