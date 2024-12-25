@@ -13,7 +13,7 @@ export const MainPageRefreshButton = ({ applyFilter }) => {
     color: "white",
     fontWeight: "bold",
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: "1rem",
     border: "none",
     boxShadow: `
         0 4px 6px rgba(0, 0, 0, 0.3),

@@ -2,15 +2,15 @@ import "../assets/css/date-range-custom.css";
 
 export const TopBarMenu = () => {
   return (
-    <nav className="flex space-x-6 sm:space-x-6 overflow-x-auto sm:overflow-x-visible">
-      <a href="#home" className="hover:text-gray-300 font-bold text-xl">
+<nav className="flex space-x-12 sm:space-x-12 overflow-x-auto sm:overflow-x-visible">
+<a href="#home" className="hover:text-gray-300 font-bold text-xl">
         Home
       </a>
       <a href="#profile" className="hover:text-gray-300 font-bold text-xl ">
         Profile
       </a>
       <a href="#voyage" className="hover:text-gray-300 font-bold text-xl">
-        Voyage
+        Voyages
       </a>
       <a href="#favorites" className="hover:text-gray-300 font-bold text-xl">
         Favorites

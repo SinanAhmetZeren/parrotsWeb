@@ -13,7 +13,7 @@ export const MainPageNewVoyageButton = () => {
     color: "white",
     fontWeight: "bold",
     cursor: "pointer",
-    fontSize: "1.4rem",
+    fontSize: "1.2rem",
     border: "none",
     boxShadow:
       "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",

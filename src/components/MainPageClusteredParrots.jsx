@@ -70,7 +70,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           label.style.left = "50%";
           label.style.transform = "translate(-50%, -50%)";
           label.style.color = "white"; // Ensure visibility
-          label.style.fontSize = "16px"; // Customize font size
+          label.style.fontSize = "1rem"; // Customize font size
           label.style.fontWeight = "bold"; // Optional: make the text bold
           label.style.zIndex = "1000"; // Ensure the label is above the marker
 
@@ -110,14 +110,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
     });
   }, []);
 
-  const handlePanToLocation = useCallback(
-    (lat, lng) => {
-      if (map) {
-        map.panTo({ lat, lng });
-      }
-    },
-    [map]
-  );
+
 
   const voyageMarkers = useMemo(() => {
     return voyages
@@ -189,8 +182,8 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                 <div
                   style={{
                     position: "absolute",
-                    bottom: "10px", // 10px from the bottom of the card
-                    right: "10px", // 10px from the right of the card
+                    bottom: "0.6rem", // 10px from the bottom of the card
+                    right: "0.6rem", // 10px from the right of the card
                     ...buttonStyle,
                   }}
                 >
@@ -370,6 +363,6 @@ const buttonStyle = {
   color: "#007bff",
   fontWeight: "bold",
   cursor: "pointer",
-  fontSize: "16px",
+  fontSize: "1rem",
   marginTop: "auto",
 };
