@@ -1,40 +1,33 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from "react-date-range";
-import { useState, useRef, useEffect } from "react";
+import {  useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 
-export const MainPageDatePicker = ({ dates, setDates }) => {
-  // const [dates, setDates] = useState([
-  //   {
-  //     startDate: null, // Start date is null initially
-  //     endDate: null, // End date is null initially
-  //     key: "selection",
-  //   },
-  // ]);
-  const [open, setOpen] = useState(false); // State to toggle the calendar visibility
+export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
 
-  const calendarRef = useRef(null); // Ref for the calendar container
-
-  // Update the date range when the calendar is used
+  const calendarRef = useRef(null); 
   const handleDateChange = (item) => {
     setDates([item.selection]);
   };
 
-  // Format the date in a readable way
   const formatDate = (date) => {
     return date ? date.toLocaleDateString() : "";
   };
 
-  // Close the calendar if clicked outside
   const handleClickOutside = (event) => {
-    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-      setOpen(false); // Close the calendar if click is outside
+    console.log('Clicked element:', event.target);
+    if (
+      calendarRef.current &&
+      !calendarRef.current.contains(event.target)
+    ) {
+      console.log('Closing calendar');
+      setCalendarOpen(false); 
     }
   };
-
-  // Set up event listener for clicks outside
+  
+  
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside); // Add event listener
     return () => {
@@ -45,7 +38,7 @@ export const MainPageDatePicker = ({ dates, setDates }) => {
   return (
     <div>
       <div
-        onClick={() => setOpen(!open)} // Toggle the calendar on date field click
+        onClick={() => setCalendarOpen(!calendarOpen)} // Toggle the calendar on date field click
         style={{
           display: "flex", // Flexbox to place inputs side by side
           gap: ".5rem", // Gap between the two inputs
@@ -122,7 +115,7 @@ export const MainPageDatePicker = ({ dates, setDates }) => {
         </div>
       </div>
 
-      {open && (
+      {calendarOpen && (
         <div
           ref={calendarRef}
           style={{
@@ -136,6 +129,8 @@ export const MainPageDatePicker = ({ dates, setDates }) => {
             editableDateInputs={true}
             onChange={handleDateChange}
             moveRangeOnFirstSelection={false}
+            startDatePlaceholder="Start Date"
+            endDatePlaceholder="End Date"
             ranges={dates}
             locale={enUS}
             style={{ width: "33rem" }}

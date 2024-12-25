@@ -10,9 +10,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { MainPageVoyageCard } from "./MainPageVoyageCard";
 
-export function MainPageCardSwiper({ voyagesData, panToLocation }) {
+export function MainPageCardSwiper({ voyagesData, panToLocation,  calendarOpen,
+  setCalendarOpen }) {
   return (
-    <div>
+    <div
+    onClick={()=>{if(calendarOpen) {
+      setCalendarOpen(!calendarOpen)}
+    }}
+    >
       <div style={{ width: "90%" }}>
         <Swiper
           effect="coverflow"

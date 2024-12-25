@@ -14,6 +14,8 @@ export const MainPageFiltersComponent = ({
   selectedVacancy,
   setSelectedVacancy,
   applyFilter,
+  calendarOpen,
+  setCalendarOpen
 }) => {
   return (
     <div // FILTER COMPONENT
@@ -31,7 +33,10 @@ export const MainPageFiltersComponent = ({
           paddingTop: "0.2rem",
         }}
       >
-        <MainPageDatePicker dates={dates} setDates={setDates} />
+        <MainPageDatePicker dates={dates} setDates={setDates}
+                calendarOpen={calendarOpen} 
+                setCalendarOpen={setCalendarOpen}
+        />
       </div>
       <div
         style={{
@@ -58,7 +63,10 @@ export const MainPageFiltersComponent = ({
         </div>
       </div>
       <div>
-        <MainPageApplyClearButtons applyFilter={applyFilter} />
+        <MainPageApplyClearButtons applyFilter={applyFilter} setDates={setDates}
+                    setSelectedVacancy={setSelectedVacancy}
+            setSelectedVehicle={setSelectedVehicle}
+        />
       </div>
     </div>
   );

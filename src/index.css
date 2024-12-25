@@ -17,7 +17,7 @@ code {
 }
 
 html {
-  font-size: clamp(6px, 1vw, 25px); /* More gradual scaling */
+  font-size: clamp(6px, .951vw, 25px); /* More gradual scaling */
 }
 
 

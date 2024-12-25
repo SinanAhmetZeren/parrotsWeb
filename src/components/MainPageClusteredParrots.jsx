@@ -229,7 +229,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         return marker;
       })
       .filter((marker) => marker !== null);
-  }, [voyages, handlePanToLocation, setMarkerRef]);
+  }, [voyages, setMarkerRef,map]);
 
   useEffect(() => {
     if (!map || !infoWindow) return;

@@ -2,15 +2,12 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
 
-export const MainPageApplyClearButtons = ({
-  applyFilter,
-  setDates,
-  setSelectedVehicle,
-  setSelectedVacancy,
-}) => {
+export const MainPageRefreshButton = ({ applyFilter }) => {
   const buttonStyle = {
-    width: "65%", // Match the input width
-    padding: "0.3rem",
+    padding: "0.5rem",
+    paddingLeft: "1rem",
+    paddingRight: "1rem",
+    marginBottom: "1rem",
     borderRadius: "1.5rem",
     textAlign: "center",
     color: "white",
@@ -27,18 +24,6 @@ export const MainPageApplyClearButtons = ({
     MozOsxFontSmoothing: "grayscale",
   };
 
-  const clearFilters = () => {
-    setDates([
-      {
-        startDate: null,
-        endDate: null,
-        key: "selection",
-      },
-    ]);
-    setSelectedVehicle("");
-    setSelectedVacancy("");
-  };
-
   return (
     <div
       style={{
@@ -52,29 +37,7 @@ export const MainPageApplyClearButtons = ({
       }}
     >
       <div
-        style={{
-          width: "50%",
-          display: "flex", // Enable flexbox
-          justifyContent: "flex-end", // Align items to the right
-        }}
-      >
-        <button
-          onClick={() => {
-            console.log("clear");
-            clearFilters();
-          }}
-          style={{ ...buttonStyle, backgroundColor: "green" }}
-        >
-          Clear
-        </button>
-      </div>
-
-      <div
-        style={{
-          width: "50%",
-          display: "flex", // Enable flexbox
-          justifyContent: "flex-end", // Align items to the right
-        }}
+  
       >
         <button
           onClick={() => {
@@ -82,7 +45,7 @@ export const MainPageApplyClearButtons = ({
           }}
           style={{ ...buttonStyle, backgroundColor: "#007bff" }}
         >
-          Apply
+          Refresh Map
         </button>
       </div>
     </div>

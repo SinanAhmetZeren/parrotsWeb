@@ -22,7 +22,7 @@ import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow"
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
 import { convertDateFormat } from "./components/ConvertDateFormat";
-
+import {MainPageRefreshButton} from "./components/MainPageRefreshButton"
 function MainPage() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -30,7 +30,7 @@ function MainPage() {
   const [initialLongitude, setInitialLongitude] = useState();
   const [initialLatDelta, setInitialLatDelta] = useState(5);
   const [initialLngDelta, setInitialLngDelta] = useState(5);
-
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialVoyages, setInitialVoyages] = useState([]);
   const [locationError, setLocationError] = useState(null);
@@ -219,6 +219,8 @@ function MainPage() {
                   selectedVacancy={selectedVacancy}
                   setSelectedVacancy={setSelectedVacancy}
                   applyFilter={applyFilter}
+                  calendarOpen={calendarOpen} 
+                  setCalendarOpen={setCalendarOpen}
                 />
               </div>
               <div style={{ height: "60vh" }}>
@@ -230,6 +232,9 @@ function MainPage() {
                   <MainPageCardSwiper
                     voyagesData={initialVoyages}
                     panToLocation={handlePanToLocation}
+                    setCalendarOpen={setCalendarOpen}
+                  calendarOpen={calendarOpen} 
+
                   />
                 )}
               </div>
@@ -266,9 +271,13 @@ function MainPage() {
                 </APIProvider>
               </div>
             </div>
+      <div style={{ position: "absolute", right: 0, bottom: 0 }}>
+              <MainPageRefreshButton applyFilter={applyFilter} />
+            </div>
           </div>
         </div>
       </header>
+
     </div>
   );
 }
