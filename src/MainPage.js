@@ -286,10 +286,5 @@ export default MainPage;
 
 /* 
 TODO: 
-- map refresh button 
 - username from fixed userId
-- clear filter button
-- get filtered voyages
-
-
 */
