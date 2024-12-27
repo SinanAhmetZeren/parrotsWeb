@@ -24,6 +24,7 @@ import { convertDateFormat } from "./components/ConvertDateFormat";
 import { VoyageDetailPageImageSwiper } from "./components/VoyageDetailPageImageSwiper";
 import { VoyageDetailPageDetails } from "./components/VoyageDetailPageDetails";
 import { VoyageDetailPageDescription } from "./components/VoyageDetailPageDescription";
+import { VoyageDetailBids } from "./components/VoyageDetailPageBids";
 
 function VoyageDetails() {
 
@@ -124,7 +125,9 @@ function VoyageDetails() {
               <div className="flex voyageDetails_Description">
                 <VoyageDetailPageDescription voyage={{}} />
               </div>
-              <div className="flex voyageDetails_Bids">bids</div>
+              <div className="flex voyageDetails_Bids">
+                <VoyageDetailBids voyage={{}} />
+              </div>
             </div>
             <div className="flex flex-col voyageDetails_BottomRight">
               <div
