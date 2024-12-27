@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { MainPageMapVoyageCard } from "../components/MainPageMapVoyageCard ";
+import { MainPageMapVoyageCard } from "../components/MainPageMapVoyageCard";
 import {
   AdvancedMarker,
   InfoWindow,
@@ -44,14 +44,14 @@ export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
             index % 6 === 0
               ? parrotMarker1
               : index % 6 === 1
-              ? parrotMarker2
-              : index % 6 === 2
-              ? parrotMarker3
-              : index % 6 === 3
-              ? parrotMarker4
-              : index % 6 === 4
-              ? parrotMarker5
-              : parrotMarker6
+                ? parrotMarker2
+                : index % 6 === 2
+                  ? parrotMarker3
+                  : index % 6 === 3
+                    ? parrotMarker4
+                    : index % 6 === 4
+                      ? parrotMarker5
+                      : parrotMarker6
           }
           width={50}
           height={60}

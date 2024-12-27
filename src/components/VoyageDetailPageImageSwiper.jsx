@@ -1,8 +1,8 @@
 import leftArrow from "../assets/mainPageArrow.png";
 import rightArrow from "../assets/mainPageArrow.png";
-import img1 from "../assets/catamaran.jpeg";
-import img2 from "../assets/caravan.jpeg";
-import img3 from "../assets/caravanserai.png";
+import img1 from "../assets/fareast1.jpg";
+import img3 from "../assets/fareast2.jpeg";
+import img2 from "../assets/fareast3.jpeg";
 import "../App.css";
 import * as React from "react";
 import "swiper/css/pagination";
@@ -49,15 +49,48 @@ export function VoyageDetailPageImageSwiper({ imageUrls }) {
                 alt={`Slide ${index + 1}`}
                 style={{
                   width: "100%",
-                  padding: "1rem",
+                  paddingLeft: "1rem",
+                  paddingRight: "1rem",
                   height: "100%",
                   objectFit: "cover",
-                  borderRadius: "10px",
+                  borderRadius: "2rem",
+                  overflow: "hidden"
                 }}
               />
             </SwiperSlide>
           ))}
+
+
+
         </Swiper>
+
+
+        {/* <style>
+          {`
+          .swiper-button-next, .swiper-button-prev {
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 40px;
+            height: 40px;
+          }
+
+          .swiper-button-next {
+            background-image: url(${rightArrow});
+          }
+
+           .swiper-button-prev {
+            background-image: url(${leftArrow});
+            transform: rotate(180deg);
+          }
+
+          .swiper-button-next::after, .swiper-button-prev::after {
+            content: ""; 
+          }
+          `}
+        </style> 
+        */}
+
+
       </div>
 
     </div>
@@ -68,3 +101,6 @@ const slideContainerStyle = {
   height: "30rem", // Adjust height to fit your design
   width: "100%"
 };
+
+
+

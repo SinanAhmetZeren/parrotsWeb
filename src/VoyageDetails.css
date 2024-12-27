@@ -178,34 +178,30 @@
 
 
 .voyageDetails_Bottom {
-  background-color: pink;
+  background-color: "";
 }
 
 
 
 .voyageDetails_BottomRight {
-  background-color: pink;
   height: calc(100vh - 3rem);
   width: 45%;
 }
 
 .voyageDetails_MapContainer {
   width: 100%;
-  background-color: red;
-  padding: .4rem;
+  padding: .2rem;
   height: 55vh;
 }
 
 .voyageDetails_waypointsContainer {
   background-color: blueviolet;
   flex-grow: 1;
-  padding: 1rem;
-  margin: .3rem;
+  margin: .2rem;
 }
 
 
 .voyageDetails_BottomLeft {
-  background-color: green;
   height: calc(100vh - 3rem);
   width: 55%;
   flex-direction: column;
@@ -218,22 +214,20 @@
 }
 
 .voyageDetails_Details {
-  flex: 0 0 45vh;
   width: calc(100%-2rem);
-  margin: 1rem;
-  background-color: #ffadad;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 0.3rem;
 }
 
 .voyageDetails_Description {
-  flex: 0 0 45vh;
-  background-color: #ffd6a5;
   width: calc(100%-2rem);
-  margin: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 0.3rem;
 }
 
 .voyageDetails_Images {
-  flex: 0 0 45vh;
-  margin: .2rem;
   align-items: center;
   justify-content: center;
 }

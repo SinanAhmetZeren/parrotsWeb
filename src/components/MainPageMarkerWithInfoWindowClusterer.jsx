@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard ";
+import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard";
 import {
   AdvancedMarker,
   InfoWindow,

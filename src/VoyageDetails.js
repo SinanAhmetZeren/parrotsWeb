@@ -23,6 +23,7 @@ import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
 import { convertDateFormat } from "./components/ConvertDateFormat";
 import { VoyageDetailPageImageSwiper } from "./components/VoyageDetailPageImageSwiper";
 import { VoyageDetailPageDetails } from "./components/VoyageDetailPageDetails";
+import { VoyageDetailPageDescription } from "./components/VoyageDetailPageDescription";
 
 function VoyageDetails() {
 
@@ -120,7 +121,9 @@ function VoyageDetails() {
               <div className="flex voyageDetails_Details">
                 <VoyageDetailPageDetails voyage={{}} />
               </div>
-              <div className="flex voyageDetails_Description">description</div>
+              <div className="flex voyageDetails_Description">
+                <VoyageDetailPageDescription voyage={{}} />
+              </div>
               <div className="flex voyageDetails_Bids">bids</div>
             </div>
             <div className="flex flex-col voyageDetails_BottomRight">
