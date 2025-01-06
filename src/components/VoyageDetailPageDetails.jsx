@@ -31,15 +31,16 @@ export function VoyageDetailPageDetails({ voyage }) {
             <span style={userAndVehicleText}>Marco Polo</span>
           </div>
         </div>
-      </div>
-
-      <div style={userVehicleInfoRow}>
         <div className={"flex"} style={dataRowItem}>
           <span style={{}}>Vacancy: </span>
           <div style={infoBox}>
-            <span style={infoText}>30</span>
+            <span style={infoText}>300</span>
           </div>
         </div>
+
+      </div>
+
+      <div style={userVehicleInfoRow}>
 
         <div className={"flex"} style={dataRowItem}>
           <span style={{}}>Dates: </span>
@@ -54,31 +55,20 @@ export function VoyageDetailPageDetails({ voyage }) {
             <span style={infoText}>Nov 12, 30</span>
           </div>
         </div>
-      </div>
-
-      <div style={userVehicleInfoRow}>
         <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Min Price: </span>
+          <span style={{}}>Price: </span>
           <div style={infoBox}>
-            <span style={infoText}>15</span>
+            <span style={infoText}>15-50</span>
           </div>
         </div>
         <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Max Price: </span>
           <div style={infoBox}>
-            <span style={infoText}>50</span>
+            <span style={infoText}>Auction</span>
           </div>
-        </div>
 
-        <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Auction: </span>
-          <div style={infoBox}>
-            <span style={infoText}>Yes</span>
-          </div>
         </div>
       </div>
     </div>
-
   );
 }
 
@@ -86,7 +76,7 @@ export function VoyageDetailPageDetails({ voyage }) {
 const voyageName = {
   color: "#2ac898",
   fontWeight: "800",
-  fontSize: "1.8rem"
+  fontSize: "1.5rem"
 }
 
 const cardContainerStyle = {
@@ -104,9 +94,9 @@ const cardContainerStyle = {
 `,
   color: "rgba(0, 119, 234,1)",
   padding: "1rem",
-  fontSize: "1.3rem",
-  fontWeight: "500"
-
+  fontSize: "1.15rem",
+  fontWeight: "500",
+  paddingBottom: "2rem"
 };
 
 const userVehicleInfoRow = {
@@ -152,8 +142,8 @@ const userAndVehicleText = {
 }
 
 const infoText = {
-  paddingLeft: "1rem",
-  paddingRight: "1rem"
+  paddingLeft: ".75rem",
+  paddingRight: ".75rem"
 }
 
 

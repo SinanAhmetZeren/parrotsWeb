@@ -41,6 +41,11 @@ export function VoyageDetailPageDescription({ voyage }) {
 
   return (
     <div style={cardContainerStyle} className="flex row">
+
+
+      <div style={userVehicleInfoRow}>
+        <span style={voyageName}>Voyage Details</span>
+      </div>
       <div style={{ position: "relative" }}>
         <div className={"flex"} style={dataRowItem}>
           <div style={infoBox}>
@@ -88,9 +93,23 @@ const cardContainerStyle = {
 `,
   color: "rgba(0, 119, 234,1)",
   padding: "1rem",
-  fontSize: "1.4rem",
+  fontSize: "1.15rem",
 };
 
+
+const voyageName = {
+  color: "#2ac898",
+  fontWeight: "800",
+  fontSize: "1.5rem"
+}
+
+const userVehicleInfoRow = {
+  display: 'flex',
+  flexDirection: 'row',
+  margin: "0.2rem",
+  // justifyContent: "center"
+  marginLeft: "1.3rem"
+};
 
 const dataRowItem = {
   marginTop: ".3rem",
@@ -125,7 +144,6 @@ const vehicles = [
   "🏠", // Tinyhouse
   "✈️", // Airplane
 ];
-
 
 
 

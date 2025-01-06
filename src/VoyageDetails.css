@@ -234,7 +234,7 @@
 
 .voyageDetails_Bids {
   flex: 0 0 45vh;
-  background-color: #caffbf;
+  /* background-color: #caffbf; */
   width: calc(100%-2rem);
   margin: 1rem;
 }
