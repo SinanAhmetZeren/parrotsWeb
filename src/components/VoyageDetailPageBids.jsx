@@ -11,7 +11,11 @@ export function VoyageDetailBids({ voyage }) {
 
   const username = "Peter Parker";
   const userImage = img2;
-  const message = "This is my bid message";
+  const message1 = "This is my bid message";
+  const message21 = "This is my bid message This is my bid message This is my bid message";
+  const message = null;
+  const message2 = null;
+
   const price = "145";
   const accepted = false;
   const bids = [];
@@ -33,7 +37,7 @@ export function VoyageDetailBids({ voyage }) {
         <RenderBid
           username={username}
           userImage={userImage}
-          message={message}
+          message={message2}
           price={price}
           accepted={!accepted}
         />
@@ -121,6 +125,8 @@ const cardContainerStyle = {
 const dataRowItem = {
   marginTop: ".3rem",
   // backgroundColor: "red"
+  backgroundColor: "rgba(0, 119, 234,0.05)",
+  borderRadius: "1rem"
 };
 
 const userAndVehicleBox = {
@@ -191,3 +197,42 @@ const acceptedBidStyle = {
 
 };
 
+
+export const MainPageNewVoyageButton = () => {
+  const buttonStyle = {
+    width: "40%",
+    backgroundColor: "#007bff",
+    padding: "0.6rem",
+    marginTop: "2rem",
+    borderRadius: "1.5rem",
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontSize: "1.2rem",
+    border: "none",
+    boxShadow:
+      "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+    transition: "box-shadow 0.2s ease",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={() => {
+          console.log("apply");
+        }}
+        style={buttonStyle}
+      >
+        New Bid
+      </button>
+    </div>
+  );
+};

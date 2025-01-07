@@ -94,7 +94,7 @@ const cardContainerStyle = {
 `,
   color: "rgba(0, 119, 234,1)",
   padding: "1rem",
-  fontSize: "1.15rem",
+  fontSize: "1rem",
   fontWeight: "500",
   paddingBottom: "2rem"
 };

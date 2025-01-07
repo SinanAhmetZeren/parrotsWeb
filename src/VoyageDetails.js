@@ -25,6 +25,8 @@ import { VoyageDetailPageImageSwiper } from "./components/VoyageDetailPageImageS
 import { VoyageDetailPageDetails } from "./components/VoyageDetailPageDetails";
 import { VoyageDetailPageDescription } from "./components/VoyageDetailPageDescription";
 import { VoyageDetailBids } from "./components/VoyageDetailPageBids";
+import { VoyageDetailWaypointSwiper } from "./components/VoyageDetailWaypointSwiper";
+// import { VoyageDetailWaypointSwiper } from "./components/VoyageDetailWaypointSwiper";
 
 function VoyageDetails() {
 
@@ -154,7 +156,7 @@ function VoyageDetails() {
                 </APIProvider>
               </div>
               <div className="voyageDetails_waypointsContainer">
-                <span>waypoints slider container</span>
+                <VoyageDetailWaypointSwiper waypoints={{}} />
               </div>
             </div>
           </div>

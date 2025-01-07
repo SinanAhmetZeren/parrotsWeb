@@ -185,7 +185,7 @@
 
 .voyageDetails_BottomRight {
   height: calc(100vh - 3rem);
-  width: 45%;
+  width: 50%;
 }
 
 .voyageDetails_MapContainer {
@@ -203,7 +203,7 @@
 
 .voyageDetails_BottomLeft {
   height: calc(100vh - 3rem);
-  width: 55%;
+  width: 50%;
   flex-direction: column;
   overflow-y: auto;
 }

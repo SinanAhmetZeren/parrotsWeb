@@ -14,7 +14,7 @@ import { Navigation, EffectCoverflow } from "swiper/modules";
 
 export function VoyageDetailPageImageSwiper({ imageUrls }) {
 
-  const images = [img1, img2, img3]
+  const images = [img2, img1, img3]
 
   return (
     <div style={{ backgroundColor: "" }}>
