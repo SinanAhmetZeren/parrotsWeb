@@ -59,14 +59,7 @@ export function VoyageDetailPageDescription({ voyage }) {
         {isDescriptionLong && (
           <span
             onClick={toggleExpand}
-            style={{
-              position: "absolute",
-              bottom: "0rem",
-              right: "1rem",
-              fontWeight: "bold",
-              color: "#0077EA",
-              cursor: "pointer",
-            }}
+            style={readMore}
           >
             {isExpanded ? "Read Less" : "Read More"}
           </span>
@@ -172,4 +165,22 @@ export default function VehicleIcon({ vehicleType }) {
 }
 
 
+const readMore = {
+
+  height: "1.5rem",
+  alignSelf: "end",
+  color: "#2ac898",
+  fontWeight: "bold",
+  fontSize: "0.9rem",
+  cursor: "pointer",
+  backgroundColor: "rgba(42,200,152,0.1)",
+  borderRadius: "1rem",
+  marginLeft: "0.5rem",
+  marginRight: "1rem",
+  paddingLeft: "0.5rem",
+  paddingRight: "0.5rem",
+  position: "absolute",
+  bottom: "0rem",
+  right: 0
+}
 

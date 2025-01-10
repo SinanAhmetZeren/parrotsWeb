@@ -7,7 +7,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
-import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 
 export function VoyageDetailWaypointSwiper({ waypoints }) {
 
@@ -26,7 +25,6 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
         style={{
           width: "100%",
           height: "35vh",
-          backgroundColor: "red"
         }}
       >
         {images.map((url, index) => (
@@ -34,13 +32,26 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
             key={index}
             style={{
               textAlign: "center",
-              fontSize: "1.1rem",
+              fontSize: "18px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <VoyageDetailWaypointCard waypoint={{}} />
+            <img
+              src={url}
+              alt={`Slide ${index + 1}`}
+              style={{
+                display: "block",
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+                paddingLeft: "1rem",
+                paddingRight: "1rem",
+                borderRadius: "2rem",
+                overflow: "hidden",
+              }}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -48,6 +59,10 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
   );
 }
 
+const slideContainerStyle = {
+  height: "30rem", // Adjust height to fit your design
+  width: "100%"
+};
 
 
 
