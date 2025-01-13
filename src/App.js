@@ -12,8 +12,8 @@ import VoyageDetails from "./VoyageDetails";
 function App() {
   return (
     <div>
-      <VoyageDetails />
       {/* <MainPage /> */}
+      <VoyageDetails />
     </div>
   );
 }

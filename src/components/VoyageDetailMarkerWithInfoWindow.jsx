@@ -12,17 +12,14 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { MainPageMapVoyageCard } from "../components/MainPageMapVoyageCard";
+import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard";
 import {
   AdvancedMarker,
   InfoWindow,
   useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
 
-export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
-  console.log("position", position);
-  console.log("voyage", voyage);
-  console.log("index", index);
+export const VoyageDetailMarkerWithInfoWindow = ({ position, voyage, index }) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
 
   const [infoWindowShown, setInfoWindowShown] = useState(false);
@@ -36,6 +33,7 @@ export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
 
   return (
     <>
+
       <AdvancedMarker
         ref={markerRef}
         position={position}
@@ -63,10 +61,22 @@ export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
       {infoWindowShown && (
         <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
           <div className="info-window-custom">
-            <MainPageMapVoyageCard cardData={voyage} />
+            <span style={popupStyle}>hello</span>
           </div>
         </InfoWindow>
       )}
     </>
   );
 };
+
+
+const popupStyle = {
+  backgroundColor: "white",
+  padding: ".5rem",
+  borderRadius: "1rem",
+  color: "rgb(0, 119, 234)",
+  margin: "1rem",
+  zIndex: 100,
+  fontWeight: "bold"
+}
+

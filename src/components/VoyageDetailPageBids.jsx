@@ -6,6 +6,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
+import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton"
 
 export function VoyageDetailBids({ voyage }) {
 
@@ -21,9 +22,12 @@ export function VoyageDetailBids({ voyage }) {
   const bids = [];
 
   for (let i = 0; i < 10; i++) {
+    const bidId = `bid-${i}`; // Unique bid identifier
+
     if (i % 2 === 1) {
       bids.push(
         <RenderBid
+          key={bidId}
           username={username}
           userImage={userImage}
           message={message}
@@ -35,6 +39,7 @@ export function VoyageDetailBids({ voyage }) {
     else {
       bids.push(
         <RenderBid
+          key={bidId} // Use the unique key for each bid
           username={username}
           userImage={userImage}
           message={message2}
@@ -52,6 +57,8 @@ export function VoyageDetailBids({ voyage }) {
         <span style={voyageName}>Current Bids</span>
       </div>
       {bids}
+
+      <VoyageDetailBidButton />
     </div>
   );
 }
@@ -198,41 +205,3 @@ const acceptedBidStyle = {
 };
 
 
-export const MainPageNewVoyageButton = () => {
-  const buttonStyle = {
-    width: "40%",
-    backgroundColor: "#007bff",
-    padding: "0.6rem",
-    marginTop: "2rem",
-    borderRadius: "1.5rem",
-    textAlign: "center",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer",
-    fontSize: "1.2rem",
-    border: "none",
-    boxShadow:
-      "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-    transition: "box-shadow 0.2s ease",
-    WebkitFontSmoothing: "antialiased",
-    MozOsxFontSmoothing: "grayscale",
-  };
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <button
-        onClick={() => {
-          console.log("apply");
-        }}
-        style={buttonStyle}
-      >
-        New Bid
-      </button>
-    </div>
-  );
-};

@@ -26,7 +26,6 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
         style={{
           width: "100%",
           height: "35vh",
-          backgroundColor: "red"
         }}
       >
         {images.map((url, index) => (

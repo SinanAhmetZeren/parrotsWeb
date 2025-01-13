@@ -22,7 +22,7 @@ import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow"
 import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
 import { convertDateFormat } from "./components/ConvertDateFormat";
-import {MainPageRefreshButton} from "./components/MainPageRefreshButton"
+import { MainPageRefreshButton } from "./components/MainPageRefreshButton"
 function MainPage() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -219,7 +219,7 @@ function MainPage() {
                   selectedVacancy={selectedVacancy}
                   setSelectedVacancy={setSelectedVacancy}
                   applyFilter={applyFilter}
-                  calendarOpen={calendarOpen} 
+                  calendarOpen={calendarOpen}
                   setCalendarOpen={setCalendarOpen}
                 />
               </div>
@@ -233,7 +233,7 @@ function MainPage() {
                     voyagesData={initialVoyages}
                     panToLocation={handlePanToLocation}
                     setCalendarOpen={setCalendarOpen}
-                  calendarOpen={calendarOpen} 
+                    calendarOpen={calendarOpen}
 
                   />
                 )}
@@ -244,7 +244,7 @@ function MainPage() {
             <div className="flex mainpage_BottomRight">
               <div
                 className="flex mainpage_MapContainer"
-                // ref={mapRef}
+              // ref={mapRef}
               >
                 <APIProvider apiKey={myApiKey} libraries={["marker"]}>
                   <Map
@@ -271,7 +271,7 @@ function MainPage() {
                 </APIProvider>
               </div>
             </div>
-      <div style={{ position: "absolute", right: 0, bottom: 0 }}>
+            <div style={{ position: "absolute", right: 0, bottom: 0 }}>
               <MainPageRefreshButton applyFilter={applyFilter} />
             </div>
           </div>
