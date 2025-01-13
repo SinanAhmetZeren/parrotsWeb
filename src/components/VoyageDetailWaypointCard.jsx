@@ -6,34 +6,38 @@ import * as React from "react";
 
 export function VoyageDetailWaypointCard({ waypoint }) {
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const baseWaypointImageUrl = `${apiUrl}/Uploads/WaypointImages/`;
+
+  /*
+{
+  "id": 107,
+  "latitude": 40.99,
+  "longitude": 29.09,
+  "title": "Istanbul",
+  "description": "Spend a day in Istanbul, starting with the stunning Hagia Sophia, a mix of history and beauty. Explore the lively Grand Bazaar, full of colors, sounds, and unique items. Finish with a relaxing Bosphorus cruise, enjoying the view of the city that connects two continents.",
+  "profileImage": "014b817b-142f-4777-9a6b-5e2a82b52e4f.jpg",
+  "order": 1,
+  "voyageId": 88
+}*/
 
   return (
     <div style={voyageDetailCard}>
       <div style={imageContainer}>
         <img
-          src={img1}
+          src={baseWaypointImageUrl + waypoint.profileImage}
           alt={`Slide ${+1}`}
           style={voyageImage}
         />
       </div>
       <div style={detailsContainer}>
         <div style={heading}>
-          hello
+          {waypoint.title}
         </div>
         <div style={waypointBrief}>
-          Waypo int brief
-          Wayp oi nt brief
-          Wayp oint brief
-          Wayp oint brief
-          Waypoi nt brief
-          Waypoi nt brief
-          Wa  oint brief
-          Wayp oi nt brief
-          Wayp oi nt brief
-          Wayp oint brief
-          Wayp oint brief
-          Wayp oint brief
-          Way ypoint brief
+          <div style={scrollableDescription}>
+            {waypoint.description}
+          </div>
         </div>
         <div style={seeOnMap} onClick={() => console.log("hi there")}>
           See on map
@@ -101,3 +105,14 @@ const seeOnMap = {
   paddingRight: "0.5rem"
 };
 
+const scrollableDescription = {
+  maxHeight: "200px", // Adjust this height as needed
+  overflowY: "auto",  // Enables vertical scrolling
+  scrollbarWidth: "none", // Hides scrollbar in Firefox
+  msOverflowStyle: "none", // Hides scrollbar in Internet Explorer and Edge
+  WebkitOverflowScrolling: "touch", // Ensures smooth scrolling on iOS
+  // Hide the scrollbar in WebKit browsers like Chrome and Safari
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+};

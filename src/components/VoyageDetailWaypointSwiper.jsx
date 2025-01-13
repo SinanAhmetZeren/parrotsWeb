@@ -11,8 +11,6 @@ import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 
 export function VoyageDetailWaypointSwiper({ waypoints }) {
 
-  const images = [img2, img1, img3, img2, img1, img3, img2, img1, img3, img2, img1, img3]
-
   return (
     <div style={{}}>
       <Swiper
@@ -28,7 +26,7 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
           height: "35vh",
         }}
       >
-        {images.map((url, index) => (
+        {waypoints.map((waypoint, index) => (
           <SwiperSlide
             key={index}
             style={{
@@ -39,7 +37,7 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
               alignItems: "center",
             }}
           >
-            <VoyageDetailWaypointCard waypoint={{}} />
+            <VoyageDetailWaypointCard waypoint={waypoint} />
           </SwiperSlide>
         ))}
       </Swiper>

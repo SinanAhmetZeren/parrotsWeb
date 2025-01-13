@@ -1,5 +1,3 @@
-import leftArrow from "../assets/mainPageArrow.png";
-import rightArrow from "../assets/mainPageArrow.png";
 import img1 from "../assets/fareast1.jpg";
 import img3 from "../assets/fareast2.jpeg";
 import img2 from "../assets/fareast3.jpeg";
@@ -12,9 +10,14 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 
-export function VoyageDetailPageImageSwiper({ imageUrls }) {
 
-  const images = [img2, img1, img3]
+
+export function VoyageDetailPageImageSwiper({ voyageData }) {
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = `${apiUrl}/Uploads/VoyageImages/`;
+
+  const images = [voyageData.profileImage, ...voyageData.voyageImages.map(image => image.voyageImagePath)
+  ]
 
   return (
     <div style={{ backgroundColor: "" }}>
@@ -40,12 +43,11 @@ export function VoyageDetailPageImageSwiper({ imageUrls }) {
           }}
           navigation={true}
           modules={[EffectCoverflow, Navigation]}
-
         >
           {images.map((url, index) => (
             <SwiperSlide key={index} style={slideContainerStyle}>
               <img
-                src={url}
+                src={baseUrl + url}
                 alt={`Slide ${index + 1}`}
                 style={{
                   width: "100%",
@@ -59,40 +61,8 @@ export function VoyageDetailPageImageSwiper({ imageUrls }) {
               />
             </SwiperSlide>
           ))}
-
-
-
         </Swiper>
-
-
-        {/* <style>
-          {`
-          .swiper-button-next, .swiper-button-prev {
-            background-size: contain;
-            background-repeat: no-repeat;
-            width: 40px;
-            height: 40px;
-          }
-
-          .swiper-button-next {
-            background-image: url(${rightArrow});
-          }
-
-           .swiper-button-prev {
-            background-image: url(${leftArrow});
-            transform: rotate(180deg);
-          }
-
-          .swiper-button-next::after, .swiper-button-prev::after {
-            content: ""; 
-          }
-          `}
-        </style> 
-        */}
-
-
       </div>
-
     </div>
   );
 }

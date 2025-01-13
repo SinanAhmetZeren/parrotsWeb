@@ -19,9 +19,8 @@ import {
   useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
 
-export const VoyageDetailMarkerWithInfoWindow = ({ position, voyage, index }) => {
+export const VoyageDetailMarkerWithInfoWindow = ({ position, waypointTitle, index }) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
-
   const [infoWindowShown, setInfoWindowShown] = useState(false);
 
   const handleMarkerClick = useCallback(
@@ -61,7 +60,7 @@ export const VoyageDetailMarkerWithInfoWindow = ({ position, voyage, index }) =>
       {infoWindowShown && (
         <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
           <div className="info-window-custom">
-            <span style={popupStyle}>hello</span>
+            <span style={popupStyle}>{waypointTitle}</span>
           </div>
         </InfoWindow>
       )}

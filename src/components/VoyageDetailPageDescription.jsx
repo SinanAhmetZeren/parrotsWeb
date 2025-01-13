@@ -8,32 +8,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 
-const descriptionPlaceHolder1 =
-  "FEW LANDMARKS HAVE tantalised the minds of travellers more than the legendary cities of Central Asia." +
-  "Originally caravanserais on the Golden Trade route across Central Asia, they developed into thriving centres of commerce and culture." +
-  "Under the ferocious medieval warriors Genghis Khan and then Tamerlane, they assumed inimitable power and splendour.\n\n" +
-  "Travel through the spectacular Pamir mountains of Tajikistan and visit Panjikent, sometimes referred to as ‘Oriental Pompei’." +
-  "Cross into Uzbekistan and visit the legendary city of Samarkand."
-
-const descriptionPlaceHolder2 =
-  "Explore ‘Divine Bukhara’, a town of hundreds of mosques, madrassas and minarets." +
-  "Experience the timelessness of a central Asia town in Khiva.\n\n" +
-  "FEW LANDMARKS HAVE tantalised the minds of travellers more than the legendary cities of Central Asia." +
-  "Originally caravanserais on the Golden Trade route across Central Asia, they developed into thriving centres of commerce and culture." +
-  "Under the ferocious medieval warriors Genghis Khan and then Tamerlane, they assumed inimitable power and splendour.\n\n" +
-  "Travel through the spectacular Pamir mountains of Tajikistan and visit Panjikent, sometimes referred to as ‘Oriental Pompei’." +
-  "Cross into Uzbekistan and visit the legendary city of Samarkand." +
-  "Explore ‘Divine Bukhara’, a town of hundreds of mosques, madrassas and minarets." +
-  "Experience the timelessness of a central Asia town in Khiva.x";
-
-const descriptionText = descriptionPlaceHolder1 + descriptionPlaceHolder2
-
-
-export function VoyageDetailPageDescription({ voyage }) {
+export function VoyageDetailPageDescription({ voyageDescription }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
-
   const descriptionCriticalLength = 300;
-  const isDescriptionLong = descriptionText.length > descriptionCriticalLength;
+  const isDescriptionLong = voyageDescription.length > descriptionCriticalLength;
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -41,22 +19,26 @@ export function VoyageDetailPageDescription({ voyage }) {
 
   return (
     <div style={cardContainerStyle} className="flex row">
-
-
       <div style={userVehicleInfoRow}>
         <span style={voyageName}>Voyage Details</span>
       </div>
       <div style={{ position: "relative" }}>
         <div className={"flex"} style={dataRowItem}>
           <div style={infoBox}>
-            <span style={descriptionTextStyle}>
-              {isExpanded || !isDescriptionLong
-                ? descriptionText // Show full description if expanded or short
-                : descriptionText.slice(0, descriptionCriticalLength) + "..."}
+            <span
+              style={{
+                ...descriptionTextStyle,
+                WebkitLineClamp: isExpanded ? 'unset' : 7, // 7 lines when collapsed
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden', // Hide the overflowing text when collapsed
+              }}
+            >
+              {voyageDescription}
             </span>
           </div>
         </div>
-        {isDescriptionLong && (
+        {voyageDescription.length > 0 && (
           <span
             onClick={toggleExpand}
             style={readMore}

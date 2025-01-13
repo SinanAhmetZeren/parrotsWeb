@@ -9,63 +9,62 @@ import "swiper/css/navigation";
 
 
 
-export function VoyageDetailPageDetails({ voyage }) {
+export function VoyageDetailPageDetails({ voyageData }) {
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+  const baseVehicleImageUrl = `${apiUrl}/Uploads/VehicleImages/`;
+
   return (
     <div style={cardContainerStyle} className="flex row">
-
       <div style={userVehicleInfoRow}>
-        <span style={voyageName}>Marco Polo Eastern Expedition</span>
+        <span style={voyageName}>{voyageData.name}</span>
       </div>
       <div style={userVehicleInfoRow}>
         <div className={"flex"} style={dataRowItem}>
           <span style={{ alignSelf: "center" }}>Hosted by</span>
           <div style={userAndVehicleBox}>
-            <img src={img2} style={userImage} alt=" " />
-            <span style={userAndVehicleText}>Peter Parker</span>
+            <img src={baseUserImageUrl + voyageData.user.profileImageUrl} style={userImage} alt=" " />
+            <span style={userAndVehicleText}>{voyageData.user.userName}</span>
           </div>
         </div>
         <div className={"flex"} style={dataRowItem}>
           <span style={{ alignSelf: "center" }}>On</span>
           <div style={userAndVehicleBox}>
-            <img src={img1} style={userImage} alt=" " />
-            <span style={userAndVehicleText}>Marco Polo</span>
+            <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl} style={userImage} alt=" " />
+            <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
         </div>
         <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Vacancy: </span>
+          <span style={{ alignSelf: "center" }}>Vacancy: </span>
           <div style={infoBox}>
-            <span style={infoText}>300</span>
+            <span style={infoText}>{voyageData.vacancy}</span>
           </div>
         </div>
-
       </div>
-
-      <div style={userVehicleInfoRow}>
-
+      <div style={{ ...userVehicleInfoRow, marginBottom: '.5rem' }}>
         <div className={"flex"} style={dataRowItem}>
           <span style={{}}>Dates: </span>
           <div style={infoBox}>
-            <span style={infoText}>Nov 12, 30 - Nov 12, 30</span>
+            {/* <span style={infoText}>Nov 12, 30 - Nov 12, 30</span> */}
+            <span style={infoText}>{formatCustomDate(voyageData.startDate)} - {formatCustomDate(voyageData.endDate)}</span>
           </div>
         </div>
-
         <div className={"flex"} style={dataRowItem}>
           <span style={{}}>Last Bid: </span>
           <div style={infoBox}>
-            <span style={infoText}>Nov 12, 30</span>
+            <span style={infoText}> {formatCustomDate(voyageData.lastBidDate)}</span>
           </div>
         </div>
         <div className={"flex"} style={dataRowItem}>
           <span style={{}}>Price: </span>
           <div style={infoBox}>
-            <span style={infoText}>15-50</span>
+            <span style={infoText}>{voyageData.minPrice}-{voyageData.maxPrice}</span>
           </div>
         </div>
         <div className={"flex"} style={dataRowItem}>
           <div style={infoBox}>
-            <span style={infoText}>Auction</span>
+            {voyageData.auction ? <span style={infoText}>Auction</span> : null}
           </div>
-
         </div>
       </div>
     </div>
@@ -103,13 +102,14 @@ const userVehicleInfoRow = {
   display: 'flex',
   flexDirection: 'row',
   margin: "0.2rem",
-  justifyContent: "center"
+  justifyContent: "center",
+  marginTop: "0.5rem"
 };
 
 const dataRowItem = {
   marginTop: ".3rem",
   marginRight: "0.8rem",
-  marginLeft: "0.8rem"
+  marginLeft: "0.8rem",
 }
 
 const userImage = {
@@ -123,17 +123,17 @@ const userAndVehicleBox = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: "center",
-  backgroundColor: "rgba(0, 119, 234,0.1)",
+  backgroundColor: "rgba(0, 119, 234,0.06)",
   borderRadius: "4rem",
   marginLeft: "0.5rem",
   height: "2rem"
 };
 
 const infoBox = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
+  backgroundColor: "rgba(0, 119, 234,0.06)",
   borderRadius: "4rem",
   marginLeft: "0.5rem",
-
+  alignSelf: "center"
 };
 
 const userAndVehicleText = {
@@ -142,8 +142,8 @@ const userAndVehicleText = {
 }
 
 const infoText = {
-  paddingLeft: ".75rem",
-  paddingRight: ".75rem"
+  paddingLeft: ".5rem",
+  paddingRight: ".5rem",
 }
 
 
