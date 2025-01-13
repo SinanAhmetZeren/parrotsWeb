@@ -40,7 +40,7 @@ export function VoyageDetailMapPanComponent({ targetLat, targetLng, setBounds })
   useEffect(() => {
     if (map && targetLat && targetLng) {
       map.panTo({ lat: targetLat, lng: targetLng });
-      map.setZoom(16);
+      map.setZoom(9);
     }
   }, [map, targetLat, targetLng]);
 

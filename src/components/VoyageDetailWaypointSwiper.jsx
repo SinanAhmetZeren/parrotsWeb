@@ -9,7 +9,7 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 
-export function VoyageDetailWaypointSwiper({ waypoints }) {
+export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation }) {
 
   return (
     <div style={{}}>
@@ -37,7 +37,7 @@ export function VoyageDetailWaypointSwiper({ waypoints }) {
               alignItems: "center",
             }}
           >
-            <VoyageDetailWaypointCard waypoint={waypoint} />
+            <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} />
           </SwiperSlide>
         ))}
       </Swiper>

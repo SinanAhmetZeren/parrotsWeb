@@ -4,7 +4,7 @@ import img2 from "../assets/fareast3.jpeg";
 import "../App.css";
 import * as React from "react";
 
-export function VoyageDetailWaypointCard({ waypoint }) {
+export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseWaypointImageUrl = `${apiUrl}/Uploads/WaypointImages/`;
@@ -20,6 +20,14 @@ export function VoyageDetailWaypointCard({ waypoint }) {
   "order": 1,
   "voyageId": 88
 }*/
+
+  function onClick() {
+    console.log("hi there ", waypoint.latitude);
+    handlePanToLocation(
+      waypoint.latitude,
+      waypoint.longitude
+    )
+  }
 
   return (
     <div style={voyageDetailCard}>
@@ -39,7 +47,8 @@ export function VoyageDetailWaypointCard({ waypoint }) {
             {waypoint.description}
           </div>
         </div>
-        <div style={seeOnMap} onClick={() => console.log("hi there")}>
+        <div style={seeOnMap} onClick={onClick}>
+
           See on map
         </div>
       </div>
@@ -111,7 +120,6 @@ const scrollableDescription = {
   scrollbarWidth: "none", // Hides scrollbar in Firefox
   msOverflowStyle: "none", // Hides scrollbar in Internet Explorer and Edge
   WebkitOverflowScrolling: "touch", // Ensures smooth scrolling on iOS
-  // Hide the scrollbar in WebKit browsers like Chrome and Safari
   '&::-webkit-scrollbar': {
     display: 'none',
   },

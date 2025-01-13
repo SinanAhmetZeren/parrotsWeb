@@ -21,31 +21,26 @@ import { VoyageDetailMapPanComponent } from "./components/VoyageDetailMapPanComp
 import { VoyageDetailMarkerWithInfoWindow } from "./components/VoyageDetailMarkerWithInfoWindow";
 import { VoyageDetailMapPolyLineComponent } from "./components/VoyageDetailMapPolyLineComponent";
 
-const markers = [
-  { lat: 37.7749, lng: 30.4194 }, // San Francisco
-  { lat: 34.0522, lng: 30.2437 }, // Los Angeles
-  { lat: 36.1699, lng: 30.1398 }, // Las Vegas
-];
-
-// Create an array of coordinates for the Polyline path
-const coordinates = markers.map(marker => ({
-  lat: marker.lat,
-  lng: marker.lng,
-}));
-
 
 function VoyageDetails() {
 
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   let voyageId = 88;
-
-  const [bounds, setBounds] = useState(null);
   const mapRef = useRef()
-
   const [targetLocation, setTargetLocation] = useState({});
-  const markersRef = useRef([]); // Ref to store marker instances
-  const markerClustererRef = useRef(null); // Ref to  store MarkerClusterer instance
+  const [bounds, setBounds] = useState({
+    maxLat: null,
+    minLat: null,
+    maxLng: null,
+    minLng: null,
+  });
+  const [latLngBoundsLiteral, setLatLngBoundsLiteral] = useState({
+    north: null,
+    south: null,
+    east: null,
+    west: null
+  });
 
   const {
     data: VoyageData,
@@ -54,13 +49,40 @@ function VoyageDetails() {
     refetch,
   } = useGetVoyageByIdQuery(voyageId);
 
+  useEffect(() => {
+    if (isSuccessVoyage && VoyageData?.waypoints?.length > 0) {
+      let tempMaxLat = -Infinity;
+      let tempMinLat = Infinity;
+      let tempMaxLng = -Infinity;
+      let tempMinLng = Infinity;
 
+      VoyageData.waypoints.forEach((waypoint) => {
+        const { latitude, longitude } = waypoint;
+
+        if (latitude > tempMaxLat) tempMaxLat = latitude;
+        if (latitude < tempMinLat) tempMinLat = latitude;
+        if (longitude > tempMaxLng) tempMaxLng = longitude;
+        if (longitude < tempMinLng) tempMinLng = longitude;
+      });
+      setBounds({
+        maxLat: tempMaxLat,
+        minLat: tempMinLat,
+        maxLng: tempMaxLng,
+        minLng: tempMinLng,
+      });
+      setLatLngBoundsLiteral({
+        north: tempMaxLat,
+        south: tempMinLat,
+        east: tempMaxLng,
+        west: tempMinLng,
+      })
+    }
+
+  }, [isSuccessVoyage, VoyageData]);
 
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
-
-
 
   return (
     isLoadingVoyage ? (
@@ -99,11 +121,7 @@ function VoyageDetails() {
                     <Map
                       ref={mapRef}
                       mapId={"mainpageMap"}
-                      defaultZoom={10}
-                      defaultCenter={{
-                        lat: 40.7749,
-                        lng: 29.14194,
-                      }}
+                      defaultBounds={latLngBoundsLiteral}
                       gestureHandling={"greedy"}
                       disableDefaultUI
                       onCameraChanged={() => setTargetLocation(null)}
@@ -115,7 +133,6 @@ function VoyageDetails() {
                       />
                       <VoyageDetailMapPolyLineComponent
                         waypoints={VoyageData.waypoints}
-
                       />
                       {
                         VoyageData.waypoints.map((waypoint, index) => (
@@ -140,7 +157,7 @@ function VoyageDetails() {
                   </APIProvider>
                 </div>
                 <div className="voyageDetails_waypointsContainer">
-                  <VoyageDetailWaypointSwiper waypoints={VoyageData.waypoints} />
+                  <VoyageDetailWaypointSwiper waypoints={VoyageData.waypoints} handlePanToLocation={handlePanToLocation} />
                 </div>
               </div>
             </div>
