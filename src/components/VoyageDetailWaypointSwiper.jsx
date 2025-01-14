@@ -20,7 +20,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation }) {
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        // modules={[Pagination]}
         style={{
           width: "100%",
           height: "35vh",

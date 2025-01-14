@@ -23,10 +23,10 @@ import { VoyageDetailMapPolyLineComponent } from "./components/VoyageDetailMapPo
 
 
 function VoyageDetails() {
-
-  const userId = "43242342432342342342";
+  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   let voyageId = 88;
+  const [userBid, setUserBid] = useState("")
   const mapRef = useRef()
   const [targetLocation, setTargetLocation] = useState({});
   const [bounds, setBounds] = useState({
@@ -78,6 +78,12 @@ function VoyageDetails() {
       })
     }
 
+    if (VoyageData) {
+      setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
+      console.log("11111", VoyageData.bids);
+      console.log("user Id: ", VoyageData.userId);
+    }
+
   }, [isSuccessVoyage, VoyageData]);
 
   const handlePanToLocation = (lat, lng) => {
@@ -112,7 +118,7 @@ function VoyageDetails() {
                   <VoyageDetailPageDescription voyageDescription={VoyageData.description} />
                 </div>
                 <div className="flex voyageDetails_Bids">
-                  <VoyageDetailBids voyage={{}} />
+                  <VoyageDetailBids voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} />
                 </div>
               </div>
               <div className="flex flex-col voyageDetails_BottomRight">

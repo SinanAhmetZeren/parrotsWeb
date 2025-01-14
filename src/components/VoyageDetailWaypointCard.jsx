@@ -86,6 +86,7 @@ const heading = {
   backgroundColor: "white",
   height: "2rem",
   color: "rgb(0, 119, 234)",
+  color: "#2ac898",
   fontWeight: "600",
 };
 
@@ -97,6 +98,7 @@ const waypointBrief = {
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   WebkitLineClamp: 7,
+
 };
 
 const seeOnMap = {
@@ -111,11 +113,11 @@ const seeOnMap = {
   marginLeft: "0.5rem",
   marginRight: "1rem",
   paddingLeft: "0.5rem",
-  paddingRight: "0.5rem"
+  paddingRight: "0.5rem",
 };
 
 const scrollableDescription = {
-  maxHeight: "200px", // Adjust this height as needed
+  maxHeight: "25vh", // Adjust this height as needed
   overflowY: "auto",  // Enables vertical scrolling
   scrollbarWidth: "none", // Hides scrollbar in Firefox
   msOverflowStyle: "none", // Hides scrollbar in Internet Explorer and Edge

@@ -7,49 +7,34 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton"
+import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
 
-export function VoyageDetailBids({ voyage }) {
 
-  const username = "Peter Parker";
-  const userImage = img2;
-  const message1 = "This is my bid message";
-  const message21 = "This is my bid message This is my bid message This is my bid message";
-  const message = null;
-  const message2 = null;
+export function VoyageDetailBids({ voyageData, ownVoyage, userBid }) {
 
-  const price = "145";
-  const accepted = false;
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const bids = [];
+  console.log("VoyageDetailBids userBid", userBid);
+  console.log("VoyageDetailBids ownVoyage", ownVoyage);
 
-  for (let i = 0; i < 10; i++) {
+  voyageData.bids.forEach((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
+    bids.push(
+      <RenderBid
+        key={bidId}
+        username={bid.userName}
+        userImage={baseUserImageUrl + bid.userProfileImage}
+        message={bid.message}
+        price={bid.offerPrice}
+        accepted={bid.accepted}
+        personCount={bid.personCount}
+        ownVoyage={ownVoyage}
+      />
+    );
+  });
 
-    if (i % 2 === 1) {
-      bids.push(
-        <RenderBid
-          key={bidId}
-          username={username}
-          userImage={userImage}
-          message={message}
-          price={price}
-          accepted={accepted}
-        />
-      );
-    }
-    else {
-      bids.push(
-        <RenderBid
-          key={bidId} // Use the unique key for each bid
-          username={username}
-          userImage={userImage}
-          message={message2}
-          price={price}
-          accepted={!accepted}
-        />
-      );
-    }
 
-  }
 
   return (
     <div style={cardContainerStyle} className="flex row">
@@ -58,7 +43,7 @@ export function VoyageDetailBids({ voyage }) {
       </div>
       {bids}
 
-      <VoyageDetailBidButton />
+      <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
     </div>
   );
 }
@@ -70,7 +55,7 @@ function acceptBid() {
 
 
 
-function RenderBid({ username, userImage, message, price, accepted }) {
+function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage }) {
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
@@ -78,8 +63,16 @@ function RenderBid({ username, userImage, message, price, accepted }) {
         <span style={userNameStyle} title={username}>
           {username}
         </span>
+        <span style={personCountStyle} title={personCount}>
+          {personCount === 1 ?
+            <IoPersonOutline size="1rem" style={{ marginRight: '0.15rem' }} />
+            : <IoPeopleOutline size="1rem" style={{ marginRight: '0.15rem' }} />
+          }
+          {personCount}
+
+        </span>
         <span style={bidMessage}>
-          {message || " "}
+          {ownVoyage ? (message || " ") : " "}
         </span>
         <span style={bidAmount}>€{price}</span>
         <span
@@ -154,18 +147,29 @@ const userImageStyle = {
 };
 
 const userNameStyle = {
-  // backgroundColor: "yellow",
   width: "20%", // Fixed width
   whiteSpace: "nowrap", // Prevent line breaks
   overflow: "hidden", // Hide overflow text
   textOverflow: "ellipsis", // Show "..." for overflow text
+  fontWeight: "700",
+  paddingLeft: "0.2rem"
+};
+
+const personCountStyle = {
+  width: "10%", // Fixed width
+  whiteSpace: "nowrap", // Prevent line breaks
+  overflow: "hidden", // Hide overflow text
+  textOverflow: "ellipsis", // Show "..." for overflow text
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: "center",
+  fontWeight: "700"
 };
 
 const bidMessage = {
-  // backgroundColor: "pink",
   wordWrap: "break-word", // Allow the message to break into multiple lines
   marginLeft: "1rem",
-  width: "60%",
+  width: "50%",
 };
 
 const bidAmount = {

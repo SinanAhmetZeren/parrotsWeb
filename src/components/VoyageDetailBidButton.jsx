@@ -2,7 +2,7 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
 
-export const VoyageDetailBidButton = () => {
+export const VoyageDetailBidButton = ({ ownVoyage, userBid }) => {
   const buttonStyle = {
     padding: "0.5rem",
     paddingLeft: "1rem",
@@ -39,14 +39,28 @@ export const VoyageDetailBidButton = () => {
     >
       <div
       >
-        <button
-          onClick={() => {
-            console.log("hi");
-          }}
-          style={{ ...buttonStyle, backgroundColor: "#007bff" }}
-        >
-          Create Bid
-        </button>
+        {
+          ownVoyage ? null :
+            userBid === null ? (
+              <button
+                onClick={() => {
+                  console.log("Create Bid");
+                }}
+                style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+              >
+                Create Bid
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  console.log("Change Bid");
+                }}
+                style={{ ...buttonStyle, backgroundColor: "#28a745" }}
+              >
+                Change Bid
+              </button>
+            )
+        }
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ import {
 
 export const VoyageDetailMarkerWithInfoWindow = ({ position, waypointTitle, index }) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
-  const [infoWindowShown, setInfoWindowShown] = useState(false);
+  const [infoWindowShown, setInfoWindowShown] = useState(true);
 
   const handleMarkerClick = useCallback(
     () => setInfoWindowShown((isShown) => !isShown),
@@ -57,7 +57,7 @@ export const VoyageDetailMarkerWithInfoWindow = ({ position, waypointTitle, inde
           height={60}
         />
       </AdvancedMarker>
-      {infoWindowShown && (
+      {(infoWindowShown || !infoWindowShown) && (
         <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
           <div className="info-window-custom">
             <span style={popupStyle}>{waypointTitle}</span>
