@@ -118,7 +118,7 @@ function VoyageDetails() {
                   <VoyageDetailPageDescription voyageDescription={VoyageData.description} />
                 </div>
                 <div className="flex voyageDetails_Bids">
-                  <VoyageDetailBids voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} />
+                  <VoyageDetailBids voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} currentUserId={userId} />
                 </div>
               </div>
               <div className="flex flex-col voyageDetails_BottomRight">

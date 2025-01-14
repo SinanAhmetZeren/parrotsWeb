@@ -8,15 +8,65 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton"
 import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
+import { useAcceptBidMutation } from "../slices/VoyageSlice";
+import { HubConnectionBuilder } from "@microsoft/signalr";
+import { useMemo, useEffect } from "react";
 
 
-export function VoyageDetailBids({ voyageData, ownVoyage, userBid }) {
+export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId }) {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const bids = [];
-  console.log("VoyageDetailBids userBid", userBid);
-  console.log("VoyageDetailBids ownVoyage", ownVoyage);
+  const [acceptBid] = useAcceptBidMutation();
+
+  const hubConnection = useMemo(() => {
+    return new HubConnectionBuilder()
+      .withUrl(`${apiUrl}/chathub/11?userId=${currentUserId}`)
+      .build();
+  }, [currentUserId, apiUrl]);
+
+  useEffect(() => {
+    const startHubConnection = async () => {
+      try {
+        if (hubConnection.state === "Disconnected") {
+          await hubConnection.start();
+          console.log("SignalR connection started successfully.");
+        }
+      } catch (error) {
+        console.error("Failed to start SignalR connection:", error.message);
+      }
+    };
+
+    hubConnection.onclose(() => {
+      console.log("SignalR connection closed.");
+    });
+
+    hubConnection.onreconnecting(() => {
+      console.log("SignalR connection reconnecting...");
+    });
+
+    hubConnection.onreconnected(() => {
+      console.log("SignalR connection reconnected.");
+    });
+
+
+    startHubConnection();
+
+    return () => {
+      hubConnection.stop();
+    };
+  }, [hubConnection]);
+
+
+  console.log("hubconnect: ", hubConnection);
+
+  const handleAcceptBid = ({ bidId, bidUserId }) => {
+    const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
+    hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+    acceptBid(bidId);
+    // refetch();
+  };
 
   voyageData.bids.forEach((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
@@ -30,6 +80,7 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid }) {
         accepted={bid.accepted}
         personCount={bid.personCount}
         ownVoyage={ownVoyage}
+        handleAcceptBid={handleAcceptBid}
       />
     );
   });
@@ -48,14 +99,12 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid }) {
   );
 }
 
-function acceptBid() {
-  console.log("bid accepted");
-}
 
 
 
 
-function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage }) {
+
+function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid }) {
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
@@ -76,7 +125,7 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         </span>
         <span style={bidAmount}>€{price}</span>
         <span
-          onClick={() => acceptBid()}
+          onClick={handleAcceptBid}
           style={accepted ? acceptedBidStyle : acceptBidStyle}
         >
           {accepted ? "Accepted" : "Accept"}
