@@ -10,23 +10,60 @@ import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton"
 import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
 import { useAcceptBidMutation } from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useCallback } from "react";
 
 
-export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId }) {
+export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
+
+  const stateOfTheHub = () => {
+    console.log("state of the hub: ", hubConnection.state);
+  }
+
+  const makeRefetch = useCallback(() => {
+    refetch();
+    console.log("hello from refetch");
+  }, [refetch]);
+
+  const startTheHub = async () => {
+    if (hubConnection.state === "Disconnected") {
+      await hubConnection.start();
+      console.log("state of the hub: ", hubConnection.state);
+
+    } else {
+      console.log("state of the hub is already: ", hubConnection.state);
+    }
+  }
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const bids = [];
   const [acceptBid] = useAcceptBidMutation();
 
+
+  const handleAcceptBid = async ({ bidId, bidUserId }) => {
+    const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
+    console.log("state of the hub: ", hubConnection.state);
+
+    if (hubConnection.state === "Disconnected") {
+      await hubConnection.start();
+    }
+    hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+    acceptBid(bidId);
+    makeRefetch();
+  };
+
   const hubConnection = useMemo(() => {
     return new HubConnectionBuilder()
-      .withUrl(`${apiUrl}/chathub/11?userId=${currentUserId}`)
+      .withUrl(`${apiUrl}/chathub/11?userId=${currentUserId}`, {
+        withCredentials: false // TODO: is this correct? 
+      })
       .build();
   }, [currentUserId, apiUrl]);
 
+
   useEffect(() => {
+    console.log("hubconnect: ", hubConnection);
+
     const startHubConnection = async () => {
       try {
         if (hubConnection.state === "Disconnected") {
@@ -50,23 +87,13 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
       console.log("SignalR connection reconnected.");
     });
 
-
-    startHubConnection();
-
+    if (isSuccessVoyage) {
+      startHubConnection();
+    }
     return () => {
       hubConnection.stop();
     };
-  }, [hubConnection]);
-
-
-  console.log("hubconnect: ", hubConnection);
-
-  const handleAcceptBid = ({ bidId, bidUserId }) => {
-    const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
-    hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
-    acceptBid(bidId);
-    // refetch();
-  };
+  }, [hubConnection, isSuccessVoyage]);
 
   voyageData.bids.forEach((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
@@ -81,6 +108,8 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
         personCount={bid.personCount}
         ownVoyage={ownVoyage}
         handleAcceptBid={handleAcceptBid}
+        bidId={bid.id}
+        bidUserId={bid.userId}
       />
     );
   });
@@ -93,7 +122,8 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
         <span style={voyageName}>Current Bids</span>
       </div>
       {bids}
-
+      <button onClick={() => stateOfTheHub()}>show state of the hub</button>
+      <button onClick={() => startTheHub()}>start the hub</button>
       <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
     </div>
   );
@@ -104,7 +134,7 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
 
 
-function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid }) {
+function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId }) {
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
@@ -125,7 +155,7 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         </span>
         <span style={bidAmount}>€{price}</span>
         <span
-          onClick={handleAcceptBid}
+          onClick={() => handleAcceptBid({ bidId, bidUserId })}
           style={accepted ? acceptedBidStyle : acceptBidStyle}
         >
           {accepted ? "Accepted" : "Accept"}
