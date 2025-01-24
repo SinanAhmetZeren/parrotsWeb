@@ -83,7 +83,7 @@ function MainPage() {
     };
 
     const filteredVoyages = await getFilteredVoyages(data);
-    console.log("filtered voyages", filteredVoyages);
+    //console.log("filtered voyages", filteredVoyages);
     setInitialVoyages(filteredVoyages.data || []);
   }, [
     bounds,
