@@ -1,0 +1,208 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  background-image: url("../../assets/seafromsky.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  margin: 0;
+  height: 100vh;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  background-size: 3rem 3rem;
+  width: 3rem;
+  height: 3rem;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.7;
+  /* Lower opacity */
+  filter: brightness(0.8);
+  /* Make darker */
+  transition: all 5s ease-in-out;
+  /* Smooth transition */
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border-left-color: #09f;
+  animation: spin 1s ease infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 
+img {
+   pointer-events: auto; 
+} */
+
+.card-container {
+  /* visibility: hidden; */
+  transform: scale(0.3) translateY(0%);
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out,
+    visibility 0s linear 0.3s;
+  transform-origin: bottom center;
+}
+
+.card-container.visible {
+  /* visibility: visible; */
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.card-container {
+  position: relative;
+  z-index: 9999;
+  /* Ensure the card is in front */
+}
+
+.custom-pin {
+  position: relative;
+  z-index: 0;
+  /* Ensure the image is behind the card */
+}
+
+/* Remove default InfoWindow styles */
+.gm-style-iw,
+.gm-style-iw-d,
+.gm-ui-hover-effect {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  color: transparent !important;
+}
+
+.gm-ui-hover-effect {
+  display: none !important;
+}
+
+/* Custom content container for the InfoWindow */
+.info-window-custom {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  overflow: visible;
+}
+
+.buttonStyle {
+  width: 40%;
+  background-color: #007bff;
+  padding: 0.6rem;
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.4rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mainpage_Container {
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+}
+
+.mainpage_toprow {
+  padding: 0.1rem;
+  flex-direction: row;
+}
+
+.mainpage_TopRight {
+  height: 3rem;
+  width: 65%;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.mainpage_BottomRow {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.mainpage_BottomLeft {
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+}
+
+.cardSwiperSpinner {
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+}
+
+.mainpage_BottomRight {
+  width: 67%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainpage_MapContainer {
+  height: 100%;
+  width: 100%;
+}

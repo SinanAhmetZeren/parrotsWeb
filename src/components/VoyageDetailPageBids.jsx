@@ -1,6 +1,6 @@
 import img1 from "../assets/catamaran.jpeg";
 import img2 from "../assets/parrot-looks.jpg";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -11,10 +11,11 @@ import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
 import { useAcceptBidMutation } from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
+import { set } from "date-fns";
 
 
 export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
-
+  const [dummyState, setDummyState] = React.useState(false);
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
   }
@@ -34,6 +35,14 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
     }
   }
 
+  const updateDummyState = () => {
+    setDummyState(!dummyState);
+  }
+
+  const printDummyState = () => {
+    console.log("dummy: ", dummyState);
+  }
+
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const bids = [];
@@ -48,7 +57,8 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
       await hubConnection.start();
     }
     hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
-    acceptBid(bidId);
+    const acceptBidResult = await acceptBid(bidId).unwrap(); // Ensure the mutation completes
+    console.log("acceptBidResult: ", acceptBidResult);
     makeRefetch();
   };
 
@@ -124,6 +134,8 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
       {bids}
       <button onClick={() => stateOfTheHub()}>show state of the hub</button>
       <button onClick={() => startTheHub()}>start the hub</button>
+      <button onClick={() => updateDummyState()}>update dummy State</button>
+      <button onClick={() => printDummyState()}>print dummy State</button>
       <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
     </div>
   );
@@ -277,7 +289,6 @@ const acceptedBidStyle = {
   fontWeight: "bold",
   color: "#2ac898",
   cursor: "pointer",
-  // backgroundColor: "green",
   fontSize: "0.9rem",
   width: "12%", // Fixed width for the "Accept Bid" button
   backgroundColor: "rgba(42,200,152,0.1)",

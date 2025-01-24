@@ -1,7 +1,7 @@
 import img1 from "../assets/fareast1.jpg";
 import img3 from "../assets/fareast2.jpeg";
 import img2 from "../assets/fareast3.jpeg";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 
 export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
@@ -61,6 +61,7 @@ const voyageDetailCard = {
   height: "18rem",
   borderRadius: "2rem",
   overflow: "hidden",
+
 };
 
 const imageContainer = {
@@ -80,7 +81,12 @@ const detailsContainer = {
   display: "flex",
   flexDirection: "column",
   height: "100%",
+  boxShadow: `
+  0 4px 6px rgba(0, 0, 0, 0.3),
+  inset 0 -8px 6px rgba(0, 0, 0, 0.2)
+`,
 };
+
 
 const heading = {
   backgroundColor: "white",

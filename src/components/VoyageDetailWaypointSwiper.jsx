@@ -1,7 +1,7 @@
 import img1 from "../assets/fareast1.jpg";
 import img3 from "../assets/fareast2.jpeg";
 import img2 from "../assets/fareast3.jpeg";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -35,6 +35,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation }) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+
             }}
           >
             <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} />

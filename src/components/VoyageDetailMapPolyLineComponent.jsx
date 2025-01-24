@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import "../App.css";
+import "../assets/css/App.css";
 import "../assets/css/advancedmarker.css";
 import { useEffect } from "react";
 import "swiper/css/pagination";

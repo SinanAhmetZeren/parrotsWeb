@@ -1,6 +1,6 @@
 import img1 from "../assets/catamaran.jpeg";
 import img2 from "../assets/parrot-looks.jpg";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";

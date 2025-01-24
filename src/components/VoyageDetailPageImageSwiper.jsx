@@ -1,7 +1,7 @@
 import img1 from "../assets/fareast1.jpg";
 import img3 from "../assets/fareast2.jpeg";
 import img2 from "../assets/fareast3.jpeg";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -35,14 +35,14 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
           centeredSlides={true}
           slidesPerView="auto"
           coverflowEffect={{
-            rotate: 100,
-            stretch: 150,
-            depth: 600,
+            rotate: 0,
+            stretch: 990,
+            depth: 110,
             modifier: 1,
             slideShadows: false,
           }}
           navigation={true}
-          modules={[EffectCoverflow, Navigation]}
+          modules={[Navigation]}
         >
           {images.map((url, index) => (
             <SwiperSlide key={index} style={slideContainerStyle}>
@@ -50,13 +50,14 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
                 src={baseUrl + url}
                 alt={`Slide ${index + 1}`}
                 style={{
-                  width: "100%",
-                  paddingLeft: "1rem",
-                  paddingRight: "1rem",
+                  width: "95%",
+                  margin: "auto",
                   height: "100%",
                   objectFit: "cover",
-                  borderRadius: "2rem",
-                  overflow: "hidden"
+                  borderRadius: "1rem",
+                  overflow: "hidden",
+                  backgroundColor: "white",
+                  marginTop: "0vh"
                 }}
               />
             </SwiperSlide>
@@ -68,8 +69,8 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
 }
 
 const slideContainerStyle = {
-  height: "30rem", // Adjust height to fit your design
-  width: "100%"
+  height: "55vh",
+  width: "100%",
 };
 
 

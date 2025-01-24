@@ -5,7 +5,7 @@ import parrotMarker3 from "../assets/parrotMarker3.png";
 import parrotMarker4 from "../assets/parrotMarker4.png";
 import parrotMarker5 from "../assets/parrotMarker5.png";
 import parrotMarker6 from "../assets/parrotMarker6.png";
-import "../App.css";
+import "../assets/css/App.css";
 import "../assets/css/advancedmarker.css";
 import React, { useState, useCallback } from "react";
 import "swiper/css/pagination";

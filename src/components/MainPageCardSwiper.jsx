@@ -1,6 +1,6 @@
 import leftArrow from "../assets/mainPageArrow.png";
 import rightArrow from "../assets/mainPageArrow.png";
-import "../App.css";
+import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -10,13 +10,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { MainPageVoyageCard } from "./MainPageVoyageCard";
 
-export function MainPageCardSwiper({ voyagesData, panToLocation,  calendarOpen,
+export function MainPageCardSwiper({ voyagesData, panToLocation, calendarOpen,
   setCalendarOpen }) {
   return (
     <div
-    onClick={()=>{if(calendarOpen) {
-      setCalendarOpen(!calendarOpen)}
-    }}
+      onClick={() => {
+        if (calendarOpen) {
+          setCalendarOpen(!calendarOpen)
+        }
+      }}
     >
       <div style={{ width: "90%" }}>
         <Swiper

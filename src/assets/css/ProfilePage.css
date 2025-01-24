@@ -16,7 +16,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  background-image: url("./assets/seafromsky.jpg");
+  background-image: url("../../assets/seafromsky.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -54,9 +55,9 @@
 }
 
 .swiper-slide:not(.swiper-slide-active) {
-  opacity: 0.7; /* Lower opacity */
-  filter: brightness(0.8); /* Make darker */
-  transition: all 5s ease-in-out; /* Smooth transition */
+  opacity: 0.7;
+  filter: brightness(0.8);
+  transition: all 5s ease-in-out;
 }
 
 .spinner {
@@ -73,18 +74,15 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
 
-/* 
-img {
-   pointer-events: auto; 
-} */
+
 
 .card-container {
-  /* visibility: hidden; */
   transform: scale(0.3) translateY(0%);
   opacity: 1;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out,
@@ -93,7 +91,6 @@ img {
 }
 
 .card-container.visible {
-  /* visibility: visible; */
   transform: scale(1) translateY(0);
   opacity: 1;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
@@ -101,12 +98,14 @@ img {
 
 .card-container {
   position: relative;
-  z-index: 9999; /* Ensure the card is in front */
+  z-index: 9999;
+  /* Ensure the card is in front */
 }
 
 .custom-pin {
   position: relative;
-  z-index: 0; /* Ensure the image is behind the card */
+  z-index: 0;
+  /* Ensure the image is behind the card */
 }
 
 /* Remove default InfoWindow styles */
@@ -176,26 +175,115 @@ img {
   width: 100%;
 }
 
-.mainpage_BottomLeft {
+.profilePage_Bottom {
+  background-color: "";
+}
+
+.profilePage_BottomRight {
+  height: calc(100vh - 3rem);
+  width: 34%;
+}
+
+.profilePage_MapContainer {
+  width: 100%;
+  padding: .2rem;
+  height: 58vh;
+}
+
+.profilePage_waypointsContainer {
+  flex-grow: 1;
+  margin: .2rem;
+  height: auto;
+}
+
+.profilePage_BottomLeft {
+  height: calc(100vh - 3rem);
+  width: 60%;
+  flex-direction: column;
+  background-color: red;
+}
+
+.profilePage_BottomRight {
+  height: calc(100vh - 3rem);
+  width: 40%;
+  flex-direction: column;
+  background-color: slateblue;
+}
+
+.profilePage_Vehicles {
+  height: 50%;
+  width: 100%;
+  background-color: lightgreen;
+}
+
+.profilePage_Voyages {
+  height: 50%;
+  width: 100%;
+  background-color: lightpink;
+}
+
+
+.profilePage_CoverAndProfile {
   display: flex;
   flex-direction: column;
-  width: 33%;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 60%;
+  width: 100%;
+  background-color: pink;
 }
 
-.cardSwiperSpinner {
-  justify-content: center;
-  align-content: center;
-  height: 100%;
-}
-
-.mainpage_BottomRight {
-  width: 67%;
+.profilePage_BioAndContactDetails {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  height: 40%;
+  width: 100%;
+  background-color: orange;
 }
 
-.mainpage_MapContainer {
+.profilePage_CoverImage {
   height: 100%;
   width: 100%;
+  background-color: green;
+}
+
+.profilePage_ProfileImage {
+  position: absolute;
+  height: 20rem;
+  width: 20rem;
+  background-color: blue;
+  margin-right: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 10rem;
+}
+
+.profilePage_ContactDetails {
+  height: 100%;
+  width: 40%;
+  background-color: yellow;
+}
+
+.profilePage_BioTitleUserName {
+  height: 100%;
+  width: 60%;
+  background-color: purple;
+  flex-direction: column;
+}
+
+.profilePage_UserName {
+  height: 20%;
+  width: 100%;
+  background-color: lightblue;
+}
+
+.profilePage_Title {
+  height: 20%;
+  width: 100%;
+  background-color: lightcyan;
+}
+
+.profilePage_Bio {
+  height: 60%;
+  width: 100%;
+  background-color: lightskyblue;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import "./VoyageDetails.css";
+import "./assets/css/VoyageDetails.css";
 import "./assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
@@ -22,7 +22,7 @@ import { VoyageDetailMarkerWithInfoWindow } from "./components/VoyageDetailMarke
 import { VoyageDetailMapPolyLineComponent } from "./components/VoyageDetailMapPolyLineComponent";
 
 
-function VoyageDetails() {
+function VoyageDetailsPage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   let voyageId = 88;
@@ -80,8 +80,6 @@ function VoyageDetails() {
 
     if (VoyageData) {
       setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
-      console.log("11111", VoyageData.bids);
-      console.log("user Id: ", VoyageData.userId);
     }
 
   }, [isSuccessVoyage, VoyageData]);
@@ -183,7 +181,7 @@ function VoyageDetails() {
 
 }
 
-export default VoyageDetails;
+export default VoyageDetailsPage;
 
 
 
