@@ -1,11 +1,15 @@
-import parrot1 from "../assets/sailboat.jpg";
+import { hover } from "@testing-library/user-event/dist/hover";
+
+const apiUrl = process.env.REACT_APP_API_URL;
+const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
+
 
 export function ProfilePageVoyageCard({ voyage, index }) {
 
   return (
-    <div key={index} className="card" style={cardContainerStyle}>
+    <div key={index} className="card" style={cardContainerStyle} onClick={() => console.log("voyage: ", voyage)}>
       <div className="card-image" style={cardImageContainerStyle}>
-        <img src={parrot1} style={cardImageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + voyage?.profileImage} style={cardImageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle}>{voyage?.name}</div>
@@ -52,7 +56,7 @@ const voyageDetailSpan = {
 const cardContainerStyle = {
   display: "flex",
   flexDirection: "row",
-  border: "1px solid #ddd",
+  // border: "1px solid #ddd",
   borderRadius: "2rem",
   overflow: "hidden",
   width: "40rem",
@@ -65,16 +69,18 @@ const cardContainerStyle = {
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.1)
 `,
+  cursor: "pointer",
 };
 
 const cardImageStyle = {
   width: "16rem",
-  height: "100%",
+  height: "101%",
   objectFit: "cover",
 };
 
 const cardImageContainerStyle = {
   height: "14rem",
+  minWidth: "16rem",
   objectFit: "cover",
   borderBottom: "1px solid #ddd",
 };
@@ -82,7 +88,8 @@ const cardImageContainerStyle = {
 const cardContentStyle = {
   display: "flex",
   height: "14rem",
-  // backgroundColor: "yellow",
+  minWidth: "24rem",
+  width: "24rem",
   flexDirection: "column",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.4),

@@ -11,6 +11,8 @@ import { BlueHashtagText } from "./components/BlueHashtagText";
 import { SocialRenderComponent } from "./components/SocialRenderComponent";
 import { useGetUserByIdQuery } from "./slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "./components/ProfilePageVoyagesComponent";
+import { ProfilePageVehiclesComponent } from "./components/ProfilePageVehiclesComponent";
+import { color } from "d3";
 
 
 
@@ -36,15 +38,13 @@ function ProfilePage() {
     refetch: refetchUserData,
   } = useGetUserByIdQuery(userId);
 
-  /*
+
   useEffect(() => {
     console.log("userData", userData)
-    console.log("backgroundImageUrl", userData?.backgroundImageUrl);
-    console.log("profileImageUrl", userData?.profileImageUrl);
-    console.log("userBaseUrl", userBaseUrl + userData?.profileImageUrl);
+    console.log("vehicles: ", userData?.usersVehicles);
 
   }, [userData]);
-*/
+
 
   return (
     isLoadingUser ? (
@@ -65,8 +65,14 @@ function ProfilePage() {
             <div className="flex profilePage_Bottom">
               <div className="flex profilePage_BottomLeft">
                 <div className="flex profilePage_CoverAndProfile">
+
+                  <div className="profilePage_SendMessage">
+                    <span>send message</span>
+                  </div>
+
                   <div className="flex profilePage_CoverImage">
                     <img src={userBaseUrl + userData?.backgroundImageUrl} className=" profilePage_CoverImage_Img" alt="a" />
+
                   </div>
                   <div className="flex profilePage_ProfileImage">
                     <div>
@@ -75,6 +81,7 @@ function ProfilePage() {
                       </div>
                     </div>
                   </div>
+
                 </div>
                 <div className="flex profilePage_BioAndContactDetails">
                   <div className="flex profilePage_BioTitleUserName">
@@ -98,13 +105,28 @@ function ProfilePage() {
               </div>
 
               <div className="flex flex-col profilePage_BottomRight">
-                <div className="flex profilePage_Voyages ">
-                  {isSuccessUser ?
-                    <ProfilePageVoyagesComponent userData={userData} />
+                <div className="flex profilePage_Vehicles ">
+
+                  {isSuccessUser ? (
+                    userData?.usersVehicles.length > 0 ?
+                      (<>
+                        <span style={VehiclesVoyagesTitle}>Vehicles</span>
+                        <ProfilePageVehiclesComponent userData={userData} />
+                      </>) : null)
                     : null
                   }
                 </div>
-                <div className="flex profilePage_Vehicles "></div>
+                <div className="flex profilePage_Voyages ">
+                  {isSuccessUser ? (
+                    userData?.usersVoyages.length > 0 ?
+                      (<>
+                        <span style={{ ...VehiclesVoyagesTitle, marginTop: "1rem" }}>Voyages</span>
+                        <ProfilePageVoyagesComponent userData={userData} />
+                      </>) : null)
+                    : null
+                  }
+
+                </div>
               </div>
             </div>
           </div>
@@ -123,4 +145,11 @@ export default ProfilePage;
 
 const spinnerContainer = {
   marginTop: "20%",
+};
+
+const VehiclesVoyagesTitle = {
+  width: "100%", // Added quotes around "100%"
+  fontSize: "2rem", // Changed to camelCase
+  fontWeight: 800, // Correct format for font-weight
+  color: "white"
 };
