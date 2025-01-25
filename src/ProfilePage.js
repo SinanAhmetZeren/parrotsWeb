@@ -36,6 +36,7 @@ function ProfilePage() {
     refetch: refetchUserData,
   } = useGetUserByIdQuery(userId);
 
+  /*
   useEffect(() => {
     console.log("userData", userData)
     console.log("backgroundImageUrl", userData?.backgroundImageUrl);
@@ -43,7 +44,7 @@ function ProfilePage() {
     console.log("userBaseUrl", userBaseUrl + userData?.profileImageUrl);
 
   }, [userData]);
-
+*/
 
   return (
     isLoadingUser ? (
@@ -97,20 +98,15 @@ function ProfilePage() {
               </div>
 
               <div className="flex flex-col profilePage_BottomRight">
-                <div className="flex profilePage_Vehicles ">
-
+                <div className="flex profilePage_Voyages ">
                   {isSuccessUser ?
                     <ProfilePageVoyagesComponent userData={userData} />
                     : null
                   }
-
                 </div>
-                <div className="flex profilePage_Voyages "></div>
-
+                <div className="flex profilePage_Vehicles "></div>
               </div>
-
             </div>
-
           </div>
         </header >
       </div >

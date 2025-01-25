@@ -182,6 +182,12 @@
 .profilePage_BottomRight {
   height: calc(100vh - 3rem);
   width: 34%;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.profilePage_BottomRight::-webkit-scrollbar {
+  display: none;
 }
 
 .profilePage_MapContainer {
@@ -217,9 +223,14 @@
 }
 
 .profilePage_Voyages {
-  height: 50%;
   width: 100%;
   background-color: lightpink;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+
+.profilePage_Voyages::-webkit-scrollbar {
+  display: none;
 }
 
 .profilePage_CoverAndProfile {
