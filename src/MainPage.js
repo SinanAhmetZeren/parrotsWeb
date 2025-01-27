@@ -115,9 +115,9 @@ function MainPage() {
   }, [
     initialLatitude,
     initialLongitude,
-    getVoyagesByLocation,
     initialLatDelta,
     initialLngDelta,
+    getVoyagesByLocation,
   ]);
 
   const handlePanToLocation = (lat, lng) => {
@@ -244,30 +244,44 @@ function MainPage() {
             <div className="flex mainpage_BottomRight">
               <div
                 className="flex mainpage_MapContainer"
-              // ref={mapRef}
               >
                 <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                  <Map
-                    mapId={"mainpageMap"}
-                    defaultZoom={10}
-                    defaultCenter={{
-                      lat: initialLatitude || 37.7749,
-                      lng: initialLongitude || -122.4194,
-                    }}
-                    gestureHandling={"greedy"}
-                    disableDefaultUI
-                    onCameraChanged={() => setTargetLocation(null)}
-                  >
-                    <MainPageMapPanComponent
-                      setBounds={setBounds}
-                      targetLat={targetLocation?.lat}
-                      targetLng={targetLocation?.lng}
-                    />
+                  {
+                    !initialLatitude && (
 
-                    {isSuccessVoyages && initialVoyages?.length > 0 && (
-                      <ClusteredVoyageMarkers voyages={initialVoyages} />
-                    )}
-                  </Map>
+                      <div className={"cardSwiperSpinner"}>
+                        <div className="spinner"></div>
+                      </div>
+                    )
+                  }
+                  {
+                    initialLatitude && (
+
+                      <Map
+                        mapId={"mainpageMap"}
+                        defaultZoom={10}
+                        defaultCenter={{
+                          lat: initialLatitude, //|| 37.7749,
+                          lng: initialLongitude //|| -122.4194,
+                        }}
+                        gestureHandling={"greedy"}
+                        disableDefaultUI
+                        onCameraChanged={() => setTargetLocation(null)}
+                      >
+                        <MainPageMapPanComponent
+                          setBounds={setBounds}
+                          targetLat={targetLocation?.lat}
+                          targetLng={targetLocation?.lng}
+                        />
+
+                        {isSuccessVoyages && initialVoyages?.length > 0 && (
+                          <ClusteredVoyageMarkers voyages={initialVoyages} />
+                        )}
+                      </Map>
+
+                    )
+                  }
+
                 </APIProvider>
               </div>
             </div>

@@ -13,20 +13,27 @@ export function ProfilePageVehicleCard({ vehicle, index }) {
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={vehicleNameStyle}>
-            <span style={vehicleNameStyle_Text}>{vehicle?.name}</span>
+          <div style={vehicleNameStyle} >
+            <span style={vehicleNameStyle_Text} title={vehicle?.name}>
+              {vehicle?.name?.length > 18 ? `${vehicle?.name.substring(0, 18)}...` : vehicle?.name}
+            </span>
           </div>
           <div style={vehicleTypeStyle}>
-            <span style={vehicleTypeStyle_Text}><VehicleIcon vehicleType={vehicle?.type} /> {vehicle?.type}</span>
+
+            <span style={vehicleTypeStyle_Text} title={vehicle?.type}>
+              <VehicleIcon vehicleType={vehicle?.type} />
+            </span>
+
+
           </div>
           <div style={vehicleCapacityStyle}>
-            <span style={vehicleCapacityStyle_Text}>🧑‍🤝‍🧑{vehicle?.capacity}
+            <span style={vehicleCapacityStyle_Text} title={"capacity is " + vehicle?.capacity + ((vehicle?.capacity > 1) ? " people" : " person")}>🧑‍🤝‍🧑{vehicle?.capacity}
             </span>
           </div>
         </div>
         <div style={cardBriefStyle}>{vehicle?.description}</div>
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -86,7 +93,7 @@ const cardContainerStyle = {
   maxHeight: "700px",
   backgroundColor: "#fff",
   margin: "auto",
-  marginBottom: ".2rem",
+  marginBottom: ".5rem",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.1)

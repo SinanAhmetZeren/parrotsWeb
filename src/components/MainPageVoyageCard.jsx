@@ -1,6 +1,18 @@
 import parrot1 from "../assets/sailboat.jpg";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 export function MainPageVoyageCard({ cardData, panToLocation }) {
+
+  const navigate = useNavigate();
+
+  const handleCardClick = (voyageId) => {
+    navigate(`/voyage-details/${voyageId}`);
+  };
+
+
   return (
     <div className="card" style={cardContainerStyle}>
       <div className="card-image" style={cardImageStyle}>
@@ -37,7 +49,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
 
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
-          <button style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
+          <button onClick={() => handleCardClick(cardData.id)} style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
             Trip Details
           </button>
           <button

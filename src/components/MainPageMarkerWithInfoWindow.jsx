@@ -20,13 +20,8 @@ import {
 } from "@vis.gl/react-google-maps";
 
 export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
-  console.log("position", position);
-  console.log("voyage", voyage);
-  console.log("index", index);
   const [markerRef, marker] = useAdvancedMarkerRef();
-
   const [infoWindowShown, setInfoWindowShown] = useState(false);
-
   const handleMarkerClick = useCallback(
     () => setInfoWindowShown((isShown) => !isShown),
     []

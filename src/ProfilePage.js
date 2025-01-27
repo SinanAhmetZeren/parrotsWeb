@@ -39,13 +39,6 @@ function ProfilePage() {
   } = useGetUserByIdQuery(userId);
 
 
-  useEffect(() => {
-    console.log("userData", userData)
-    console.log("vehicles: ", userData?.usersVehicles);
-
-  }, [userData]);
-
-
   return (
     isLoadingUser ? (
       <div style={spinnerContainer}>
@@ -66,8 +59,8 @@ function ProfilePage() {
               <div className="flex profilePage_BottomLeft">
                 <div className="flex profilePage_CoverAndProfile">
 
-                  <div className="profilePage_SendMessage">
-                    <span>send message</span>
+                  <div className="profilePage_SendMessage" onClick={() => { console.log("message") }}>
+                    <span>Send Message</span>
                   </div>
 
                   <div className="flex profilePage_CoverImage">

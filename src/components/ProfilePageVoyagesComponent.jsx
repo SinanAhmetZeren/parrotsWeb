@@ -12,28 +12,3 @@ export function ProfilePageVoyagesComponent({ userData }) {
     )
   }))
 }
-
-/*
-const ProfilePageVoyageCard1 = ({ index, voyage }) => {
-  if (index == 0) {
-    console.log("voyage: ", voyage);
-    console.log("brief: ", voyage.brief);
-    console.log("vehicle", voyage.vehicleName)
-    console.log("name", voyage.name);
-    console.log("start", voyage.startDate);
-    console.log("end", voyage.endDate);
-    console.log("vacancy", voyage.vacancy);
-  }
-
-  //<img src={voyageBaseUrl + voyage?.profileImage} className="profilePage_VoyageCard_Img" alt="b" />
-
-
-  return (
-    <div key={index} >
-      <div >
-      </div>
-
-    </div>
-  )
-}
-  */

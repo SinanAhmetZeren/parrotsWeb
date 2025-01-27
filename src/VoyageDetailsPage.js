@@ -20,12 +20,15 @@ import { VoyageDetailWaypointSwiper } from "./components/VoyageDetailWaypointSwi
 import { VoyageDetailMapPanComponent } from "./components/VoyageDetailMapPanComponent";
 import { VoyageDetailMarkerWithInfoWindow } from "./components/VoyageDetailMarkerWithInfoWindow";
 import { VoyageDetailMapPolyLineComponent } from "./components/VoyageDetailMapPolyLineComponent";
+import { useParams } from "react-router-dom";
 
 
 function VoyageDetailsPage() {
+  const { voyageId } = useParams();
+  let voyageId1 = 88;
+
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-  let voyageId = 88;
   const [userBid, setUserBid] = useState("")
   const mapRef = useRef()
   const [targetLocation, setTargetLocation] = useState({});
@@ -64,26 +67,34 @@ function VoyageDetailsPage() {
         if (longitude > tempMaxLng) tempMaxLng = longitude;
         if (longitude < tempMinLng) tempMinLng = longitude;
       });
+
       setBounds({
         maxLat: tempMaxLat,
         minLat: tempMinLat,
         maxLng: tempMaxLng,
         minLng: tempMinLng,
       });
+
       setLatLngBoundsLiteral({
         north: tempMaxLat,
         south: tempMinLat,
         east: tempMaxLng,
         west: tempMinLng,
-      })
+      });
+    } else {
+      // Default bounds in case of no waypoints
+      setLatLngBoundsLiteral({
+        north: 0,
+        south: 0,
+        east: 0,
+        west: 0,
+      });
     }
 
     if (VoyageData) {
       setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
     }
-
   }, [isSuccessVoyage, VoyageData]);
-
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -128,42 +139,46 @@ function VoyageDetailsPage() {
               <div className="flex flex-col voyageDetails_BottomRight">
                 <div className="flex voyageDetails_MapContainer">
                   <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                    <Map
-                      ref={mapRef}
-                      mapId={"mainpageMap"}
-                      defaultBounds={latLngBoundsLiteral}
-                      gestureHandling={"greedy"}
-                      disableDefaultUI
-                      onCameraChanged={() => setTargetLocation(null)}
-                    >
-                      <VoyageDetailMapPanComponent
-                        setBounds={setBounds}
-                        targetLat={targetLocation?.lat}
-                        targetLng={targetLocation?.lng}
-                      />
-                      <VoyageDetailMapPolyLineComponent
-                        waypoints={VoyageData.waypoints}
-                      />
-                      {
-                        VoyageData.waypoints.map((waypoint, index) => (
-                          <VoyageDetailMarkerWithInfoWindow
-                            key={`$${waypoint.id}`}
-                            index={index}
-                            waypointTitle={waypoint.title}
-                            position={{
-                              lat: waypoint.latitude,
-                              lng: waypoint.longitude,
-                            }}
-                            onClick={() =>
-                              handlePanToLocation(
-                                waypoint.latitude,
-                                waypoint.longitude
-                              )
-                            }
+                    {
+                      latLngBoundsLiteral?.east ? (
+                        <Map
+                          ref={mapRef}
+                          mapId={"mainpageMap"}
+                          defaultBounds={latLngBoundsLiteral}
+                          gestureHandling={"greedy"}
+                          disableDefaultUI
+                          onCameraChanged={() => setTargetLocation(null)}
+                        >
+                          <VoyageDetailMapPanComponent
+                            setBounds={setBounds}
+                            targetLat={targetLocation?.lat}
+                            targetLng={targetLocation?.lng}
                           />
-                        ))
-                      }
-                    </Map>
+                          <VoyageDetailMapPolyLineComponent
+                            waypoints={VoyageData.waypoints}
+                          />
+                          {
+                            VoyageData.waypoints.map((waypoint, index) => (
+                              <VoyageDetailMarkerWithInfoWindow
+                                key={`$${waypoint.id}`}
+                                index={index}
+                                waypointTitle={waypoint.title}
+                                position={{
+                                  lat: waypoint.latitude,
+                                  lng: waypoint.longitude,
+                                }}
+                                onClick={() =>
+                                  handlePanToLocation(
+                                    waypoint.latitude,
+                                    waypoint.longitude
+                                  )
+                                }
+                              />
+                            ))
+                          }
+                        </Map>) : null
+                    }
+
                   </APIProvider>
                 </div>
                 <div className="voyageDetails_waypointsContainer">

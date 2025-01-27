@@ -9,14 +9,17 @@ import "swiper/css/navigation";
 import MainPage from "./MainPage";
 import VoyageDetailsPage from "./VoyageDetailsPage";
 import ProfilePage from "./ProfilePage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div>
-      {/* <MainPage /> */}
-      <ProfilePage />
-      {/* <VoyageDetailsPage /> */}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
+      </Routes>
+    </Router>
   );
 }
 

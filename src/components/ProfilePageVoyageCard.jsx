@@ -1,18 +1,23 @@
-import { hover } from "@testing-library/user-event/dist/hover";
+import { useNavigate } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
 
 
+
 export function ProfilePageVoyageCard({ voyage, index }) {
+  const navigate = useNavigate();
+  const handleCardClick = (voyageId) => {
+    navigate(`/voyage-details/${voyageId}`);
+  };
 
   return (
-    <div key={index} className="card" style={cardContainerStyle} onClick={() => console.log("voyage: ", voyage)}>
+    <div key={index} className="card" style={cardContainerStyle} onClick={() => handleCardClick(voyage?.id)}>
       <div className="card-image" style={cardImageContainerStyle}>
         <img src={voyageBaseUrl + voyage?.profileImage} style={cardImageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
-        <div style={cardTitleStyle}>{voyage?.name}</div>
+        <div style={cardTitleStyle} title={voyage?.name}>{voyage?.name}</div>
 
         {/* DETAILS */}
         <div style={cardDescriptionStyle}>
@@ -24,15 +29,16 @@ export function ProfilePageVoyageCard({ voyage, index }) {
           >
             <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
               <VehicleIcon vehicleType={voyage?.vehicleType} />
+              {" "}
               {voyage?.vehicleName}
             </span>
             <span style={voyageDetailSpan}>
-              👨‍👨‍👦‍👦
+              👨‍👨‍👦‍👦 {" "}
               {voyage?.vacancy}
             </span>
           </div>
           <span style={voyageDetailSpan}>
-            📅From {formatCustomDate(voyage?.startDate)} to To{" "}
+            📅 From {formatCustomDate(voyage?.startDate)} to To{" "}
             {formatCustomDate(voyage?.endDate)}
           </span>
         </div>
@@ -64,7 +70,7 @@ const cardContainerStyle = {
   maxHeight: "700px",
   backgroundColor: "#fff",
   margin: "auto",
-  marginBottom: ".2rem",
+  marginBottom: ".5rem",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.1)
@@ -152,7 +158,6 @@ export default function VehicleIcon({ vehicleType }) {
     "✈️", // Airplane
   ];
 
-  console.log("vehicleType", vehicleType);
   const getVehicleEmoji = (typeIndex) => {
     if (typeIndex >= 0 && typeIndex < vehicles.length) {
       return vehicles[typeIndex];
