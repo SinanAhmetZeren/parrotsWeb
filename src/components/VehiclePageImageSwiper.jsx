@@ -6,15 +6,15 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, EffectCoverflow } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 
 
 
-export function VoyageDetailPageImageSwiper({ voyageData }) {
+export function VehiclePageImageSwiper({ vehicleData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const baseUrl = `${apiUrl}/Uploads/VoyageImages/`;
+  const baseUrl = `${apiUrl}/Uploads/VehicleImages/`;
 
-  const images = [voyageData.profileImage, ...voyageData.voyageImages.map(image => image.voyageImagePath)
+  const images = [vehicleData.profileImageUrl, ...vehicleData.vehicleImages.map(image => image.vehicleImagePath)
   ]
 
   return (
@@ -48,14 +48,13 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
                 src={baseUrl + url}
                 alt={`Slide ${index + 1}`}
                 style={{
-                  width: "95%",
                   margin: "auto",
                   height: "100%",
                   objectFit: "cover",
                   borderRadius: "1rem",
                   overflow: "hidden",
-                  backgroundColor: "white",
-                  marginTop: "0vh"
+                  // marginTop: "5vh",
+
                 }}
               />
             </SwiperSlide>
@@ -67,7 +66,7 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
 }
 
 const slideContainerStyle = {
-  height: "55vh",
+  height: "60vh",
   width: "100%",
 };
 

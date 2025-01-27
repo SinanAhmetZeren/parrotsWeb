@@ -1,20 +1,14 @@
 /* eslint-disable no-undef */
-import "./assets/css/ProfilePage.css"
+import "../assets/css/ProfilePage.css"
 import React, { useState, useEffect, useRef } from "react";
 
-import { TopBarMenu } from "./components/TopBarMenu";
-import { TopLeftComponent } from "./components/TopLeftComponent";
-import profileImg from "./assets/parrot-looks2.jpg";
-import coverImg from "./assets/seafromsky.jpg";
-
-import { BlueHashtagText } from "./components/BlueHashtagText";
-import { SocialRenderComponent } from "./components/SocialRenderComponent";
-import { useGetUserByIdQuery } from "./slices/UserSlice";
-import { ProfilePageVoyagesComponent } from "./components/ProfilePageVoyagesComponent";
-import { ProfilePageVehiclesComponent } from "./components/ProfilePageVehiclesComponent";
-import { color } from "d3";
-
-
+import { TopBarMenu } from "../components/TopBarMenu";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import { BlueHashtagText } from "../components/BlueHashtagText";
+import { SocialRenderComponent } from "../components/SocialRenderComponent";
+import { useGetUserByIdQuery } from "../slices/UserSlice";
+import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
+import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 
 
 function ProfilePage() {

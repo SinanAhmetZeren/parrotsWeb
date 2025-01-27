@@ -1,12 +1,11 @@
-import instagram from "../assets/instagram_icon.png"
-import youtube from '../assets/youtube_icon.png';
-import facebook from '../assets/facebook_logo.png';
-import twitter from '../assets/twitter_logo.png';
-import linkedin from '../assets/linkedin_logo.png';
-import tiktok from '../assets/tiktok_logo.png';
-import email from '../assets/email_logo.png';
-import phone from '../assets/phone_logo.jpeg';
-import { text } from "d3";
+import instagram from "../assets/images/instagram_icon.png"
+import youtube from '../assets/images/youtube_icon.png';
+import facebook from '../assets/images/facebook_logo.png';
+import twitter from '../assets/images/twitter_logo.png';
+import linkedin from '../assets/images/linkedin_logo.png';
+import tiktok from '../assets/images/tiktok_logo.png';
+import email from '../assets/images/email_logo.png';
+import phone from '../assets/images/phone_logo.jpeg';
 
 
 export function SocialRenderComponent({ userData }) {

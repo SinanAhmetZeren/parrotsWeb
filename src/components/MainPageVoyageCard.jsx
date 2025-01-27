@@ -1,4 +1,4 @@
-import parrot1 from "../assets/sailboat.jpg";
+import parrot1 from "../assets/images/sailboat.jpg";
 import { useNavigate } from "react-router-dom";
 
 
@@ -7,11 +7,9 @@ import { useNavigate } from "react-router-dom";
 export function MainPageVoyageCard({ cardData, panToLocation }) {
 
   const navigate = useNavigate();
-
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
   };
-
 
   return (
     <div className="card" style={cardContainerStyle}>

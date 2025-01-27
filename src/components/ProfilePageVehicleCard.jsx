@@ -1,13 +1,15 @@
-const apiUrl = process.env.REACT_APP_API_URL;
-const vehicleBaseUrl = `${apiUrl}/Uploads/VehicleImages/`;
-
-
-
+import { useNavigate } from "react-router-dom";
 
 export function ProfilePageVehicleCard({ vehicle, index }) {
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const vehicleBaseUrl = `${apiUrl}/Uploads/VehicleImages/`;
+  const navigate = useNavigate();
+  const handleCardClick = (vehicleId) => {
+    navigate(`/vehicle-details/${vehicleId}`);
+  };
 
   return (
-    <div key={index} className="card" style={cardContainerStyle} onClick={() => console.log("vehicle: ", vehicle)}>
+    <div key={index} className="card" style={cardContainerStyle} onClick={() => handleCardClick(vehicle?.id)}>
       <div className="card-image" style={cardImageContainerStyle}>
         <img src={vehicleBaseUrl + vehicle?.profileImageUrl} style={cardImageStyle} alt="Boat tour" />
       </div>

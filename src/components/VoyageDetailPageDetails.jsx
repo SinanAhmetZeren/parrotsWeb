@@ -1,12 +1,11 @@
-import img1 from "../assets/catamaran.jpeg";
-import img2 from "../assets/parrot-looks.jpg";
+
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-
+import { useNavigate } from "react-router-dom";
 
 
 export function VoyageDetailPageDetails({ voyageData }) {
@@ -14,20 +13,29 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const baseVehicleImageUrl = `${apiUrl}/Uploads/VehicleImages/`;
 
+  const navigate = useNavigate();
+  const handleGoToVehicle = (vehicleID) => {
+    navigate(`/vehicle-details/${vehicleID}`);
+  };
+
+  const handleGoToUser = (user) => {
+    console.log("go to user: ", user.userName);
+  }
+
   return (
     <div style={cardContainerStyle} className="flex row">
       <div style={userVehicleInfoRow}>
         <span style={voyageName}>{voyageData.name}</span>
       </div>
       <div style={userVehicleInfoRow}>
-        <div className={"flex"} style={dataRowItem}>
+        <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToUser(voyageData.user)} >
           <span style={{ alignSelf: "center" }}>Hosted by</span>
           <div style={userAndVehicleBox}>
             <img src={baseUserImageUrl + voyageData.user.profileImageUrl} style={userImage} alt=" " />
             <span style={userAndVehicleText}>{voyageData.user.userName}</span>
           </div>
         </div>
-        <div className={"flex"} style={dataRowItem}>
+        <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData.vehicle.id)}>
           <span style={{ alignSelf: "center" }}>On</span>
           <div style={userAndVehicleBox}>
             <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl} style={userImage} alt=" " />

@@ -1,4 +1,4 @@
-import parrot1 from "../assets/sailboat.jpg";
+import parrot1 from "../assets/images/sailboat.jpg";
 
 export function MainPageMapVoyageCard({ cardData }) {
   return (

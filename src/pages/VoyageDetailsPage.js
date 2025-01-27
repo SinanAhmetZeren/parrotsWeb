@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import "./assets/css/VoyageDetails.css";
-import "./assets/css/advancedmarker.css";
+import "../assets/css/VoyageDetails.css";
+import "../assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -8,18 +8,18 @@ import "swiper/css";
 import "swiper/css/navigation";
 import {
   useGetVoyageByIdQuery,
-} from "./slices/VoyageSlice";
-import { TopBarMenu } from "./components/TopBarMenu";
+} from "../slices/VoyageSlice";
+import { TopBarMenu } from "../components/TopBarMenu";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import { TopLeftComponent } from "./components/TopLeftComponent";
-import { VoyageDetailPageImageSwiper } from "./components/VoyageDetailPageImageSwiper";
-import { VoyageDetailPageDetails } from "./components/VoyageDetailPageDetails";
-import { VoyageDetailPageDescription } from "./components/VoyageDetailPageDescription";
-import { VoyageDetailBids } from "./components/VoyageDetailPageBids";
-import { VoyageDetailWaypointSwiper } from "./components/VoyageDetailWaypointSwiper";
-import { VoyageDetailMapPanComponent } from "./components/VoyageDetailMapPanComponent";
-import { VoyageDetailMarkerWithInfoWindow } from "./components/VoyageDetailMarkerWithInfoWindow";
-import { VoyageDetailMapPolyLineComponent } from "./components/VoyageDetailMapPolyLineComponent";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import { VoyageDetailPageImageSwiper } from "../components/VoyageDetailPageImageSwiper";
+import { VoyageDetailPageDetails } from "../components/VoyageDetailPageDetails";
+import { VoyageDetailPageDescription } from "../components/VoyageDetailPageDescription";
+import { VoyageDetailBids } from "../components/VoyageDetailPageBids";
+import { VoyageDetailWaypointSwiper } from "../components/VoyageDetailWaypointSwiper";
+import { VoyageDetailMapPanComponent } from "../components/VoyageDetailMapPanComponent";
+import { VoyageDetailMarkerWithInfoWindow } from "../components/VoyageDetailMarkerWithInfoWindow";
+import { VoyageDetailMapPolyLineComponent } from "../components/VoyageDetailMapPolyLineComponent";
 import { useParams } from "react-router-dom";
 
 

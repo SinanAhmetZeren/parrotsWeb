@@ -1,5 +1,5 @@
-import leftArrow from "../assets/mainPageArrow.png";
-import rightArrow from "../assets/mainPageArrow.png";
+import leftArrow from "../assets/images/mainPageArrow.png";
+import rightArrow from "../assets/images/mainPageArrow.png";
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";

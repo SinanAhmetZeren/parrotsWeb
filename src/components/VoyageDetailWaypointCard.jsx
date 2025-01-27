@@ -1,6 +1,4 @@
-import img1 from "../assets/fareast1.jpg";
-import img3 from "../assets/fareast2.jpeg";
-import img2 from "../assets/fareast3.jpeg";
+
 import "../assets/css/App.css";
 import * as React from "react";
 

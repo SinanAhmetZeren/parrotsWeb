@@ -1,28 +1,28 @@
 /* eslint-disable no-undef */
-import "./assets/css/App.css";
-import "./assets/css/advancedmarker.css";
+import "../assets/css/App.css";
+import "../assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { MainPageCardSwiper } from "./components/MainPageCardSwiper";
+import { MainPageCardSwiper } from "../components/MainPageCardSwiper";
 import {
   useGetVoyagesByLocationMutation,
   useGetFilteredVoyagesMutation,
-} from "./slices/VoyageSlice";
-import { TopBarMenu } from "./components/TopBarMenu";
+} from "../slices/VoyageSlice";
+import { TopBarMenu } from "../components/TopBarMenu";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
-import { MainPageFiltersComponent } from "./components/MainPageFiltersComponent";
-import { TopLeftComponent } from "./components/TopLeftComponent";
-import { MainPageNewVoyageButton } from "./components/MainPageNewVoyageButton";
-import { MarkerWithInfoWindow } from "./components/MainPageMarkerWithInfoWindow";
-import { MainPageMapPanComponent } from "./components/MainPageMapPanComponent";
-import { ClusteredVoyageMarkers } from "./components/MainPageClusteredParrots";
-import { convertDateFormat } from "./components/ConvertDateFormat";
-import { MainPageRefreshButton } from "./components/MainPageRefreshButton"
+import { MainPageFiltersComponent } from "../components/MainPageFiltersComponent";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import { MainPageNewVoyageButton } from "../components/MainPageNewVoyageButton";
+import { MarkerWithInfoWindow } from "../components/MainPageMarkerWithInfoWindow";
+import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
+import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
+import { convertDateFormat } from "../components/ConvertDateFormat";
+import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
 function MainPage() {
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";

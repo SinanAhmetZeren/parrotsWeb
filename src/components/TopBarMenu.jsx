@@ -34,6 +34,7 @@ export function TopBarMenu() {
       >
         Voyages
       </NavLink>
+
       <NavLink
         to="/favorites"
         className={({ isActive }) =>

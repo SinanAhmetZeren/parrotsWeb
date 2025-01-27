@@ -1,5 +1,4 @@
-import img1 from "../assets/catamaran.jpeg";
-import img2 from "../assets/parrot-looks.jpg";
+
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";

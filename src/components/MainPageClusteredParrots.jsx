@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import ReactDOM from "react-dom/client";
-import parrot1 from "../assets/sailboat.jpg";
+import parrot1 from "../assets/images/sailboat.jpg";
 import * as d3 from "d3";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import parrotMarker1 from "../assets/parrotMarker1.png";
-import parrotMarker2 from "../assets/parrotMarker2.png";
-import parrotMarker3 from "../assets/parrotMarker3.png";
-import parrotMarker4 from "../assets/parrotMarker4.png";
-import parrotMarker5 from "../assets/parrotMarker5.png";
-import parrotMarker6 from "../assets/parrotMarker6.png";
+import parrotMarker1 from "../assets/images/parrotMarker1.png";
+import parrotMarker2 from "../assets/images/parrotMarker2.png";
+import parrotMarker3 from "../assets/images/parrotMarker3.png";
+import parrotMarker4 from "../assets/images/parrotMarker4.png";
+import parrotMarker5 from "../assets/images/parrotMarker5.png";
+import parrotMarker6 from "../assets/images/parrotMarker6.png";
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const [markers, setMarkers] = useState({});
@@ -44,9 +44,8 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         <svg fill="${color}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
           <circle cx="120" cy="120" opacity=".2" r="${radiusOuter}" fill="${color}" /> <!-- Outer circle -->
           <circle cx="120" cy="120" opacity=".5" r="${radiusMedium}" fill="${color}" /> <!-- Inner circle -->
-          <circle cx="120" cy="120" opacity="1" r="${
-            radiusInner + 3
-          }" fill="${color}" /> <!-- Inner circle -->
+          <circle cx="120" cy="120" opacity="1" r="${radiusInner + 3
+        }" fill="${color}" /> <!-- Inner circle -->
         </svg>
       `);
 
@@ -124,14 +123,14 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           index % 6 === 0
             ? parrotMarker1
             : index % 6 === 1
-            ? parrotMarker2
-            : index % 6 === 2
-            ? parrotMarker3
-            : index % 6 === 3
-            ? parrotMarker4
-            : index % 6 === 4
-            ? parrotMarker5
-            : parrotMarker6;
+              ? parrotMarker2
+              : index % 6 === 2
+                ? parrotMarker3
+                : index % 6 === 3
+                  ? parrotMarker4
+                  : index % 6 === 4
+                    ? parrotMarker5
+                    : parrotMarker6;
         const parrotMarkerImg = document.createElement("img");
         parrotMarkerImg.src = markerName;
         parrotMarkerImg.style.width = "3rem";
@@ -222,7 +221,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         return marker;
       })
       .filter((marker) => marker !== null);
-  }, [voyages, setMarkerRef,map]);
+  }, [voyages, setMarkerRef, map]);
 
   useEffect(() => {
     if (!map || !infoWindow) return;

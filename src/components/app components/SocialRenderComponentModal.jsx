@@ -143,7 +143,7 @@ const EmailItem = ({ email, handleEmailPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleEmailPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/email_logo.png")}
+        source={require("../assets/images/email_logo.png")}
       />
 
       <Text style={styles.iconText}>
@@ -158,7 +158,7 @@ const InstagramItem = ({ instagram, handleInstagramPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleInstagramPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/instagram_icon.png")}
+        source={require("../assets/images/instagram_icon.png")}
       />
       <Text style={styles.iconText}>
         {instagram.length > 22 ? `${instagram.substring(0, 19)}...` : instagram}
@@ -172,7 +172,7 @@ const YoutubeItem = ({ youtube, handleYoutubePress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleYoutubePress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/youtube_icon.png")}
+        source={require("../assets/images/youtube_icon.png")}
       />
       <Text style={styles.iconText}>
         {youtube.length > 22 ? `${youtube.substring(0, 19)}...` : youtube}
@@ -186,7 +186,7 @@ const FacebookItem = ({ facebook, handleFacebookPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleFacebookPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/facebook_logo.png")}
+        source={require("../assets/images/facebook_logo.png")}
       />
       <Text style={styles.iconText}>
         {facebook.length > 22 ? `${facebook.substring(0, 19)}...` : facebook}
@@ -200,7 +200,7 @@ const PhoneItem = ({ phoneNumber, handlePhonePress, style }) => {
     <TouchableOpacity style={style} onPress={() => handlePhonePress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/phone_logo.jpeg")}
+        source={require("../assets/images/phone_logo.jpeg")}
       />
       <Text style={styles.iconText}>
         {phoneNumber.length > 17
@@ -216,7 +216,7 @@ const TwitterItem = ({ twitter, handleTwitterPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleTwitterPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/twitter_logo.png")}
+        source={require("../assets/images/twitter_logo.png")}
       />
       <Text style={styles.iconText}>
         {twitter.length > 22 ? `${twitter.substring(0, 19)}...` : twitter}
@@ -231,7 +231,7 @@ const TiktokItem = ({ tiktok, handleTiktokPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleTiktokPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/tiktok_logo.png")}
+        source={require("../assets/images/tiktok_logo.png")}
       />
       <Text style={styles.iconText}>
         {tiktok.length > 22 ? `${tiktok.substring(0, 19)}...` : tiktok}
@@ -245,7 +245,7 @@ const LinkedinItem = ({ linkedin, handleLinkedinPress, style }) => {
     <TouchableOpacity style={style} onPress={() => handleLinkedinPress()}>
       <Image
         style={styles.iconLogo}
-        source={require("../assets/linkedin_logo.png")}
+        source={require("../assets/images/linkedin_logo.png")}
       />
       <Text style={styles.iconText}>
         {linkedin.length > 22 ? `${linkedin.substring(0, 19)}...` : linkedin}

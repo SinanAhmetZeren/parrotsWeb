@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
-import parrotMarker1 from "../assets/parrotMarker1.png";
-import parrotMarker2 from "../assets/parrotMarker2.png";
-import parrotMarker3 from "../assets/parrotMarker3.png";
-import parrotMarker4 from "../assets/parrotMarker4.png";
-import parrotMarker5 from "../assets/parrotMarker5.png";
-import parrotMarker6 from "../assets/parrotMarker6.png";
+import parrotMarker1 from "../assets/images/parrotMarker1.png";
+import parrotMarker2 from "../assets/images/parrotMarker2.png";
+import parrotMarker3 from "../assets/images/parrotMarker3.png";
+import parrotMarker4 from "../assets/images/parrotMarker4.png";
+import parrotMarker5 from "../assets/images/parrotMarker5.png";
+import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import "../assets/css/App.css";
 import "../assets/css/advancedmarker.css";
 import React, { useState, useCallback, useEffect } from "react";
@@ -12,7 +12,6 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard";
 import {
   AdvancedMarker,
   InfoWindow,

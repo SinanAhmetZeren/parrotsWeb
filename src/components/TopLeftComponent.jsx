@@ -1,7 +1,7 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
-import parrotsLogo from "../assets/parrots-logo-mini.png";
+import parrotsLogo from "../assets/images/parrots-logo-mini.png";
 import { useNavigate } from "react-router-dom";
 
 export const TopLeftComponent = ({ userName }) => {
