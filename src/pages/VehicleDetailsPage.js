@@ -12,9 +12,7 @@ import {
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { MdHeight } from "react-icons/md";
+import { useParams, useNavigate } from "react-router-dom";
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
