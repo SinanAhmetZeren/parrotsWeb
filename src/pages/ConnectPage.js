@@ -12,6 +12,7 @@ import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
 
+
 function ConnectPage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const navigate = useNavigate();
@@ -61,8 +62,10 @@ function ConnectPage() {
             <div className="flex connectPage_Bottom">
               <div className="flex connectPage_BottomLeft">
                 <SearchUserComponent query={query} setQuery={setQuery} />
-                {query.length > 3 && (
-                  <MessagePreviewsComponent messagesData={messagesData} />
+                {query.length < 3 && (
+                  <div style={MessagePreviewsContainer}>
+                    <MessagePreviewsComponent messagesData={messagesData} userId={userId} />
+                  </div>
                 )}
               </div>
               <div className="flex connectPage_BottomRight"></div>
@@ -80,4 +83,10 @@ const spinnerContainer = {
   marginTop: "20%",
 };
 
-
+const MessagePreviewsContainer = {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  height: "100%",
+  overflowY: "scroll",
+};  

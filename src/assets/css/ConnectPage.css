@@ -173,14 +173,17 @@
 .connectPage_Bottom {
   height: calc(100% - 3rem);
   width: 100%;
-  background-color: olive;
+  background-color: #f6f6f6;
+
 }
 
 .connectPage_BottomLeft {
   height: calc(100% - 1rem);
   margin: .5rem;
   width: 30%;
-  background-color: azure;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .connectPage_BottomRight {
@@ -190,5 +193,5 @@
   width: calc(100% - 30% - 1rem);
   align-items: center;
   justify-content: center;
-  background-color: rgb(151, 233, 233);
+  background-color: #f6f6f6;
 }
