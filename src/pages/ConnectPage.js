@@ -7,20 +7,31 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { useNavigate } from "react-router-dom";
 
-import { useGetMessagesByUserIdQuery } from "../slices/MessageSlice";
-import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
+import { useGetMessagesBetweenUsersQuery, useGetMessagesByUserIdQuery } from "../slices/MessageSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
+import { ConversationComponent } from "../components/ConversationComponent";
+import { IoPlayBackCircle } from "react-icons/io5";
+import { MessageSenderComponent } from "../components/MessageSenderComponent";
 
 
 function ConnectPage() {
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const currentUserId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const navigate = useNavigate();
   const handleGoToUser = (user) => {
     console.log("go to user: ", user.userName);
   }
-  const [username, setUsername] = useState("bbb");
   const [query, setQuery] = useState("");
+  const [conversationUserId, setConversationUserId] = useState("")
+  const [conversationUserUsername, setConversationUserUsername] = useState("")
+  const [conversationUserProfileImg, setConversationUserProfileImg] = useState("")
+  const [currentUserUsername, setCurrentUserUsername] = useState("")
+  const [currentUserProfileImg, setCurrentUserProfileImg] = useState("")
+  const [users, setUsers] = useState({ currentUserId, conversationUserId });
+
+  useEffect(() => {
+    setUsers({ currentUserId, conversationUserId })
+  }, [conversationUserId])
 
   const {
     data: messagesData,
@@ -29,27 +40,35 @@ function ConnectPage() {
     error: errorMessages,
     isSuccess: isSuccessMessages,
     refetch,
-  } = useGetMessagesByUserIdQuery(userId);
+  } = useGetMessagesByUserIdQuery(currentUserId);
 
   const {
-    data: usersData,
-    isLoading: isLoadingUsers,
-    isError: isErrorUsers,
-    error: errorUser,
-    isSuccess: isSuccessUsers,
-    refetch: refetchUsers,
-  } = useGetUsersByUsernameQuery(username);
+    data: conversationData,
+    isLoading: isLoadingConversation,
+    isError: isErrorConversation,
+    error,
+    isSuccess: isSuccessConversation,
+    refetch: refetchConversation,
+  } = useGetMessagesBetweenUsersQuery(users);
 
   useEffect(() => {
-    // console.log("messagesData: ", messagesData);
-  }, [messagesData]);
+    console.log("conversationData: ", conversationData);
+    console.log("messagesData: ", messagesData);
+  }, [conversationData, messagesData])
+
+
+  useEffect(() => {
+    if (conversationUserId) {
+      refetchConversation();
+    }
+  }, [conversationUserId, refetchConversation]);
 
   return (
     isLoadingMessages ? (
       <div style={spinnerContainer}>
         <div className="spinner"></div>
       </div>
-    ) : isSuccessMessages ? (
+    ) : (
       <div className="App">
         <header className="App-header">
           <div className="flex mainpage_Container">
@@ -62,18 +81,42 @@ function ConnectPage() {
             <div className="flex connectPage_Bottom">
               <div className="flex connectPage_BottomLeft">
                 <SearchUserComponent query={query} setQuery={setQuery} />
-                {query.length < 3 && (
+                {isSuccessMessages && query.length < 3 && (
                   <div style={MessagePreviewsContainer}>
-                    <MessagePreviewsComponent messagesData={messagesData} userId={userId} />
+                    <MessagePreviewsComponent
+                      messagesData={messagesData}
+                      userId={currentUserId}
+                      setConversationUserId={setConversationUserId}
+                      setConversationUserUsername={setConversationUserUsername}
+                      setConversationUserProfileImg={setConversationUserProfileImg}
+                      setCurrentUserUsername={setCurrentUserUsername}
+                      setCurrentUserProfileImg={setCurrentUserProfileImg}
+                    />
                   </div>
                 )}
               </div>
-              <div className="flex connectPage_BottomRight"></div>
+              <div className="flex connectPage_BottomRight">
+                <div style={ConversationComponentContainer}>
+                  <ConversationComponent
+                    conversationData={conversationData}
+                    currentUserId={currentUserId}
+                    currentUserUsername={currentUserUsername}
+                    currentUserProfileImg={currentUserProfileImg}
+                    conversationUserId={conversationUserId}
+                    conversationUserProfileImg={conversationUserProfileImg}
+                    conversationUserUsername={conversationUserUsername}
+                  />
+                </div>
+
+                <div style={{ width: "100%" }}>
+                  <MessageSenderComponent />
+                </div>
+              </div>
             </div>
           </div>
         </header>
       </div>
-    ) : null
+    )
   );
 }
 
@@ -89,4 +132,13 @@ const MessagePreviewsContainer = {
   width: "100%",
   height: "100%",
   overflowY: "scroll",
-};  
+}
+
+const ConversationComponentContainer = {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  overflowY: "scroll",
+  height: `calc(100vh - 15rem)`,
+  alignSelf: "flex-start",
+}

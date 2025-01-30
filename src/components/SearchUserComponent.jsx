@@ -21,7 +21,7 @@ export function SearchUserComponent({ query, setQuery }) {
   } = useGetUsersByUsernameQuery(query, { skip: query.length < 3 });
 
   const handleInputChange = (event) => {
-    setQuery(event.target.value); // Properly set the query value
+    setQuery(event.target.value);
   };
 
   useEffect(() => {
@@ -31,7 +31,6 @@ export function SearchUserComponent({ query, setQuery }) {
   return (
     <div style={searchMainContainer}>
       <div style={searchUserContainer}>
-
         <input
           type="text"
           value={query}
@@ -41,31 +40,38 @@ export function SearchUserComponent({ query, setQuery }) {
         <div style={magnifierContainerStyle}>
           <IoSearch style={magnifierStyle} />
         </div>
-
       </div>
-      {query.length > 2 ?
+      {isLoadingUsers ? (
+        <div style={{ marginTop: "20%" }}>
+          <div className="spinner"></div>
+        </div>
+      ) : isSuccessUsers && query.length > 2 ? (
         <div style={searchResultsContainer}>
-
           <RenderSearchResults users={usersData} />
-        </div> : null}
+        </div>
+      ) : isErrorUsers ? (
+        <div style={{}}>Error: {errorUser.message}</div>
+      ) : null}
     </div>
-
   );
 }
 
-const gotoProfile = (profileId) => {
-  console.log("gotoProfile: ", profileId);
-}
 
 function RenderSearchResults({ users }) {
+
+  function setId(id) {
+    console.log("selected id :", id);
+  }
+
   if (!users) {
     console.log("no users");
     return null;
   }
-
   return <div style={searchResults}>
     {users.map((user) => (
-      <div onClick={() => gotoProfile(user.id)} style={singleSearchResult} key={user.id}>
+      <div onClick={() => {
+        setId(user.id)
+      }} style={singleSearchResult} key={user.id}>
         <img style={userProfileImg} src={userBaseUrl + user.profileImageUrl} alt="profile" />
         <div style={userNameText}>{user.userName}</div>
       </div>
@@ -130,6 +136,8 @@ const searchResultsContainer = {
 const singleSearchResult = {
   width: "100%",
   backgroundColor: "#f6f6f6",
+  backgroundColor: "red",
+
   marginBottom: "1rem",
   display: "flex",
   flexDirection: "row",

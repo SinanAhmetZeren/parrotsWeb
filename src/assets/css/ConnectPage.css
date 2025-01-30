@@ -193,5 +193,8 @@
   width: calc(100% - 30% - 1rem);
   align-items: center;
   justify-content: center;
-  background-color: #f6f6f6;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+
 }
