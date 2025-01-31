@@ -36,6 +36,7 @@ export function SearchUserComponent({ query, setQuery }) {
           value={query}
           onChange={handleInputChange} // Use the correct handler
           style={inputStyle} // Added styles for input
+          placeholder="Search for users..."
         />
         <div style={magnifierContainerStyle}>
           <IoSearch style={magnifierStyle} />
@@ -115,7 +116,7 @@ const inputStyle = {
   marginBottom: "1rem",
   borderRadius: "2rem",
   backgroundColor: "#f9f5f1",
-  fontSize: "1.5rem",
+  fontSize: "1.3rem",
 }
 
 const searchResults = {
@@ -136,8 +137,6 @@ const searchResultsContainer = {
 const singleSearchResult = {
   width: "100%",
   backgroundColor: "#f6f6f6",
-  backgroundColor: "red",
-
   marginBottom: "1rem",
   display: "flex",
   flexDirection: "row",

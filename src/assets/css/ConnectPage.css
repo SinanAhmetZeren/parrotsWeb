@@ -174,7 +174,6 @@
   height: calc(100% - 3rem);
   width: 100%;
   background-color: #f6f6f6;
-
 }
 
 .connectPage_BottomLeft {
@@ -188,13 +187,10 @@
 
 .connectPage_BottomRight {
   height: calc(100% - 1rem);
-  padding: 2rem;
   margin: .5rem;
   width: calc(100% - 30% - 1rem);
   align-items: center;
-  justify-content: center;
   background-color: white;
   display: flex;
   flex-direction: column;
-
 }

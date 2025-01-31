@@ -2,22 +2,21 @@ import "../assets/css/App.css";
 import * as React from "react";
 import { useState } from "react";
 
-export function MessageSenderComponent() {
-
+export function MessageSenderComponent({ conversationUserId, currentUserId }) {
   const [message, setMessage] = useState("");
-
   React.useEffect(() => {
     console.log("message: ", message);
   }, [message]);
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
-    e.target.style.height = `${e.target.scrollHeight}px`; // Adjust height based on content
-
+    e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
   const handleSendMessage = () => {
     console.log("sending message: ", message);
+    console.log("from user: ", currentUserId);
+    console.log("to user: ", conversationUserId);
     setMessage("");
   }
 
@@ -42,7 +41,6 @@ const inputContainerStyle = {
   width: "100%",
   padding: "1rem",
   backgroundColor: "#f0f0f0",
-  borderRadius: "1rem",
 };
 
 const messageInputStyle = {
@@ -51,23 +49,32 @@ const messageInputStyle = {
   padding: "1rem",
   fontSize: "1.3rem",
   border: "1px solid #ccc",
-  borderRadius: "5px",
   color: "black",
   overflowY: "hidden", // Hide scrollbar initially
   minHeight: "1rem", // Set minimum height
   maxHeight: "10rem", // Optional: Limit maximum height (can be adjusted)
+  resize: "none", // Disables the resize handle
+
+  paddingLeft: "2rem",
+  paddingRight: "2rem",
+  marginRop: "1rem",
+  borderRadius: "2rem",
+  backgroundColor: "rgb(249, 245, 241)",
+
 };
 
 const sendButtonStyle = {
-  width: "100%",
-  height: "100%",
+  width: "7rem",
+  height: "4rem",
   fontSize: "1rem",
   fontWeight: "bold",
   backgroundColor: "#007bff",
   color: "white",
   border: "none",
-  borderRadius: "1rem",
+  borderRadius: "2rem",
   cursor: "pointer",
 };
+
+
 
 

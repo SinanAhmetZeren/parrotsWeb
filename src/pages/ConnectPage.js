@@ -11,7 +11,6 @@ import { useGetMessagesBetweenUsersQuery, useGetMessagesByUserIdQuery } from "..
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
-import { IoPlayBackCircle } from "react-icons/io5";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
 
 
@@ -31,6 +30,7 @@ function ConnectPage() {
 
   useEffect(() => {
     setUsers({ currentUserId, conversationUserId })
+    // console.log("--->> conversationUserId: ", conversationUserId);
   }, [conversationUserId])
 
   const {
@@ -52,8 +52,8 @@ function ConnectPage() {
   } = useGetMessagesBetweenUsersQuery(users);
 
   useEffect(() => {
-    console.log("conversationData: ", conversationData);
-    console.log("messagesData: ", messagesData);
+    // console.log("conversationData: ", conversationData);
+    // console.log("messagesData: ", messagesData);
   }, [conversationData, messagesData])
 
 
@@ -100,17 +100,21 @@ function ConnectPage() {
                   <ConversationComponent
                     conversationData={conversationData}
                     currentUserId={currentUserId}
-                    currentUserUsername={currentUserUsername}
-                    currentUserProfileImg={currentUserProfileImg}
-                    conversationUserId={conversationUserId}
-                    conversationUserProfileImg={conversationUserProfileImg}
-                    conversationUserUsername={conversationUserUsername}
+                  // currentUserUsername={currentUserUsername}
+                  // currentUserProfileImg={currentUserProfileImg}
+                  // conversationUserId={conversationUserId}
+                  // conversationUserProfileImg={conversationUserProfileImg}
+                  // conversationUserUsername={conversationUserUsername}
                   />
                 </div>
 
-                <div style={{ width: "100%" }}>
-                  <MessageSenderComponent />
-                </div>
+                {
+                  conversationUserId && (
+                    <div style={{ width: "100%" }}>
+                      <MessageSenderComponent conversationUserId={conversationUserId} currentUserId={currentUserId} />
+                    </div>
+                  )
+                }
               </div>
             </div>
           </div>
@@ -139,6 +143,6 @@ const ConversationComponentContainer = {
   flexDirection: "column",
   width: "100%",
   overflowY: "scroll",
-  height: `calc(100vh - 15rem)`,
+  height: `calc(100vh - 5rem)`,
   alignSelf: "flex-start",
 }

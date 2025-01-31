@@ -1,29 +1,23 @@
-import { color } from "d3";
 import "../assets/css/App.css";
 import * as React from "react";
-import { FaFontAwesome } from "react-icons/fa";
-const apiUrl = process.env.REACT_APP_API_URL;
-const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+import { useEffect, useRef } from "react";
 
-export function ConversationComponent({ conversationData, currentUserId,
-  currentUserUsername,
-  currentUserProfileImg,
-  conversationUserId,
-  conversationUserProfileImg,
-  conversationUserUsername }) {
+export function ConversationComponent({ conversationData, currentUserId
+}) {
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [conversationData?.data]);
 
   return (
     <div style={messagesContainerStyle}>
       {conversationData?.data.map((message, index) => {
-        console.log("conversation message 0: ", message);
-
         const dateObj = new Date(message.dateTime);
         const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
         const date = dateObj.toLocaleDateString("en-GB");
-
-
         const isCurrentUser = message.senderId === currentUserId;
-
         return (
           <div
             key={index}
@@ -36,7 +30,6 @@ export function ConversationComponent({ conversationData, currentUserId,
               <div>{message.text}
               </div>
             </div>
-
             <div style={dateAndTimeContainerStyle}>
               <div>
                 <span>
@@ -52,6 +45,7 @@ export function ConversationComponent({ conversationData, currentUserId,
           </div>
         );
       })}
+      <div ref={messagesEndRef} />
     </div >
   );
 }
@@ -89,7 +83,7 @@ const containerStyle = {
   margin: "10px",
   padding: "10px",
   display: "grid",
-  gridTemplateColumns: "3fr 1fr",
+  gridTemplateColumns: "3fr 10rem",
   borderRadius: "4rem",
   color: "darkblue",
   width: "auto",
