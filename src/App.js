@@ -12,6 +12,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ConnectPage from "./pages/ConnectPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import VehicleDetailsPage from "./pages/VehicleDetailsPage";
+import ProfilePagePublic from "./pages/ProfilePagePublic";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile-public/:userId" element={<ProfilePagePublic />} />
         <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
         <Route path="/vehicle-details/:vehicleId" element={<VehicleDetailsPage />} />
         <Route path="/connect" element={<ConnectPage />} />

@@ -1,7 +1,8 @@
 import "../assets/css/App.css";
 import * as React from "react";
 
-export function MessageSenderComponent({ conversationUserId, currentUserId, message, setMessage, handleSendMessage, sendButtonDisabled }) {
+export function MessageSenderComponent({ conversationUserId, currentUserId, message, setMessage, handleSendMessage,
+  sendButtonDisabled, conversationUserUsername }) {
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
@@ -12,7 +13,7 @@ export function MessageSenderComponent({ conversationUserId, currentUserId, mess
     <div style={inputContainerStyle}>
       <textarea
         value={message}
-        placeholder="Write a message..."
+        placeholder={`Write a message to ${conversationUserUsername}`}
         style={messageInputStyle}
         onInput={handleInputChange}
       />
@@ -39,7 +40,7 @@ const messageInputStyle = {
   width: "100%",
   padding: "1rem",
   fontSize: "1.3rem",
-  border: "1px solid #ccc",
+  // border: "1px solid #ccc",
   color: "black",
   overflowY: "hidden", // Hide scrollbar initially
   minHeight: "1rem", // Set minimum height
@@ -51,6 +52,7 @@ const messageInputStyle = {
   marginRop: "1rem",
   borderRadius: "2rem",
   backgroundColor: "rgb(249, 245, 241)",
+  border: "2px solid #3c9dee42"
 
 };
 

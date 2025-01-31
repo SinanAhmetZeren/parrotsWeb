@@ -13,16 +13,18 @@ import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
   const currentUserId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const navigate = useNavigate();
-  const handleGoToUser = (user) => {
-    console.log("go to user: ", user.userName);
+  const handleGoToUser = (userId) => {
+    navigate(`/profile-public/${userId}`);
   }
   const [query, setQuery] = useState("");
   const [conversationUserId, setConversationUserId] = useState("")
+  const [conversationUserUsername, setConversationUserUsername] = useState("")
   const [users, setUsers] = useState({ currentUserId, conversationUserId });
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
@@ -105,10 +107,10 @@ function ConnectPage() {
 
   const {
     data: messagePreviewsData,
-    isLoading: isLoadingMessages,
+    isLoading: isLoadingmessagePreviews,
     isError: isErrorMessages,
     error: errorMessages,
-    isSuccess: isSuccessMessages,
+    isSuccess: isSuccessmessagePreviews,
     refetch: refetchMessagePreviews
   } = useGetMessagesByUserIdQuery(currentUserId);
 
@@ -190,7 +192,7 @@ function ConnectPage() {
 
 
   return (
-    isLoadingMessages ? (
+    isLoadingmessagePreviews ? (
       <div style={spinnerContainer}>
         <div className="spinner"></div>
       </div>
@@ -208,13 +210,30 @@ function ConnectPage() {
 
             <div className="flex connectPage_Bottom">
               <div className="flex connectPage_BottomLeft">
-                <SearchUserComponent query={query} setQuery={setQuery} />
-                {isSuccessMessages && query.length < 3 && (
+                <div style={SearchBarContainer}>
+                  <SearchUserComponent query={query} setQuery={setQuery} />
+                </div>
+                {query.length > 2 && (
+                  <div style={MessagePreviewsContainer}>
+                    <SearchUserResultsComponent
+                      query={query}
+                      setQuery={setQuery}
+                      userId={currentUserId}
+                      setConversationUserId={setConversationUserId}
+                      setConversationUserUsername={setConversationUserUsername}
+                      handleGoToUser={handleGoToUser}
+                    />
+                  </div>
+                )}
+                {isSuccessmessagePreviews && query.length < 3 && (
                   <div style={MessagePreviewsContainer}>
                     <MessagePreviewsComponent
                       messagesData={messagePreviewsData}
                       userId={currentUserId}
                       setConversationUserId={setConversationUserId}
+                      setConversationUserUsername={setConversationUserUsername}
+                      handleGoToUser={handleGoToUser}
+
                     />
                   </div>
                 )}
@@ -233,6 +252,7 @@ function ConnectPage() {
                     <div style={{ width: "100%" }}>
                       <MessageSenderComponent
                         conversationUserId={conversationUserId}
+                        conversationUserUsername={conversationUserUsername}
                         currentUserId={currentUserId}
                         message={message}
                         setMessage={setMessage}
@@ -272,4 +292,9 @@ const ConversationComponentContainer = {
   overflowY: "scroll",
   height: `calc(100vh - 10rem)`,
   alignSelf: "flex-start",
+}
+
+const SearchBarContainer = {
+  backgroundColor: "rgb(240, 240, 240)",
+  height: "9vh"
 }

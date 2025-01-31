@@ -1,6 +1,7 @@
 
 import "../assets/css/App.css";
 import * as React from "react";
+
 const apiUrl = process.env.REACT_APP_API_URL;
 const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
 
@@ -8,10 +9,17 @@ export function MessagePreviewsComponent({
   messagesData,
   userId,
   setConversationUserId,
+  setConversationUserUsername,
+  handleGoToUser
 }) {
 
+  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
+  const sortedMessages = [...messagesData].sort(
+    (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
+  );
+
   return (
-    messagesData.map((message, index) => {
+    sortedMessages.map((message, index) => {
       const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
       const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
       const otherUserProfile = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
@@ -22,12 +30,26 @@ export function MessagePreviewsComponent({
 
       const setUserDetails = () => {
         setConversationUserId(otherUserUserId);
+        setConversationUserUsername(otherUserUsername)
       }
 
       return (
         <div key={index} style={containerStyle} title={message.text} onClick={() => setUserDetails()}>
-          <div style={userprofileimgContainer}>
-            <img src={userBaseUrl + otherUserProfile} style={userprofileimg} alt="user" />
+          <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
+            console.log("going to other user: ", otherUserUserId);
+            handleGoToUser(otherUserUserId)
+          }
+          }>
+            <img
+              src={userBaseUrl + otherUserProfile}
+              style={{ ...userprofileimg, ...((hoveredUserImgID === otherUserUserId) ? userprofileimgHover : {}) }}
+              alt="user"
+              onMouseEnter={() => {
+                console.log("otheruser: ", otherUserUsername)
+                setHoveredUserImgID(otherUserUserId)
+              }}
+              onMouseLeave={() => setHoveredUserImgID("")}
+            />
           </div>
           <div style={UsernameAndTextContainer}>
             <div>
@@ -51,6 +73,19 @@ export function MessagePreviewsComponent({
   );
 }
 
+
+const userprofileimg = {
+  height: "4rem",
+  width: "4rem",
+  borderRadius: "50%",
+  marginRight: "1rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+}
+
+const userprofileimgHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
+
 const containerStyle = {
   fontSize: "1rem",
   backgroundColor: "rgb(246, 246, 246)",
@@ -60,9 +95,12 @@ const containerStyle = {
   gridTemplateColumns: "1fr 3fr 1.5fr",
   alignItems: "center",
   borderRadius: "4rem",
+  cursor: "pointer"
 };
 
 const userprofileimgContainer = {
+  cursor: "pointer"
+
 }
 
 const UsernameAndTextContainer = {
@@ -71,12 +109,6 @@ const UsernameAndTextContainer = {
 const timestampContainer = {
 }
 
-const userprofileimg = {
-  height: "4rem",
-  width: "4rem",
-  borderRadius: "50%",
-  marginRight: "1rem",
-}
 
 
 const messageTextStyle = {

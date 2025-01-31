@@ -5,7 +5,6 @@ const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
 
 
 export function ProfilePageVoyagesComponent({ userData }) {
-  console.log("ProfilePageVoyagesComponent userdata: ", userData);
   return (userData.usersVoyages.map((voyage, index) => {
     return (
       <ProfilePageVoyageCard key={index} index={index} voyage={voyage} />
