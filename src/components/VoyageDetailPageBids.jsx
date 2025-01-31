@@ -10,7 +10,6 @@ import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
 import { useAcceptBidMutation } from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
-import { set } from "date-fns";
 
 
 export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {

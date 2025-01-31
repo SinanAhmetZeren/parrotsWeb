@@ -57,15 +57,6 @@ export const ConversationDetailScreen = ({ navigation }) => {
       .build();
   }, [currentUserId]);
 
-  useEffect(() => {
-    if (isErrorMessages) {
-      setHasError(true);
-    }
-    if (!isErrorMessages) {
-      setHasError(false);
-    }
-  }, [isErrorMessages]);
-
   const onRefresh = () => {
     setRefreshing(true);
     setHasError(false);
@@ -78,24 +69,6 @@ export const ConversationDetailScreen = ({ navigation }) => {
     }
     setRefreshing(false);
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        try {
-          await refetch();
-        } catch (error) {
-          console.error("Error refetching messages data:", error);
-        }
-      };
-
-      fetchData();
-
-      return () => {
-        // Cleanup function if needed
-      };
-    }, [refetch, navigation])
-  );
 
   useEffect(() => {
     const startHubConnection = async () => {
@@ -117,27 +90,6 @@ export const ConversationDetailScreen = ({ navigation }) => {
     });
 
     return () => { };
-  }, []);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      (event) => {
-        setTextInputBottomMargin(event.endCoordinates.height);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setTextInputBottomMargin(0);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
   }, []);
 
   useEffect(() => {

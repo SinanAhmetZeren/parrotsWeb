@@ -8,10 +8,6 @@ export function MessagePreviewsComponent({
   messagesData,
   userId,
   setConversationUserId,
-  setConversationUserUsername,
-  setConversationUserProfileImg,
-  setCurrentUserUsername,
-  setCurrentUserProfileImg
 }) {
 
   return (
@@ -19,8 +15,6 @@ export function MessagePreviewsComponent({
       const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
       const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
       const otherUserProfile = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
-      const currentUserUsername = message.receiverId === userId ? message.receiverUsername : message.senderUsername;
-      const currentUserProfileImg = message.receiverId === userId ? message.receiverProfileUrl : message.senderProfileUrl;
 
       const dateObj = new Date(message.dateTime);
       const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
@@ -28,10 +22,6 @@ export function MessagePreviewsComponent({
 
       const setUserDetails = () => {
         setConversationUserId(otherUserUserId);
-        setConversationUserUsername(otherUserUsername);
-        setConversationUserProfileImg(otherUserProfile);
-        setCurrentUserProfileImg(currentUserProfileImg);
-        setCurrentUserUsername(currentUserUsername);
       }
 
       return (

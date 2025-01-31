@@ -1,24 +1,12 @@
 import "../assets/css/App.css";
 import * as React from "react";
-import { useState } from "react";
 
-export function MessageSenderComponent({ conversationUserId, currentUserId }) {
-  const [message, setMessage] = useState("");
-  React.useEffect(() => {
-    console.log("message: ", message);
-  }, [message]);
+export function MessageSenderComponent({ conversationUserId, currentUserId, message, setMessage, handleSendMessage, sendButtonDisabled }) {
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
-
-  const handleSendMessage = () => {
-    console.log("sending message: ", message);
-    console.log("from user: ", currentUserId);
-    console.log("to user: ", conversationUserId);
-    setMessage("");
-  }
 
   return (
     <div style={inputContainerStyle}>
@@ -28,7 +16,10 @@ export function MessageSenderComponent({ conversationUserId, currentUserId }) {
         style={messageInputStyle}
         onInput={handleInputChange}
       />
-      <button onClick={() => handleSendMessage()} style={sendButtonStyle}> Send </button>
+      <button disabled={sendButtonDisabled} onClick={() => handleSendMessage()} style={{
+        ...sendButtonStyle,
+        backgroundColor: sendButtonDisabled ? "gray" : "#007bff",
+      }}> Send </button>
     </div>
   );
 }

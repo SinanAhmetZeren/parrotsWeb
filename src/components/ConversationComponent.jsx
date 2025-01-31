@@ -2,18 +2,19 @@ import "../assets/css/App.css";
 import * as React from "react";
 import { useEffect, useRef } from "react";
 
-export function ConversationComponent({ conversationData, currentUserId
+export function ConversationComponent({ currentUserId, messagesToDisplay
 }) {
   const messagesEndRef = useRef(null);
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "auto" });
     }
-  }, [conversationData?.data]);
+  }, [messagesToDisplay]);
 
   return (
     <div style={messagesContainerStyle}>
-      {conversationData?.data.map((message, index) => {
+      {messagesToDisplay?.length > 0 && messagesToDisplay?.map((message, index) => {
         const dateObj = new Date(message.dateTime);
         const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
         const date = dateObj.toLocaleDateString("en-GB");
