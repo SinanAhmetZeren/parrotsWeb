@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import "../assets/css/ProfilePage.css"
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -13,14 +14,18 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 
 function ProfilePage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const userName = "Peter Parker"
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   let voyageId = 88;
-  const [userBid, setUserBid] = useState("")
   const profileData = ""
   const dummyBio = "Passionate wanderer, exploring the world one step at a time. Lost in the beauty of unfamiliar places and the stories they hold. 🌍✨ #Wanderlust. Embracing the journey with an open heart and a curiosity for the unknown......🌟👣"
+  const navigate = useNavigate();
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+  const handleGoToPublicPage = () => {
+    navigate(`/profile-public/${userId}/${userName}`);
+  }
 
 
   const {
@@ -53,8 +58,8 @@ function ProfilePage() {
               <div className="flex profilePage_BottomLeft">
                 <div className="flex profilePage_CoverAndProfile">
 
-                  <div className="profilePage_SendMessage" onClick={() => { console.log("message") }}>
-                    <span>Send Message</span>
+                  <div className="profilePage_SendMessage" onClick={() => handleGoToPublicPage()}>
+                    <span>Public Profile</span>
                   </div>
 
                   <div className="flex profilePage_CoverImage">

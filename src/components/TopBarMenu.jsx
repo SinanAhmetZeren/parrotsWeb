@@ -32,7 +32,7 @@ export function TopBarMenu() {
             : `${inactiveStyle} ${commonStyle}`
         }
       >
-        Voyages
+        {/* Voyages */}
       </NavLink>
 
       <NavLink
@@ -43,7 +43,7 @@ export function TopBarMenu() {
             : `${inactiveStyle} ${commonStyle}`
         }
       >
-        Favorites
+        {/* Favorites */}
       </NavLink>
       <NavLink
         to="/connect"
@@ -63,7 +63,7 @@ export function TopBarMenu() {
             : `${inactiveStyle} ${commonStyle}`
         }
       >
-        Logout
+        {/* Logout */}
       </NavLink>
     </nav>
   );

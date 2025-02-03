@@ -5,7 +5,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useGetMessagesBetweenUsersQuery, useGetMessagesByUserIdQuery } from "../slices/MessageSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
@@ -17,10 +17,13 @@ import { SearchUserResultsComponent } from "../components/SearchUserResultsCompo
 const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
+  const { conversationUserId: paramConversationUserId } = useParams();
+  const { conversationUserUsername: paramConversationUserUsername } = useParams();
+
   const currentUserId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const navigate = useNavigate();
-  const handleGoToUser = (userId) => {
-    navigate(`/profile-public/${userId}`);
+  const handleGoToUser = (userId, userName) => {
+    navigate(`/profile-public/${userId}/${userName}`);
   }
   const [query, setQuery] = useState("");
   const [conversationUserId, setConversationUserId] = useState("")
@@ -29,6 +32,13 @@ function ConnectPage() {
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false)
+
+  useEffect(() => {
+    if (paramConversationUserId && paramConversationUserUsername) {
+      setConversationUserId(paramConversationUserId);
+      setConversationUserUsername(paramConversationUserUsername);
+    }
+  }, [paramConversationUserId, paramConversationUserUsername])
 
   const hubConnection = useMemo(() => {
     return new HubConnectionBuilder()

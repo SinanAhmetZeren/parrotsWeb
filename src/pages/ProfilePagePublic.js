@@ -14,10 +14,19 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 
 function ProfilePagePublic() {
   const { userId } = useParams();
+  const { userName } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("public profile page: ", userId);
-  }, [userId])
+    console.log("public profile page: ", userId, " ", userName);
+  }, [userId, userName])
+
+
+  const handleSendMessageRequest = () => {
+    console.log("hello");
+    navigate(`/connect/${userId}/${userName}`);
+  }
+
 
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   let voyageId = 88;
@@ -59,7 +68,7 @@ function ProfilePagePublic() {
               <div className="flex profilePage_BottomLeft">
                 <div className="flex profilePage_CoverAndProfile">
 
-                  <div className="profilePage_SendMessage" onClick={() => { console.log("message") }}>
+                  <div className="profilePage_SendMessage" onClick={() => handleSendMessageRequest()}>
                     <span>Send Message</span>
                   </div>
 

@@ -37,7 +37,7 @@ export function MessagePreviewsComponent({
         <div key={index} style={containerStyle} title={message.text} onClick={() => setUserDetails()}>
           <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
             console.log("going to other user: ", otherUserUserId);
-            handleGoToUser(otherUserUserId)
+            handleGoToUser(otherUserUserId, otherUserUsername)
           }
           }>
             <img

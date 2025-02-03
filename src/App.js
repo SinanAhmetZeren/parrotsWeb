@@ -20,10 +20,11 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/profile-public/:userId" element={<ProfilePagePublic />} />
+        <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
         <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
         <Route path="/vehicle-details/:vehicleId" element={<VehicleDetailsPage />} />
         <Route path="/connect" element={<ConnectPage />} />
+        <Route path="/connect/:conversationUserId/:conversationUserUsername" element={<ConnectPage />} />
       </Routes>
     </Router>
   );
