@@ -33,7 +33,10 @@ export function ProfilePageVehicleCard({ vehicle, index }) {
             </span>
           </div>
         </div>
-        <div style={cardBriefStyle}>{vehicle?.description}</div>
+        {/* <div style={cardBriefStyle}>{vehicle?.description}</div> */}
+        <div style={cardBriefStyle}>{vehicle?.description?.length > 280 ? `${vehicle?.description.substring(0, 280)}...` : vehicle?.description}</div>
+
+
       </div>
     </div >
   );
@@ -138,6 +141,8 @@ const cardBriefStyle = {
   textOverflow: "ellipsis",
   paddingLeft: "1rem",
   paddingRight: "1rem",
+  textAlign: "justify",  // Justifies the text
+
 };
 
 

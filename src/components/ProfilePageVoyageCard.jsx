@@ -120,6 +120,8 @@ const cardBriefStyle = {
   paddingLeft: "1rem",
   paddingRight: "1rem",
   // backgroundColor: "pink",
+  textAlign: "justify",  // Justifies the text
+
 };
 
 const cardDescriptionStyle = {

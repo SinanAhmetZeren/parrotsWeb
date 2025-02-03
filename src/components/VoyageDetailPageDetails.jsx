@@ -20,6 +20,8 @@ export function VoyageDetailPageDetails({ voyageData }) {
 
   const handleGoToUser = (user) => {
     console.log("go to user: ", user.userName);
+    navigate(`/profile-public/${user.id}/${user.userName}`);
+
   }
 
   return (

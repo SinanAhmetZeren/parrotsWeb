@@ -10,9 +10,12 @@ import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
 import { useAcceptBidMutation } from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
+
+
   const [dummyState, setDummyState] = React.useState(false);
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
@@ -20,7 +23,6 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
   const makeRefetch = useCallback(() => {
     refetch();
-    console.log("hello from refetch");
   }, [refetch]);
 
   const startTheHub = async () => {
@@ -145,10 +147,16 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
 
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId }) {
+
+  const navigate = useNavigate();
+  const handleGoToUser = (bidUserId, username) => {
+    navigate(`/profile-public/${bidUserId}/${username}`);
+  }
+
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
-        <img src={userImage} style={userImageStyle} alt="User" />
+        <img src={userImage} style={userImageStyle} alt="User" onClick={() => handleGoToUser(bidUserId, username)} />
         <span style={userNameStyle} title={username}>
           {username}
         </span>

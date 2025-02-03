@@ -53,9 +53,9 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
 function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
   const [hoveredUserImgID2, setHoveredUserImgID2] = React.useState("")
+  const [hoveredUserImgID3, setHoveredUserImgID3] = React.useState("")
 
   const StartConversationWithUser = (user) => {
-    console.log("hi there: ", user.id);
     setConversationUserId(user.id);
     setConversationUserUsername(user.userName)
   }
@@ -67,12 +67,20 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
   return <div style={searchResults}>
     {users.map((user) => (
       <div style={singleSearchResult} key={user.id}>
-        <img style={userProfileImg} src={userBaseUrl + user.profileImageUrl} alt="profile" />
+        <img
+          title={`See ${user.userName}'s profile`}
+          style={{ ...userProfileImg, ...((hoveredUserImgID3 === user.id) ? userprofileimgHover : {}) }}
+          onMouseEnter={() => {
+            setHoveredUserImgID3(user.id)
+          }}
+          onMouseLeave={() => setHoveredUserImgID3("")}
+          onClick={() => handleGoToUser(user.id, user.userName)}
+          src={userBaseUrl + user.profileImageUrl} alt="profile" />
+
         <div style={userNameText}>{user.userName}</div>
         <div title={`Send Message to ${user.userName}`}
           style={{ ...sendMessageStyle, ...((hoveredUserImgID === user.id) ? seeProfileStyleHover : {}) }}
           onMouseEnter={() => {
-            console.log("otheruser: ", user.userName)
             setHoveredUserImgID(user.id)
           }}
           onMouseLeave={() => setHoveredUserImgID("")}
@@ -81,11 +89,10 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
         <div title={`See ${user.userName}'s profile`}
           style={{ ...seeProfileStyle, ...((hoveredUserImgID2 === user.id) ? seeProfileStyleHover : {}) }}
           onMouseEnter={() => {
-            console.log("otheruser: ", user.userName)
             setHoveredUserImgID2(user.id)
           }}
           onMouseLeave={() => setHoveredUserImgID2("")}
-          onClick={() => handleGoToUser(user.id)}>
+          onClick={() => handleGoToUser(user.id, user.userName)}>
           <CgProfile />
         </div>
       </div>

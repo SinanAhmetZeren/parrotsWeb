@@ -23,16 +23,8 @@ function ProfilePagePublic() {
 
 
   const handleSendMessageRequest = () => {
-    console.log("hello");
     navigate(`/connect/${userId}/${userName}`);
   }
-
-
-  const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-  let voyageId = 88;
-  const [userBid, setUserBid] = useState("")
-  const profileData = ""
-  const dummyBio = "Passionate wanderer, exploring the world one step at a time. Lost in the beauty of unfamiliar places and the stories they hold. 🌍✨ #Wanderlust. Embracing the journey with an open heart and a curiosity for the unknown......🌟👣"
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -58,7 +50,7 @@ function ProfilePagePublic() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={"Peter Parker"} />
+              <TopLeftComponent userName={userData.userName} />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>
@@ -88,13 +80,13 @@ function ProfilePagePublic() {
                 <div className="flex profilePage_BioAndContactDetails">
                   <div className="flex profilePage_BioTitleUserName">
                     <div className="flex profilePage_UserName">
-                      <span className="profilePage_UserName">Peter Parker</span>
+                      <span className="profilePage_UserName">{userData.userName}</span>
                     </div>
                     <div className="flex profilePage_Title">
-                      <span className="profilePage_Title">Serendipitous Vagabond Sojourner</span>
+                      <span className="profilePage_Title">{userData.title}</span>
                     </div>
                     <div className="flex profilePage_Bio">
-                      <BlueHashtagText originalText={dummyBio} />
+                      <BlueHashtagText originalText={userData.bio} />
                     </div>
                   </div>
                   <div className="flex profilePage_ContactDetails">

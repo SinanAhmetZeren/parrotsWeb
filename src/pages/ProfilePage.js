@@ -2,7 +2,6 @@
 import "../assets/css/ProfilePage.css"
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { BlueHashtagText } from "../components/BlueHashtagText";
@@ -14,19 +13,12 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 
 function ProfilePage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const userName = "Peter Parker"
-  const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-  let voyageId = 88;
-  const profileData = ""
-  const dummyBio = "Passionate wanderer, exploring the world one step at a time. Lost in the beauty of unfamiliar places and the stories they hold. 🌍✨ #Wanderlust. Embracing the journey with an open heart and a curiosity for the unknown......🌟👣"
   const navigate = useNavigate();
-
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
   const handleGoToPublicPage = () => {
-    navigate(`/profile-public/${userId}/${userName}`);
+    navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
-
 
   const {
     data: userData,
@@ -38,6 +30,11 @@ function ProfilePage() {
   } = useGetUserByIdQuery(userId);
 
 
+  useEffect(() => {
+    if (isSuccessUser)
+      console.log("userData: ", userData);
+  }, [userData, isSuccessUser])
+
   return (
     isLoadingUser ? (
       <div style={spinnerContainer}>
@@ -48,7 +45,7 @@ function ProfilePage() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={"Peter Parker"} />
+              <TopLeftComponent userName={userData.userName} />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>
@@ -78,13 +75,13 @@ function ProfilePage() {
                 <div className="flex profilePage_BioAndContactDetails">
                   <div className="flex profilePage_BioTitleUserName">
                     <div className="flex profilePage_UserName">
-                      <span className="profilePage_UserName">Peter Parker</span>
+                      <span className="profilePage_UserName">{userData.userName}</span>
                     </div>
                     <div className="flex profilePage_Title">
-                      <span className="profilePage_Title">Serendipitous Vagabond Sojourner</span>
+                      <span className="profilePage_Title">{userData.title}</span>
                     </div>
                     <div className="flex profilePage_Bio">
-                      <BlueHashtagText originalText={dummyBio} />
+                      <BlueHashtagText originalText={userData.bio} />
                     </div>
                   </div>
                   <div className="flex profilePage_ContactDetails">
