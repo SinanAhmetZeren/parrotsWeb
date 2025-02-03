@@ -32,8 +32,8 @@ export const VoyageDetailMarkerWithInfoWindow = ({ position, waypointTitle, inde
   // Ensure the InfoWindow opens once the marker is ready
   useEffect(() => {
     if (marker) {
-      console.log("marker: ", marker);
-      console.log("infosohwn: ", infoWindowShown);
+      // console.log("marker: ", marker);
+      // console.log("infosohwn: ", infoWindowShown);
       setInfoWindowShown(true);
     }
   }, [marker]);

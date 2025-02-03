@@ -21,9 +21,14 @@ import { VoyageDetailMapPanComponent } from "../components/VoyageDetailMapPanCom
 import { VoyageDetailMarkerWithInfoWindow } from "../components/VoyageDetailMarkerWithInfoWindow";
 import { VoyageDetailMapPolyLineComponent } from "../components/VoyageDetailMapPolyLineComponent";
 import { useParams } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import {
+  useAddVoyageToFavoritesMutation,
+  useDeleteVoyageFromFavoritesMutation,
+} from "../slices/VoyageSlice";
 
 function VoyageDetailsPage() {
+  const dispatch = useDispatch();
   const { voyageId } = useParams();
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -36,6 +41,7 @@ function VoyageDetailsPage() {
     east: null,
     west: null
   });
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const {
     data: VoyageData,
@@ -43,6 +49,55 @@ function VoyageDetailsPage() {
     isLoading: isLoadingVoyage,
     refetch,
   } = useGetVoyageByIdQuery(voyageId);
+
+
+  /*
+  const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
+  const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
+
+  const handleAddVoyageToFavorites = () => {
+    addVoyageToFavorites({ userId, voyageId });
+    setIsFavorited(true);
+    dispatch(
+      addVoyageToUserFavorites({
+        favoriteVoyage: voyageId,
+      })
+    );
+  };
+
+  const handleDeleteVoyageFromFavorites = () => {
+    deleteVoyageFromFavorites({ userId, voyageId });
+    setIsFavorited(false);
+    dispatch(
+      removeVoyageFromUserFavorites({
+        favoriteVoyage: voyageId,
+      })
+    );
+  };
+
+  useEffect(() => {
+    console.log("voyage data ---> ", VoyageData);
+    
+        if (isSuccessVoyages && userFavoriteVoyages) {
+          if (userFavoriteVoyages.includes(VoyageData.id)) {
+            setIsFavorited(true);
+          }
+    
+          if (VoyageData.bids) {
+            setBids(VoyageData.bids);
+            let bids = VoyageData.bids;
+            setHasBidWithUserId(bids.some((bid) => bid.userId === userId));
+    
+          }
+        }
+          
+  }, [
+    // isSuccessVoyages, 
+    VoyageData,
+    isFavorited]);
+    */
+
+
 
   useEffect(() => {
     if (latLngBoundsLiteral?.east)
@@ -105,7 +160,7 @@ function VoyageDetailsPage() {
                 <TopBarMenu />
               </div>
             </div>
-
+            {/* {isFavorited ? <span>favorited</span> : <span>not favorited</span>} */}
             <div className="flex voyageDetails_Bottom">
               <div className="flex voyageDetails_BottomLeft">
                 <div className="flex voyageDetails_Images">

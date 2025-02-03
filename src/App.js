@@ -14,12 +14,14 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import VehicleDetailsPage from "./pages/VehicleDetailsPage";
 import ProfilePagePublic from "./pages/ProfilePagePublic";
 import FavoritesPage from "./pages/FavoritesPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
         <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />

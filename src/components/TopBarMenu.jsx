@@ -25,17 +25,6 @@ export function TopBarMenu() {
         Profile
       </NavLink>
       <NavLink
-        to="/voyage-details"
-        className={({ isActive }) =>
-          isActive
-            ? `${activeStyle} ${commonStyle}`
-            : `${inactiveStyle} ${commonStyle}`
-        }
-      >
-        {/* Voyages */}
-      </NavLink>
-
-      <NavLink
         to="/favorites"
         className={({ isActive }) =>
           isActive
@@ -56,14 +45,14 @@ export function TopBarMenu() {
         Connect
       </NavLink>
       <NavLink
-        to="/logout"
+        to="/login"
         className={({ isActive }) =>
           isActive
             ? `${activeStyle} ${commonStyle}`
             : `${inactiveStyle} ${commonStyle}`
         }
       >
-        {/* Logout */}
+        Login
       </NavLink>
     </nav>
   );
