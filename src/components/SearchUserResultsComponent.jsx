@@ -1,9 +1,7 @@
 
 import "../assets/css/App.css";
 import * as React from "react";
-import { useEffect } from "react";
 import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
-import { IoSearch } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { TiMessages } from "react-icons/ti";
 

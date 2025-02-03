@@ -43,7 +43,7 @@ export function TopBarMenu() {
             : `${inactiveStyle} ${commonStyle}`
         }
       >
-        {/* Favorites */}
+        Favorites
       </NavLink>
       <NavLink
         to="/connect"

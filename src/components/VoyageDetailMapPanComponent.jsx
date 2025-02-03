@@ -8,9 +8,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useMap } from "@vis.gl/react-google-maps";
 
-export function VoyageDetailMapPanComponent({ targetLat, targetLng, setBounds }) {
+export function VoyageDetailMapPanComponent({ targetLat, targetLng
+  // setBounds 
+}) {
   const map = useMap();
 
+  /*
   useEffect(() => {
     const logMapBounds = () => {
       const bounds = map.getBounds();
@@ -36,7 +39,7 @@ export function VoyageDetailMapPanComponent({ targetLat, targetLng, setBounds })
       };
     }
   }, [map, setBounds]);
-
+*/
   useEffect(() => {
     if (map && targetLat && targetLng) {
       map.panTo({ lat: targetLat, lng: targetLng });

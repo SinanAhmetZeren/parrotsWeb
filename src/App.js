@@ -13,6 +13,7 @@ import ConnectPage from "./pages/ConnectPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import VehicleDetailsPage from "./pages/VehicleDetailsPage";
 import ProfilePagePublic from "./pages/ProfilePagePublic";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
         <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
         <Route path="/vehicle-details/:vehicleId" element={<VehicleDetailsPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/connect" element={<ConnectPage />} />
         <Route path="/connect/:conversationUserId/:conversationUserUsername" element={<ConnectPage />} />
       </Routes>

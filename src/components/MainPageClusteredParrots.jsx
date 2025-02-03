@@ -10,11 +10,18 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
+import { useNavigate } from "react-router-dom";
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
+  const navigate = useNavigate()
   const [markers, setMarkers] = useState({});
   const [infoWindow, setInfoWindow] = useState(null); // Track the current InfoWindow
   const map = useMap();
+
+  const handleGoToVoyage = (voyageId) => {
+    navigate(`/voyage-details/${voyageId}`);
+  }
+
   const clusterer = useMemo(() => {
     if (!map) return null;
     const palette = (ratio) => {
@@ -186,7 +193,9 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                     ...buttonStyle,
                   }}
                 >
-                  <span>click to see details</span>
+                  <span
+                    onClick={() => handleGoToVoyage(cardData.id)}
+                  >click to see details</span>
                 </div>
               </div>
             </div>

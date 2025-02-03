@@ -25,19 +25,11 @@ import { useParams } from "react-router-dom";
 
 function VoyageDetailsPage() {
   const { voyageId } = useParams();
-  let voyageId1 = 88;
-
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [userBid, setUserBid] = useState("")
   const mapRef = useRef()
   const [targetLocation, setTargetLocation] = useState({});
-  const [bounds, setBounds] = useState({
-    maxLat: null,
-    minLat: null,
-    maxLng: null,
-    minLng: null,
-  });
   const [latLngBoundsLiteral, setLatLngBoundsLiteral] = useState({
     north: null,
     south: null,
@@ -51,6 +43,11 @@ function VoyageDetailsPage() {
     isLoading: isLoadingVoyage,
     refetch,
   } = useGetVoyageByIdQuery(voyageId);
+
+  useEffect(() => {
+    if (latLngBoundsLiteral?.east)
+      console.log("latLngBoundsLiteral", latLngBoundsLiteral);
+  }, [latLngBoundsLiteral])
 
   useEffect(() => {
     if (isSuccessVoyage && VoyageData?.waypoints?.length > 0) {
@@ -67,14 +64,7 @@ function VoyageDetailsPage() {
         if (longitude > tempMaxLng) tempMaxLng = longitude;
         if (longitude < tempMinLng) tempMinLng = longitude;
       });
-
-      setBounds({
-        maxLat: tempMaxLat,
-        minLat: tempMinLat,
-        maxLng: tempMaxLng,
-        minLng: tempMinLng,
-      });
-
+      console.log("diff:....", tempMaxLat - tempMinLat);
       setLatLngBoundsLiteral({
         north: tempMaxLat,
         south: tempMinLat,
@@ -82,7 +72,6 @@ function VoyageDetailsPage() {
         west: tempMinLng,
       });
     } else {
-      // Default bounds in case of no waypoints
       setLatLngBoundsLiteral({
         north: 0,
         south: 0,
@@ -95,6 +84,8 @@ function VoyageDetailsPage() {
       setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
     }
   }, [isSuccessVoyage, VoyageData]);
+
+
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -147,10 +138,15 @@ function VoyageDetailsPage() {
                           defaultBounds={latLngBoundsLiteral}
                           gestureHandling={"greedy"}
                           disableDefaultUI
+
+                          zoom={latLngBoundsLiteral.east === latLngBoundsLiteral.west &&
+                            latLngBoundsLiteral.north === latLngBoundsLiteral.south ? 13 : undefined}  // Adjust zoom if single point
+
+
                           onCameraChanged={() => setTargetLocation(null)}
                         >
                           <VoyageDetailMapPanComponent
-                            setBounds={setBounds}
+                            // setBounds={setBounds}
                             targetLat={targetLocation?.lat}
                             targetLng={targetLocation?.lng}
                           />
