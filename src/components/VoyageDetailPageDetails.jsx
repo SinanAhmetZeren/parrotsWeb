@@ -12,6 +12,8 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const baseVehicleImageUrl = `${apiUrl}/Uploads/VehicleImages/`;
+  const [hoveredUser, setHoveredUser] = React.useState(false)
+  const [hoveredVehicle, setHoveredVehicle] = React.useState(false)
 
   const navigate = useNavigate();
   const handleGoToVehicle = (vehicleID) => {
@@ -33,14 +35,28 @@ export function VoyageDetailPageDetails({ voyageData }) {
         <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToUser(voyageData.user)} >
           <span style={{ alignSelf: "center" }}>Hosted by</span>
           <div style={userAndVehicleBox}>
-            <img src={baseUserImageUrl + voyageData.user.profileImageUrl} style={userImage} alt=" " />
+            <img
+              src={baseUserImageUrl + voyageData.user.profileImageUrl}
+              style={{ ...userImage, ...((hoveredUser === true) ? userprofileimgHover : {}) }}
+              onMouseEnter={() => {
+                setHoveredUser(true)
+              }}
+              onMouseLeave={() => setHoveredUser(false)}
+              alt=" " />
             <span style={userAndVehicleText}>{voyageData.user.userName}</span>
           </div>
         </div>
         <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData.vehicle.id)}>
           <span style={{ alignSelf: "center" }}>On</span>
           <div style={userAndVehicleBox}>
-            <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl} style={userImage} alt=" " />
+            <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
+              //style={userImage}
+              style={{ ...userImage, ...((hoveredVehicle === true) ? userprofileimgHover : {}) }}
+              onMouseEnter={() => {
+                setHoveredVehicle(true)
+              }}
+              onMouseLeave={() => setHoveredVehicle(false)}
+              alt=" " />
             <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
         </div>
@@ -82,6 +98,18 @@ export function VoyageDetailPageDetails({ voyageData }) {
 }
 
 
+const userImage = {
+  height: "3rem",
+  width: "3rem",
+  borderRadius: "3rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+
+}
+
+const userprofileimgHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
+
 const voyageName = {
   color: "#2ac898",
   fontWeight: "800",
@@ -122,11 +150,7 @@ const dataRowItem = {
   marginLeft: "0.8rem",
 }
 
-const userImage = {
-  height: "3rem",
-  width: "3rem",
-  borderRadius: "3rem"
-}
+
 
 
 const userAndVehicleBox = {

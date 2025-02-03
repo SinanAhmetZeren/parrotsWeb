@@ -148,6 +148,9 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId }) {
 
+  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
+
+
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
     navigate(`/profile-public/${bidUserId}/${username}`);
@@ -156,7 +159,16 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
-        <img src={userImage} style={userImageStyle} alt="User" onClick={() => handleGoToUser(bidUserId, username)} />
+        <img src={userImage}
+
+          style={{ ...userImageStyle, ...((hoveredUserImgID === bidUserId) ? userImageStyleHover : {}) }}
+          onMouseEnter={() => {
+            setHoveredUserImgID(bidUserId)
+          }}
+          onMouseLeave={() => setHoveredUserImgID("")}
+
+
+          alt="User" onClick={() => handleGoToUser(bidUserId, username)} />
         <span style={userNameStyle} title={username}>
           {username}
         </span>
@@ -183,6 +195,18 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
   );
 }
 
+const userImageStyleHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
+
+
+const userImageStyle = {
+  height: "3rem",
+  width: "3rem",
+  borderRadius: "3rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+  cursor: "pointer"
+};
 
 const voyageName = {
   color: "#2ac898",
@@ -237,11 +261,6 @@ const userAndVehicleBox = {
   justifyContent: "space-between",
 };
 
-const userImageStyle = {
-  height: "3rem",
-  width: "3rem",
-  borderRadius: "3rem",
-};
 
 const userNameStyle = {
   width: "20%", // Fixed width

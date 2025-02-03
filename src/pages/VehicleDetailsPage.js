@@ -18,10 +18,13 @@ function VehicleDetailsPage() {
   const { vehicleId } = useParams();
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const navigate = useNavigate();
-  const handleGoToUser = (user) => {
-    console.log("go to user: ", user.userName);
+  const handleGoToUser = ({ userId, userName }) => {
+    navigate(`/profile-public/${userId}/${userName}`);
   }
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+  const [hoveredUserImg, setHoveredUserImg] = useState(false)
   const {
     data: VehicleData,
     isSuccess: isSuccessVehicle,
@@ -83,9 +86,18 @@ function VehicleDetailsPage() {
                     <div className=" ">
                       <span>Host</span>
                     </div>
-                    <div className=" " onClick={() => handleGoToUser(VehicleData.user)}>
+                    <div className=" " onClick={() => handleGoToUser({ userId: VehicleData.user.id, userName: VehicleData.user.userName })}>
                       <div style={userNameStyle} onClick={() => { console.log("message") }}>
-                        <span>{VehicleData.user.userName}</span>
+                        <img src={baseUserImageUrl + VehicleData.user.profileImageUrl}
+                          style={{ ...userImageStyle, ...((hoveredUserImg) ? userImageStyleHover : {}) }}
+                          onMouseEnter={() => {
+                            setHoveredUserImg(true)
+                          }}
+                          onMouseLeave={() => setHoveredUserImg(false)}
+
+
+                          alt="User" onClick={() => handleGoToUser({ userId: VehicleData.user.id, userName: VehicleData.user.userName })} />
+                        <span style={userNameTextStyle} >{VehicleData.user.userName}</span>
                       </div>
                     </div>
                   </div>
@@ -122,6 +134,39 @@ function VehicleDetailsPage() {
 export default VehicleDetailsPage;
 
 
+const userNameStyle = {
+  borderRadius: '1.5rem', // Keep this as the final value for border-radius
+  backgroundColor: '#007bff',
+  color: 'white',
+  textAlign: 'center',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  fontSize: '1rem',
+  border: 'none',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)',
+  transition: 'box-shadow 0.2s ease',
+  WebkitFontSmoothing: 'antialiased',
+  MozOsxFontSmoothing: 'grayscale',
+  height: "1.8rem",
+  display: "flex",
+  flexDirection: "row"
+}
+
+const userNameTextStyle = {
+  // backgroundColor: "red"
+}
+
+const userImageStyleHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
+
+const userImageStyle = {
+  height: "2rem",
+  width: "2rem",
+  borderRadius: "3rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+  cursor: "pointer",
+};
 
 const spinnerContainer = {
   marginTop: "20%",
@@ -141,18 +186,3 @@ const VehicleTypes = [
 ];
 
 
-const userNameStyle = {
-  borderRadius: '1.5rem', // Keep this as the final value for border-radius
-  backgroundColor: '#007bff',
-  color: 'white',
-  textAlign: 'center',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  fontSize: '1rem',
-  border: 'none',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)',
-  transition: 'box-shadow 0.2s ease',
-  WebkitFontSmoothing: 'antialiased',
-  MozOsxFontSmoothing: 'grayscale',
-  height: "1.8rem"
-}
