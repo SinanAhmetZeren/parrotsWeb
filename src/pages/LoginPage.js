@@ -194,7 +194,7 @@ const mainContainer = {
 }
 
 const welcomeStyle = {
-  color: "rgb(10, 119, 234,.7)",
+  color: "rgba(10, 119, 234,.7)",
   margin: "0.5rem",
   fontSize: "3rem",
   fontWeight: "bold",
