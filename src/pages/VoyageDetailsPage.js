@@ -30,7 +30,7 @@ import {
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
   const { voyageId } = useParams();
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const userId = localStorage.getItem("storedUserId")
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [userBid, setUserBid] = useState("")
   const mapRef = useRef()
@@ -155,7 +155,7 @@ function VoyageDetailsPage() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={"Peter Parker"} />
+              <TopLeftComponent />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>

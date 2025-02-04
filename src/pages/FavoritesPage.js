@@ -10,11 +10,7 @@ import { useGetFavoriteVehiclesByUserByIdQuery } from "../slices/VehicleSlice";
 import { FavoritesPageVoyagesComponent } from "../components/FavoritesPageVoyagesComponent";
 
 export default function FavoritePage() {
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const navigate = useNavigate();
-
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+  const userId = localStorage.getItem("storedUserId")
   const {
     data: FavoriteVoyagesData,
     isError: isFavoriteErrorVoyages,
@@ -49,7 +45,7 @@ export default function FavoritePage() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={"Peter Prker"} />
+              <TopLeftComponent />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>
@@ -63,7 +59,7 @@ export default function FavoritePage() {
               <div className="flex favoritesPage_BottomLeft">
                 <div className="flex favoritesPage_Vehicles">
                   {isFavoriteSuccessVehicles ? (
-                    FavoriteVehiclesData.length > 0 ?
+                    FavoriteVehiclesData?.length > 0 ?
                       (<>
                         {/* <span style={VehiclesVoyagesTitle}>Vehicles</span> */}
                         <FavoritesPageVehiclesComponent FavoriteVehiclesData={FavoriteVehiclesData} />
@@ -75,7 +71,7 @@ export default function FavoritePage() {
               <div className="flex flex-col favoritesPage_BottomRight">
                 <div className="flex favoritesPage_Voyages">
                   {isFavoriteSuccessVoyages ? (
-                    FavoriteVoyagesData.length > 0 ?
+                    FavoriteVoyagesData?.length > 0 ?
                       (<>
                         {/* <span style={VehiclesVoyagesTitle}>Voyages</span> */}
                         <FavoritesPageVoyagesComponent FavoriteVoyages={FavoriteVoyagesData} />

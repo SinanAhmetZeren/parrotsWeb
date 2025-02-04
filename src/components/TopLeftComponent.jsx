@@ -4,7 +4,10 @@ import "../assets/css/date-range-custom.css";
 import parrotsLogo from "../assets/images/parrots-logo-mini.png";
 import { useNavigate } from "react-router-dom";
 
-export const TopLeftComponent = ({ userName }) => {
+export const TopLeftComponent = () => {
+
+  const storedUserName = localStorage.getItem("storedUserName")
+  console.log("stored username---: ", storedUserName);
   const navigate = useNavigate();
   const handleCardClick = () => {
     navigate(`/profile`);
@@ -38,7 +41,7 @@ export const TopLeftComponent = ({ userName }) => {
           style={{ color: "#2ac898", fontWeight: "900" }}
         >
           {" "}
-          {userName.toUpperCase()}
+          {storedUserName ? storedUserName.toUpperCase() : "Voyager"}
         </span>
       </div>
     </div>

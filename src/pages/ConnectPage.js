@@ -19,8 +19,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 function ConnectPage() {
   const { conversationUserId: paramConversationUserId } = useParams();
   const { conversationUserUsername: paramConversationUserUsername } = useParams();
-
-  const currentUserId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const currentUserId = localStorage.getItem("storedUserId")
   const navigate = useNavigate();
   const handleGoToUser = (userId, userName) => {
     navigate(`/profile-public/${userId}/${userName}`);
@@ -211,7 +210,7 @@ function ConnectPage() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={"Peter Parker"} />
+              <TopLeftComponent />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>

@@ -17,16 +17,13 @@ import FavoritesPage from "./pages/FavoritesPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
-  const isLoggedIn = localStorage.getItem("storedToken"); // Check if user is logged in
-
+  const isLoggedIn = localStorage.getItem("storedToken");
 
   return (
-
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         {!isLoggedIn ? (
-          // If not logged in, redirect all other routes to login
           <Route path="*" element={<Navigate to="/login" />} />
         ) : (
           <>
@@ -43,22 +40,6 @@ function App() {
         )}
       </Routes>
     </Router>
-
-    /*
-        <Router>
-          <Routes>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
-            <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
-            <Route path="/vehicle-details/:vehicleId" element={<VehicleDetailsPage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/connect" element={<ConnectPage />} />
-            <Route path="/connect/:conversationUserId/:conversationUserUsername" element={<ConnectPage />} />
-          </Routes>
-        </Router>
-        */
   );
 }
 

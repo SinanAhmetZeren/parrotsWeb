@@ -201,7 +201,7 @@ function MainPage() {
       <header className="App-header">
         <div className="flex mainpage_Container">
           <div className="flex mainpage_TopRow">
-            <TopLeftComponent userName={"Peter Parker"} />
+            <TopLeftComponent />
 
             <div className="flex mainpage_TopRight">
               <TopBarMenu />

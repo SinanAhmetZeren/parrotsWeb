@@ -12,7 +12,7 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 
 
 function ProfilePage() {
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const userId = localStorage.getItem("storedUserId")
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -45,7 +45,7 @@ function ProfilePage() {
         <header className="App-header">
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
-              <TopLeftComponent userName={userData.userName} />
+              <TopLeftComponent />
               <div className="flex mainpage_TopRight">
                 <TopBarMenu />
               </div>

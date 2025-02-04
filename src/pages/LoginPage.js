@@ -19,10 +19,19 @@ import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [pageState, setPageState] = useState("Login");
+  const [pageState, setPageState] = useState("Register2");
   const [username, setUsername] = useState("sinanzen@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [usernameRegister, setUsernameRegister] = useState("");
+  const [emailRegister, setEmailRegister] = useState("yyy");
+  const [password, setPassword] = useState("");
+  const [passwordRegister, setPasswordRegister] = useState("");
+  const [passwordRegister2, setPasswordRegister2] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordRegister, setShowPasswordRegister] = useState(false);
+  const [showPasswordRegister2, setShowPasswordRegister2] = useState(false);
+
+
   const dispatch = useDispatch()
 
   const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
@@ -48,28 +57,38 @@ function LoginPage() {
   const makeVisible = () => {
     setShowPassword(!showPassword)
   }
+  const makeVisibleRegister = () => {
+    setShowPasswordRegister(!showPasswordRegister)
+  }
+  const makeVisibleRegister2 = () => {
+    setShowPasswordRegister2(!showPasswordRegister2)
+  }
 
-  const handleLogin2 = async () => {
+  const handleConfirmCode = async () => {
+    console.log("email R:", emailRegister);
+    console.log("confirmation code: ", confirmationCode);
     try {
-      const loginResponse = await loginUser({
-        Email: username,
-        Password: password,
+      const confirmResponse = await confirmUser({
+        email: emailRegister,
+        code: confirmationCode,
       }).unwrap();
-      setUsername("");
-      setPassword("");
-      if (loginResponse.token) {
+
+      setConfirmationCode("");
+      setEmailRegister("");
+
+      if (confirmResponse.token) {
+        setPageState("Login");
+
         await dispatch(
           updateAsLoggedIn({
-            userId: loginResponse.userId,
-            token: loginResponse.token,
-            userName: loginResponse.userName,
-            profileImageUrl: loginResponse.profileImageUrl,
+            userId: confirmResponse.userId,
+            token: confirmResponse.token,
+            userName: confirmResponse.userName,
+            profileImageUrl: confirmResponse.profileImageUrl,
           })
         );
       }
-
     } catch (err) {
-      console.log("hello from catch - handle login");
       console.log(err);
     }
   };
@@ -94,88 +113,236 @@ function LoginPage() {
       );
       setUsername("");
       setPassword("");
+      console.log("let s go to profile ?");
       navigate("/profile");
     } catch (err) {
       console.error("Login error:", err);
     }
   };
 
+  const handleRegister = async () => {
+    try {
+      const registerResponse = await registerUser({
+        Email: emailRegister,
+        UserName: usernameRegister,
+        Password: passwordRegister,
+      }).unwrap();
 
+      setUsernameRegister("");
+      setPasswordRegister("");
+      setPasswordRegister2("");
 
-  const userId = "43242342432342342342";
-  const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
+      // if registration response is 200
+      // go to Registration-2
+
+      // if ConfirmCode returns token etc
+      // then updateasLoggedIn
+
+      if (registerResponse.token) {
+        setPageState("Register2");
+        /*
+        await dispatch(
+          updateAsLoggedIn({
+            userId: registerResponse.userId,
+            token: registerResponse.token,
+            userName: registerResponse.userName,
+            profileImageUrl: registerResponse.profileImageUrl,
+          })
+        );
+        */
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <div className="flex mainpage_Container">
           <div className="flex mainpage_TopRow">
-            <TopLeftComponent userName={"Peter Parker"} />
+            <TopLeftComponent />
             <div className="flex mainpage_TopRight">
               <TopBarMenu />
             </div>
           </div>
 
-          <div style={mainContainer}>
-            <div style={welcomeStyle}> Welcome To Parrots!</div>
-            <div
-              className="username-wrapper">
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="username-input"
-              />
-            </div>
-            <div
-              className="password-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="password-input"
-              />
-              <span style={{
-                padding: "1rem",
-                position: "absolute",
-                marginLeft: "-5rem",
-                marginTop: "-.2rem"
-              }}
-                onClick={() => makeVisible()}
-              >
-                {
-                  showPassword ?
-                    <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                    <AiOutlineEye size="2rem" color="grey" />
-                }
-              </span>
+          {
+            pageState === "Login" ?
+              <div style={mainContainer}>
+                <div style={welcomeStyle}> Welcome To Parrots!</div>
+                <div
+                  className="username-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="username-input"
+                  />
+                </div>
+                <div
+                  className="password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="password-input"
+                  />
+                  <span style={{
+                    padding: "1rem",
+                    position: "absolute",
+                    marginLeft: "-5rem",
+                    marginTop: "-.2rem"
+                  }}
+                    onClick={() => makeVisible()}
+                  >
+                    {
+                      showPassword ?
+                        <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                        <AiOutlineEye size="2rem" color="grey" />
+                    }
+                  </span>
+                </div>
+                <div className="forgot-password">
+                  <span className="forgotPasswordSpan"
+                    onClick={() => handleForgotPassword()}
+                  >
+                    Forgot password?
+                  </span>
+                </div>
+                <div className="login-button"
+                  onClick={() => handleLogin()}
+                > Login</div>
+                <div className="signup">
+                  <span className="signupSpan">
+                    Don't have an account?
+                    <span className="signupLinkSpan"
+                      onClick={() => handleSignup()}
+                    >
+                      Sign up
+                    </span>
+                  </span>
+                </div>
+              </div>
+              : pageState === "Register1" ?
+                <div style={mainContainer}>
+                  <div style={welcomeStyle}> Welcome To Parrots! {pageState}</div>
+                  <div
+                    className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Username (max 25 characters)"
+                      value={usernameRegister}
+                      onChange={(e) => setUsernameRegister(e.target.value)}
+                      className="username-input"
+                    />
+                  </div>
+                  <div
+                    className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Email"
+                      value={emailRegister}
+                      onChange={(e) => setEmailRegister(e.target.value)}
+                      className="username-input"
+                    />
+                  </div>
 
-            </div>
-            <div className="forgot-password">
-              <span className="forgotPasswordSpan"
-                onClick={() => handleForgotPassword()}
-              >
-                Forgot password?
-              </span>
-            </div>
-            <div className="login-button"
-              onClick={() => handleLogin()}
-            > Login</div>
+                  <div
+                    className="password-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={passwordRegister}
+                      onChange={(e) => setPasswordRegister(e.target.value)}
+                      className="password-input"
+                    />
+                    <span style={{
+                      padding: "1rem",
+                      position: "absolute",
+                      marginLeft: "-5rem",
+                      marginTop: "-.2rem"
+                    }}
+                      onClick={() => makeVisibleRegister()}
+                    >
+                      {
+                        showPasswordRegister ?
+                          <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                          <AiOutlineEye size="2rem" color="grey" />
+                      }
+                    </span>
+                  </div>
 
-            <div className="signup">
-              <span className="signupSpan">
-                Don't have an account?
-                <span className="signupLinkSpan"
-                  onClick={() => handleSignup()}
-                >
-                  Sign up
-                </span>
-              </span>
-            </div>
 
-          </div>
+                  <div
+                    className="password-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Re-enter Password"
+                      value={passwordRegister2}
+                      onChange={(e) => setPasswordRegister2(e.target.value)}
+                      className="password-input"
+                    />
+                    <span style={{
+                      padding: "1rem",
+                      position: "absolute",
+                      marginLeft: "-5rem",
+                      marginTop: "-.2rem"
+                    }}
+                      onClick={() => makeVisibleRegister2()}
+                    >
+                      {
+                        showPasswordRegister2 ?
+                          <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                          <AiOutlineEye size="2rem" color="grey" />
+                      }
+                    </span>
+                  </div>
+
+                  {/* <div className="forgot-password">
+                    <span className="forgotPasswordSpan"
+                      onClick={() => handleForgotPassword()}
+                    >
+                      Forgot password?
+                    </span>
+                  </div> */}
+                  <div className="login-button"
+                    onClick={() => handleRegister()}
+                  > Register</div>
+                  {/* <div className="signup">
+                    <span className="signupSpan">
+                      Don't have an account?
+                      <span className="signupLinkSpan"
+                        onClick={() => handleSignup()}
+                      >
+                        Sign up
+                      </span>
+                    </span>
+                  </div> */}
+                </div>
+                : pageState === "Register2" ?
+                  <div style={mainContainer}>
+                    <div style={welcomeStyle}> Welcome To Parrots! {pageState}</div>
+                    <div
+                      className="username-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Confirmation Code"
+                        value={confirmationCode}
+                        onChange={(e) => setConfirmationCode(e.target.value)}
+                        className="username-input"
+                      />
+                    </div>
+
+                    <div className="login-button"
+                      onClick={() => handleConfirmCode()}
+                    > Confirm</div>
+                  </div> : <></>
+          }
+
+
         </div>
       </header>
     </div>
