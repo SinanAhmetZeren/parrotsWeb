@@ -14,14 +14,16 @@ import {
 } from "../slices/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
-import { IoPersonOutline, IoPeopleOutline, IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [pageState, setPageState] = useState("Login");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("sinanzen@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [showPassword, setShowPassword] = useState(false);
-
+  const dispatch = useDispatch()
 
   const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
   const [requestCode] = useRequestCodeMutation();
@@ -43,6 +45,62 @@ function LoginPage() {
     console.log("handleSignup...");
   }
 
+  const makeVisible = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleLogin2 = async () => {
+    try {
+      const loginResponse = await loginUser({
+        Email: username,
+        Password: password,
+      }).unwrap();
+      setUsername("");
+      setPassword("");
+      if (loginResponse.token) {
+        await dispatch(
+          updateAsLoggedIn({
+            userId: loginResponse.userId,
+            token: loginResponse.token,
+            userName: loginResponse.userName,
+            profileImageUrl: loginResponse.profileImageUrl,
+          })
+        );
+      }
+
+    } catch (err) {
+      console.log("hello from catch - handle login");
+      console.log(err);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const loginResponse = await loginUser({
+        Email: username,
+        Password: password,
+      }).unwrap();
+      if (!loginResponse?.token) {
+        console.error("Login failed: No token received");
+        return;
+      }
+      await dispatch(
+        updateAsLoggedIn({
+          userId: loginResponse.userId,
+          token: loginResponse.token,
+          userName: loginResponse.userName,
+          profileImageUrl: loginResponse.profileImageUrl,
+        })
+      );
+      setUsername("");
+      setPassword("");
+      navigate("/profile");
+    } catch (err) {
+      console.error("Login error:", err);
+    }
+  };
+
+
 
   const userId = "43242342432342342342";
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
@@ -59,7 +117,7 @@ function LoginPage() {
           </div>
 
           <div style={mainContainer}>
-            <div style={welcomeStyle}> Welcome To Parrots !</div>
+            <div style={welcomeStyle}> Welcome To Parrots!</div>
             <div
               className="username-wrapper">
               <input
@@ -73,12 +131,27 @@ function LoginPage() {
             <div
               className="password-wrapper">
               <input
-                type="text"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="password-input"
               />
+              <span style={{
+                padding: "1rem",
+                position: "absolute",
+                marginLeft: "-5rem",
+                marginTop: "-.2rem"
+              }}
+                onClick={() => makeVisible()}
+              >
+                {
+                  showPassword ?
+                    <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                    <AiOutlineEye size="2rem" color="grey" />
+                }
+              </span>
+
             </div>
             <div className="forgot-password">
               <span className="forgotPasswordSpan"
@@ -87,7 +160,9 @@ function LoginPage() {
                 Forgot password?
               </span>
             </div>
-            <div className="login-button"> Login</div>
+            <div className="login-button"
+              onClick={() => handleLogin()}
+            > Login</div>
 
             <div className="signup">
               <span className="signupSpan">
@@ -119,28 +194,10 @@ const mainContainer = {
 }
 
 const welcomeStyle = {
-  color: "rgb(10, 119, 234)",
+  color: "rgb(10, 119, 234,.7)",
   margin: "0.5rem",
   fontSize: "3rem",
   fontWeight: "bold",
   borderRadius: "2rem"
 }
 
-const buttonStyle = {
-  width: "40%",
-  backgroundColor: "#007bff",
-  padding: "0.6rem",
-  marginTop: "2rem",
-  borderRadius: "1.5rem",
-  textAlign: "center",
-  color: "white",
-  fontWeight: "bold",
-  cursor: "pointer",
-  fontSize: "1.2rem",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-  transition: "box-shadow 0.2s ease",
-  WebkitFontSmoothing: "antialiased",
-  MozOsxFontSmoothing: "grayscale",
-};

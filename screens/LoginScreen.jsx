@@ -354,7 +354,7 @@ const LoginScreen = ({ navigation }) => {
                   <TouchableOpacity
                     style={styles.eyeIcon}
                     onPressIn={() => togglePasswordVisibility()}
-                    // onPressOut={() => setIsPasswordHidden(true)}
+                  // onPressOut={() => setIsPasswordHidden(true)}
                   >
                     <Text>
                       <Feather name="eye" size={24} color="#c3c3c3" />
@@ -531,8 +531,8 @@ const LoginScreen = ({ navigation }) => {
                   style={[
                     styles.selection2,
                     isLoadingRegisterUser ||
-                    passwordR === "" ||
-                    passwordR2 === ""
+                      passwordR === "" ||
+                      passwordR2 === ""
                       ? styles.disabled
                       : null,
                   ]}
@@ -771,9 +771,9 @@ const LoginScreen = ({ navigation }) => {
                   style={[
                     styles.selection2,
                     isLoadingRegisterUser ||
-                    passwordR === "" ||
-                    passwordR2 === "" ||
-                    registerCode2 === ""
+                      passwordR === "" ||
+                      passwordR2 === "" ||
+                      registerCode2 === ""
                       ? styles.disabled
                       : null,
                   ]}

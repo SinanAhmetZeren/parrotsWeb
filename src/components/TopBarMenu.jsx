@@ -1,7 +1,12 @@
 import "../assets/css/date-range-custom.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateAsLoggedOut } from "../slices/UserSlice";
 
 export function TopBarMenu() {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
   return (
     <nav className="flex space-x-2 sm:space-x-2 overflow-x-auto sm:overflow-x-visible">
       <NavLink
@@ -44,7 +49,7 @@ export function TopBarMenu() {
       >
         Connect
       </NavLink>
-      <NavLink
+      {/* <NavLink
         to="/login"
         className={({ isActive }) =>
           isActive
@@ -53,7 +58,32 @@ export function TopBarMenu() {
         }
       >
         Login
-      </NavLink>
+      </NavLink> */}
+
+      {localStorage.getItem("storedToken") ? (
+        <button
+          onClick={() => {
+            if (window.confirm("Are you sure you want to log out?")) {
+              dispatch(updateAsLoggedOut());
+              navigate("/login");
+            }
+          }}
+          className={`${inactiveStyle} ${commonStyle}`}
+        >
+          Logout
+        </button>
+      ) : (
+        <NavLink
+          to="/login"
+          className={({ isActive }) =>
+            isActive
+              ? `${activeStyle} ${commonStyle}`
+              : `${inactiveStyle} ${commonStyle}`
+          }
+        >
+          Login
+        </NavLink>
+      )}
     </nav>
   );
 }
