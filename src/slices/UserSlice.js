@@ -131,13 +131,24 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: userData,
       }),
     }),
-    confirmUser: builder.mutation({
+    confirmUser2: builder.mutation({
       query: (confirmData) => ({
         url: "/api/account/confirmCode",
         method: "POST",
         body: confirmData,
       }),
     }),
+    confirmUser: builder.mutation({
+      query: (confirmData) => {
+        console.log("confirmData:--->", confirmData);
+        return {
+          url: "/api/account/confirmCode",
+          method: "POST",
+          body: confirmData,
+        };
+      },
+    }),
+
     requestCode: builder.mutation({
       query: (email) => ({
         url: `/api/account/sendCode/${email}`,

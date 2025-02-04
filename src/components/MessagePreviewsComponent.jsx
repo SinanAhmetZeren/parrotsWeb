@@ -14,6 +14,18 @@ export function MessagePreviewsComponent({
 }) {
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
+
+  if (!messagesData || messagesData.length === 0) {
+    return <p
+      style={{
+        color: "#3c9dde66",
+        fontSize: "1.5rem",
+        fontWeight: "500"
+      }}
+      className="text-gray-500 text-center p-4">No messages yet</p>;
+  }
+
+
   const sortedMessages = [...messagesData].sort(
     (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
   );

@@ -19,17 +19,23 @@ import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [pageState, setPageState] = useState("Register2");
+  const [pageState, setPageState] = useState("Login");
   const [username, setUsername] = useState("sinanzen@gmail.com");
   const [usernameRegister, setUsernameRegister] = useState("");
-  const [emailRegister, setEmailRegister] = useState("yyy");
+  const [emailRegister, setEmailRegister] = useState("");
+  const [emailForgotPassword, setEmailForgotPassword] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRegister, setPasswordRegister] = useState("");
   const [passwordRegister2, setPasswordRegister2] = useState("");
+  const [passwordUpdate1, setPasswordUpdate1] = useState("");
+  const [passwordUpdate2, setPasswordUpdate2] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
+  const [sixDigitCode, setSixDigitCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
   const [showPasswordRegister2, setShowPasswordRegister2] = useState(false);
+  const [showPasswordUpdate1, setShowPasswordUpdate1] = useState(false);
+  const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
 
 
   const dispatch = useDispatch()
@@ -47,16 +53,17 @@ function LoginPage() {
   ] = useConfirmUserMutation();
 
   const handleForgotPassword = () => {
-    console.log("Forgot password...");
+    setPageState("ForgotPassword")
   }
 
   const handleSignup = () => {
-    console.log("handleSignup...");
+    setPageState("Register1")
   }
 
   const makeVisible = () => {
     setShowPassword(!showPassword)
   }
+
   const makeVisibleRegister = () => {
     setShowPasswordRegister(!showPasswordRegister)
   }
@@ -64,6 +71,12 @@ function LoginPage() {
     setShowPasswordRegister2(!showPasswordRegister2)
   }
 
+  const makeVisibleUpdate = () => {
+    setShowPasswordUpdate1(!showPasswordUpdate1)
+  }
+  const makeVisibleUpdate2 = () => {
+    setShowPasswordUpdate2(!showPasswordUpdate2)
+  }
   const handleConfirmCode = async () => {
     console.log("email R:", emailRegister);
     console.log("confirmation code: ", confirmationCode);
@@ -73,10 +86,14 @@ function LoginPage() {
         code: confirmationCode,
       }).unwrap();
 
+      console.log("hello from register 1");
       setConfirmationCode("");
       setEmailRegister("");
 
+      console.log("confirmResponse:...", confirmResponse);
       if (confirmResponse.token) {
+        console.log("hello from register 2");
+
         setPageState("Login");
 
         await dispatch(
@@ -113,7 +130,6 @@ function LoginPage() {
       );
       setUsername("");
       setPassword("");
-      console.log("let s go to profile ?");
       navigate("/profile");
     } catch (err) {
       console.error("Login error:", err);
@@ -155,6 +171,41 @@ function LoginPage() {
       console.log(err);
     }
   };
+
+
+  const handleSendResetCode = async () => {
+    requestCode(emailForgotPassword);
+    setPageState("ResetPassword");
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      const resetPasswordResponse = await resetPassword({
+        email: emailForgotPassword,
+        password: passwordUpdate1,
+        confirmationCode: sixDigitCode,
+      }).unwrap();
+
+      setPasswordUpdate1("");
+      setPasswordUpdate2("");
+      setSixDigitCode("");
+      if (resetPasswordResponse.token) {
+        await dispatch(
+          updateAsLoggedIn({
+            userId: resetPasswordResponse.userId,
+            token: resetPasswordResponse.token,
+            userName: resetPasswordResponse.userName,
+            profileImageUrl: resetPasswordResponse.profileImageUrl,
+          })
+        );
+      }
+      navigate("/profile");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
 
   return (
     <div className="App">
@@ -301,26 +352,10 @@ function LoginPage() {
                     </span>
                   </div>
 
-                  {/* <div className="forgot-password">
-                    <span className="forgotPasswordSpan"
-                      onClick={() => handleForgotPassword()}
-                    >
-                      Forgot password?
-                    </span>
-                  </div> */}
                   <div className="login-button"
                     onClick={() => handleRegister()}
                   > Register</div>
-                  {/* <div className="signup">
-                    <span className="signupSpan">
-                      Don't have an account?
-                      <span className="signupLinkSpan"
-                        onClick={() => handleSignup()}
-                      >
-                        Sign up
-                      </span>
-                    </span>
-                  </div> */}
+
                 </div>
                 : pageState === "Register2" ?
                   <div style={mainContainer}>
@@ -339,7 +374,100 @@ function LoginPage() {
                     <div className="login-button"
                       onClick={() => handleConfirmCode()}
                     > Confirm</div>
-                  </div> : <></>
+                  </div> :
+                  pageState === "ForgotPassword" ?
+                    <div style={mainContainer}>
+                      <div style={welcomeStyle}> Welcome To Parrots! {pageState}</div>
+                      <div
+                        className="username-wrapper">
+                        <input
+                          type="text"
+                          placeholder="Enter email"
+                          value={emailForgotPassword}
+                          onChange={(e) => setEmailForgotPassword(e.target.value)}
+                          className="username-input"
+                        />
+                      </div>
+
+                      <div className="login-button"
+                        onClick={() => handleSendResetCode()}
+                      >Send Code</div>
+                    </div>
+                    :
+                    pageState === "ResetPassword" ?
+                      <div style={mainContainer}>
+                        <div style={welcomeStyle}> Welcome To Parrots! {pageState}</div>
+                        <div
+                          className="password-wrapper">
+                          <input
+                            type={showPasswordUpdate1 ? "text" : "password"}
+                            placeholder="Password"
+                            value={passwordUpdate1}
+                            onChange={(e) => setPasswordUpdate1(e.target.value)}
+                            className="password-input"
+                          />
+                          <span style={{
+                            padding: "1rem",
+                            position: "absolute",
+                            marginLeft: "-5rem",
+                            marginTop: "-.2rem"
+                          }}
+                            onClick={() => makeVisibleUpdate()}
+                          >
+                            {
+                              showPasswordUpdate1 ?
+                                <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                                <AiOutlineEye size="2rem" color="grey" />
+                            }
+                          </span>
+                        </div>
+
+
+                        <div
+                          className="password-wrapper">
+                          <input
+                            type={showPasswordUpdate2 ? "text" : "password"}
+                            placeholder="Re-enter Password"
+                            value={passwordUpdate2}
+                            onChange={(e) => setPasswordUpdate2(e.target.value)}
+                            className="password-input"
+                          />
+                          <span style={{
+                            padding: "1rem",
+                            position: "absolute",
+                            marginLeft: "-5rem",
+                            marginTop: "-.2rem"
+                          }}
+                            onClick={() => makeVisibleUpdate2()}
+                          >
+                            {
+                              showPasswordUpdate2 ?
+                                <AiOutlineEyeInvisible size="2rem" color="grey" /> :
+                                <AiOutlineEye size="2rem" color="grey" />
+                            }
+                          </span>
+                        </div>
+
+                        <div
+                          className="username-wrapper">
+                          <input
+                            type="text"
+                            placeholder="Enter 6 digit code"
+                            value={sixDigitCode}
+                            onChange={(e) => setSixDigitCode(e.target.value)}
+                            className="username-input"
+                          />
+                        </div>
+
+
+                        <div className="login-button"
+                          onClick={() => handleResetPassword()}
+                        > Update Password</div>
+
+                      </div>
+
+                      :
+                      <></>
           }
 
 
