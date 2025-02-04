@@ -1,18 +1,4 @@
-.parrot-image {
-  width: 300px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.slide-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.email-input::placeholder,
+.username-input::placeholder,
 .password-input::placeholder {
   color: rgba(4, 4, 4, .2);
   font-size: 2rem;
@@ -20,34 +6,69 @@
   padding-left: 1rem;
 }
 
-.email-input {
-  border-radius: 0.5rem;
-  background-color: white;
-  width: 70%;
-  margin-right: 1rem;
-  border: "2px solid #3c9dee42"
-}
-
+.username-input,
 .password-input {
   border-radius: 0.5rem;
   background-color: white;
-  width: 70%;
-  margin-right: 1rem;
-  border: "2px solid #3c9dee42";
-  border: "2px solid red"
+  border: 1px solid rgba(4, 4, 4, .2);
+  width: 80%;
+  padding: 0.5rem;
+  font-size: 2rem;
+  color: rgb(10, 119, 234);
+  font-weight: 700;
+  border-radius: 1.5rem;
+
+}
+
+.password-wrapper,
+.username-wrapper {
+  color: blue;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+
+
+.forgotPasswordSpan {
+  font-weight: 700;
+  color: #a5a5a5;
+  /* background-color: lightblue; */
+  cursor: pointer;
+}
+
+.forgot-password,
+.signup {
+  color: grey;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 1rem;
+  margin-top: .5rem;
+}
+
+.signupSpan {
+  font-weight: 700;
+  color: #a5a5a5;
+}
+
+.signupLinkSpan {
+  color: #656565;
+  padding-left: 0.5rem;
+  /* background-color: lightblue; */
+  cursor: pointer;
 
 }
 
 .login-button {
-  background-color: blue;
-  border-radius: 0.5rem;
-  width: 70%;
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 80%;
   margin: auto;
-  border: "2px solid #3c9dee42"
-
-}
-
-.forgot-password-signup {
-  background-color: antiquewhite;
-  color: blueviolet;
+  border: 2px solid #3c9dee42;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: calc(0.5rem - 2px);
 }

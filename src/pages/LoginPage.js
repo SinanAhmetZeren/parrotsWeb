@@ -35,6 +35,13 @@ function LoginPage() {
     { isLoading: isLoadingConfirmUser, isSuccess: isSuccessConfirmUser },
   ] = useConfirmUserMutation();
 
+  const handleForgotPassword = () => {
+    console.log("Forgot password...");
+  }
+
+  const handleSignup = () => {
+    console.log("handleSignup...");
+  }
 
 
   const userId = "43242342432342342342";
@@ -53,31 +60,47 @@ function LoginPage() {
 
           <div style={mainContainer}>
             <div style={welcomeStyle}> Welcome To Parrots !</div>
-            <div style={emailStyle}>
+            <div
+              className="username-wrapper">
               <input
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="email-input"
+                className="username-input"
               />
             </div>
-            <div style={passWordStyle}>
+            <div
+              className="password-wrapper">
               <input
                 type="text"
                 placeholder="Password"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="password-input"
               />
-
             </div>
-            <div className="forgot-password-signup"> Forgot password?</div>
+            <div className="forgot-password">
+              <span className="forgotPasswordSpan"
+                onClick={() => handleForgotPassword()}
+              >
+                Forgot password?
+              </span>
+            </div>
             <div className="login-button"> Login</div>
-            <div className="forgot-password-signup"> Don't have an account?  Sign up</div>
+
+            <div className="signup">
+              <span className="signupSpan">
+                Don't have an account?
+                <span className="signupLinkSpan"
+                  onClick={() => handleSignup()}
+                >
+                  Sign up
+                </span>
+              </span>
+            </div>
+
           </div>
-
-
         </div>
       </header>
     </div>
@@ -96,39 +119,12 @@ const mainContainer = {
 }
 
 const welcomeStyle = {
-  backgroundColor: "#addbe655",
   color: "rgb(10, 119, 234)",
   margin: "0.5rem",
   fontSize: "3rem",
   fontWeight: "bold",
   borderRadius: "2rem"
 }
-
-const emailStyle = {
-  backgroundColor: "#addbe6",
-  color: "blue",
-  margin: "0.5rem"
-
-}
-
-const passWordStyle = {
-  backgroundColor: "#addbe6",
-  color: "blue",
-  margin: "0.5rem"
-}
-
-const loginStyle = {
-  backgroundColor: "#addbe6",
-  color: "blue"
-}
-
-const signUpStyle = {
-  backgroundColor: "#addbe6",
-  color: "blue",
-  margin: "0.5rem"
-}
-
-
 
 const buttonStyle = {
   width: "40%",
