@@ -3,8 +3,9 @@ import "../assets/css/ProfilePage.css"
 import React, { useState, useEffect } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useGetUserByIdQuery } from "../slices/UserSlice";
 import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
+import placeHolder from "../assets/images/placeholder.png"
+import { IoRemoveCircleOutline } from "react-icons/io5";
 
 function CreateVehiclePage() {
   const { userId } = "43242342432342342342";
@@ -18,71 +19,95 @@ function CreateVehiclePage() {
   const [vehicleDescription, setVehicleDescription] = useState("")
   const [vehicleCapacity, setVehicleCapacity] = useState(1);
   const [selectedVehicleType, setSelectedVehicleType] = useState("Boat");
-  const [image, setImage] = useState(null); // State to store the image
-  const [imagePreview, setImagePreview] = useState(null); // State for the image preview
-  const fileInputRef = React.createRef(); // Reference to the file input
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = React.createRef();
+  const [hoveredUserImg, setHoveredUserImg] = useState(false)
+  const [addedVehicleImages, setAddedVehicleImages] = useState([]);
 
   const handleImageChange = (e) => {
     console.log("hello from image change");
     console.log("e: --->", e);
     const files = e.target.files;
-    if (files && files.length > 0) { // Check if files array is not empty
-      const file = files[0]; // Get the selected file
-      setImage(file); // Update the state with the selected image
-      const previewUrl = URL.createObjectURL(file); // Generate a preview URL
-      setImagePreview(previewUrl); // Set the preview URL for the image
+    if (files && files.length > 0) {
+      const file = files[0];
+      setImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
     }
   };
 
   const handleCancelUpload = () => {
     console.log("hello from cancel image");
     if (imagePreview) {
-      URL.revokeObjectURL(imagePreview); // Make sure it's safe to revoke
+      URL.revokeObjectURL(imagePreview);
     }
     setImage(null);
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
 
-
-  const {
-    data: userData,
-    isLoading: isLoadingUser,
-    isError: isErrorUser,
-    error,
-    isSuccess: isSuccessUser,
-    refetch: refetchUserData,
-  } = useGetUserByIdQuery(userId);
+  const printStates = () => {
+    console.log("image: ", image);
+    console.log("image preview: ", imagePreview);
+  }
 
   const handleRegisterVehicle = () => {
     console.log("...register vehicle...");
   }
 
 
+  const maxItems = 10;
+  const placeholders = Array.from({ length: maxItems }, (_, index) => ({
+    key: `placeholder_${index + 1}`,
+  }));
+
+  const data =
+    addedVehicleImages.length < maxItems
+      ? [
+        ...addedVehicleImages,
+        ...placeholders.slice(addedVehicleImages.length),
+      ]
+      : addedVehicleImages.map((item) => ({
+        ...item,
+        key: item.addedVoyageImageId,
+      }));
+
+
   return (
-    isLoadingUser ? (
-      <div style={spinnerContainer}>
-        <div className="spinner"></div>
-      </div>
-    ) : true ? (
-      <div className="App">
-        <header className="App-header">
-          <div className="flex mainpage_Container">
-            <div className="flex mainpage_TopRow">
-              <TopLeftComponent />
-              <div className="flex mainpage_TopRight">
-                <TopBarMenu />
-
-              </div>
+    // <div style={spinnerContainer}>
+    //   <div className="spinner"></div>
+    // </div>
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
             </div>
-
-            <div style={mainContainer}>
-              <div style={wrapper}>
-                <div className="image-upload-container">
-                  {/* Hidden file input field */}
+          </div>
+          <div style={{
+            // mainContainer
+          }}>
+            <div style={wrapper}>
+              <div style={{
+                display: "flex",
+                flexDirection: "row",
+                padding: "1rem",
+                backgroundColor: "lightgoldenrodyellow",
+                width: "100%"
+              }}>
+                <div style={{
+                  backgroundColor: "cyan",
+                  width: "20.5rem"
+                }}>
                   <input
                     type="file"
                     accept="image/*"
@@ -90,100 +115,177 @@ function CreateVehiclePage() {
                     style={{ display: "none" }}
                     ref={fileInputRef}
                   />
-                  {/* Clickable image that triggers the file input */}
-                  <img
-                    src={uploadImage} // Placeholder image for the "upload" button
-                    alt="Upload Icon"
-                    onClick={handleImageClick}
-                    style={{ cursor: "pointer", maxWidth: "5rem", maxHeight: "5rem" }}
-                  />
-                  {imagePreview && (
-                    <div className="image-preview">
-                      <img src={imagePreview} alt="Uploaded preview" style={{ maxWidth: "100%", maxHeight: "400px" }} />
-                    </div>
-                  )}
-                  {image && (
-                    <img
-                      style={{ cursor: "pointer", maxWidth: "5rem", maxHeight: "5rem" }}
-                      src={uploadImage} // Example cancel icon
-                      alt="Cancel Upload"
-                      onClick={handleCancelUpload}
-                    />
-                  )}
-                </div>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "20rem",
+                      padding: "0.5rem",
+                      backgroundColor: "orange"
 
-                <div
-                  className="username-wrapper">
-                  <input
-                    type="text"
-                    placeholder="Vehicle Name"
-                    value={vehicleName}
-                    onChange={(e) => setVehicleName(e.target.value)}
-                    className="username-input"
-                  />
-                </div>
-                <div
-                  className="password-wrapper">
-                  <input
-                    type={"text"}
-                    placeholder="Description"
-                    value={vehicleDescription}
-                    onChange={(e) => setVehicleDescription(e.target.value)}
-                    className="password-input"
-                  />
-                </div>
-
-                <div className="capacity-wrapper">
-                  <input
-                    type="number"
-                    id="capacity"
-                    min="1"
-                    max="100"
-                    value={vehicleCapacity}
-                    onChange={(e) => setVehicleCapacity(e.target.value)}
-                    className="password-input"
-                  />
-                </div>
-
-
-                <div className="vehicle-type-wrapper">
-                  <select
-                    id="vehicle-type"
-                    value={selectedVehicleType}
-                    onChange={(e) => setSelectedVehicleType(e.target.value)}
-                    className="password-input"
+                    }}
                   >
-                    {Object.keys(vehicles).map((vehicle) => (
-                      <option key={vehicle} value={vehicle}>
-                        {vehicles[vehicle]} {vehicle}
-                      </option>
-                    ))}
-                  </select>
+                    {imagePreview ? (
+                      <div className="image-preview">
+                        <img src={imagePreview} alt="Uploaded preview"
+                          style={{
+                            width: "20rem",
+                            height: "20rem",
+                            objectFit: "cover",
+                            borderRadius: "1.5rem",
+                            border: "2px solid #3c9dee42"
+                          }}
+                        />
+                      </div>
+                    ) :
+                      <img
+                        src={uploadImage}
+                        alt="Upload Icon"
+                        onClick={handleImageClick}
+                        style={{
+                          width: "20rem",
+                          height: "20rem",
+                          objectFit: "cover",
+                          borderRadius: "1.5rem",
+                          border: "2px solid transparent"
+                        }}
+                      />
+                    }
+                    {image && (
+                      <div onClick={handleCancelUpload}
+                        style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
+                        onMouseEnter={() => {
+                          setHoveredUserImg(true)
+                        }}
+                        onMouseLeave={() => setHoveredUserImg(false)}
+                      >
+                        <IoRemoveCircleOutline size={"2.5rem"} />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
+                <div style={{ backgroundColor: "red" }}>
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    backgroundColor: "orange",
+                    overflow: "scroll",
+                    width: "calc(100vw - 22.5rem)"
+                  }}>
+                    {data.map((item, index) => (
+                      <div key={item.key} className="image-container">
+                        {item.addedVoyageImageId ? (
+                          <img
+                            src={item.imageUrl}
+                            alt={`Uploaded ${index + 1}`}
+                            style={{
+                              width: "20rem",
+                              height: "20rem",
+                              objectFit: "cover",
+                              maxWidth: "20rem",
 
-
-
-                <div className="login-button"
-                  onClick={() => handleRegisterVehicle()}
-                > Register Vehicle</div>
-
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={placeHolder}
+                            alt={`Placeholder ${index + 1}`}
+                            style={{
+                              width: "20rem",
+                              height: "20rem",
+                              maxWidth: "20rem",
+                              margin: "0.5rem",
+                              padding: "0.5rem",
+                              backgroundColor: "red"
+                            }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              <div
+                className="username-wrapper">
+                <input
+                  type="text"
+                  placeholder="Vehicle Name"
+                  value={vehicleName}
+                  onChange={(e) => setVehicleName(e.target.value)}
+                  className="username-input"
+                />
+              </div>
+              <div
+                className="password-wrapper">
+                <input
+                  type={"text"}
+                  placeholder="Description"
+                  value={vehicleDescription}
+                  onChange={(e) => setVehicleDescription(e.target.value)}
+                  className="password-input"
+                />
+              </div>
+              <div className="capacity-wrapper">
+                <input
+                  type="number"
+                  id="capacity"
+                  min="1"
+                  max="100"
+                  value={vehicleCapacity}
+                  onChange={(e) => setVehicleCapacity(e.target.value)}
+                  className="password-input"
+                />
+              </div>
+              <div className="vehicle-type-wrapper">
+                <select
+                  id="vehicle-type"
+                  value={selectedVehicleType}
+                  onChange={(e) => setSelectedVehicleType(e.target.value)}
+                  className="password-input"
+                >
+                  {Object.keys(vehicles).map((vehicle) => (
+                    <option key={vehicle} value={vehicle}>
+                      {vehicles[vehicle]} {vehicle}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="login-button"
+                style={{ marginBottom: "1rem" }}
+                onClick={() => printStates()}
+              > Print States</div>
+              <div className="login-button"
+                onClick={() => handleRegisterVehicle()}
+              > Register Vehicle</div>
             </div>
-
           </div>
-        </header >
-      </div >
-    ) : null
+        </div>
+      </header >
+    </div >
   );
-
-
-
 }
 
 export default CreateVehiclePage;
 
 
+const deleteImageIcon = {
+  backgroundColor: " #3c9dee99",
+  width: "3rem",
+  height: "3rem",
+  position: "absolute",
+  top: "-0.5rem",
+  right: "-0.5rem",
+  borderRadius: "2rem",
+  alignContent: "center",
+  justifyItems: "center",
+  cursor: "pointer",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+}
+
+const deleteImageIconHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
 
 const spinnerContainer = {
   marginTop: "20%",
@@ -191,7 +293,7 @@ const spinnerContainer = {
 
 const mainContainer = {
   backgroundColor: "rgba(255, 255, 255, .3)",
-  width: "40%",
+  width: "80%",
   margin: "auto",
   borderRadius: "2rem",
   padding: "1rem",
@@ -208,16 +310,10 @@ const welcomeStyle = {
   borderRadius: "2rem"
 }
 
-const mainWrapper = {
-}
-
 const wrapper = {
   backgroundColor: "white",
   width: "100%",
-  padding: "1rem",
-  paddingTop: "2rem",
-  paddingBottom: "3rem",
-  borderRadius: "1.5rem",
+  backgroundColor: "yellow"
 }
 
 const vehicles = {
