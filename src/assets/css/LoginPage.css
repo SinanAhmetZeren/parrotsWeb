@@ -1,3 +1,5 @@
+/*
+
 .username-input::placeholder,
 .password-input::placeholder {
   color: rgba(4, 4, 4, .2);
@@ -14,7 +16,6 @@
   width: 80%;
   padding: 0.5rem;
   font-size: 1.5rem;
-  /* color: rgb(10, 119, 234); */
   color: #757575;
   font-weight: 700;
   border-radius: 1.5rem;
@@ -67,4 +68,77 @@
   font-size: 1.8rem;
   font-weight: 700;
   padding: 0.2rem;
+  cursor: pointer;
+}
+
+ "-------" */
+.username-input::placeholder,
+.password-input::placeholder {
+  color: rgba(4, 4, 4, .2);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding-left: 1rem;
+}
+
+.username-input,
+.password-input {
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(4, 4, 4, .2);
+  width: 80%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  color: #757575;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  padding-left: 1rem;
+}
+
+.password-wrapper,
+.username-wrapper {
+  color: blue;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.forgotPasswordSpan {
+  font-weight: 700;
+  color: #a5a5a5;
+  cursor: pointer;
+}
+
+.forgot-password,
+.signup {
+  color: grey;
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 1rem;
+  margin-top: .5rem;
+}
+
+.signupSpan {
+  font-weight: 700;
+  color: #a5a5a5;
+}
+
+.signupLinkSpan {
+  color: #656565;
+  padding-left: 0.5rem;
+  cursor: pointer;
+}
+
+.login-button {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 80%;
+  margin: auto;
+  border: 2px solid #3c9dee42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
 }

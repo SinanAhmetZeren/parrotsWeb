@@ -23,6 +23,18 @@ export function TopBarMenu() {
           >
             Home
           </NavLink>
+
+          <NavLink
+            to="/newVehicle"
+            className={({ isActive }) =>
+              isActive
+                ? `${activeStyle} ${commonStyle}`
+                : `${inactiveStyle} ${commonStyle}`
+            }
+          >
+            CreateVehicle
+          </NavLink>
+
           <NavLink
             to="/profile"
             className={({ isActive }) =>
