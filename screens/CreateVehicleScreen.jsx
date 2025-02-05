@@ -323,13 +323,13 @@ const CreateVehicleScreen = () => {
   const data =
     addedVehicleImages.length < maxItems
       ? [
-          ...addedVehicleImages,
-          ...placeholders.slice(addedVehicleImages.length),
-        ]
+        ...addedVehicleImages,
+        ...placeholders.slice(addedVehicleImages.length),
+      ]
       : addedVehicleImages.map((item) => ({
-          ...item,
-          key: item.addedVoyageImageId,
-        }));
+        ...item,
+        key: item.addedVoyageImageId,
+      }));
 
   return (
     <>
@@ -435,10 +435,10 @@ const CreateVehicleScreen = () => {
                       onPress={() => handleCreateVehicle()}
                       style={
                         name === "" ||
-                        description === "" ||
-                        capacity === "" ||
-                        vehicleType === "" ||
-                        image === ""
+                          description === "" ||
+                          capacity === "" ||
+                          vehicleType === "" ||
+                          image === ""
                           ? styles.selection2Disabled
                           : styles.selection2
                       }
@@ -496,8 +496,8 @@ const CreateVehicleScreen = () => {
                 addedVehicleImages.length <= 1
                   ? styles.length1
                   : addedVehicleImages.length === 2
-                  ? styles.length2
-                  : styles.length3
+                    ? styles.length2
+                    : styles.length3
               }
             >
               <FlatList

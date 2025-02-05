@@ -1,15 +1,12 @@
 /* eslint-disable no-undef */
-import "../assets/css/ProfilePage.css"
 import React, { useState, useEffect } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
-import placeHolder from "../assets/images/placeholder.png"
-import { IoRemoveCircleOutline } from "react-icons/io5";
+import "../assets/css/CreateVehicle.css"
 
 function CreateVehiclePage() {
   const { userId } = "43242342432342342342";
-  const { userName } = "Ahmet Zeren";
+  const userName = "Ahmet Zeren";
 
   useEffect(() => {
     console.log("public profile page: ", userId, " ", userName);
@@ -17,8 +14,8 @@ function CreateVehiclePage() {
 
   const [vehicleName, setVehicleName] = useState("")
   const [vehicleDescription, setVehicleDescription] = useState("")
-  const [vehicleCapacity, setVehicleCapacity] = useState(1);
-  const [selectedVehicleType, setSelectedVehicleType] = useState("Boat");
+  const [vehicleCapacity, setVehicleCapacity] = useState(null);
+  const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = React.createRef();
@@ -26,8 +23,6 @@ function CreateVehiclePage() {
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
 
   const handleImageChange = (e) => {
-    console.log("hello from image change");
-    console.log("e: --->", e);
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
@@ -38,7 +33,6 @@ function CreateVehiclePage() {
   };
 
   const handleCancelUpload = () => {
-    console.log("hello from cancel image");
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview);
     }
@@ -81,9 +75,6 @@ function CreateVehiclePage() {
 
 
   return (
-    // <div style={spinnerContainer}>
-    //   <div className="spinner"></div>
-    // </div>
     <div className="App">
       <header className="App-header">
         <div className="flex mainpage_Container">
@@ -93,228 +84,148 @@ function CreateVehiclePage() {
               <TopBarMenu />
             </div>
           </div>
-          <div style={{
-            // mainContainer
-          }}>
-            <div style={wrapper}>
-              <div style={{
-                display: "flex",
-                flexDirection: "row",
-                padding: "1rem",
-                backgroundColor: "lightgoldenrodyellow",
-                width: "100%"
-              }}>
-                <div style={{
-                  backgroundColor: "cyan",
-                  width: "20.5rem"
-                }}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    style={{ display: "none" }}
-                    ref={fileInputRef}
-                  />
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "20rem",
-                      padding: "0.5rem",
-                      backgroundColor: "orange"
+          <div className="vehiclePage_vehicleContainer">
+            <div className="vehiclePage_dataContainer">
+              <div className="vehiclePage_detailsContainer">
+                <div className="vehiclePage_nameContainer">
+                  <div className=" ">
+                    <span>Name</span>
+                  </div>
+                  <div className=" ">
 
-                    }}
-                  >
-                    {imagePreview ? (
-                      <div className="image-preview">
-                        <img src={imagePreview} alt="Uploaded preview"
-                          style={{
-                            width: "20rem",
-                            height: "20rem",
-                            objectFit: "cover",
-                            borderRadius: "1.5rem",
-                            border: "2px solid #3c9dee42"
-                          }}
-                        />
-                      </div>
-                    ) :
-                      <img
-                        src={uploadImage}
-                        alt="Upload Icon"
-                        onClick={handleImageClick}
-                        style={{
-                          width: "20rem",
-                          height: "20rem",
-                          objectFit: "cover",
-                          borderRadius: "1.5rem",
-                          border: "2px solid transparent"
-                        }}
-                      />
-                    }
-                    {image && (
-                      <div onClick={handleCancelUpload}
-                        style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
-                        onMouseEnter={() => {
-                          setHoveredUserImg(true)
-                        }}
-                        onMouseLeave={() => setHoveredUserImg(false)}
-                      >
-                        <IoRemoveCircleOutline size={"2.5rem"} />
-                      </div>
-                    )}
+                    <input
+                      type="text"
+                      placeholder="Vehicle Name"
+                      value={vehicleName}
+                      onChange={(e) => setVehicleName(e.target.value)}
+                      className="vehicle-name-input"
+                    />
+
                   </div>
                 </div>
+                <div className="vehiclePage_vacancyContainer">
+                  <div className=" ">
+                    <span>Capacity</span>
+                  </div>
+                  <div className=" ">
+                    {/* <span>22</span> */}
 
-                <div style={{ backgroundColor: "red" }}>
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    backgroundColor: "orange",
-                    overflow: "scroll",
-                    width: "calc(100vw - 22.5rem)"
-                  }}>
-                    {data.map((item, index) => (
-                      <div key={item.key} className="image-container">
-                        {item.addedVoyageImageId ? (
-                          <img
-                            src={item.imageUrl}
-                            alt={`Uploaded ${index + 1}`}
-                            style={{
-                              width: "20rem",
-                              height: "20rem",
-                              objectFit: "cover",
-                              maxWidth: "20rem",
+                    <input
+                      type="number"
+                      id="capacity"
+                      placeholder="Capacity"
+                      min="1"
+                      max="100"
+                      value={vehicleCapacity}
+                      onChange={(e) => setVehicleCapacity(e.target.value)}
+                      className="capacity-input"
+                    />
 
-                            }}
-                          />
-                        ) : (
-                          <img
-                            src={placeHolder}
-                            alt={`Placeholder ${index + 1}`}
-                            style={{
-                              width: "20rem",
-                              height: "20rem",
-                              maxWidth: "20rem",
-                              margin: "0.5rem",
-                              padding: "0.5rem",
-                              backgroundColor: "red"
-                            }}
-                          />
-                        )}
-                      </div>
-                    ))}
+                  </div>
+
+                </div>
+                <div className="vehiclePage_typeContainer">
+                  <div className=" ">
+                    <span>Type</span>
+                  </div>
+                  <div className=" ">
+                    <select
+                      id="vehicle-type"
+                      value={selectedVehicleType}
+                      onChange={(e) => {
+                        setSelectedVehicleType(e.target.value);
+                      }}
+                      className="type-input"
+                      style={{ color: selectedVehicleType ? "#00008b" : "#96989c" }} // Change text color dynamically
+                    >
+                      <option value="" disabled className="placeholderOption">
+                        Select
+                      </option>
+
+                      {Object.keys(vehicles)
+                        .filter((vehicle) => vehicle !== "Walk" && vehicle !== "Run")
+                        .map((vehicle) => (
+                          <option key={vehicle} value={vehicle}>
+                            {vehicle}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
               </div>
-
-              <div
-                className="username-wrapper">
-                <input
-                  type="text"
-                  placeholder="Vehicle Name"
-                  value={vehicleName}
-                  onChange={(e) => setVehicleName(e.target.value)}
-                  className="username-input"
-                />
+              <div className="vehiclePage_descriptionContainer">
+                <div className="vehiclePage_descriptionContainer_inner">
+                  <div className="vehiclePage_descriptionContainer_descriptionTitle">
+                    <span>Description</span>
+                  </div>
+                  <div className="vehiclePage_descriptionContainer_descriptionContent">
+                    <span> Description</span>
+                  </div>
+                </div>
               </div>
-              <div
-                className="password-wrapper">
-                <input
-                  type={"text"}
-                  placeholder="Description"
-                  value={vehicleDescription}
-                  onChange={(e) => setVehicleDescription(e.target.value)}
-                  className="password-input"
-                />
-              </div>
-              <div className="capacity-wrapper">
-                <input
-                  type="number"
-                  id="capacity"
-                  min="1"
-                  max="100"
-                  value={vehicleCapacity}
-                  onChange={(e) => setVehicleCapacity(e.target.value)}
-                  className="password-input"
-                />
-              </div>
-              <div className="vehicle-type-wrapper">
-                <select
-                  id="vehicle-type"
-                  value={selectedVehicleType}
-                  onChange={(e) => setSelectedVehicleType(e.target.value)}
-                  className="password-input"
-                >
-                  {Object.keys(vehicles).map((vehicle) => (
-                    <option key={vehicle} value={vehicle}>
-                      {vehicles[vehicle]} {vehicle}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="login-button"
-                style={{ marginBottom: "1rem" }}
-                onClick={() => printStates()}
-              > Print States</div>
-              <div className="login-button"
-                onClick={() => handleRegisterVehicle()}
-              > Register Vehicle</div>
+            </div>
+            <div className="vehicle_swiperContainer">
             </div>
           </div>
         </div>
-      </header >
-    </div >
+      </header>
+    </div>
   );
 }
 
 export default CreateVehiclePage;
 
 
-const deleteImageIcon = {
-  backgroundColor: " #3c9dee99",
-  width: "3rem",
-  height: "3rem",
-  position: "absolute",
-  top: "-0.5rem",
-  right: "-0.5rem",
-  borderRadius: "2rem",
-  alignContent: "center",
-  justifyItems: "center",
-  cursor: "pointer",
-  transition: "transform 0.3s ease-in-out", // Smooth transition
+const userNameStyle = {
+  borderRadius: '1.5rem', // Keep this as the final value for border-radius
+  backgroundColor: '#007bff',
+  color: 'white',
+  textAlign: 'center',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  fontSize: '1rem',
+  border: 'none',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)',
+  transition: 'box-shadow 0.2s ease',
+  WebkitFontSmoothing: 'antialiased',
+  MozOsxFontSmoothing: 'grayscale',
+  height: "1.8rem",
+  display: "flex",
+  flexDirection: "row"
 }
 
-const deleteImageIconHover = {
+const userNameTextStyle = {
+  // backgroundColor: "red"
+}
+
+const userImageStyleHover = {
   transform: "scale(1.2)", // Enlarge on hover
+};
+
+const userImageStyle = {
+  height: "2rem",
+  width: "2rem",
+  borderRadius: "3rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+  cursor: "pointer",
 };
 
 const spinnerContainer = {
   marginTop: "20%",
 };
 
-const mainContainer = {
-  backgroundColor: "rgba(255, 255, 255, .3)",
-  width: "80%",
-  margin: "auto",
-  borderRadius: "2rem",
-  padding: "1rem",
-  display: "flex",
-  justifyContent: "center",
-  marginTop: "3rem"
-}
-
-const welcomeStyle = {
-  color: "rgba(10, 119, 234,.7)",
-  margin: "0.5rem",
-  fontSize: "1.8rem",
-  fontWeight: "bold",
-  borderRadius: "2rem"
-}
-
-const wrapper = {
-  backgroundColor: "white",
-  width: "100%",
-  backgroundColor: "yellow"
-}
+const VehicleTypes = [
+  "Boat",
+  "Car",
+  "Caravan",
+  "Bus",
+  "Walk",
+  "Run",
+  "Motorcycle",
+  "Bicycle",
+  "TinyHouse",
+  "Airplane",
+];
 
 const vehicles = {
   Boat: "⛵",
@@ -328,3 +239,4 @@ const vehicles = {
   Tinyhouse: "🏠",
   Airplane: "✈️",
 };
+
