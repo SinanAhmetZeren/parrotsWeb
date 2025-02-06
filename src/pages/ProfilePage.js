@@ -19,6 +19,10 @@ function ProfilePage() {
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
+  const gotoNewVehicle = () => {
+    navigate(`/newVehicle`);
+
+  }
 
   const {
     data: userData,
@@ -99,7 +103,17 @@ function ProfilePage() {
                   {isSuccessUser ? (
                     userData?.usersVehicles.length > 0 ?
                       (<>
-                        <span style={VehiclesVoyagesTitle}>Vehicles</span>
+                        <div style={{
+                          display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
+                          marginTop: ".5rem"
+                        }}>
+
+                          <span style={VehiclesVoyagesTitle}>Vehicles</span>
+                          <span
+                            onClick={() => { gotoNewVehicle() }}
+                            style={NewVehicle}>New Vehicle</span>
+                        </div>
+
                         <ProfilePageVehiclesComponent userData={userData} />
                       </>) : null)
                     : null
@@ -109,7 +123,20 @@ function ProfilePage() {
                   {isSuccessUser ? (
                     userData?.usersVoyages.length > 0 ?
                       (<>
-                        <span style={{ ...VehiclesVoyagesTitle, marginTop: "1rem" }}>Voyages</span>
+
+
+                        <div style={{
+                          display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
+                          marginTop: ".5rem"
+                        }}>
+
+                          <span style={VehiclesVoyagesTitle}>Voyages</span>
+                          <span
+                            onClick={() => { gotoNewVehicle() }}
+                            style={NewVehicle}>New Voyage</span>
+                        </div>
+
+
                         <ProfilePageVoyagesComponent userData={userData} />
                       </>) : null)
                     : null
@@ -141,4 +168,22 @@ const VehiclesVoyagesTitle = {
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
   color: "white"
+};
+
+
+const NewVehicle = {
+  width: "70%", // Added quotes around "100%"
+  height: "80%",
+  fontSize: "1.6rem", // Changed to camelCase
+  fontWeight: 800, // Correct format for font-weight
+  color: "white",
+  borderRadius: "1.5rem",
+  paddingRight: ".1rem",
+  paddingLeft: ".1rem",
+  marginTop: "0.3rem",
+  backgroundColor: "#007bff",
+  cursor: "pointer",
+  border: "none",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
 };

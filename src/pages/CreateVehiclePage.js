@@ -415,10 +415,6 @@ function CreateVehiclePage() {
                 onClick={() => handleCreateVehicle()}
               >Create Vehicle</div>
 
-              <div className="completeVehicleButton"
-                onClick={() => gotootherpage()}
-              >other page </div>
-
             </>
 
           }

@@ -11,6 +11,7 @@ import { FavoritesPageVoyagesComponent } from "../components/FavoritesPageVoyage
 
 export default function FavoritePage() {
   const userId = localStorage.getItem("storedUserId")
+  console.log("userid", userId);
   const {
     data: FavoriteVoyagesData,
     isError: isFavoriteErrorVoyages,

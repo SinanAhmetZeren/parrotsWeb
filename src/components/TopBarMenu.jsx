@@ -23,7 +23,7 @@ export function TopBarMenu() {
           >
             Home
           </NavLink>
-
+          {/* 
           <NavLink
             to="/newVehicle"
             className={({ isActive }) =>
@@ -33,7 +33,7 @@ export function TopBarMenu() {
             }
           >
             CreateVehicle
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             to="/profile"
