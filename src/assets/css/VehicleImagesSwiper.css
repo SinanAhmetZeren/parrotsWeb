@@ -1,0 +1,53 @@
+#app {
+    height: 100%;
+}
+
+html,
+body {
+    position: relative;
+    height: 100%;
+}
+
+body {
+    background: #eee;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #000;
+    margin: 0;
+    padding: 0;
+}
+
+.swiper {
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 1.5rem;
+    padding-left: 2rem;
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    /* background: #fff; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 1.5rem;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiper-slide {
+    filter: none !important;
+    opacity: 1 !important;
+    /* background-color: olive; */
+    padding: 1rem !important;
+    width: 23rem !important;
+}

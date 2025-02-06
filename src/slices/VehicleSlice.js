@@ -51,13 +51,15 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     addVehicleImage: builder.mutation({
       query: (data) => {
-        const { formData, vehicleId } = data;
+        const { vehicleImage, vehicleId } = data;
+        const formData = new FormData();
+        formData.append("imageFile", vehicleImage);
         const url = `/api/Vehicle/${vehicleId}/AddVehicleImage`;
         return {
           url,
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };

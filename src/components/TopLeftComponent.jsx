@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 export const TopLeftComponent = () => {
 
   const storedUserName = localStorage.getItem("storedUserName")
-  console.log("stored username---: ", storedUserName);
   const navigate = useNavigate();
   const handleCardClick = () => {
     navigate(`/profile`);

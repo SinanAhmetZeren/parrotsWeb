@@ -179,8 +179,9 @@
 .vehiclePage_vehicleContainer {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: .5rem;
-  padding: 2rem;
+  padding: 0rem;
   margin: auto;
+  margin-top: 1rem;
   color: blue;
   display: flex;
   flex-direction: row;
@@ -308,6 +309,7 @@
   margin: 1rem;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 1rem;
+
 }
 
 .capacity-input {
@@ -322,16 +324,13 @@
 
 .placeholderOption {
   color: red;
-  background-color: pink;
+  /* background-color: pink; */
 }
 
 .editor-container .ql-editor {
   min-height: calc(1.5em * 11);
-  /* max-height: 400px; */
   overflow-y: auto;
-  /* font-size: 16px; */
   line-height: 1.5;
-  /* background-color: green; */
 }
 
 .createVehicleButton {
@@ -339,11 +338,28 @@
   border-radius: 1.5rem;
   width: 20%;
   margin: auto;
-  margin-top: -3rem;
+  margin-top: 0rem;
   border: 2px solid #3c9dee42;
   font-size: 1.8rem;
   font-weight: 700;
   padding: 0.2rem;
   cursor: pointer;
+}
 
+.completeVehicleButton {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 20%;
+  margin: auto;
+  margin-top: 1rem;
+  border: 2px solid #3c9dee42;
+  font-size: 1.8rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.placeholder_imageContainer {
+  overflow: hidden;
+  border-radius: 2rem;
 }

@@ -11,10 +11,6 @@ function CreateVehiclePage() {
   const { userId } = "43242342432342342342";
   const { userName } = "Ahmet Zeren";
 
-  useEffect(() => {
-    console.log("public profile page: ", userId, " ", userName);
-  }, [userId, userName])
-
   const [vehicleName, setVehicleName] = useState("")
   const [vehicleDescription, setVehicleDescription] = useState("")
   const [vehicleCapacity, setVehicleCapacity] = useState(1);

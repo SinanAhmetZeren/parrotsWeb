@@ -181,37 +181,7 @@ const CreateVehicleScreen = () => {
     setIsCreatingVehicle(false);
   };
 
-  const handleUploadImage2 = async () => {
-    if (!voyageImage) {
-      return;
-    }
 
-    const formData = new FormData();
-    formData.append("imageFile", {
-      uri: voyageImage,
-      type: "image/jpeg",
-      name: "profileImage.jpg",
-    });
-
-    setIsUploadingImage(true);
-    try {
-      const addedVehicleImageResponse = await addVehicleImage({
-        formData,
-        vehicleId,
-      });
-
-      const addedVoyageImageId = addedVehicleImageResponse.data.imagePath;
-      const newItem = {
-        addedVoyageImageId,
-        voyageImage,
-      };
-      setAddedVehicleImages((prevImages) => [...prevImages, newItem]);
-      setVoyageImage(null);
-    } catch (error) {
-      console.error("Error uploading image", error);
-    }
-    setIsUploadingImage(false);
-  };
 
   const handleUploadImage = useCallback(async () => {
     if (!voyageImage) {

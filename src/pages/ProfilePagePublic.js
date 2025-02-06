@@ -17,11 +17,6 @@ function ProfilePagePublic() {
   const { userName } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("public profile page: ", userId, " ", userName);
-  }, [userId, userName])
-
-
   const handleSendMessageRequest = () => {
     navigate(`/connect/${userId}/${userName}`);
   }
