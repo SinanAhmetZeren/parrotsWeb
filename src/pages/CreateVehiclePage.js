@@ -19,6 +19,7 @@ import {
   useDeleteVehicleImageMutation,
   useCheckAndDeleteVehicleMutation,
 } from "../slices/VehicleSlice";
+import { useNavigate } from "react-router-dom";
 
 function CreateVehiclePage() {
   const [createVehicle] = useCreateVehicleMutation();
@@ -27,6 +28,7 @@ function CreateVehiclePage() {
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userName = "Ahmet Zeren";
+  const navigate = useNavigate();
 
   const [vehicleName, setVehicleName] = useState("")
   const [vehicleDescription, setVehicleDescription] = useState("")
@@ -45,6 +47,11 @@ function CreateVehiclePage() {
   const [vehicleId, setVehicleId] = useState(3)
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isCreatingVehicle, setIsCreatingVehicle] = useState(false)
+
+
+  useEffect(() => {
+    console.log("useffect added images: ", addedVehicleImages);
+  }, [addedVehicleImages])
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -97,31 +104,12 @@ function CreateVehiclePage() {
     fileInputRef2.current.click();
   };
 
-  const handleCreateVehicle2 = () => {
-    if (pageState === "s1")
-      setPageState("s2")
-
-    if (pageState === "s2")
-      setPageState("s1")
-  }
-
-
   const handleCreateVehicle = async () => {
     if (!image1) {
       return;
     }
-
-    // const formData = new FormData();
-    // formData.append("imageFile", {
-    //   uri: image1,
-    //   type: "image/jpeg",
-    //   name: "profileImage.jpg",
-    // });
-
     setIsCreatingVehicle(true);
     try {
-
-
       const response = await createVehicle({
         vehicleImage: image1,
         name: vehicleName,
@@ -130,14 +118,15 @@ function CreateVehiclePage() {
         vehicleType: selectedVehicleType,
         capacity: vehicleCapacity,
       });
-      console.log("-->>", response);
       const createdVehicleId = response.data.data.id;
 
       setVehicleId(createdVehicleId);
       setVehicleDescription("");
       setVehicleCapacity("");
       setSelectedVehicleType("");
+      setVehicleName("");
       setImage1("");
+      setImagePreview("")
       setVehicleImage("");
       setAddedVehicleImages([]);
       setPageState("s2");
@@ -151,24 +140,36 @@ function CreateVehiclePage() {
     }
   };
 
-
-
-  const completeVehicleCreate = () => {
+  const gotootherpage = () => {
     if (pageState === "s1")
       setPageState("s2")
-
     if (pageState === "s2")
       setPageState("s1")
   }
 
-  const printStates = () => {
-    console.log("image: ", image);
-    console.log("image preview: ", imagePreview);
+  const completeVehicleCreate = () => {
+    navigate(`/profile`);
   }
 
-  const handleRegisterVehicle = () => {
-    console.log("...register vehicle...");
-  }
+  const handleDeleteImage = async (imageId) => {
+
+    console.log("iamge Id: ...", imageId);
+
+    const previousImages = [...addedVehicleImages];
+    setAddedVehicleImages(
+      previousImages.filter((item) => item.addedvehicleImageId !== imageId)
+    );
+
+    try {
+      await deleteVehicleImage(imageId);
+    } catch (error) {
+      console.error("Error deleting image", error);
+      setAddedVehicleImages(previousImages);
+      alert(
+        "Failed to delete image. Please check your connection and try again."
+      );
+    }
+  };
 
   const maxItems = 10;
   const placeholders = Array.from({ length: maxItems }, (_, index) => ({
@@ -206,7 +207,8 @@ function CreateVehiclePage() {
       };
       setAddedVehicleImages((prevImages) => [...prevImages, newItem]);
       setVehicleImage(null);
-      setImagePreview2(null)
+      setImagePreview2(null);
+
     } catch (error) {
       console.error("Error uploading image", error);
       alert(
@@ -356,6 +358,7 @@ function CreateVehiclePage() {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
+                      // onClick={(e) => (e.target.value = null)} // Reset value before selection
                       style={{ display: "none" }}
                       ref={fileInputRef}
                     />
@@ -411,6 +414,11 @@ function CreateVehiclePage() {
               <div className="createVehicleButton"
                 onClick={() => handleCreateVehicle()}
               >Create Vehicle</div>
+
+              <div className="completeVehicleButton"
+                onClick={() => gotootherpage()}
+              >other page </div>
+
             </>
 
           }
@@ -429,6 +437,8 @@ function CreateVehiclePage() {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange2}
+                      onClick={(e) => (e.target.value = null)} // Reset value before selection
+
                       style={{ display: "none" }}
                       ref={fileInputRef2}
                     />
@@ -464,13 +474,9 @@ function CreateVehiclePage() {
                             <IoRemoveCircleOutline size={"2.5rem"} />
                           </div>
 
-                          <div className="completeVehicleButton"
+                          <div style={addImageButton}
                             onClick={() => handleUploadImage()}
                           >Add Image</div>
-
-                          <div className="completeVehicleButton"
-                            onClick={() => printState()}
-                          >Print Image</div>
                         </>
                       )}
                     </div>
@@ -489,16 +495,26 @@ function CreateVehiclePage() {
                       className="mySwiper"
                     >
                       {data.map((item, index) => {
+                        if (index === 1)
+                          console.log("data:", data);
                         return (
                           <SwiperSlide>
                             <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
 
                               {item.addedvehicleImageId ? (
-                                <img
-                                  src={URL.createObjectURL(item.vehicleImage)}
-                                  alt={`Uploaded ${index + 1}`}
-                                  style={userUploadedImage}
-                                />
+                                <>
+                                  <img
+                                    src={URL.createObjectURL(item.vehicleImage)}
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={userUploadedImage}
+                                  />
+                                  <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
+                                    style={deleteImageIcon3}
+                                  >
+                                    <IoRemoveCircleOutline size={"2.5rem"} />
+                                  </div>
+                                </>
+
                               ) : (
                                 <img
                                   src={placeHolder}
@@ -579,6 +595,23 @@ function CreateVehiclePage() {
 
 export default CreateVehiclePage;
 
+const addImageButton = {
+  backgroundColor: "#007bff",
+  position: "absolute",
+  bottom: "-0.5rem",
+  borderRadius: "2rem",
+  alignContent: "center",
+  justifyItems: "center",
+  cursor: "pointer",
+  transition: "transform 0.3s ease-in-out",
+  fontSize: "1.5rem",
+  fontWeight: "800",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+  left: "50%",
+  transform: "translateX(-50%)", // Centers it horizontally
+}
+
 const placeHolderImage = {
   width: "20rem",
   height: "20rem",
@@ -586,6 +619,8 @@ const placeHolderImage = {
   margin: "0.5rem",
   borderRadius: "1rem",
   overflow: "hidden",
+  objectFit: "cover",
+
 }
 
 const userUploadedImage = {
@@ -593,7 +628,9 @@ const userUploadedImage = {
   height: "20rem",
   objectFit: "cover",
   maxWidth: "20rem",
-  borderRadius: "1rem"
+  borderRadius: "1rem",
+  margin: "0.5rem",
+
 }
 
 const uploadImage2 = {
@@ -659,9 +696,27 @@ const deleteImageIcon2 = {
   transition: "transform 0.3s ease-in-out",
 }
 
+const deleteImageIcon3 = {
+  backgroundColor: " #3e99",
+  width: "3rem",
+  height: "3rem",
+  position: "absolute",
+  top: "0",
+  right: "0",
+  borderRadius: "2rem",
+  alignContent: "center",
+  justifyItems: "center",
+  cursor: "pointer",
+  transition: "transform 0.3s ease-in-out",
+}
+
+
+
 const deleteImageIconHover2 = {
   transform: "scale(1.2)",
 };
+
+
 
 const VehiclesVoyagesTitle = {
   fontSize: "1.6rem",
