@@ -176,7 +176,7 @@
 }
 
 
-.vehiclePage_vehicleContainer {
+.vehiclePage1_vehicleContainer {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: .5rem;
   padding: 2rem;
@@ -186,7 +186,7 @@
   flex-direction: row;
 }
 
-.vehiclePage_dataContainer {
+.vehiclePage1_dataContainer {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -197,7 +197,7 @@
 }
 
 
-.vehiclePage_detailsContainer {
+.vehiclePage1_detailsContainer {
   background-color: #E7E7EC;
   display: grid;
   grid-template-columns: 1.5fr .7fr .6fr 1.2fr;
@@ -209,7 +209,7 @@
   font-size: 1.2rem;
 }
 
-.vehiclePage_descriptionContainer {
+.vehiclePage1_descriptionContainer {
   display: flex;
   flex-direction: row;
   background-color: #E7E7EC;
@@ -218,34 +218,34 @@
   box-shadow: rgba(0, 0, 0, 0.14) 0px -3px 8px 0px inset;
 }
 
-.vehiclePage_nameContainer {
+.vehiclePage1_nameContainer {
   margin: 0.2rem;
   /* background-color: white; */
 }
 
-.vehiclePage_vacancyContainer {
-  margin: 0.2rem;
-  /* background-color: white; */
-}
-
-
-
-.vehiclePage_typeContainer {
+.vehiclePage1_vacancyContainer {
   margin: 0.2rem;
   /* background-color: white; */
 }
 
 
-.vehiclePage_hostContainer {
+
+.vehiclePage1_typeContainer {
   margin: 0.2rem;
   /* background-color: white; */
 }
 
 
-.vehiclePage_nameContainer> :first-child,
-.vehiclePage_typeContainer> :first-child,
-.vehiclePage_hostContainer> :first-child,
-.vehiclePage_vacancyContainer> :first-child {
+.vehiclePage1_hostContainer {
+  margin: 0.2rem;
+  /* background-color: white; */
+}
+
+
+.vehiclePage1_nameContainer> :first-child,
+.vehiclePage1_typeContainer> :first-child,
+.vehiclePage1_hostContainer> :first-child,
+.vehiclePage1_vacancyContainer> :first-child {
   color: darkblue;
   background-color: white;
   font-weight: 700;
@@ -255,10 +255,10 @@
   padding-left: 0.3rem;
 }
 
-.vehiclePage_nameContainer> :nth-child(2),
-.vehiclePage_typeContainer> :nth-child(2),
-.vehiclePage_hostContainer> :nth-child(2),
-.vehiclePage_vacancyContainer> :nth-child(2) {
+.vehiclePage1_nameContainer> :nth-child(2),
+.vehiclePage1_typeContainer> :nth-child(2),
+.vehiclePage1_hostContainer> :nth-child(2),
+.vehiclePage1_vacancyContainer> :nth-child(2) {
   background-color: white;
   color: darkblue;
   border-radius: .4rem;
@@ -267,12 +267,12 @@
 }
 
 
-.vehiclePage_descriptionContainer {
+.vehiclePage1_descriptionContainer {
   width: 40rem;
   height: 50vh;
 }
 
-.vehiclePage_descriptionContainer_inner {
+.vehiclePage1_descriptionContainer_inner {
   background-color: white;
   border-radius: .4rem;
   width: 100%;
@@ -281,11 +281,11 @@
   scrollbar-width: none;
 }
 
-.vehiclePage_descriptionContainer_inner::-webkit-scrollbar {
+.vehiclePage1_descriptionContainer_inner::-webkit-scrollbar {
   display: none;
 }
 
-.vehiclePage_descriptionContainer_descriptionTitle {
+.vehiclePage1_descriptionContainer_descriptionTitle {
   margin: 0.5rem;
   font-size: 1.4rem;
   text-align: left;
@@ -294,7 +294,7 @@
 
 }
 
-.vehiclePage_descriptionContainer_descriptionContent {
+.vehiclePage1_descriptionContainer_descriptionContent {
   margin: 0.5rem;
   font-size: 1.2rem;
   text-align: justify;
@@ -303,11 +303,7 @@
 
 }
 
-
-
-
-
-.vehicle_swiperContainer {
+.vehiclePage1_swiperContainer {
   width: 40rem;
   padding: 2rem;
   margin: 1rem;

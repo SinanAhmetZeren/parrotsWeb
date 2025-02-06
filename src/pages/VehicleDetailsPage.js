@@ -52,10 +52,10 @@ function VehicleDetailsPage() {
                 <TopBarMenu />
               </div>
             </div>
-            <div className="vehiclePage_vehicleContainer">
-              <div className="vehiclePage_dataContainer">
-                <div className="vehiclePage_detailsContainer">
-                  <div className="vehiclePage_nameContainer">
+            <div className="vehiclePage1_vehicleContainer">
+              <div className="vehiclePage1_dataContainer">
+                <div className="vehiclePage1_detailsContainer">
+                  <div className="vehiclePage1_nameContainer">
                     <div className=" ">
                       <span>Name</span>
                     </div>
@@ -63,7 +63,7 @@ function VehicleDetailsPage() {
                       <span>{VehicleData.name}</span>
                     </div>
                   </div>
-                  <div className="vehiclePage_vacancyContainer">
+                  <div className="vehiclePage1_vacancyContainer">
                     <div className=" ">
                       <span>Capacity</span>
                     </div>
@@ -72,7 +72,7 @@ function VehicleDetailsPage() {
                     </div>
 
                   </div>
-                  <div className="vehiclePage_typeContainer">
+                  <div className="vehiclePage1_typeContainer">
                     <div className=" ">
                       <span>Type</span>
                     </div>
@@ -81,7 +81,7 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="vehiclePage_hostContainer">
+                  <div className="vehiclePage1_hostContainer">
                     <div className=" ">
                       <span>Host</span>
                     </div>
@@ -101,13 +101,14 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="vehiclePage_descriptionContainer">
-                  <div className="vehiclePage_descriptionContainer_inner">
-                    <div className="vehiclePage_descriptionContainer_descriptionTitle">
+                <div className="vehiclePage1_descriptionContainer">
+                  <div className="vehiclePage1_descriptionContainer_inner">
+                    <div className="vehiclePage1_descriptionContainer_descriptionTitle">
                       <span>Description</span>
                     </div>
-                    <div className="vehiclePage_descriptionContainer_descriptionContent">
-                      <span> {VehicleData.description}</span>
+                    <div className="vehiclePage1_descriptionContainer_descriptionContent">
+                      {/* <span> {VehicleData.description}</span> */}
+                      <div dangerouslySetInnerHTML={{ __html: VehicleData.description }} />
                     </div>
 
                   </div>
@@ -115,7 +116,7 @@ function VehicleDetailsPage() {
 
 
               </div>
-              <div className="vehicle_swiperContainer">
+              <div className="vehiclePage1_swiperContainer">
                 <VehiclePageImageSwiper vehicleData={VehicleData} />
               </div>
 

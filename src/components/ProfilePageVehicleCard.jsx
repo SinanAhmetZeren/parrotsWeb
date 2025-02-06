@@ -21,12 +21,9 @@ export function ProfilePageVehicleCard({ vehicle, index }) {
             </span>
           </div>
           <div style={vehicleTypeStyle}>
-
             <span style={vehicleTypeStyle_Text} title={vehicle?.type}>
               <VehicleIcon vehicleType={vehicle?.type} />
             </span>
-
-
           </div>
           <div style={vehicleCapacityStyle}>
             <span style={vehicleCapacityStyle_Text} title={"capacity is " + vehicle?.capacity + ((vehicle?.capacity > 1) ? " people" : " person")}>🧑‍🤝‍🧑{vehicle?.capacity}
@@ -34,9 +31,14 @@ export function ProfilePageVehicleCard({ vehicle, index }) {
           </div>
         </div>
         {/* <div style={cardBriefStyle}>{vehicle?.description}</div> */}
-        <div style={cardBriefStyle}>{vehicle?.description?.length > 280 ? `${vehicle?.description.substring(0, 280)}...` : vehicle?.description}</div>
-
-
+        <div style={cardBriefStyle}>
+          {vehicle?.description?.length > 280 ?
+            // `${vehicle?.description.substring(0, 280)}...` :
+            <div dangerouslySetInnerHTML={{ __html: vehicle?.description.substring(0, 200) + "..." }} /> :
+            // vehicle?.description}
+            <div dangerouslySetInnerHTML={{ __html: vehicle?.description }} />
+          }
+        </div>
       </div>
     </div >
   );

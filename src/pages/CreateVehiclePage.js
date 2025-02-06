@@ -11,7 +11,7 @@ import placeHolder from "../assets/images/placeholder.png"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import '../assets/css/VehicleImagesSwiper.css';
+// import '../assets/css/VehicleImagesSwiper.css';
 import { Pagination, FreeMode } from 'swiper/modules';
 import {
   useCreateVehicleMutation,
@@ -25,7 +25,7 @@ function CreateVehiclePage() {
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
-  const { userId } = "43242342432342342342";
+  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userName = "Ahmet Zeren";
 
   const [vehicleName, setVehicleName] = useState("")
@@ -44,6 +44,7 @@ function CreateVehiclePage() {
   const [pageState, setPageState] = useState("s1")
   const [vehicleId, setVehicleId] = useState(3)
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isCreatingVehicle, setIsCreatingVehicle] = useState(false)
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -96,13 +97,59 @@ function CreateVehiclePage() {
     fileInputRef2.current.click();
   };
 
-  const handleCreateVehicle = () => {
+  const handleCreateVehicle2 = () => {
     if (pageState === "s1")
       setPageState("s2")
 
     if (pageState === "s2")
       setPageState("s1")
   }
+
+
+  const handleCreateVehicle = async () => {
+    if (!image1) {
+      return;
+    }
+
+    // const formData = new FormData();
+    // formData.append("imageFile", {
+    //   uri: image1,
+    //   type: "image/jpeg",
+    //   name: "profileImage.jpg",
+    // });
+
+    setIsCreatingVehicle(true);
+    try {
+
+
+      const response = await createVehicle({
+        vehicleImage: image1,
+        name: vehicleName,
+        description: vehicleDescription,
+        userId,
+        vehicleType: selectedVehicleType,
+        capacity: vehicleCapacity,
+      });
+      console.log("-->>", response);
+      const createdVehicleId = response.data.data.id;
+
+      setVehicleId(createdVehicleId);
+      setVehicleDescription("");
+      setVehicleCapacity("");
+      setSelectedVehicleType("");
+      setImage1("");
+      setVehicleImage("");
+      setAddedVehicleImages([]);
+      setPageState("s2");
+    } catch (error) {
+      alert(
+        "Failed to create vehicle. Please check your connection and try again."
+      );
+      console.error("Error creating vehicle:", error);
+    } finally {
+      setIsCreatingVehicle(false);
+    }
+  };
 
 
 
@@ -169,9 +216,9 @@ function CreateVehiclePage() {
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
 
-  useEffect(() => {
-    console.log("data", data);
-  }, [data])
+  // useEffect(() => {
+  //   console.log("data", data);
+  // }, [data])
 
   return (
     <div className="App">
@@ -442,19 +489,13 @@ function CreateVehiclePage() {
                       className="mySwiper"
                     >
                       {data.map((item, index) => {
-                        console.log("item", item);
-                        console.log("item", item.addedvehicleImageId);
-                        console.log("item", item.vehicleImage);
-
                         return (
                           <SwiperSlide>
                             <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
 
                               {item.addedvehicleImageId ? (
                                 <img
-                                  // src={item.vehicleImage}
                                   src={URL.createObjectURL(item.vehicleImage)}
-
                                   alt={`Uploaded ${index + 1}`}
                                   style={userUploadedImage}
                                 />
@@ -480,6 +521,58 @@ function CreateVehiclePage() {
           }
         </div>
       </header>
+
+      <style>
+        {`
+          #app {
+            height: 100%;
+          }
+
+          html, body {
+            position: relative;
+            height: 100%;
+          }
+
+          body {
+            background: #eee;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+          }
+
+          .swiper {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+          }
+
+          .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+            filter: none !important;
+            opacity: 1 !important;
+            padding: 1rem !important;
+            width: 23rem !important;
+          }
+
+          .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        `}
+      </style>
+
+
     </div>
   );
 }
@@ -596,3 +689,4 @@ const pageStateDisplay = {
 
 const pageStateDisplayContainer = {
 }
+

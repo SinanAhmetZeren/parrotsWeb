@@ -29,8 +29,19 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     createVehicle: builder.mutation({
       query: (data) => {
-        const { formData, name, description, userId, capacity, vehicleType } =
+
+        const { vehicleImage, name, description, userId, capacity, vehicleType } =
           data;
+
+        console.log("data: --->>> ", data);
+        console.log("1", vehicleImage);
+        console.log("2", name);
+        console.log("3", description);
+        console.log("4", userId);
+        console.log("5", capacity);
+        console.log("6", vehicleType);
+
+
         const queryParams = new URLSearchParams({
           Name: name,
           Description: description,
@@ -38,12 +49,15 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           Capacity: capacity,
           Type: vehicleType,
         });
+        const formData = new FormData();
+        formData.append("imageFile", vehicleImage);
         const url = `/api/Vehicle/AddVehicle?${queryParams}`;
+        console.log("url: ", url);
         return {
           url,
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };

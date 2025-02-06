@@ -54,7 +54,6 @@ export function VehiclePageImageSwiper({ vehicleData }) {
                   borderRadius: "1rem",
                   overflow: "hidden",
                   // marginTop: "5vh",
-
                 }}
               />
             </SwiperSlide>
