@@ -165,7 +165,7 @@ function CreateVehiclePage() {
                 </div>
 
 
-                {/* <div style={{ backgroundColor: "red" }}>
+                <div style={{ backgroundColor: "red" }}>
                   <div style={{
                     display: "flex",
                     flexDirection: "row",
@@ -204,7 +204,7 @@ function CreateVehiclePage() {
                       </div>
                     ))}
                   </div>
-                </div> */}
+                </div>
 
 
               </div>

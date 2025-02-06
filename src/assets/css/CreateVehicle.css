@@ -271,12 +271,12 @@
   height: 50vh;
 }
 
-.vehiclePage_descriptionContainer_inner {
+.createvehiclePage_descriptionContainer_inner {
   background-color: white;
   border-radius: .4rem;
   width: 100%;
   overflow: scroll;
-  height: 46vh;
+  height: 47vh;
   scrollbar-width: none;
 }
 
@@ -302,8 +302,8 @@
 
 }
 
-.vehicle_swiperContainer {
-  width: 40rem;
+.vehicle_imageContainer {
+  /* width: 40rem; */
   padding: 2rem;
   margin: 1rem;
   background-color: rgba(255, 255, 255, 0.3);
@@ -323,4 +323,27 @@
 .placeholderOption {
   color: red;
   background-color: pink;
+}
+
+.editor-container .ql-editor {
+  min-height: calc(1.5em * 11);
+  /* max-height: 400px; */
+  overflow-y: auto;
+  /* font-size: 16px; */
+  line-height: 1.5;
+  /* background-color: green; */
+}
+
+.createVehicleButton {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 20%;
+  margin: auto;
+  margin-top: -3rem;
+  border: 2px solid #3c9dee42;
+  font-size: 1.8rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+
 }
