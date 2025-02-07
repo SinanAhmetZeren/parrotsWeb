@@ -103,6 +103,7 @@ function LoginPage() {
             token: confirmResponse.token,
             userName: confirmResponse.userName,
             profileImageUrl: confirmResponse.profileImageUrl,
+
           })
         );
       }

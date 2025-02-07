@@ -20,12 +20,14 @@ export const MainPageFiltersComponent = ({
   return (
     <div // FILTER COMPONENT
       style={{
-        backgroundColor: "rgba(5, 8, 58, 0.85)",
+        // backgroundColor: "rgba(5, 8, 58, 0.85)",
+        backgroundColor: "rgba(255, 255, 255, 0.3)",
         height: "17vh",
-        width: "95%",
+        width: "92%",
         padding: "1vh",
         borderRadius: "1rem",
         alignSelf: "center",
+        margin: "auto"
       }}
     >
       <div
@@ -34,8 +36,8 @@ export const MainPageFiltersComponent = ({
         }}
       >
         <MainPageDatePicker dates={dates} setDates={setDates}
-                calendarOpen={calendarOpen} 
-                setCalendarOpen={setCalendarOpen}
+          calendarOpen={calendarOpen}
+          setCalendarOpen={setCalendarOpen}
         />
       </div>
       <div
@@ -64,8 +66,8 @@ export const MainPageFiltersComponent = ({
       </div>
       <div>
         <MainPageApplyClearButtons applyFilter={applyFilter} setDates={setDates}
-                    setSelectedVacancy={setSelectedVacancy}
-            setSelectedVehicle={setSelectedVehicle}
+          setSelectedVacancy={setSelectedVacancy}
+          setSelectedVehicle={setSelectedVehicle}
         />
       </div>
     </div>

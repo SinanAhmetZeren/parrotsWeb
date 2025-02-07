@@ -22,12 +22,10 @@ const usersSlice = createSlice({
         state.token = action.payload.token;
         state.userName = action.payload.userName;
         state.userProfileImage = action.payload.profileImageUrl;
-        console.log("hello 1");
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedUserId", action.payload.userId);
         localStorage.setItem("storedUserName", action.payload.userName);
         localStorage.setItem("storedProfileImageUrl", action.payload.profileImageUrl);
-        console.log("hello 5");
       } catch (error) {
         console.error("Error setting localStorage:", error);
       }

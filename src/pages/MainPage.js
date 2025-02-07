@@ -28,8 +28,8 @@ function MainPage() {
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
-  const [initialLatDelta, setInitialLatDelta] = useState(5);
-  const [initialLngDelta, setInitialLngDelta] = useState(5);
+  const [initialLatDelta, setInitialLatDelta] = useState(1);
+  const [initialLngDelta, setInitialLngDelta] = useState(1);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialVoyages, setInitialVoyages] = useState([]);
@@ -71,6 +71,8 @@ function MainPage() {
     const formattedStartDate = convertDateFormat(dates.startDate, "startDate");
     const formattedEndDate = convertDateFormat(dates.endDate, "endDate");
 
+
+    console.log("bounds: --> ", bounds);
     const data = {
       latitude: (bounds.lat.northEast + bounds.lat.southWest) / 2,
       longitude: (bounds.lng.northEast + bounds.lng.southWest) / 2,
@@ -225,7 +227,7 @@ function MainPage() {
               </div>
               <div style={{ height: "60vh" }}>
                 {isLoading ? (
-                  <div className={"cardSwiperSpinner"}>
+                  <div style={{ backgroundColor: "", margin: "auto", marginTop: "30vh" }}>
                     <div className="spinner"></div>
                   </div>
                 ) : (
@@ -241,50 +243,53 @@ function MainPage() {
               <MainPageNewVoyageButton />
             </div>
 
-            <div className="flex mainpage_BottomRight">
-              <div
-                className="flex mainpage_MapContainer"
-              >
-                <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                  {
-                    !initialLatitude && (
+            {
+              isLoading ?
+                <div style={{ backgroundColor: "", margin: "auto", marginTop: "30vh" }}>
+                  <div className="spinner"></div>
+                </div>
+                :
+                <div className="flex mainpage_BottomRight">
+                  <div
+                    className="flex mainpage_MapContainer"
+                  >
+                    <APIProvider apiKey={myApiKey} libraries={["marker"]}>
+                      {
+                        !initialLatitude && (
 
-                      <div className={"cardSwiperSpinner"}>
-                        <div className="spinner"></div>
-                      </div>
-                    )
-                  }
-                  {
-                    initialLatitude && (
-
-                      <Map
-                        mapId={"mainpageMap"}
-                        defaultZoom={10}
-                        defaultCenter={{
-                          lat: initialLatitude, //|| 37.7749,
-                          lng: initialLongitude //|| -122.4194,
-                        }}
-                        gestureHandling={"greedy"}
-                        disableDefaultUI
-                        onCameraChanged={() => setTargetLocation(null)}
-                      >
-                        <MainPageMapPanComponent
-                          setBounds={setBounds}
-                          targetLat={targetLocation?.lat}
-                          targetLng={targetLocation?.lng}
-                        />
-
-                        {isSuccessVoyages && initialVoyages?.length > 0 && (
-                          <ClusteredVoyageMarkers voyages={initialVoyages} />
-                        )}
-                      </Map>
-
-                    )
-                  }
-
-                </APIProvider>
-              </div>
-            </div>
+                          <div className={"cardSwiperSpinner"}>
+                            {/* <div className="spinner"></div> */}
+                          </div>
+                        )
+                      }
+                      {
+                        initialLatitude && (
+                          <Map
+                            mapId={"mainpageMap"}
+                            defaultZoom={10}
+                            defaultCenter={{
+                              lat: initialLatitude, //|| 37.7749,
+                              lng: initialLongitude //|| -122.4194,
+                            }}
+                            gestureHandling={"greedy"}
+                            disableDefaultUI
+                            onCameraChanged={() => setTargetLocation(null)}
+                          >
+                            <MainPageMapPanComponent
+                              setBounds={setBounds}
+                              targetLat={targetLocation?.lat}
+                              targetLng={targetLocation?.lng}
+                            />
+                            {isSuccessVoyages && initialVoyages?.length > 0 && (
+                              <ClusteredVoyageMarkers voyages={initialVoyages} />
+                            )}
+                          </Map>
+                        )
+                      }
+                    </APIProvider>
+                  </div>
+                </div>
+            }
             <div style={{ position: "absolute", right: 0, bottom: 0 }}>
               <MainPageRefreshButton applyFilter={applyFilter} />
             </div>

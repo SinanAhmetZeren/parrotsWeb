@@ -13,6 +13,17 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
 import { useParams, useNavigate } from "react-router-dom";
+import { IoHeartSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useAddVehicleToFavoritesMutation,
+  useDeleteVehicleFromFavoritesMutation,
+} from "../slices/VehicleSlice";
+import {
+  addVehicleToUserFavorites,
+  removeVehicleFromUserFavorites,
+} from "../slices/UserSlice";
+
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
@@ -20,6 +31,14 @@ function VehicleDetailsPage() {
   const handleGoToUser = ({ userId, userName }) => {
     navigate(`/profile-public/${userId}/${userName}`);
   }
+
+  const userFavoriteVehicles = useSelector(
+    (state) => state.users.userFavoriteVehicles
+  );
+
+  const stateNow = useSelector(
+    (state) => state.users
+  );
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -34,7 +53,8 @@ function VehicleDetailsPage() {
 
   useEffect(() => {
     if (VehicleData)
-      console.log("VehicleData", VehicleData);
+      console.log("VehicleData---->", VehicleData);
+    console.log("stateNow: -->", stateNow);
   }, [VehicleData]);
 
   return (
@@ -53,7 +73,15 @@ function VehicleDetailsPage() {
               </div>
             </div>
             <div className="vehiclePage1_vehicleContainer">
-              <div className="vehiclePage1_dataContainer">
+              <div className="vehiclePage1_dataContainer" style={{ position: "relative" }}>
+
+
+
+                <div style={inactiveHeart}>
+                  <IoHeartSharp size="2.5rem" color="orange" />
+                </div>
+
+
                 <div className="vehiclePage1_detailsContainer">
                   <div className="vehiclePage1_nameContainer">
                     <div className=" ">
@@ -133,6 +161,16 @@ function VehicleDetailsPage() {
 
 export default VehicleDetailsPage;
 
+
+const inactiveHeart = {
+  position: "absolute",
+  backgroundColor: "white",
+  right: "-1rem",
+  top: "-1rem",
+  borderRadius: "3rem",
+  padding: "0.5rem",
+  border: "2px orange solid"
+}
 
 const userNameStyle = {
   borderRadius: '1.5rem', // Keep this as the final value for border-radius

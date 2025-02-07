@@ -176,9 +176,9 @@ const VehicleDetailScreen = () => {
     const displayText = showFullText
       ? VehicleData.description
       : VehicleData.description.slice(0, descriptionShortenedChars) +
-        (VehicleData.description.length > descriptionShortenedChars
-          ? "..."
-          : "");
+      (VehicleData.description.length > descriptionShortenedChars
+        ? "..."
+        : "");
 
     let icon;
     switch (VehicleData.type) {
