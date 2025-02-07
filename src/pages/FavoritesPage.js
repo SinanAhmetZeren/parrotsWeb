@@ -31,9 +31,9 @@ export default function FavoritePage() {
   useEffect(() => {
     console.log("hello");
     if (isFavoriteSuccessVoyages)
-      console.log("FavoriteVoyagesData ", FavoriteVoyagesData);
+      console.log("FavoriteVoyagesData from api", FavoriteVoyagesData);
     if (isFavoriteSuccessVehicles)
-      console.log("FavoriteVehiclesData", FavoriteVehiclesData);
+      console.log("FavoriteVehiclesData from api", FavoriteVehiclesData);
   }, [FavoriteVehiclesData, FavoriteVoyagesData])
 
   return (

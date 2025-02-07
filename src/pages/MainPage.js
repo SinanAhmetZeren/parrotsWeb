@@ -11,6 +11,15 @@ import {
   useGetVoyagesByLocationMutation,
   useGetFilteredVoyagesMutation,
 } from "../slices/VoyageSlice";
+
+import {
+  useGetFavoriteVoyageIdsByUserIdQuery,
+  useGetFavoriteVehicleIdsByUserIdQuery,
+  updateUserFavorites
+} from "../slices/UserSlice"
+
+import { useSelector, useDispatch } from "react-redux";
+
 import { TopBarMenu } from "../components/TopBarMenu";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
@@ -23,8 +32,10 @@ import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
+
+
 function MainPage() {
-  const userId = "43242342432342342342";
+  const userId = localStorage.getItem("storedUserId")
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
@@ -46,9 +57,9 @@ function MainPage() {
   ]);
   const [selectedVacancy, setSelectedVacancy] = useState();
   const [selectedVehicle, setSelectedVehicle] = useState();
-
   const [bounds, setBounds] = useState(null);
 
+  const dispatch = useDispatch()
   const [
     getVoyagesByLocation,
     {
@@ -67,12 +78,33 @@ function MainPage() {
     },
   ] = useGetFilteredVoyagesMutation();
 
+  const {
+    data: favoriteVoyagesData
+  } = useGetFavoriteVoyageIdsByUserIdQuery(userId);
+
+  const {
+    data: favoriteVehiclesData
+  } = useGetFavoriteVehicleIdsByUserIdQuery(userId);
+
+  useEffect(() => {
+    // console.log("1. ", favoriteVehiclesData);
+    // console.log("2. ", favoriteVoyagesData); 
+
+    const updateFavorites = () => {
+      dispatch(
+        updateUserFavorites({
+          favoriteVehicles: favoriteVehiclesData,
+          favoriteVoyages: favoriteVoyagesData,
+        })
+      );
+    }
+    updateFavorites()
+
+  }, [favoriteVehiclesData, favoriteVoyagesData])
+
   const applyFilter = useCallback(async () => {
     const formattedStartDate = convertDateFormat(dates.startDate, "startDate");
     const formattedEndDate = convertDateFormat(dates.endDate, "endDate");
-
-
-    console.log("bounds: --> ", bounds);
     const data = {
       latitude: (bounds.lat.northEast + bounds.lat.southWest) / 2,
       longitude: (bounds.lng.northEast + bounds.lng.southWest) / 2,
@@ -85,7 +117,6 @@ function MainPage() {
     };
 
     const filteredVoyages = await getFilteredVoyages(data);
-    //console.log("filtered voyages", filteredVoyages);
     setInitialVoyages(filteredVoyages.data || []);
   }, [
     bounds,

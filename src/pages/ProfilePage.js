@@ -9,10 +9,15 @@ import { SocialRenderComponent } from "../components/SocialRenderComponent";
 import { useGetUserByIdQuery } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
+import { useSelector } from "react-redux";
 
 
 function ProfilePage() {
-  const userId = localStorage.getItem("storedUserId")
+  const local_userId = localStorage.getItem("storedUserId")
+  const state_userId = useSelector((state) => state.users.userId);
+  const userId = local_userId !== null ? local_userId : state_userId;
+
+
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -21,7 +26,6 @@ function ProfilePage() {
   }
   const gotoNewVehicle = () => {
     navigate(`/newVehicle`);
-
   }
 
   const {
@@ -114,7 +118,9 @@ function ProfilePage() {
                             style={NewVehicle}>New Vehicle</span>
                         </div>
 
-                        <ProfilePageVehiclesComponent userData={userData} />
+                        <ProfilePageVehiclesComponent userData={userData}
+                        // userFavoriteVehicles={state_favVehicles} 
+                        />
                       </>) : null)
                     : null
                   }
@@ -137,7 +143,9 @@ function ProfilePage() {
                         </div>
 
 
-                        <ProfilePageVoyagesComponent userData={userData} />
+                        <ProfilePageVoyagesComponent userData={userData}
+                        // userFavoriteVoyages={state_favVoyages} 
+                        />
                       </>) : null)
                     : null
                   }

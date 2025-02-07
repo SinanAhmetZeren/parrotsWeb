@@ -1,13 +1,13 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from "react-date-range";
-import {  useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 
 export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
 
-  const calendarRef = useRef(null); 
+  const calendarRef = useRef(null);
   const handleDateChange = (item) => {
     setDates([item.selection]);
   };
@@ -17,17 +17,17 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
   };
 
   const handleClickOutside = (event) => {
-    console.log('Clicked element:', event.target);
+    // console.log('Clicked element:', event.target);
     if (
       calendarRef.current &&
       !calendarRef.current.contains(event.target)
     ) {
       console.log('Closing calendar');
-      setCalendarOpen(false); 
+      setCalendarOpen(false);
     }
   };
-  
-  
+
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside); // Add event listener
     return () => {

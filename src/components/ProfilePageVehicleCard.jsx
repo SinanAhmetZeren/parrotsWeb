@@ -1,12 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-export function ProfilePageVehicleCard({ vehicle, index }) {
+export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const vehicleBaseUrl = `${apiUrl}/Uploads/VehicleImages/`;
   const navigate = useNavigate();
   const handleCardClick = (vehicleId) => {
     navigate(`/vehicle-details/${vehicleId}`);
   };
+  const isFavorited = userFavoriteVehicles?.includes(vehicle?.id);
+
 
   return (
     <div key={index} className="card" style={cardContainerStyle} onClick={() => handleCardClick(vehicle?.id)}>
@@ -14,7 +16,9 @@ export function ProfilePageVehicleCard({ vehicle, index }) {
         <img src={vehicleBaseUrl + vehicle?.profileImageUrl} style={cardImageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={{
+          display: "flex", flexDirection: "row"
+        }}>
           <div style={vehicleNameStyle} >
             <span style={vehicleNameStyle_Text} title={vehicle?.name}>
               {vehicle?.name?.length > 18 ? `${vehicle?.name.substring(0, 18)}...` : vehicle?.name}

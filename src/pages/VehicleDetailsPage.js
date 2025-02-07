@@ -27,18 +27,50 @@ import {
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
+  const userId = localStorage.getItem("storedUserId");
+  const favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"))
+  const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
+
+
+
+  useEffect(() => {
+    console.log("-->", vehicleId);
+    console.log("-->", favoriteVehicles);
+    console.log("-->", isInFavorites);
+
+  }, [vehicleId, favoriteVehicles, isInFavorites])
+
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const handleGoToUser = ({ userId, userName }) => {
     navigate(`/profile-public/${userId}/${userName}`);
   }
+  const [isFavorited, setIsFavorited] = useState(isInFavorites)
+  const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
+  const [deleteVehicleFromFavorites] = useDeleteVehicleFromFavoritesMutation();
 
-  const userFavoriteVehicles = useSelector(
-    (state) => state.users.userFavoriteVehicles
-  );
 
-  const stateNow = useSelector(
-    (state) => state.users
-  );
+  const handleAddVehicleToFavorites = () => {
+    const vehicleId_number = Number(vehicleId)
+    addVehicleToFavorites({ userId, vehicleId: vehicleId_number });
+    setIsFavorited(true);
+    dispatch(
+      addVehicleToUserFavorites({
+        favoriteVehicle: vehicleId_number,
+      })
+    );
+  };
+
+  const handleDeleteVehicleFromFavorites = () => {
+    const vehicleId_number = Number(vehicleId)
+    deleteVehicleFromFavorites({ userId, vehicleId: vehicleId_number });
+    setIsFavorited(false);
+    dispatch(
+      removeVehicleFromUserFavorites({
+        favoriteVehicle: vehicleId_number,
+      })
+    );
+  };
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -51,11 +83,6 @@ function VehicleDetailsPage() {
     refetch,
   } = useGetVehicleByIdQuery(vehicleId);
 
-  useEffect(() => {
-    if (VehicleData)
-      console.log("VehicleData---->", VehicleData);
-    console.log("stateNow: -->", stateNow);
-  }, [VehicleData]);
 
   return (
     isLoadingVehicle ? (
@@ -76,10 +103,25 @@ function VehicleDetailsPage() {
               <div className="vehiclePage1_dataContainer" style={{ position: "relative" }}>
 
 
+                {isFavorited ?
+                  <div
+                    onClick={() => handleDeleteVehicleFromFavorites()}
+                    style={{
+                      ...heartIcon, border: "2px red solid"
+                    }}>
+                    <IoHeartSharp size="2.5rem" color="red" />
+                  </div>
+                  :
+                  <div
+                    onClick={() => handleAddVehicleToFavorites()}
+                    style={{
+                      ...heartIcon, border: "2px orange solid"
+                    }}
+                  >
+                    <IoHeartSharp size="2.5rem" color="orange" />
+                  </div>
 
-                <div style={inactiveHeart}>
-                  <IoHeartSharp size="2.5rem" color="orange" />
-                </div>
+                }
 
 
                 <div className="vehiclePage1_detailsContainer">
@@ -162,14 +204,13 @@ function VehicleDetailsPage() {
 export default VehicleDetailsPage;
 
 
-const inactiveHeart = {
+const heartIcon = {
   position: "absolute",
   backgroundColor: "white",
   right: "-1rem",
   top: "-1rem",
   borderRadius: "3rem",
   padding: "0.5rem",
-  border: "2px orange solid"
 }
 
 const userNameStyle = {

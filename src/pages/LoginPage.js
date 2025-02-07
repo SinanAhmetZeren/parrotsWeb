@@ -11,6 +11,9 @@ import {
   useLoginUserMutation,
   useRequestCodeMutation,
   useResetPasswordMutation,
+  useLazyGetFavoriteVoyageIdsByUserIdQuery,
+  useLazyGetFavoriteVehicleIdsByUserIdQuery,
+  updateUserFavorites
 } from "../slices/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
@@ -24,7 +27,7 @@ function LoginPage() {
   const [usernameRegister, setUsernameRegister] = useState("");
   const [emailRegister, setEmailRegister] = useState("");
   const [emailForgotPassword, setEmailForgotPassword] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("123456");
   const [passwordRegister, setPasswordRegister] = useState("");
   const [passwordRegister2, setPasswordRegister2] = useState("");
   const [passwordUpdate1, setPasswordUpdate1] = useState("");
@@ -39,7 +42,6 @@ function LoginPage() {
 
 
   const dispatch = useDispatch()
-
   const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
   const [requestCode] = useRequestCodeMutation();
   const [resetPassword] = useResetPasswordMutation();
@@ -47,6 +49,10 @@ function LoginPage() {
     registerUser,
     { isLoading: isLoadingRegisterUser, isSuccess: isSuccessRegisterUser },
   ] = useRegisterUserMutation();
+
+  const [getFavoriteVehicleIdsByUserId] = useLazyGetFavoriteVehicleIdsByUserIdQuery();
+  const [getFavoriteVoyageIdsByUserId] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
+
   const [
     confirmUser,
     { isLoading: isLoadingConfirmUser, isSuccess: isSuccessConfirmUser },
@@ -68,7 +74,6 @@ function LoginPage() {
     setShowPasswordRegister(!showPasswordRegister)
   }
   const makeVisibleRegister2 = () => {
-    console.log("hello");
     setShowPasswordRegister2(!showPasswordRegister2)
   }
 
@@ -79,34 +84,29 @@ function LoginPage() {
     setShowPasswordUpdate2(!showPasswordUpdate2)
   }
   const handleConfirmCode = async () => {
-    console.log("email R:", emailRegister);
-    console.log("confirmation code: ", confirmationCode);
     try {
       const confirmResponse = await confirmUser({
         email: emailRegister,
         code: confirmationCode,
       }).unwrap();
-
-      console.log("hello from register 1");
       setConfirmationCode("");
       setEmailRegister("");
-
       console.log("confirmResponse:...", confirmResponse);
       if (confirmResponse.token) {
-        console.log("hello from register 2");
-
         setPageState("Login");
+        // await 
 
-        await dispatch(
+
+        dispatch(
           updateAsLoggedIn({
             userId: confirmResponse.userId,
             token: confirmResponse.token,
             userName: confirmResponse.userName,
             profileImageUrl: confirmResponse.profileImageUrl,
-
           })
         );
       }
+
     } catch (err) {
       console.log(err);
     }
@@ -122,7 +122,20 @@ function LoginPage() {
         console.error("Login failed: No token received");
         return;
       }
-      await dispatch(
+
+      const favoriteVehicles = await getFavoriteVehicleIdsByUserId(loginResponse.userId)
+      console.log("lazy -> favoriteVehicles: ", favoriteVehicles.data);
+      const favoriteVoyages = await getFavoriteVoyageIdsByUserId(loginResponse.userId)
+      console.log("lazy -> favoriteVoyages: ", favoriteVoyages.data);
+
+      dispatch(
+        updateUserFavorites({
+          favoriteVehicles: favoriteVehicles.data,
+          favoriteVoyages: favoriteVoyages.data,
+        })
+      );
+
+      dispatch(
         updateAsLoggedIn({
           userId: loginResponse.userId,
           token: loginResponse.token,
@@ -130,9 +143,12 @@ function LoginPage() {
           profileImageUrl: loginResponse.profileImageUrl,
         })
       );
+
+
+
       setUsername("");
       setPassword("");
-      navigate("/profile");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
     }
@@ -192,7 +208,8 @@ function LoginPage() {
       setPasswordUpdate2("");
       setSixDigitCode("");
       if (resetPasswordResponse.token) {
-        await dispatch(
+        // await 
+        dispatch(
           updateAsLoggedIn({
             userId: resetPasswordResponse.userId,
             token: resetPasswordResponse.token,
@@ -201,13 +218,11 @@ function LoginPage() {
           })
         );
       }
-      navigate("/profile");
+      navigate("/");
     } catch (err) {
       console.log(err);
     }
   };
-
-
 
   return (
     <div className="App">
@@ -387,25 +402,20 @@ function LoginPage() {
                             className="username-input"
                           />
                         </div>
-
                         <div className="login-button"
                           onClick={() => handleConfirmCode()}
                         > Confirm</div>
-
                         <div className="signup">
                           <span className="signupSpan"
                             style={{ marginTop: ".5rem" }}
                           >
-
                             <span className="signupLinkSpan"
-
                               onClick={() => setPageState("Login")}
                             >
                               Back to Login
                             </span>
                           </span>
                         </div>
-
                       </div>
                     </div>
                     : pageState === "ForgotPassword" ?
@@ -422,19 +432,15 @@ function LoginPage() {
                               className="username-input"
                             />
                           </div>
-
                           <div className="login-button"
                             style={{ marginTop: "1rem" }}
                             onClick={() => handleSendResetCode()}
                           >Send Code</div>
-
                           <div className="signup">
                             <span className="signupSpan"
                               style={{ marginTop: ".5rem" }}
                             >
-
                               <span className="signupLinkSpan"
-
                                 onClick={() => setPageState("Login")}
                               >
                                 Back to Login
@@ -471,8 +477,6 @@ function LoginPage() {
                                 }
                               </span>
                             </div>
-
-
                             <div
                               className="password-wrapper">
                               <input

@@ -41,6 +41,8 @@ const usersSlice = createSlice({
         localStorage.removeItem("storedUserId")
         localStorage.removeItem("storedUserName")
         localStorage.removeItem("storedProfileImageUrl")
+        localStorage.removeItem("storedFavoriteVehicles")
+        localStorage.removeItem("storedFavoriteVoyages")
       }
       catch (err) {
         console.error("Error setting localStorage:", err);
@@ -48,7 +50,6 @@ const usersSlice = createSlice({
     },
     updateStateFromLocalStorage: (state, action) => {
       const { token, userId, userName, profileImageUrl } = action.payload;
-
       state.userId = userId;
       state.token = token;
       state.userName = userName;
@@ -62,32 +63,50 @@ const usersSlice = createSlice({
       state.userName = action.payload.username;
     },
     updateUserFavorites: (state, action) => {
-      state.userFavoriteVehicles = action.payload.favoriteVehicles;
-      state.userFavoriteVoyages = action.payload.favoriteVoyages;
+      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(action.payload.favoriteVehicles));
+      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(action.payload.favoriteVoyages));
     },
     addVoyageToUserFavorites: (state, action) => {
-      state.userFavoriteVoyages = [
-        ...state.userFavoriteVoyages,
-        action.payload.favoriteVoyage,
-      ];
+      const currentFavoriteVoyages = JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
+      if (!Array.isArray(currentFavoriteVoyages)) {
+        console.error("Error: currentFavoriteVoyages is not an array", currentFavoriteVoyages);
+        return;
+      }
+      const updatedFavoriteVoyages = [...currentFavoriteVoyages, action.payload.favoriteVehicle];
+      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(updatedFavoriteVoyages));
     },
     removeVoyageFromUserFavorites: (state, action) => {
       const voyageToRemove = action.payload.favoriteVoyage;
-      state.userFavoriteVoyages = state.userFavoriteVoyages.filter(
+      const currentFavoriteVoyages = JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
+      if (!Array.isArray(currentFavoriteVoyages)) {
+        console.error("Error: currentFavoriteVoyages is not an array", currentFavoriteVoyages);
+        return;
+      }
+      const updatedFavoriteVoyages = currentFavoriteVoyages.filter(
         (voyage) => voyage !== voyageToRemove
       );
+      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(updatedFavoriteVoyages));
     },
     addVehicleToUserFavorites: (state, action) => {
-      state.userFavoriteVehicles = [
-        ...state.userFavoriteVehicles,
-        action.payload.favoriteVehicle,
-      ];
+      const currentFavoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
+      if (!Array.isArray(currentFavoriteVehicles)) {
+        console.error("Error: currentFavoriteVehicles is not an array", currentFavoriteVehicles);
+        return;
+      }
+      const updatedFavoriteVehicles = [...currentFavoriteVehicles, action.payload.favoriteVehicle];
+      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(updatedFavoriteVehicles));
     },
     removeVehicleFromUserFavorites: (state, action) => {
       const vehicleToRemove = action.payload.favoriteVehicle;
-      state.userFavoriteVehicles = state.userFavoriteVehicles.filter(
+      const currentFavoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
+      if (!Array.isArray(currentFavoriteVehicles)) {
+        console.error("Error: currentFavoriteVehicles is not an array", currentFavoriteVehicles);
+        return;
+      }
+      const updatedFavoriteVehicles = currentFavoriteVehicles.filter(
         (vehicle) => vehicle !== vehicleToRemove
       );
+      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(updatedFavoriteVehicles));
     },
   },
 });
@@ -146,7 +165,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
-
     requestCode: builder.mutation({
       query: (email) => ({
         url: `/api/account/sendCode/${email}`,
@@ -248,8 +266,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 });
 export const {
   useGetUsersByUsernameQuery,
+  //
   useGetFavoriteVoyageIdsByUserIdQuery,
+  useLazyGetFavoriteVoyageIdsByUserIdQuery,
+  //
   useGetFavoriteVehicleIdsByUserIdQuery,
+  useLazyGetFavoriteVehicleIdsByUserIdQuery,
   useRegisterUserMutation,
   useRequestCodeMutation,
   useConfirmUserMutation,

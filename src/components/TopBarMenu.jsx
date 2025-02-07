@@ -1,17 +1,32 @@
 import "../assets/css/date-range-custom.css";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateAsLoggedOut } from "../slices/UserSlice";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function TopBarMenu() {
-  const isLoggedIn = localStorage.getItem("storedToken"); // Check if user is logged in
-  const [showModal, setShowModal] = useState(false)
+
+
+  const [loggedInState, setIsLoggedInState] = useState(false);
+  const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tokenInLocalStorage = localStorage.getItem("storedToken");
+    if (tokenInLocalStorage) {
+      setIsLoggedInState(true);
+    } else if (isLoggedIn) {
+      setIsLoggedInState(true);
+    }
+  }, [isLoggedIn]);
+
+
+
+  const [showModal, setShowModal] = useState(false)
   return (
     <nav className="flex space-x-2 sm:space-x-2 overflow-x-auto sm:overflow-x-visible">
-      {isLoggedIn ?
+      {loggedInState ?
         <>
           <NavLink
             to="/"

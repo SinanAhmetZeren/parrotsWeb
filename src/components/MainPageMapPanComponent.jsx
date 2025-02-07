@@ -18,9 +18,9 @@ export function MainPageMapPanComponent({ targetLat, targetLng, setBounds }) {
         const northEast = bounds.getNorthEast();
         const southWest = bounds.getSouthWest();
 
-        console.log("Map Bounds:");
-        console.log("North-East:", northEast.lat(), northEast.lng());
-        console.log("South-West:", southWest.lat(), southWest.lng());
+        // console.log("Map Bounds:");
+        // console.log("North-East:", northEast.lat(), northEast.lng());
+        // console.log("South-West:", southWest.lat(), southWest.lng());
 
         setBounds({
           lat: { northEast: northEast.lat(), southWest: southWest.lat() },
