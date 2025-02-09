@@ -32,6 +32,7 @@ import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
+import { retry } from "@reduxjs/toolkit/query";
 
 
 function MainPage() {
@@ -232,7 +233,6 @@ function MainPage() {
         <div className="flex mainpage_Container">
           <div className="flex mainpage_TopRow">
             <TopLeftComponent />
-
             <div className="flex mainpage_TopRight">
               <TopBarMenu />
             </div>
@@ -255,42 +255,7 @@ function MainPage() {
               </div>
               <div style={{ height: "60vh" }}>
                 {isLoading ? (
-                  /*
-                  <div style={{
-                    margin: "auto",
-                    marginTop: "30vh",
-                  }}>
-                    <div className="spinner"></div>
-                  </div>
-*/
-
-                  <div style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    height: "100%",
-                    width: "80%",
-
-                    width: "92%",
-                    padding: "1vh",
-
-                    borderRadius: "1.5rem",
-                    position: "relative",
-                    margin: "auto",
-                    marginTop: "1rem"
-
-                  }}>
-                    <div className="spinner"
-                      style={{
-                        position: "absolute",
-                        top: "40%",
-                        left: "50%",
-                        height: "5rem",
-                        width: "5rem",
-                        border: "8px solid rgba(173, 216, 230, 0.3)",
-                        borderTop: "8px solid #1e90ff",
-                      }}></div>
-                  </div>
-
-
+                  <CardSwiperSpinner />
                 ) : (
                   <MainPageCardSwiper
                     voyagesData={initialVoyages}
@@ -306,45 +271,24 @@ function MainPage() {
 
             {
               isLoading ?
-
                 <div className="flex mainpage_BottomRight">
-                  <div
-                    className="flex mainpage_MapContainer"
-                  >
-                    <div style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.2)",
-                      height: "100%", width: "100%",
-                      borderRadius: "1.5rem",
-                      position: "relative"
-
-                    }}>
-                      <div className="spinner"
-                        style={{
-                          position: "absolute",
-                          top: "40%",
-                          left: "50%",
-                          height: "5rem",
-                          width: "5rem",
-                          border: "8px solid rgba(173, 216, 230, 0.3)",
-                          borderTop: "8px solid #1e90ff",
-                        }}></div>
-                    </div>
+                  <div className="flex mainpage_MapContainer">
+                    <MapSpinner />
                   </div>
                 </div>
                 :
                 <div className="flex mainpage_BottomRight">
-                  <div
-                    className="flex mainpage_MapContainer"
-                  >
+                  <div className="flex mainpage_MapContainer">
                     <APIProvider apiKey={myApiKey} libraries={["marker"]}>
+
                       {
                         !initialLatitude && (
-
                           <div className={"cardSwiperSpinner"}>
                             {/* <div className="spinner"></div> */}
                           </div>
                         )
                       }
+
                       {
                         initialLatitude && (
                           <Map
@@ -386,7 +330,53 @@ function MainPage() {
 
 export default MainPage;
 
-/* 
-TODO: 
-- username from fixed userId
-*/
+
+const CardSwiperSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      height: "100%",
+      width: "92%",
+      padding: "1vh",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      marginTop: "1rem"
+    }}>
+      <div className="spinner"
+        style={{
+          position: "absolute",
+          top: "40%",
+          left: "50%",
+          height: "5rem",
+          width: "5rem",
+          border: "8px solid rgba(173, 216, 230, 0.3)",
+          borderTop: "8px solid #1e90ff",
+        }}></div>
+    </div>
+
+  )
+}
+
+const MapSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      height: "100%", width: "100%",
+      borderRadius: "1.5rem",
+      position: "relative"
+
+    }}>
+      <div className="spinner"
+        style={{
+          position: "absolute",
+          top: "40%",
+          left: "50%",
+          height: "5rem",
+          width: "5rem",
+          border: "8px solid rgba(173, 216, 230, 0.3)",
+          borderTop: "8px solid #1e90ff",
+        }}></div>
+    </div>
+  )
+}

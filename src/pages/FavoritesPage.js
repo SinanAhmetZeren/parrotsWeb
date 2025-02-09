@@ -42,9 +42,12 @@ export default function FavoritePage() {
 
   return (
     (isFavoriteLoadingVehicles || isFavoriteLoadingVoyages) ? (
-      <div style={spinnerContainer}>
-        <div className="spinner"></div>
-      </div>
+      // <div style={spinnerContainer}>
+      //   <div className="spinner"></div>
+      // </div>
+
+      <PlaceHolderPage />
+
     ) : (isFavoriteSuccessVehicles && isFavoriteSuccessVoyages) ? (
       <div className="App">
         <header className="App-header">
@@ -107,3 +110,81 @@ const VehiclesVoyagesTitle = {
   fontWeight: 800, // Correct format for font-weight
   color: "white"
 };
+
+
+const PlaceHolderPage = () => {
+  return (
+
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", height: "3rem" }}>
+            <span style={VehiclesVoyagesTitle}>Vehicles</span>
+            <span style={VehiclesVoyagesTitle}>Voyages</span>
+          </div>
+
+          <div className="flex favoritesPage_Bottom">
+            <div className="flex favoritesPage_BottomLeft">
+              <div className="flex favoritesPage_Vehicles"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  padding: "1rem",
+                  height: "45rem",
+                  borderRadius: "1.5rem",
+                  width: "95%"
+                }}
+              >
+                <FavoritePageSpinner />
+              </div>
+            </div>
+            <div className="flex flex-col favoritesPage_BottomRight">
+              <div className="flex favoritesPage_Voyages"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  padding: "1rem",
+                  height: "45rem",
+                  borderRadius: "1.5rem",
+                  width: "95%"
+                }}
+              >
+                <FavoritePageSpinner />
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </header >
+    </div >
+
+  )
+}
+
+
+const FavoritePageSpinner = () => {
+  return (
+    <div style={{
+      // backgroundColor: "rgba(255, 255, 255, 0.2)",
+      height: "100%", width: "100%",
+      borderRadius: "1.5rem",
+      position: "relative"
+
+    }}>
+      <div className="spinner"
+        style={{
+          position: "absolute",
+          top: "40%",
+          left: "50%",
+          height: "5rem",
+          width: "5rem",
+          border: "8px solid rgba(173, 216, 230, 0.3)",
+          borderTop: "8px solid #1e90ff",
+        }}></div>
+    </div>
+  )
+}
