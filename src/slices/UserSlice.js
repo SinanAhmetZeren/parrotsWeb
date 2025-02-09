@@ -66,6 +66,10 @@ const usersSlice = createSlice({
       localStorage.setItem("storedFavoriteVehicles", JSON.stringify(action.payload.favoriteVehicles));
       localStorage.setItem("storedFavoriteVoyages", JSON.stringify(action.payload.favoriteVoyages));
     },
+    updateUserFavoriteVehicles: (state, action) => {
+      if (action.payload.userFavoriteVehicles)
+        localStorage.setItem("storedFavoriteVehicles", JSON.stringify(action.payload.favoriteVehicles));
+    },
     addVoyageToUserFavorites: (state, action) => {
       const currentFavoriteVoyages = JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
       if (!Array.isArray(currentFavoriteVoyages)) {
@@ -118,6 +122,7 @@ export const {
   updateUserData,
   updateUserName,
   updateUserFavorites,
+  updateUserFavoriteVehicles,
   addVoyageToUserFavorites,
   removeVoyageFromUserFavorites,
   addVehicleToUserFavorites,

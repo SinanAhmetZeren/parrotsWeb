@@ -87,9 +87,6 @@ function MainPage() {
   } = useGetFavoriteVehicleIdsByUserIdQuery(userId);
 
   useEffect(() => {
-    // console.log("1. ", favoriteVehiclesData);
-    // console.log("2. ", favoriteVoyagesData); 
-
     const updateFavorites = () => {
       dispatch(
         updateUserFavorites({
@@ -258,9 +255,42 @@ function MainPage() {
               </div>
               <div style={{ height: "60vh" }}>
                 {isLoading ? (
-                  <div style={{ backgroundColor: "", margin: "auto", marginTop: "30vh" }}>
+                  /*
+                  <div style={{
+                    margin: "auto",
+                    marginTop: "30vh",
+                  }}>
                     <div className="spinner"></div>
                   </div>
+*/
+
+                  <div style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    height: "100%",
+                    width: "80%",
+
+                    width: "92%",
+                    padding: "1vh",
+
+                    borderRadius: "1.5rem",
+                    position: "relative",
+                    margin: "auto",
+                    marginTop: "1rem"
+
+                  }}>
+                    <div className="spinner"
+                      style={{
+                        position: "absolute",
+                        top: "40%",
+                        left: "50%",
+                        height: "5rem",
+                        width: "5rem",
+                        border: "8px solid rgba(173, 216, 230, 0.3)",
+                        borderTop: "8px solid #1e90ff",
+                      }}></div>
+                  </div>
+
+
                 ) : (
                   <MainPageCardSwiper
                     voyagesData={initialVoyages}
@@ -276,8 +306,30 @@ function MainPage() {
 
             {
               isLoading ?
-                <div style={{ backgroundColor: "", margin: "auto", marginTop: "30vh" }}>
-                  <div className="spinner"></div>
+
+                <div className="flex mainpage_BottomRight">
+                  <div
+                    className="flex mainpage_MapContainer"
+                  >
+                    <div style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      height: "100%", width: "100%",
+                      borderRadius: "1.5rem",
+                      position: "relative"
+
+                    }}>
+                      <div className="spinner"
+                        style={{
+                          position: "absolute",
+                          top: "40%",
+                          left: "50%",
+                          height: "5rem",
+                          width: "5rem",
+                          border: "8px solid rgba(173, 216, 230, 0.3)",
+                          borderTop: "8px solid #1e90ff",
+                        }}></div>
+                    </div>
+                  </div>
                 </div>
                 :
                 <div className="flex mainpage_BottomRight">

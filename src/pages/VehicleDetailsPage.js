@@ -22,15 +22,37 @@ import {
 import {
   addVehicleToUserFavorites,
   removeVehicleFromUserFavorites,
+  useGetFavoriteVehicleIdsByUserIdQuery,
+  updateUserFavoriteVehicles
 } from "../slices/UserSlice";
 
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
   const userId = localStorage.getItem("storedUserId");
-  const favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"))
+  // const favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"))
+  let favoriteVehicles;
+  try {
+    favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"));
+  } catch (err) {
+    console.log(err);
+  }
   const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
+  const {
+    data: favoriteVehiclesData
+  } = useGetFavoriteVehicleIdsByUserIdQuery(userId);
 
+  useEffect(() => {
+    const updateFavoriteVehicles = () => {
+      dispatch(
+        updateUserFavoriteVehicles({
+          favoriteVehicles: favoriteVehiclesData,
+        })
+      );
+    }
+    updateFavoriteVehicles()
+
+  }, [favoriteVehiclesData])
 
 
   useEffect(() => {

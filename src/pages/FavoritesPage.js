@@ -27,9 +27,13 @@ export default function FavoritePage() {
     refetch: refetchFavoriteVehicles,
   } = useGetFavoriteVehiclesByUserByIdQuery(userId);
 
+  useEffect(() => {
+    console.log("Component mounted, refetching data...");
+    refetchFavoriteVoyages();
+    refetchFavoriteVehicles();
+  }, []);
 
   useEffect(() => {
-    console.log("hello");
     if (isFavoriteSuccessVoyages)
       console.log("FavoriteVoyagesData from api", FavoriteVoyagesData);
     if (isFavoriteSuccessVehicles)
