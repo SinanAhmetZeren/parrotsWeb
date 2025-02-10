@@ -10,6 +10,7 @@ import { useGetUserByIdQuery } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { useSelector } from "react-redux";
+import { LoadingProfilePage } from "../components/LoadingProfilePage";
 
 
 function ProfilePage() {
@@ -197,89 +198,5 @@ const NewVehicle = {
 };
 
 
-const BackgroundImageSpinner = () => {
-  return (
-    <div style={{
-      // backgroundColor: "rgba(255, 255, 255, 0.2)",
-      height: "100%", width: "100%",
-      borderRadius: "1.5rem",
-      position: "relative"
 
-    }}>
-      <div className="spinner"
-        style={{
-          position: "absolute",
-          top: "40%",
-          left: "50%",
-          height: "5rem",
-          width: "5rem",
-          border: "8px solid rgba(173, 216, 230, 0.3)",
-          borderTop: "8px solid #1e90ff",
-        }}></div>
-    </div>
-  )
-}
 
-const LoadingProfilePage = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <div className="flex mainpage_Container">
-          <div className="flex mainpage_TopRow">
-            <TopLeftComponent />
-            <div className="flex mainpage_TopRight">
-              <TopBarMenu />
-            </div>
-          </div>
-          <div className="flex profilePage_Bottom">
-            <div className="flex profilePage_BottomLeft">
-              <div className="flex profilePage_CoverAndProfile">
-                <div className="flex profilePage_CoverImage"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-                >
-                  <BackgroundImageSpinner />
-                </div>
-              </div>
-              <div className="flex profilePage_BioAndContactDetails"
-              >
-                <div className="flex profilePage_BioTitleUserName"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", padding: "1rem" }}
-                >
-                  <BackgroundImageSpinner />
-
-                </div>
-                <div className="flex profilePage_ContactDetails"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", padding: "1rem", borderRadius: "1.5rem" }}
-                >
-                  <BackgroundImageSpinner />
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col"
-              style={{
-                backgroundColor: "rgba(0, 0, 0, .3)",
-                padding: ".5rem",
-                borderRadius: "1.5rem",
-                height: "100%",
-                width: "40%",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
-                  borderRadius: "1.5rem",
-                  height: "100%",
-                  flexDirection: "column",
-                }}
-              >
-
-                <BackgroundImageSpinner />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header >
-    </div >)
-
-}

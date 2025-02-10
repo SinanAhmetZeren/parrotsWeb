@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
+import { ConnectPagePlaceHolder } from "../components/ConnectPagePlaceHolder"
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useGetMessagesBetweenUsersQuery, useGetMessagesByUserIdQuery } from "../slices/MessageSlice";
@@ -201,10 +202,9 @@ function ConnectPage() {
 
 
   return (
-    isLoadingmessagePreviews ? (
-      <div style={spinnerContainer}>
-        <div className="spinner"></div>
-      </div>
+    true ||
+      isLoadingmessagePreviews ? (
+      <ConnectPagePlaceHolder />
     ) : (
       <div className="App">
         <header className="App-header">
@@ -282,9 +282,6 @@ function ConnectPage() {
 
 export default ConnectPage;
 
-const spinnerContainer = {
-  marginTop: "20%",
-};
 
 const MessagePreviewsContainer = {
   display: "flex",
@@ -307,3 +304,4 @@ const SearchBarContainer = {
   backgroundColor: "rgb(240, 240, 240)",
   height: "9vh"
 }
+

@@ -182,7 +182,6 @@ function MainPage() {
   useEffect(() => {
     if (
       isSuccessVoyages
-      //  && mapRef.current
     ) {
       markersRef.current = [];
 
@@ -237,7 +236,6 @@ function MainPage() {
               <TopBarMenu />
             </div>
           </div>
-
           <div className="flex mainpage_BottomRow">
             <div className="flex mainpage_BottomLeft">
               <div>

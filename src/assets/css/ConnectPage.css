@@ -176,6 +176,11 @@
   background-color: #f6f6f6;
 }
 
+.connectPage_Bottom_placeholder {
+  height: calc(100% - 3rem);
+  width: 100%;
+}
+
 .connectPage_BottomLeft {
   height: calc(100% - 1rem);
   margin: .5rem;
@@ -185,12 +190,32 @@
   flex-direction: column;
 }
 
+
+.connectPage_BottomLeft_placeholder {
+  height: calc(100%);
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+
+
 .connectPage_BottomRight {
   height: calc(100% - 1rem);
   margin: .5rem;
   width: calc(100% - 30% - 1rem);
   align-items: center;
   background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.connectPage_BottomRight_placeHolder {
+  height: calc(100% - 1rem);
+  margin: .5rem;
+  width: calc(100% - 30% - 1rem);
+  align-items: center;
   display: flex;
   flex-direction: column;
 }
