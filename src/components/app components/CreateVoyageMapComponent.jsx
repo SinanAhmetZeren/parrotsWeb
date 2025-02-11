@@ -367,7 +367,7 @@ const CreateVoyageMapComponent = ({
             <Text style={styles.addWaypointText}> Add Waypoint </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => { }}>
             <Text style={styles.addWaypointTextDisabled}> Add Waypoint </Text>
           </TouchableOpacity>
         )}

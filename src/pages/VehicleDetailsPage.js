@@ -25,6 +25,7 @@ import {
   useGetFavoriteVehicleIdsByUserIdQuery,
   updateUserFavoriteVehicles
 } from "../slices/UserSlice";
+import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
 
 
 function VehicleDetailsPage() {
@@ -107,10 +108,14 @@ function VehicleDetailsPage() {
 
 
   return (
+    // true ||
     isLoadingVehicle ? (
-      <div style={spinnerContainer}>
-        <div className="spinner"></div>
-      </div>
+      // <div style={spinnerContainer}>
+      //   <div className="spinner"></div>
+      // </div>
+      <VehicleDetailPlaceHolderComponent />
+
+
     ) : isSuccessVehicle ? (
       <div className="App">
         <header className="App-header">
@@ -271,6 +276,7 @@ const userImageStyle = {
 
 const spinnerContainer = {
   marginTop: "20%",
+  backgroundColor: "red"
 };
 
 const VehicleTypes = [

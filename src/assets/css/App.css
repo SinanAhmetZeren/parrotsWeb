@@ -164,6 +164,9 @@ img {
   flex-direction: column;
   width: 100%;
   height: 100vh;
+  overflow: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .mainpage_toprow {
