@@ -117,83 +117,94 @@ export default function CreateVoyagePage() {
             <div style={{ position: "relative" }}>
               <ProfileImageandDetailsTitlesComponent />
               <div style={profileImageandDetailsContainer}>
+
                 <div
                   style={{
-                    backgroundColor: "rgba(255,255,255,1)",
-                    borderRadius: "1.5rem"
+                    backgroundColor: "rgba(255,255,255,.3)",
+                    borderRadius: "1.5rem",
+                    margin: "auto",
+                    padding: "1rem"
                   }}
                 >
                   <VoyageProfileImageUploader />
                 </div>
-                <div style={voyageDetails}>
-                  <div style={{
-                    backgroundColor: "rgba(255,255,255,0.7)"
-                  }}>
-                    <CreateVoyageVacancyPicker
-                      selectedVacancy={selectedVacancy}
-                      setSelectedVacancy={setSelectedVacancy}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                    <CreateVoyageVehicleSelector
-                      vehicleId={vehicleId}
-                      setVehicleId={setVehicleId}
-                      vehiclesList={vehiclesList}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                    <CreateVoyagePageNameInput
-                      voyageName={voyageName}
-                      setVoyageName={setVoyageName}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)", }}>
-                    <CreateVoyagePriceInput
-                      minPrice={minPrice}
-                      setMinPrice={setMinPrice}
-                      maxPrice={maxPrice}
-                      setMaxPrice={setMaxPrice}
-                      type={"Min Price"}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                    <CreateVoyagePriceInput
-                      minPrice={minPrice}
-                      setMinPrice={setMinPrice}
-                      maxPrice={maxPrice}
-                      setMaxPrice={setMaxPrice}
-                      type={"Max Price"}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                    <CreateVoyageLastBidDateInput
-                      lastBidDate={lastBidDate}
-                      setLastBidDate={setLastBidDate}
-                    />
-                  </div>
-                  <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                    <AuctionFixedPrice
-                      isAuction={isAuction}
-                      isFixedPrice={isFixedPrice}
-                      setIsAuction={setIsAuction}
-                      setIsFixedPrice={setIsFixedPrice}
-                    />
+                <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
+                  <div style={voyageDetails}>
+                    <div style={{
+                      backgroundColor: "rgba(255,255,255,0.7)"
+                    }}>
+                      <CreateVoyageVacancyPicker
+                        selectedVacancy={selectedVacancy}
+                        setSelectedVacancy={setSelectedVacancy}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                      <CreateVoyageVehicleSelector
+                        vehicleId={vehicleId}
+                        setVehicleId={setVehicleId}
+                        vehiclesList={vehiclesList}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                      <CreateVoyagePageNameInput
+                        voyageName={voyageName}
+                        setVoyageName={setVoyageName}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)", }}>
+                      <CreateVoyagePriceInput
+                        minPrice={minPrice}
+                        setMinPrice={setMinPrice}
+                        maxPrice={maxPrice}
+                        setMaxPrice={setMaxPrice}
+                        type={"Min Price"}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                      <CreateVoyagePriceInput
+                        minPrice={minPrice}
+                        setMinPrice={setMinPrice}
+                        maxPrice={maxPrice}
+                        setMaxPrice={setMaxPrice}
+                        type={"Max Price"}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                      <CreateVoyageLastBidDateInput
+                        lastBidDate={lastBidDate}
+                        setLastBidDate={setLastBidDate}
+                      />
+                    </div>
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
+                      <AuctionFixedPrice
+                        isAuction={isAuction}
+                        isFixedPrice={isFixedPrice}
+                        setIsAuction={setIsAuction}
+                        setIsFixedPrice={setIsFixedPrice}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div style={{
-                  alignContent: "center",
-                  backgroundColor: "rgba(255,255,255,1)",
-                  borderRadius: "1.5rem",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}>
-                  <CreateVoyageDatePicker
-                    dates={dates}
-                    setDates={setDates}
-                    calendarOpen={calendarOpen}
-                    setCalendarOpen={setCalendarOpen}
-                  />
+
+                <div style={{ backgroundColor: "rgba(255,255,255,.31)", borderRadius: "1.5rem" }}>
+
+
+                  <div style={{
+                    alignContent: "center",
+                    backgroundColor: "rgba(255,255,255,31)",
+                    borderRadius: "1.5rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    transform: "scale(.93)"
+                  }}>
+                    <CreateVoyageDatePicker
+                      dates={dates}
+                      setDates={setDates}
+                      calendarOpen={calendarOpen}
+                      setCalendarOpen={setCalendarOpen}
+                    />
+                  </div>
 
                 </div>
               </div>
@@ -252,7 +263,7 @@ const BriefAndDescriptionTitles = {
   width: "calc(100% - 2rem)",
   borderRadius: "1.5rem",
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  gridTemplateColumns: "33fr 62fr",
   gap: "10px",
   position: "absolute",
   top: "0rem",
@@ -270,13 +281,13 @@ const profileImageandDetailsContainer = {
   borderRadius: "1.5rem",
   display: "grid",
   gridTemplateColumns: "1fr 1fr 1fr",
-  gap: "10px",
+  gap: "1rem",
 }
 
 const profileImage = {
-  width: "30rem",
-  height: "30rem",
-  margin: "1rem"
+  // width: "30rem",
+  // height: "30rem",
+  // margin: "1rem"
 }
 
 const voyageDetails = {
@@ -284,6 +295,7 @@ const voyageDetails = {
   borderRadius: "1.5rem",
   alignContent: "center",
   padding: ".2rem",
+  transform: "scale(0.92)",
 }
 
 const BriefContainer = {
@@ -333,7 +345,7 @@ const placeHolderStyle = `
 
 const quellStyleBrief = `
       .brief-editor-container .ql-editor {
-      min-height: calc(1.5em * 6);
+      min-height: calc(1.5em * 15);
       overflow-y: auto;
       line-height: 1.5;
       color: black
@@ -402,7 +414,7 @@ const VoyageProfileImageUploader = () => {
   };
 
   return (
-    <div style={{ backgroundColor: "white", borderRadius: "1.5rem" }}>
+    <div style={{ backgroundColor: "transparent", borderRadius: "1.5rem" }}>
       <div style={profileImage}>
         <div>
           <input
@@ -421,8 +433,8 @@ const VoyageProfileImageUploader = () => {
               <div>
                 <img src={imagePreview} alt="Uploaded preview"
                   style={{
-                    width: "30rem",
-                    height: "30rem",
+                    width: "28rem",
+                    height: "28rem",
                     objectFit: "cover",
                     borderRadius: "1.5rem",
                     border: "2px solid transparent"
@@ -436,16 +448,15 @@ const VoyageProfileImageUploader = () => {
                   alt="Upload Icon"
                   onClick={handleImageClick}
                   style={{
-                    width: "30rem",
-                    height: "30rem",
+                    width: "28rem",
+                    height: "28rem",
                     objectFit: "cover",
                     borderRadius: "1.5rem",
                     border: "2px solid transparent",
-                    // ahmet
-                    boxShadow: `
-                  0 4px 6px rgba(0, 0, 0, 0.1),
-                  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
-                  `,
+                    //   boxShadow: `
+                    // 0 4px 6px rgba(0, 0, 0, 0.1),
+                    // inset 0 -4px 6px rgba(0, 0, 0, 0.31)
+                    // `,
                   }}
                 />
               </div>
@@ -866,6 +877,7 @@ const AuctionFixedPrice = ({ isAuction, setIsAuction, isFixedPrice, setIsFixedPr
         alignItems: "center",
         justifyContent: "center",
         gap: "1rem",
+        borderRadius: "1.5rem",
       }}
     >
       <label
@@ -979,7 +991,7 @@ const VoyageBriefAndDescriptionComponent = ({ voyageBrief, setVoyageBrief,
         padding: "1rem",
         marginTop: "3rem",
         borderRadius: "1.5rem",
-        width: "48%",
+        width: "35%",
         marginBottom: "1rem",
       }}>
         <div style={BriefContainer}>
@@ -992,7 +1004,7 @@ const VoyageBriefAndDescriptionComponent = ({ voyageBrief, setVoyageBrief,
         marginBottom: "1.5rem",
         marginTop: "3rem",
         borderRadius: "1.5rem",
-        width: "48%",
+        width: "62%",
       }}>
         <div style={DescriptionContainer}>
           <VoyageDescriptionInput voyageDescription={voyageDescription} setVoyageDescription={setVoyageDescription} />

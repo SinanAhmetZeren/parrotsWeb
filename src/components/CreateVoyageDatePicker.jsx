@@ -41,7 +41,7 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         justifyContent: "center",
         alignItems: "center",
         paddingTop: "3rem",
-        marginTop: "-2rem"
+        // marginTop: "-2rem"
       }}
     >
 
@@ -49,8 +49,8 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         ref={calendarRef}
         style={{
           zIndex: 1000,
-          transform: "scale(0.9)",
-          height: "26rem"
+          // transform: "scale(0.9)",
+          height: "27rem"
         }}
       >
         <DateRange
