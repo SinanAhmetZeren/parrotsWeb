@@ -78,6 +78,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    /*
     addVoyageImage: builder.mutation({
       query: (data) => {
         const { formData, voyageId } = data;
@@ -92,6 +93,24 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+*/
+    addVoyageImage: builder.mutation({
+      query: (data) => {
+        const { voyageImage, voyageId } = data;
+        const formData = new FormData();
+        formData.append("imageFile", voyageImage);
+        const url = `/api/Voyage/${voyageId}/AddVoyageImage`;
+        return {
+          url,
+          method: "POST",
+          headers: {
+            // "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        };
+      },
+    }),
+
     deleteVoyageImage: builder.mutation({
       query: (imageId) => ({
         url: `/api/Voyage/${imageId}/deleteVoyageImage`,

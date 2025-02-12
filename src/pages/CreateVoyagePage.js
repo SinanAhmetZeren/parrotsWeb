@@ -23,6 +23,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { CreateVoyageDatePicker } from "../components/CreateVoyageDatePicker";
 
+import {
+  useAddVoyageImageMutation
+} from "../slices/VoyageSlice";
+
 export default function CreateVoyagePage() {
   const [createVehicle] = useCreateVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
@@ -33,18 +37,21 @@ export default function CreateVoyagePage() {
   const navigate = useNavigate();
 
   const [vehicleDescription, setVehicleDescription] = useState("")
+
   const [vehicleCapacity, setVehicleCapacity] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
-  const [vehicleImage, setVehicleImage] = useState(null);
+  const [voyageImage, setVoyageImage] = useState(null);
   const [imagePreview2, setImagePreview2] = useState(null);
   const fileInputRef2 = React.createRef();
+
   const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
-  const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s1")
-  const [vehicleId, setVehicleId] = useState(3)
+  const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isCreatingVehicle, setIsCreatingVehicle] = useState(false);
 
+
+
+  const [pageState, setPageState] = useState(1)
   const [voyageBrief, setVoyageBrief] = useState("")
   const [voyageDescription, setVoyageDescription] = useState("")
   const [selectedVacancy, setSelectedVacancy] = useState();
@@ -55,6 +62,8 @@ export default function CreateVoyagePage() {
   const [isFixedPrice, setIsFixedPrice] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState(null);
+  const [voyageId, setVoyageId] = useState(88)
+  const [vehicleId, setVehicleId] = useState(3)
   const [vehiclesList, setVehiclesList] = useState([
     { label: "Walk", value: 63 },
     { label: "Run", value: 64 },
@@ -66,6 +75,9 @@ export default function CreateVoyagePage() {
       key: "selection",
     },
   ]);
+
+  const [addVoyageImage] = useAddVoyageImageMutation();
+
 
   const {
     data: usersVehiclesData,
@@ -114,110 +126,126 @@ export default function CreateVoyagePage() {
                 <TopBarMenu />
               </div>
             </div>
-            <div style={{ position: "relative" }}>
-              <ProfileImageandDetailsTitlesComponent />
-              <div style={profileImageandDetailsContainer}>
 
-                <div
-                  style={{
-                    backgroundColor: "rgba(255,255,255,.3)",
-                    borderRadius: "1.5rem",
-                    margin: "auto",
-                    padding: "1rem"
-                  }}
-                >
-                  <VoyageProfileImageUploader />
-                </div>
-                <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
-                  <div style={voyageDetails}>
-                    <div style={{
-                      backgroundColor: "rgba(255,255,255,0.7)"
-                    }}>
-                      <CreateVoyageVacancyPicker
-                        selectedVacancy={selectedVacancy}
-                        setSelectedVacancy={setSelectedVacancy}
-                      />
+            {pageState === 1 &&
+              <>
+                <div style={{ position: "relative" }}>
+                  <ProfileImageandDetailsTitlesComponent />
+                  <div style={profileImageandDetailsContainer}>
+
+                    <div
+                      style={{
+                        backgroundColor: "rgba(255,255,255,.3)",
+                        borderRadius: "1.5rem",
+                        margin: "auto",
+                        padding: "1rem"
+                      }}
+                    >
+                      <VoyageProfileImageUploader />
                     </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                      <CreateVoyageVehicleSelector
-                        vehicleId={vehicleId}
-                        setVehicleId={setVehicleId}
-                        vehiclesList={vehiclesList}
-                      />
+                    <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
+                      <div style={voyageDetails}>
+                        <div style={{
+                          backgroundColor: "rgba(255,255,255,0.7)"
+                        }}>
+                          <CreateVoyageVacancyPicker
+                            selectedVacancy={selectedVacancy}
+                            setSelectedVacancy={setSelectedVacancy}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                          <CreateVoyageVehicleSelector
+                            vehicleId={vehicleId}
+                            setVehicleId={setVehicleId}
+                            vehiclesList={vehiclesList}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                          <CreateVoyagePageNameInput
+                            voyageName={voyageName}
+                            setVoyageName={setVoyageName}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)", }}>
+                          <CreateVoyagePriceInput
+                            minPrice={minPrice}
+                            setMinPrice={setMinPrice}
+                            maxPrice={maxPrice}
+                            setMaxPrice={setMaxPrice}
+                            type={"Min Price"}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                          <CreateVoyagePriceInput
+                            minPrice={minPrice}
+                            setMinPrice={setMinPrice}
+                            maxPrice={maxPrice}
+                            setMaxPrice={setMaxPrice}
+                            type={"Max Price"}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+                          <CreateVoyageLastBidDateInput
+                            lastBidDate={lastBidDate}
+                            setLastBidDate={setLastBidDate}
+                          />
+                        </div>
+                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
+                          <AuctionFixedPrice
+                            isAuction={isAuction}
+                            isFixedPrice={isFixedPrice}
+                            setIsAuction={setIsAuction}
+                            setIsFixedPrice={setIsFixedPrice}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                      <CreateVoyagePageNameInput
-                        voyageName={voyageName}
-                        setVoyageName={setVoyageName}
-                      />
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)", }}>
-                      <CreateVoyagePriceInput
-                        minPrice={minPrice}
-                        setMinPrice={setMinPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        type={"Min Price"}
-                      />
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                      <CreateVoyagePriceInput
-                        minPrice={minPrice}
-                        setMinPrice={setMinPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        type={"Max Price"}
-                      />
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                      <CreateVoyageLastBidDateInput
-                        lastBidDate={lastBidDate}
-                        setLastBidDate={setLastBidDate}
-                      />
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
-                      <AuctionFixedPrice
-                        isAuction={isAuction}
-                        isFixedPrice={isFixedPrice}
-                        setIsAuction={setIsAuction}
-                        setIsFixedPrice={setIsFixedPrice}
-                      />
+
+                    <div style={{ backgroundColor: "rgba(255,255,255,.31)", borderRadius: "1.5rem" }}>
+
+
+                      <div style={{
+                        alignContent: "center",
+                        backgroundColor: "rgba(255,255,255,31)",
+                        borderRadius: "1.5rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        transform: "scale(.93)"
+                      }}>
+                        <CreateVoyageDatePicker
+                          dates={dates}
+                          setDates={setDates}
+                          calendarOpen={calendarOpen}
+                          setCalendarOpen={setCalendarOpen}
+                        />
+                      </div>
+
                     </div>
                   </div>
                 </div>
-
-                <div style={{ backgroundColor: "rgba(255,255,255,.31)", borderRadius: "1.5rem" }}>
-
-
-                  <div style={{
-                    alignContent: "center",
-                    backgroundColor: "rgba(255,255,255,31)",
-                    borderRadius: "1.5rem",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    transform: "scale(.93)"
-                  }}>
-                    <CreateVoyageDatePicker
-                      dates={dates}
-                      setDates={setDates}
-                      calendarOpen={calendarOpen}
-                      setCalendarOpen={setCalendarOpen}
-                    />
-                  </div>
-
+                <div style={{ position: "relative" }}>
+                  <BriefAndDescriptionTitlesComponent />
+                  <VoyageBriefAndDescriptionComponent
+                    voyageDescription={voyageDescription}
+                    setVoyageDescription={setVoyageDescription}
+                    voyageBrief={voyageBrief}
+                    setVoyageBrief={setVoyageBrief}
+                  />
                 </div>
-              </div>
-            </div>
-            <div style={{ position: "relative" }}>
-              <BriefAndDescriptionTitlesComponent />
-              <VoyageBriefAndDescriptionComponent
-                voyageDescription={voyageDescription}
-                setVoyageDescription={setVoyageDescription}
-                voyageBrief={voyageBrief}
-                setVoyageBrief={setVoyageBrief}
-              />
-            </div>
+                <CreateVoyageButton setPageState={setPageState} />
+              </>
+            }
+
+            {pageState === 2 &&
+              <>
+                <VoyageImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage}
+                  addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
+                  voyageId={voyageId} addVoyageImage={addVoyageImage}
+                  isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
+                />
+              </>
+            }
           </div >
         </header >
       </div >
@@ -361,6 +389,328 @@ const quellStyleDescription = `
     color: black
     }
   `
+
+
+
+const VoyageImageUploader = ({
+  voyageImage,
+  setVoyageImage,
+  addedVoyageImages,
+  setAddedVoyageImages,
+  voyageId,
+  addVoyageImage,
+  isUploadingImage,
+  setIsUploadingImage
+}) => {
+
+  const deleteImageIconHover2 = {
+    transform: "scale(1.2)",
+  };
+
+  const handleUploadImage = useCallback(async () => {
+    if (!voyageImage) {
+      return;
+    }
+    setIsUploadingImage(true);
+    try {
+      const addedVoyageImageResponse = await addVoyageImage({
+        voyageImage,
+        voyageId,
+      });
+
+      const addedvoyageImageId = addedVoyageImageResponse.data.imagePath;
+      const newItem = {
+        addedvoyageImageId,
+        voyageImage,
+      };
+      setAddedVoyageImages((prevImages) => [...prevImages, newItem]);
+      setVoyageImage(null);
+      setImagePreview2(null);
+
+    } catch (error) {
+      console.error("Error uploading image", error);
+      alert(
+        "Failed to upload image. Please check your connection and try again."
+      );
+    }
+    setIsUploadingImage(false);
+  }, [voyageImage, voyageId, addVoyageImage]);
+
+  const addImageButton = {
+    backgroundColor: "#007bff",
+    position: "absolute",
+    bottom: "-0.5rem",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    fontSize: "1.5rem",
+    fontWeight: "800",
+    paddingLeft: "1rem",
+    paddingRight: "1rem",
+    left: "50%",
+    transform: "translateX(-50%)", // Centers it horizontally
+  }
+
+  const uploadedImagesContainer = {
+    display: "flex",
+    flexDirection: "row",
+    overflow: "scroll",
+    width: "calc(100vw - 26rem)",
+    margin: "auto",
+    scrollbarWidth: "none",
+    msOverflowStyle: "none",
+  }
+
+  const deleteImageIcon2 = {
+    backgroundColor: " #3c9dee99",
+    width: "3rem",
+    height: "3rem",
+    position: "absolute",
+    top: "-0.5rem",
+    right: "-0.5rem",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+  }
+
+
+  const placeHolderImage = {
+    width: "20rem",
+    height: "20rem",
+    maxWidth: "20rem",
+    margin: "0.5rem",
+    borderRadius: "1rem",
+    overflow: "hidden",
+    objectFit: "cover",
+
+  }
+
+  const uploadImage2 = {
+    width: "25rem",
+    height: "25rem",
+    objectFit: "cover",
+    borderRadius: "1.5rem",
+    border: "2px solid transparent",
+
+  }
+
+
+  const maxItems = 10;
+  const placeholders = Array.from({ length: maxItems }, (_, index) => ({
+    key: `placeholder_${index + 1}`,
+  }));
+
+  const data = useMemo(() =>
+    addedVoyageImages.length < maxItems
+      ? [
+        ...addedVoyageImages,
+        ...placeholders.slice(addedVoyageImages.length),
+      ]
+      : addedVoyageImages.map((item) => ({
+        ...item,
+        key: item.addedvehicleImageId,
+      })), [addedVoyageImages, maxItems, placeholders]);
+
+  const fileInputRef2 = React.createRef();
+  const [imagePreview2, setImagePreview2] = useState(null);
+  const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
+
+  const handleImageChange2 = (e) => {
+    const files2 = e.target.files;
+    if (files2 && files2.length > 0) {
+      const file2 = files2[0];
+      setVoyageImage(file2);
+      const previewUrl2 = URL.createObjectURL(file2);
+      setImagePreview2(previewUrl2);
+    }
+  };
+
+  const handleImageClick2 = () => {
+    fileInputRef2.current.click();
+  };
+
+  const handleCancelUpload2 = () => {
+    if (imagePreview2) {
+      URL.revokeObjectURL(imagePreview2);
+    }
+    setVoyageImage(null);
+    setImagePreview2(null);
+    if (fileInputRef2.current) {
+      fileInputRef2.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <div style={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: "1rem"
+        }}>
+          <div style={{
+            width: "26rem",
+          }}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange2}
+              onClick={(e) => (e.target.value = null)} // Reset value before selection
+              style={{ display: "none" }}
+              ref={fileInputRef2}
+            />
+            <div
+              style={{
+                position: "relative",
+                width: "25rem",
+
+              }}
+            >
+              {imagePreview2 ? (
+                <div className="image-preview">
+                  <img src={imagePreview2} alt="Uploaded preview"
+                    style={uploadImage2}
+                  />
+                </div>
+              ) :
+                <img
+                  src={uploadImage}
+                  alt="Upload Icon"
+                  onClick={handleImageClick2}
+                  style={uploadImage2}
+                />
+              }
+              {voyageImage && (
+                <>
+                  <div onClick={handleCancelUpload2}
+                    style={{ ...deleteImageIcon2, ...((hoveredUserImg2) ? deleteImageIconHover2 : {}) }}
+                    onMouseEnter={() => {
+                      setHoveredUserImg2(true)
+                    }}
+                    onMouseLeave={() => setHoveredUserImg2(false)}
+                  >
+                    <IoRemoveCircleOutline size={"2.5rem"} />
+                  </div>
+
+                  <div style={addImageButton}
+                    onClick={() => handleUploadImage()}
+                  >Add Image</div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div style={uploadedImagesContainer}>
+            <Swiper
+              scrollbar={{ hide: true }}
+              slidesPerView={3}
+              spaceBetween={10}
+              freeMode={true}
+              pagination={{
+                clickable: true,
+              }}
+              modules={[FreeMode]}
+              className="mySwiper"
+            >
+              {data.map((item, index) => {
+                if (index === 1)
+                  console.log("data:", data);
+                return (
+                  <SwiperSlide>
+                    <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
+
+                      {item.addedvehicleImageId ? (
+                        <>
+                          <img
+                            src={URL.createObjectURL(item.vehicleImage)}
+                            alt={`Uploaded ${index + 1}`}
+                            style={userUploadedImage}
+                          />
+                          <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
+                            style={deleteImageIcon3}
+                          >
+                            <IoRemoveCircleOutline size={"2.5rem"} />
+                          </div>
+                        </>
+
+                      ) : (
+                        <img
+                          src={placeHolder}
+                          alt={`Placeholder ${index + 1}`}
+                          style={placeHolderImage}
+                        />
+                      )}
+                    </div>
+                  </SwiperSlide>)
+              }
+              )}
+            </Swiper>
+          </div>
+        </div>
+      </div>
+      <div className="completeVehicleButton"
+        onClick={() => completeVehicleCreate()}
+      >Complete Voyage</div>
+
+
+      <style>
+        {`
+          #app {
+            height: 100%;
+          }
+
+          html, body {
+            position: relative;
+            height: 100%;
+          }
+
+          body {
+            background: #eee;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+          }
+
+          .swiper {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+          }
+
+          .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+            filter: none !important;
+            opacity: 1 !important;
+            padding: 1rem !important;
+            width: 23rem !important;
+          }
+
+          .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        `}
+      </style>
+
+    </>
+  )
+
+}
 
 
 const VoyageProfileImageUploader = () => {
@@ -1051,5 +1401,49 @@ const ProfileImageandDetailsTitlesComponent = () => {
           Dates</span>
       </div>
     </div>
+  )
+}
+
+const CreateVoyageButton = ({ setPageState }) => {
+
+  const buttonStyle = {
+    width: "30%",
+    backgroundColor: "#007bff",
+    padding: "0.6rem",
+    marginBottom: "1rem",
+    borderRadius: "1.5rem",
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontSize: "1.2rem",
+    border: "none",
+    boxShadow:
+      "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+    transition: "box-shadow 0.2s ease",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+  };
+
+
+  return (
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={() => {
+          console.log("apply");
+          setPageState(2)
+        }}
+        style={buttonStyle}
+      >
+        Create Voyage
+      </button>
+    </div>
+
   )
 }
