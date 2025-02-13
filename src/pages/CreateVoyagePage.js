@@ -239,13 +239,26 @@ export default function CreateVoyagePage() {
 
             {pageState === 2 &&
               <>
-                <VoyageImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage}
+                <VoyageImageUploaderComponent voyageImage={voyageImage} setVoyageImage={setVoyageImage}
                   addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
                   voyageId={voyageId} addVoyageImage={addVoyageImage}
                   isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
+                  setPageState={setPageState}
                 />
               </>
             }
+
+            {pageState === 3 &&
+              <>
+                <VoyageImageUploaderComponent voyageImage={voyageImage} setVoyageImage={setVoyageImage}
+                  addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
+                  voyageId={voyageId} addVoyageImage={addVoyageImage}
+                  isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
+                  setPageState={setPageState}
+                />
+              </>
+            }
+
           </div >
         </header >
       </div >
@@ -392,7 +405,7 @@ const quellStyleDescription = `
 
 
 
-const VoyageImageUploader = ({
+const VoyageImageUploaderComponent = ({
   voyageImage,
   setVoyageImage,
   addedVoyageImages,
@@ -400,7 +413,8 @@ const VoyageImageUploader = ({
   voyageId,
   addVoyageImage,
   isUploadingImage,
-  setIsUploadingImage
+  setIsUploadingImage,
+  setPageState
 }) => {
 
   const deleteImageIconHover2 = {
@@ -498,6 +512,31 @@ const VoyageImageUploader = ({
 
   }
 
+  const userUploadedImage = {
+    width: "20rem",
+    height: "20rem",
+    objectFit: "cover",
+    maxWidth: "20rem",
+    borderRadius: "1rem",
+    margin: "0.5rem",
+
+  }
+
+
+  const deleteImageIcon3 = {
+    backgroundColor: " #3e99",
+    width: "3rem",
+    height: "3rem",
+    position: "absolute",
+    top: "0",
+    right: "0",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+  }
+
 
   const maxItems = 10;
   const placeholders = Array.from({ length: maxItems }, (_, index) => ({
@@ -543,6 +582,12 @@ const VoyageImageUploader = ({
       fileInputRef2.current.value = "";
     }
   };
+
+  const goToWaypoints = () => {
+    console.log("hello");
+    setPageState(3)
+  }
+
 
   return (
     <>
@@ -617,20 +662,19 @@ const VoyageImageUploader = ({
               className="mySwiper"
             >
               {data.map((item, index) => {
-                if (index === 1)
-                  console.log("data:", data);
+                if (index === 0)
+                  console.log("item:", item);
                 return (
                   <SwiperSlide>
                     <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
-
-                      {item.addedvehicleImageId ? (
+                      {item.addedvoyageImageId ? (
                         <>
                           <img
-                            src={URL.createObjectURL(item.vehicleImage)}
+                            src={URL.createObjectURL(item.voyageImage)}
                             alt={`Uploaded ${index + 1}`}
                             style={userUploadedImage}
                           />
-                          <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
+                          <div onClick={() => handleDeleteImage(item.addedvoyageImageId)}
                             style={deleteImageIcon3}
                           >
                             <IoRemoveCircleOutline size={"2.5rem"} />
@@ -653,7 +697,7 @@ const VoyageImageUploader = ({
         </div>
       </div>
       <div className="completeVehicleButton"
-        onClick={() => completeVehicleCreate()}
+        onClick={() => goToWaypoints()}
       >Complete Voyage</div>
 
 
