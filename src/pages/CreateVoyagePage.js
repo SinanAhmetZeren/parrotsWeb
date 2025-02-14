@@ -19,6 +19,7 @@ import {
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
 import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsComponent";
+import { AddWaypointsComponent } from "../components/AddWaypointsComponent";
 
 export default function CreateVoyagePage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
@@ -31,7 +32,7 @@ export default function CreateVoyagePage() {
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const [pageState, setPageState] = useState(1)
+  const [pageState, setPageState] = useState(3)
   const [voyageBrief, setVoyageBrief] = useState("")
   const [voyageDescription, setVoyageDescription] = useState("")
   const [selectedVacancy, setSelectedVacancy] = useState();
@@ -248,12 +249,15 @@ export default function CreateVoyagePage() {
 
             {pageState === 3 &&
               <>
-                <VoyageImageUploaderComponent voyageImage={voyageImage} setVoyageImage={setVoyageImage}
+
+                <AddWaypointsComponent
+                  voyageImage={voyageImage} setVoyageImage={setVoyageImage}
                   addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
                   voyageId={voyageId} addVoyageImage={addVoyageImage}
                   isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
                   setPageState={setPageState}
                 />
+
               </>
             }
 
@@ -324,7 +328,7 @@ const CreateVoyageButton = ({ setPageState }) => {
         }}
         style={buttonStyle}
       >
-        Create Voyage
+        Next
       </button>
     </div>
 

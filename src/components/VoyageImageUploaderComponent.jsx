@@ -305,9 +305,13 @@ export const VoyageImageUploaderComponent = ({
                     </div>
                 </div>
             </div>
-            <div className="completeVehicleButton"
+
+
+            {/* <div className="completeVehicleButton"
                 onClick={() => goToWaypoints()}
-            >Complete Voyage</div>
+            >Complete Voyage</div> */}
+
+            <CreateVoyageButton setPageState={setPageState} />
 
 
             <style>
@@ -363,4 +367,50 @@ export const VoyageImageUploaderComponent = ({
         </>
     )
 
+}
+
+
+
+const CreateVoyageButton = ({ setPageState }) => {
+
+    const buttonStyle = {
+        width: "30%",
+        backgroundColor: "#007bff",
+        padding: "0.6rem",
+        marginBottom: "1rem",
+        borderRadius: "1.5rem",
+        textAlign: "center",
+        color: "white",
+        fontWeight: "bold",
+        cursor: "pointer",
+        fontSize: "1.2rem",
+        border: "none",
+        boxShadow:
+            "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+        transition: "box-shadow 0.2s ease",
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+    };
+
+
+    return (
+
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "center",
+            }}
+        >
+            <button
+                onClick={() => {
+                    console.log("apply");
+                    setPageState(3)
+                }}
+                style={buttonStyle}
+            >
+                Next
+            </button>
+        </div>
+
+    )
 }
