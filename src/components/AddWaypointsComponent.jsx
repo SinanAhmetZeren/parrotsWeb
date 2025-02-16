@@ -12,10 +12,19 @@ import 'swiper/css/pagination';
 // import '../assets/css/VehicleImagesSwiper.css';
 import { FreeMode } from 'swiper/modules';
 import { MainPageCardSwiper } from "../components/MainPageCardSwiper";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+
+import parrotMarker1 from "../assets/images/parrotMarker1.png";
+import parrotMarker2 from "../assets/images/parrotMarker2.png";
+import parrotMarker3 from "../assets/images/parrotMarker3.png";
+import parrotMarker4 from "../assets/images/parrotMarker4.png";
+import parrotMarker5 from "../assets/images/parrotMarker5.png";
+import parrotMarker6 from "../assets/images/parrotMarker6.png";
+
 import ReactQuill, { displayName } from "react-quill";
+import { useAddWaypointMutation } from "../slices/VoyageSlice"
 
-
+import { useNavigation } from "react-router-dom";
 
 export const AddWaypointsComponent = ({
     voyageImage,
@@ -287,24 +296,75 @@ export const AddWaypointsComponent = ({
                         <div style={addWaypointButton}
                             onClick={() => console.log("hello")}
                         >Add Waypoint</div>
-
                     </div>
-                    <div style={{ backgroundColor: "red", height: "22rem", marginTop: "1rem" }}>
+                    <div style={{
+                        backgroundColor: "red",
+                        height: "22rem",
+                        marginTop: "1rem",
+                        paddingTop: "2rem"
+                    }}>
                         <AddedWaypointsSlider />
-
                     </div>
-
                 </div>
 
 
 
                 <div style={mapContainerBox}>
                     <div style={mapContainer}>
+
+                        <APIProvider apiKey={myApiKey} libraries={["marker"]}>
+                            {!initialLatitude && <div className="cardSwiperSpinner"></div>}
+
+                            <Map
+                                mapId="mainpageMap"
+                                defaultZoom={10}
+                                defaultCenter={{
+                                    lat: initialLatitude || 37.7749,
+                                    lng: initialLongitude || -122.4194,
+                                }}
+                                gestureHandling="greedy"
+                                disableDefaultUI
+                                onCameraChanged={() => {
+                                    setWaypointLatitude(null);
+                                    setWaypointLongitude(null);
+                                }}
+                                onClick={(event) => {
+                                    const lat = event.detail.latLng.lat;
+                                    const lng = event.detail.latLng.lng;
+                                    console.log("Clicked at:", lat, lng);
+                                    setWaypointLatitude(lat);
+                                    setWaypointLongitude(lng);
+                                }}
+                            >
+                                {waypointLatitude !== null && waypointLongitude !== null && (
+                                    <Marker
+                                        position={{ lat: waypointLatitude, lng: waypointLongitude }}
+                                        icon={{
+                                            url:
+                                                // index 
+                                                6 % 6 === 0
+                                                    ? parrotMarker1
+                                                    : index % 6 === 1
+                                                        ? parrotMarker2
+                                                        : index % 6 === 2
+                                                            ? parrotMarker3
+                                                            : index % 6 === 3
+                                                                ? parrotMarker4
+                                                                : index % 6 === 4
+                                                                    ? parrotMarker5
+                                                                    : parrotMarker6,
+                                            scaledSize: { width: 50, height: 60 },
+                                        }}
+                                    />
+                                )}
+                            </Map>
+                        </APIProvider>
+
+                        {/* 
                         <APIProvider apiKey={myApiKey} libraries={["marker"]}>
                             {
                                 !initialLatitude && (
                                     <div className={"cardSwiperSpinner"}>
-                                        {/* <div className="spinner"></div> */}
                                     </div>
                                 )
                             }
@@ -333,133 +393,13 @@ export const AddWaypointsComponent = ({
                                     </Map>
                                 )
                             }
-                        </APIProvider>
+                        </APIProvider> */}
                     </div>
                 </div>
             </div>
         </div>
     )
-
 }
-
-const titleInputStyle = {
-    borderRadius: "1rem",
-    backgroundColor: "white",
-    border: "1px solid rgba(4, 4, 4, 0.2)",
-    width: "100%",
-    padding: "0.3rem",
-    fontSize: "1.2rem",
-    color: "#757575",
-    fontWeight: 700,
-}
-
-const waypointDetailRow = {
-    backgroundColor: "grey",
-    height: "5rem",
-    width: "90%",
-    margin: "auto",
-    alignContent: "center",
-    display: "grid",
-    gridTemplateColumns: "1.5fr 5fr",
-    paddingRight: "1rem",
-    marginRight: "0"
-
-}
-
-const mainContainer = {
-    display: "flex",
-    flexGrow: "1",
-    width: "100%",
-    height: "100%",
-}
-
-const newWaypointContainer = {
-    display: "flex",
-    flexDirection: "column",
-    // width: "calc(35% - 6rem)",
-    height: "calc(50vh - 1.5rem)",
-    backgroundColor: "rgba(255,255,25,1)",
-    padding: ".5rem",
-    margin: "3rem",
-    marginBottom: "0",
-    marginTop: "0.5rem",
-    borderRadius: "1.5rem",
-}
-
-const WaypointDescriptionContainerBox = {
-    height: "40%",
-    width: "100%",
-}
-
-const waypointDesctriptionContainer = {
-    height: "90%",
-    width: "100%",
-    backgroundColor: "white",
-    margin: "auto"
-}
-
-const mapContainerBox = {
-    display: "flex",
-    flexDirection: "column",
-    width: "64%",
-    height: "calc(100vh - 3rem)",
-    marginTop: "0rem"
-}
-
-const mapContainer = {
-    display: "flex",
-    height: "100%",
-    width: "calc(100% - 0rem)",
-    backgroundColor: "rgba(155,225,115,0.05)",
-}
-
-const WaypointDetailsContainer = {
-    height: "100%",
-    width: "50%",
-    display: "flex",
-    flexDirection: "column",
-    fontSize: "1.5rem"
-}
-
-const WaypointImageUploaderContainer = {
-    height: "100%",
-    width: "50%",
-    backgroundColor: "grey",
-    display: "flex",
-    justifyContent: "center"
-}
-
-
-const WaypointImageUploaderContainerBox = {
-    height: "50%",
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-}
-
-const MapSpinner = () => {
-    return (
-        <div style={{
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            height: "100%", width: "100%",
-            borderRadius: "1.5rem",
-            position: "relative"
-
-        }}>
-            <div className="spinner"
-                style={{
-                    position: "absolute",
-                    top: "40%",
-                    left: "50%",
-                    height: "5rem",
-                    width: "5rem",
-                    border: "8px solid rgba(173, 216, 230, 0.3)",
-                    borderTop: "8px solid #1e90ff",
-                }}></div>
-        </div>
-    )
-}
-
 
 
 const WaypointImageUploader = () => {
@@ -600,70 +540,247 @@ const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => {
 
 const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints }) => {
 
-    const uploadedImagesContainer = {
+
+    const [addedWayPoints, setAddedWayPoints] = useState([]);
+    const [markerCoords, setMarkerCoords] = useState(null);
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+    const [title, setTitle] = useState("Amsterdamda gezinti");
+    const [description, setDescription] = useState(
+        "Amsterdam'da geziyoruz, ot içiyoruz.  Ot kafelerde takiliyoruz"
+    );
+    const [imageUri, setImageUri] = useState(null);
+    const [order, setOrder] = useState(1);
+    const [addWaypoint] = useAddWaypointMutation();
+    const [isUploadingWaypointImage, setIsUploadingWaypointImage] =
+        useState(false);
+
+    const uploadedWaypointsContainer = {
         display: "flex",
         flexDirection: "row",
         overflow: "scroll",
-        width: "calc(100vw - 26rem)",
+        width: "36rem",
         margin: "auto",
         scrollbarWidth: "none",
         msOverflowStyle: "none",
     }
 
-
-
-
     return (
-
-        <div style={uploadedImagesContainer}>
+        <div style={uploadedWaypointsContainer}>
             <Swiper
                 scrollbar={{ hide: true }}
-                slidesPerView={3}
+                slidesPerView={1}
                 spaceBetween={10}
                 freeMode={true}
                 pagination={{
                     clickable: true,
                 }}
                 modules={[FreeMode]}
-                className="mySwiper"
             >
-                {data?.map((item, index) => {
-                    if (index === 1)
-                        console.log("data:", data);
-                    return (
-                        <SwiperSlide>
-                            <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
 
-                                {item.addedvehicleImageId ? (
-                                    <>
-                                        <img
-                                            src={URL.createObjectURL(item.vehicleImage)}
-                                            alt={`Uploaded ${index + 1}`}
-                                            style={userUploadedImage}
-                                        />
-                                        <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
-                                            style={deleteImageIcon3}
-                                        >
-                                            <IoRemoveCircleOutline size={"2.5rem"} />
-                                        </div>
-                                    </>
+                <SwiperSlide>
+                    <div key={1111} >
 
-                                ) : (
-                                    <img
-                                        src={placeHolder}
-                                        alt={`Placeholder ${index + 1}`}
-                                        style={placeHolderImage}
-                                    />
-                                )}
-                            </div>
-                        </SwiperSlide>)
-                }
-                )}
+                        <WaypointComponent
+                            description={"description"}
+                            latitude={"latitude"}
+                            longitude={"longitude"}
+                            profileImage={"profileImage"}
+                            title={"title"}
+                            pinColor={"pinColor"}
+                        />
+                    </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                    <div key={1111} >
+
+                        <WaypointComponent
+                            description={"description"}
+                            latitude={"latitude"}
+                            longitude={"longitude"}
+                            profileImage={"profileImage"}
+                            title={"title"}
+                            pinColor={"pinColor"}
+                        />
+                    </div>
+                </SwiperSlide>
+
+
+                {/* 
+                <SwiperSlide>
+                    <div key={1111} >
+
+                        <WaypointComponent
+                            description={"description"}
+                            latitude={"latitude"}
+                            longitude={"longitude"}
+                            profileImage={"profileImage"}
+                            title={"title"}
+                            pinColor={"pinColor"}
+                        />
+                    </div>
+                </SwiperSlide> */}
+
             </Swiper>
         </div>
-
     )
+}
+
+const WaypointComponent = (
+    { description,
+        latitude,
+        longitude,
+        profileImage,
+        title,
+        pinColor }) => {
+
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const waypointBaseUrl = `${apiUrl}/Uploads/WaypointImages/`;
+    const imageUrl = waypointBaseUrl + profileImage
+
+    return (
+        <div style={{
+            backgroundColor: "rgba(155,255,255,1)",
+            height: "17rem",
+            width: "34rem",
+            display: "flex",
+            flexDirection: "row",
+            borderRadius: "1.5rem",
+            overflow: "hidden"
+        }}>
+            <img src={placeHolder} alt="Uploaded preview"
+                style={{ height: "100%", }} />
+            <div style={{
+                backgroundColor: "rgba(155,255,255,1)",
+                width: "calc(100% - .8rem)",
+                margin: ".4rem"
+            }}>
+                <div style={{ backgroundColor: "orange", height: "3rem" }}>
+                    <span style={{ backgroundColor: "red" }}>{title}</span>
+                </div>
+                <div style={{ backgroundColor: "lightblue", height: "calc(100% - 3rem)" }}>
+                    <span style={{ backgroundColor: "lightgreen" }}>{description}</span>
+                </div>
+            </div>
+
+        </div>
+    )
+}
+
+const titleInputStyle = {
+    borderRadius: "1rem",
+    backgroundColor: "white",
+    border: "1px solid rgba(4, 4, 4, 0.2)",
+    width: "100%",
+    padding: "0.3rem",
+    fontSize: "1.2rem",
+    color: "#757575",
+    fontWeight: 700,
+}
+
+const waypointDetailRow = {
+    backgroundColor: "grey",
+    height: "5rem",
+    width: "90%",
+    margin: "auto",
+    alignContent: "center",
+    display: "grid",
+    gridTemplateColumns: "1.5fr 5fr",
+    paddingRight: "1rem",
+    marginRight: "0"
 
 }
 
+const mainContainer = {
+    display: "flex",
+    flexGrow: "1",
+    width: "100%",
+    height: "100%",
+}
 
+const newWaypointContainer = {
+    display: "flex",
+    flexDirection: "column",
+    // width: "calc(35% - 6rem)",
+    height: "calc(50vh - 1.5rem)",
+    backgroundColor: "rgba(255,255,25,1)",
+    padding: ".5rem",
+    margin: "3rem",
+    marginBottom: "0",
+    marginTop: "0.5rem",
+    borderRadius: "1.5rem",
+}
+
+const WaypointDescriptionContainerBox = {
+    height: "40%",
+    width: "100%",
+}
+
+const waypointDesctriptionContainer = {
+    height: "90%",
+    width: "100%",
+    backgroundColor: "white",
+    margin: "auto"
+}
+
+const mapContainerBox = {
+    display: "flex",
+    flexDirection: "column",
+    width: "64%",
+    height: "calc(100vh - 3rem)",
+    marginTop: "0rem"
+}
+
+const mapContainer = {
+    display: "flex",
+    height: "100%",
+    width: "calc(100% - 0rem)",
+    backgroundColor: "rgba(155,225,115,0.05)",
+}
+
+const WaypointDetailsContainer = {
+    height: "100%",
+    width: "50%",
+    display: "flex",
+    flexDirection: "column",
+    fontSize: "1.5rem"
+}
+
+const WaypointImageUploaderContainer = {
+    height: "100%",
+    width: "50%",
+    backgroundColor: "grey",
+    display: "flex",
+    justifyContent: "center"
+}
+
+const WaypointImageUploaderContainerBox = {
+    height: "50%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+}
+
+const MapSpinner = () => {
+    return (
+        <div style={{
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            height: "100%", width: "100%",
+            borderRadius: "1.5rem",
+            position: "relative"
+
+        }}>
+            <div className="spinner"
+                style={{
+                    position: "absolute",
+                    top: "40%",
+                    left: "50%",
+                    height: "5rem",
+                    width: "5rem",
+                    border: "8px solid rgba(173, 216, 230, 0.3)",
+                    borderTop: "8px solid #1e90ff",
+                }}></div>
+        </div>
+    )
+}

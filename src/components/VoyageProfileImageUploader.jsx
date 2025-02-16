@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 
 
 
-export const VoyageProfileImageUploader = () => {
+export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
 
     const deleteImageIcon = {
         backgroundColor: "rgba(211,1,1,0.4)",
@@ -33,14 +33,14 @@ export const VoyageProfileImageUploader = () => {
 
     const fileInputRef = React.createRef();
     const [imagePreview, setImagePreview] = useState(null);
-    const [image1, setImage1] = useState(null);
+    // const [image1, setImage1] = useState(null);
     const [hoveredUserImg, setHoveredUserImg] = useState(false)
 
     const handleImageChange = (e) => {
         const files = e.target.files;
         if (files && files.length > 0) {
             const file = files[0];
-            setImage1(file);
+            setVoyageImage(file);
             const previewUrl = URL.createObjectURL(file);
             setImagePreview(previewUrl);
         }
@@ -50,7 +50,7 @@ export const VoyageProfileImageUploader = () => {
         if (imagePreview) {
             URL.revokeObjectURL(imagePreview);
         }
-        setImage1(null);
+        setVoyageImage(null);
         setImagePreview(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -109,7 +109,7 @@ export const VoyageProfileImageUploader = () => {
                                 />
                             </div>
                         }
-                        {image1 && (
+                        {voyageImage && (
                             <div onClick={handleCancelUpload}
                                 style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
                                 onMouseEnter={() => {

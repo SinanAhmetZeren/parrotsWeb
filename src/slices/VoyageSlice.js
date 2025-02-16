@@ -27,7 +27,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     createVoyage: builder.mutation({
       query: (data) => {
         const {
-          formData,
+          voyageImage,
           name,
           brief,
           description,
@@ -43,6 +43,10 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           vehicleId,
         } = data;
 
+        const formData = new FormData();
+        formData.append("imageFile", voyageImage);
+
+
         const queryParams = new URLSearchParams({
           Name: name,
           Brief: brief,
@@ -53,11 +57,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           LastBidDate: formattedLastBidDate,
           MinPrice: minPrice,
           MaxPrice: maxPrice,
-          Auction: isAuction.toString(), // Assuming isAuction is a boolean
-          FixedPrice: isFixedPrice.toString(), // Assuming isFixedPrice is a boolean
+          Auction: isAuction.toString(),
+          FixedPrice: isFixedPrice.toString(),
           UserId: userId,
           VehicleId: vehicleId,
         });
+
 
         const url = `/api/Voyage/AddVoyage?${queryParams}`;
 
@@ -65,7 +70,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           url,
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };

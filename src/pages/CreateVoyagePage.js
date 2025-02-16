@@ -14,7 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { CreateVoyageDatePicker } from "../components/CreateVoyageDatePicker";
 
 import {
-  useAddVoyageImageMutation
+  useAddVoyageImageMutation,
+  useCreateVoyageMutation
 } from "../slices/VoyageSlice";
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
@@ -25,14 +26,11 @@ export default function CreateVoyagePage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userName = "Ahmet Zeren";
   const navigate = useNavigate();
-  const [vehicleDescription, setVehicleDescription] = useState("")
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [voyageImage, setVoyageImage] = useState(null);
-
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-
-  const [pageState, setPageState] = useState(3)
+  const [pageState, setPageState] = useState(1)
   const [voyageBrief, setVoyageBrief] = useState("")
   const [voyageDescription, setVoyageDescription] = useState("")
   const [selectedVacancy, setSelectedVacancy] = useState();
@@ -44,6 +42,7 @@ export default function CreateVoyagePage() {
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState(null);
   const [voyageId, setVoyageId] = useState(88)
+  const [isCreatingVoyage, setIsCreatingVoyage] = useState(false)
   const [vehicleId, setVehicleId] = useState(3)
   const [vehiclesList, setVehiclesList] = useState([
     { label: "Walk", value: 63 },
@@ -57,8 +56,9 @@ export default function CreateVoyagePage() {
     },
   ]);
 
-  const [addVoyageImage] = useAddVoyageImageMutation();
 
+  const [addVoyageImage] = useAddVoyageImageMutation();
+  const [createVoyage] = useCreateVoyageMutation();
 
   const {
     data: usersVehiclesData,
@@ -68,9 +68,6 @@ export default function CreateVoyagePage() {
     isSuccess: usersVehiclesSuccess,
     refetch,
   } = useGetVehiclesByUserByIdQuery(userId);
-
-
-
 
   useEffect(() => {
 
@@ -86,11 +83,176 @@ export default function CreateVoyagePage() {
         }))
       );
 
-    console.log("dropDown: --> ", dropdownData);
     setVehiclesList(dropdownData)
 
   }, [usersVehiclesSuccess, usersVehiclesData, setVehiclesList]);
 
+
+  const addWaypointButton = {
+    backgroundColor: "#007bff",
+    bottom: "-0.5rem",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    fontSize: "1.3rem",
+    fontWeight: "800",
+    width: "40%",
+    marginLeft: "50%",
+    transform: "translateX(-50%)", // Centers it horizontally
+    padding: "0.3rem",
+    paddingRight: "1rem",
+    paddingLeft: "1rem",
+    marginTop: "1rem"
+
+  }
+
+  function convertDateFormat(inputDate) {
+    const date = new Date(inputDate);
+    const year = date.getUTCFullYear();
+    const month = `0${date.getUTCMonth() + 1}`.slice(-2);
+    const day = `0${date.getUTCDate()}`.slice(-2);
+    const hours = `0${date.getUTCHours()}`.slice(-2);
+    const minutes = `0${date.getUTCMinutes()}`.slice(-2);
+    const seconds = `0${date.getUTCSeconds()}`.slice(-2);
+    const milliseconds = `00${date.getUTCMilliseconds()}`.slice(-3);
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+  }
+
+
+  function convertDateFormat_LastBidDate2(inputDate) {
+    const dateParts = inputDate.split("/");
+    if (dateParts.length !== 3) {
+      throw new Error("Invalid date format");
+    }
+
+    const year = parseInt(dateParts[2], 10);
+    const month = parseInt(dateParts[0], 10);
+    const day = parseInt(dateParts[1], 10);
+
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    const formattedDate = `${date.getUTCFullYear()}-${(
+      "0" +
+      (date.getUTCMonth() + 1)
+    ).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)} 00:00:00.000`;
+
+    return formattedDate;
+  }
+
+  function convertDateFormat_LastBidDate(inputDate) {
+    const date = new Date(`${inputDate}T00:00:00.000Z`);
+    const formattedDate = `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth() + 1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`;
+    return formattedDate;
+  }
+
+  // Example usage:
+  console.log(convertDateFormat_LastBidDate("2025-02-26"));
+
+  const handleCreateVoyage = async () => {
+    console.log("hello");
+    if (!voyageImage) {
+      return;
+    }
+
+    // const formData = new FormData();
+    // formData.append("imageFile", {
+    //   uri: voyageImage,
+    //   type: "image/jpeg",
+    //   name: "profileImage.jpg",
+    // });
+    console.log("a->", dates[0]);
+    const startDate = dates[0].startDate
+    const endDate = dates[0].endDate
+    console.log("lastBidDate--->", lastBidDate);
+
+    try {
+      console.log("1. startdate. ", startDate);
+      const formattedStartDate = convertDateFormat(startDate);
+      console.log("2. formattedStartDate. ", formattedStartDate);
+
+      const formattedEndDate = endDate
+        ? convertDateFormat(endDate)
+        : convertDateFormat(startDate);
+
+      console.log("3. endDate. ", endDate);
+      console.log("4. formattedEndDate. ", formattedEndDate);
+
+
+
+      console.log("5. lastbiddate. ", lastBidDate);
+      const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
+      console.log("6. formattedlastbiddate. ", formattedLastBidDate);
+
+
+      setIsCreatingVoyage(true);
+
+
+      const response = await createVoyage({
+        voyageImage,
+        name: "voyageName",
+        brief: "voyageBrief",
+        description: "voyageDescription",
+        vacancy: selectedVacancy,
+        formattedStartDate,
+        formattedEndDate,
+        formattedLastBidDate,
+        minPrice,
+        maxPrice,
+        isAuction,
+        isFixedPrice,
+        userId,
+        vehicleId,
+      });
+
+      const createdVoyageId = response.data.data.id;
+      setVoyageId(createdVoyageId);
+      console.log("created voyage id: ", createdVoyageId);
+      // setName("");
+      // setBrief("");
+      // setDescription("");
+      // setVacancy("");
+      // setStartDate("");
+      // setEndDate("");
+      // setLastBidDate("");
+      // setMinPrice("");
+      // setMaxPrice("");
+      // setIsAuction("");
+      // setIsFixedPrice("");
+      // setVehicleId("");
+      // setImage("");
+      // setVoyageImage("");
+      // setAddedVoyageImages("");
+
+      // setCurrentStep(2);
+    } catch (error) {
+      console.error("Error uploading image", error);
+    }
+    setIsCreatingVoyage(false);
+  };
+
+
+
+
+  const handlePrintState = () => {
+    console.log("voyageImage:", voyageImage);
+    console.log("voyageBrief:", voyageBrief);
+    console.log("voyageDescription:", voyageDescription);
+    console.log("selectedVacancy:", selectedVacancy);
+    console.log("voyageName:", voyageName);
+    console.log("minPrice:", minPrice);
+    console.log("maxPrice:", maxPrice);
+    console.log("isAuction:", isAuction);
+    console.log("isFixedPrice:", isFixedPrice);
+    console.log("calendarOpen:", calendarOpen);
+    console.log("lastBidDate:", lastBidDate);
+    console.log("voyageId:", voyageId);
+    console.log("vehicleId:", vehicleId);
+    console.log("dates - start:", dates[0].startDate);
+    console.log("dates - end:", dates[0].startDate);
+  }
 
   return (
     <div style={{
@@ -122,7 +284,7 @@ export default function CreateVoyagePage() {
                         padding: "1rem"
                       }}
                     >
-                      <VoyageProfileImageUploader />
+                      <VoyageProfileImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage} />
                     </div>
                     <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
                       {/*                       
@@ -220,6 +382,11 @@ export default function CreateVoyagePage() {
                         />
                       </div>
                     </div>
+
+                    <div style={addWaypointButton}
+                      onClick={() => handlePrintState()}
+                    >Print State</div>
+
                   </div>
                 </div>
                 <div style={{ position: "relative" }}>
@@ -231,7 +398,7 @@ export default function CreateVoyagePage() {
                     setVoyageBrief={setVoyageBrief}
                   />
                 </div>
-                <CreateVoyageButton setPageState={setPageState} />
+                <CreateVoyageButton handleCreateVoyage={handleCreateVoyage} />
               </>
             }
 
@@ -291,7 +458,7 @@ const ProfileImageandDetailsTitlesComponent = () => {
   )
 }
 
-const CreateVoyageButton = ({ setPageState }) => {
+const CreateVoyageButton = ({ handleCreateVoyage }) => {
 
   const buttonStyle = {
     width: "30%",
@@ -323,8 +490,8 @@ const CreateVoyageButton = ({ setPageState }) => {
     >
       <button
         onClick={() => {
-          console.log("apply");
-          setPageState(2)
+          console.log("create voyage");
+          handleCreateVoyage()
         }}
         style={buttonStyle}
       >

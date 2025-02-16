@@ -21,7 +21,6 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
       calendarRef.current &&
       !calendarRef.current.contains(event.target)
     ) {
-      console.log('Closing calendar');
       setCalendarOpen(false);
     }
   };

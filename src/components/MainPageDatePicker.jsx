@@ -22,7 +22,6 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
       calendarRef.current &&
       !calendarRef.current.contains(event.target)
     ) {
-      console.log('Closing calendar');
       setCalendarOpen(false);
     }
   };
