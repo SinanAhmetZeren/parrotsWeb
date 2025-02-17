@@ -13,20 +13,14 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import { useAddWaypointMutation } from "../slices/VoyageSlice"
+import { useAddWaypointMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
 import { useNavigation } from "react-router-dom";
 import 'swiper/css';
 import 'swiper/css/pagination';
 // import './styles.css';
 import { Pagination, FreeMode } from 'swiper/modules';
-import { color } from "d3";
-
-
 
 const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
-
-
-
 
 export const AddWaypointsPage = ({
     voyageId,
@@ -37,8 +31,8 @@ export const AddWaypointsPage = ({
 
     console.log("voyageid", voyageId);
     const [waypointTitle, setWaypointTitle] = useState("")
-    const [waypointLatitude, setWaypointLatitude] = useState(0)
-    const [waypointLongitude, setWaypointLongitude] = useState(0)
+    const [waypointLatitude, setWaypointLatitude] = useState(null)
+    const [waypointLongitude, setWaypointLongitude] = useState(null)
     const [waypointImage, setWaypointImage] = useState("")
     const [waypointBrief, setWaypointBrief] = useState("")
 
@@ -49,13 +43,15 @@ export const AddWaypointsPage = ({
     const [isUploadingWaypointImage, setIsUploadingWaypointImage] =
         useState(false);
     const [addWaypoint] = useAddWaypointMutation();
+    const [deleteWaypoint] = useDeleteWaypointMutation();
+
     const handleAddWaypoint = async () => {
         if (!waypointImage) {
             return;
         }
         setIsUploadingWaypointImage(true);
         try {
-            await addWaypoint({
+            const result = await addWaypoint({
                 waypointImage,
                 latitude: waypointLatitude,
                 longitude: waypointLongitude,
@@ -64,11 +60,14 @@ export const AddWaypointsPage = ({
                 voyageId,
                 order,
             });
+
+            const waypointId = result.data.data
             setOrder(order + 1);
             setAddedWaypoints((prevWaypoints) => {
                 const newWaypoints = [
                     ...prevWaypoints,
                     {
+                        waypointId,
                         waypointImage,
                         latitude: waypointLatitude,
                         longitude: waypointLongitude,
@@ -90,6 +89,23 @@ export const AddWaypointsPage = ({
     };
 
 
+    const handleDeleteWaypoint = async (waypointId) => {
+        console.log("delete waypoint id:", waypointId);
+        try {
+            await deleteWaypoint({
+                waypointId
+            });
+            setAddedWaypoints((prevWaypoints) =>
+                prevWaypoints.filter((waypoint) => waypoint.waypointId !== waypointId)
+            );
+        } catch (error) {
+            console.error("Error deleting waypoint", error);
+        }
+
+    }
+
+
+
     return (
         <div style={{
             height: "calc(100vh - 3rem)"
@@ -99,6 +115,7 @@ export const AddWaypointsPage = ({
             >
                 <div style={{ width: "35%" }}>
                     <div style={newWaypointContainer}>
+
                         <div style={WaypointImageUploaderContainerBox}>
                             <div style={WaypointImageUploaderContainer}>
                                 <WaypointImageUploader
@@ -113,7 +130,7 @@ export const AddWaypointsPage = ({
                                         <input
                                             type="text"
                                             placeholder="Click on map"
-                                            value={Number(waypointLatitude?.toFixed(6))}
+                                            value={waypointLatitude && waypointLatitude !== 0 ? Number(waypointLatitude.toFixed(6)) : ""}
                                             style={titleInputStyle}
                                             readOnly
                                         />
@@ -126,7 +143,7 @@ export const AddWaypointsPage = ({
                                         <input
                                             type="text"
                                             placeholder="Click on map"
-                                            value={Number(waypointLongitude?.toFixed(6))}
+                                            value={waypointLongitude && waypointLongitude !== 0 ? Number(waypointLongitude.toFixed(6)) : ""}
                                             style={titleInputStyle}
                                             readOnly
                                         />
@@ -171,6 +188,7 @@ export const AddWaypointsPage = ({
                         <AddedWaypointsSlider
                             addedWaypoints={addedWaypoints}
                             setAddedWaypoints={setAddedWaypoints}
+                            handleDeleteWaypoint={handleDeleteWaypoint}
                         />
                     </div>
                 </div>
@@ -187,10 +205,6 @@ export const AddWaypointsPage = ({
                                 }}
                                 gestureHandling="greedy"
                                 disableDefaultUI
-                                // onCameraChanged={() => {
-                                //     setWaypointLatitude(null);
-                                //     setWaypointLongitude(null);
-                                // }}
                                 onClick={(event) => {
                                     const lat = event.detail.latLng.lat;
                                     const lng = event.detail.latLng.lng;
@@ -223,47 +237,12 @@ export const AddWaypointsPage = ({
                             </Map>
                         </APIProvider>
 
-                        {/* 
-                        <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                            {
-                                !initialLatitude && (
-                                    <div className={"cardSwiperSpinner"}>
-                                    </div>
-                                )
-                            }
-
-                            {
-                                true && (
-                                    <Map
-                                        mapId={"mainpageMap"}
-                                        defaultZoom={10}
-                                        defaultCenter={{
-                                            lat: initialLatitude || 37.7749,
-                                            lng: initialLongitude || -122.4194,
-                                        }}
-                                        gestureHandling={"greedy"}
-                                        disableDefaultUI
-                                        onCameraChanged={() => setTargetLocation(null)}
-                                        onClick={(event) => {
-                                            const lat = event.detail.latLng.lat;
-                                            const lng = event.detail.latLng.lng;
-                                            console.log("Clicked at:", lat, lng);
-                                            setWaypointLatitude(lat);
-                                            setWaypointLongitude(lng);
-                                        }}
-
-                                    >
-                                    </Map>
-                                )
-                            }
-                        </APIProvider> */}
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
 
 const WaypointImageUploader = ({ waypointImage, setWaypointImage
 }) => {
@@ -361,7 +340,6 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage
 const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => {
 
     const briefinputContainer = {
-
     }
 
     return (
@@ -388,10 +366,7 @@ const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => {
     )
 }
 
-const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints }) => {
-    const [imageUri, setImageUri] = useState(null);
-    const [order, setOrder] = useState(1);
-
+const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints, handleDeleteWaypoint }) => {
 
     const uploadedWaypointsContainer = {
         display: "flex",
@@ -427,22 +402,26 @@ const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints }) => {
                 onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance
 
             >
-                {addedWaypoints.map((waypoint, index) => (
+                {addedWaypoints.map((waypoint, index) => {
+                    return (
 
-                    <SwiperSlide>
-                        <div key={index} >
-                            <WaypointComponent
-                                key={index}
-                                description={waypoint.description}
-                                latitude={waypoint.latitude}
-                                longitude={waypoint.longitude}
-                                profileImage={waypoint.waypointImage} // Assuming waypointImage is the profileImage
-                                title={waypoint.title}
-                                pinColor={"blue"} // You can replace this with a dynamic value if needed
-                            />
-                        </div>
-                    </SwiperSlide>
-                ))}
+                        <SwiperSlide>
+                            <div style={{ marginTop: "1rem" }} key={index} >
+                                <WaypointComponent
+                                    waypointId={waypoint.waypointId}
+                                    key={index}
+                                    description={waypoint.description}
+                                    latitude={waypoint.latitude}
+                                    longitude={waypoint.longitude}
+                                    profileImage={waypoint.waypointImage} // Assuming waypointImage is the profileImage
+                                    title={waypoint.title}
+                                    pinColor={"blue"} // You can replace this with a dynamic value if needed
+                                    handleDeleteWaypoint={handleDeleteWaypoint}
+                                />
+                            </div>
+                        </SwiperSlide>)
+                }
+                )}
             </Swiper>
         </div>
     )
@@ -454,15 +433,15 @@ const WaypointComponent = (
         longitude,
         profileImage,
         title,
-        pinColor }) => {
-
-    const apiUrl = process.env.REACT_APP_API_URL;
-    const waypointBaseUrl = `${apiUrl}/Uploads/WaypointImages/`;
-    const imageUrl = waypointBaseUrl + profileImage
-
+        pinColor,
+        waypointId,
+        handleDeleteWaypoint }) => {
+    const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
     return (
         <div style={{
             backgroundColor: "rgba(255,255,255,1)",
+            boxShadow:
+                "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
             height: "17rem",
             width: "30rem",
             display: "flex",
@@ -480,19 +459,30 @@ const WaypointComponent = (
                 <div style={{ backgroundColor: "rgba(55,255,255,0.0)", height: "3rem" }}>
                     <span style={{
                         color: "#007bff",
-                        fontWeight: "500", fontSize: "1.3rem"
+                        fontWeight: "700", fontSize: "1.3rem",
+
                     }}>{title}</span>
                 </div>
                 <div style={{
-                    backgroundColor: "white", height: "calc(100% - 3rem)", width: "100%"
+                    height: "calc(100% - 3rem)", width: "100%"
                     , lineHeight: "1.2rem"
                 }}>
                     <span style={{
                         backgroundColor: "white", color: "#007bff",
                         fontWeight: "400", fontSize: "1.1rem"
                         , width: "100%"
-                    }}>{description}</span>
+                    }}>{description} {waypointId} </span>
                 </div>
+            </div>
+
+            <div onClick={() => handleDeleteWaypoint(waypointId)}
+                style={{ ...deleteImageIcon2, ...((hoveredUserImg2) ? deleteImageIconHover2 : {}) }}
+                onMouseEnter={() => {
+                    setHoveredUserImg2(true)
+                }}
+                onMouseLeave={() => setHoveredUserImg2(false)}
+            >
+                <IoRemoveCircleOutline size={"2.5rem"} />
             </div>
 
         </div>
@@ -522,6 +512,8 @@ const titleInputStyle = {
     fontWeight: 700,
     color: "#007bff",
 
+
+
 }
 
 const waypointDetailRow = {
@@ -531,7 +523,7 @@ const waypointDetailRow = {
     margin: "auto",
     alignContent: "center",
     display: "grid",
-    gridTemplateColumns: "1.5fr 7fr",
+    gridTemplateColumns: "1.5fr 5fr",
     paddingRight: "1rem",
     marginRight: "0",
     borderRadius: "1rem"
@@ -548,7 +540,6 @@ const mainContainer = {
 const newWaypointContainer = {
     display: "flex",
     flexDirection: "column",
-    // width: "calc(35% - 6rem)",
     height: "calc(50vh - 1.5rem)",
     backgroundColor: "white",
     padding: ".5rem",
@@ -556,6 +547,10 @@ const newWaypointContainer = {
     marginBottom: "0",
     marginTop: "0.5rem",
     borderRadius: "1.5rem",
+    boxShadow:
+        "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+
+
 }
 
 const WaypointDescriptionContainerBox = {
@@ -618,12 +613,10 @@ const addWaypointButton = {
     fontWeight: "800",
     width: "40%",
     marginLeft: "50%",
-    transform: "translateX(-50%)", // Centers it horizontally
+    transform: "translateX(-50%)",
     padding: "0.3rem",
     paddingRight: "1rem",
     paddingLeft: "1rem",
-    // marginTop: "1rem"
-
 }
 
 const imageStyle = {
@@ -649,5 +642,24 @@ const deleteImageIcon = {
 }
 
 const deleteImageIconHover = {
+    transform: "scale(1.2)",
+};
+
+const deleteImageIcon2 = {
+    backgroundColor: "rgba(211,1,1,0.4)",
+    width: "3rem",
+    height: "3rem",
+    position: "absolute",
+    top: ".5rem",
+    right: "1.5rem",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    zIndex: "200"
+}
+
+const deleteImageIconHover2 = {
     transform: "scale(1.2)",
 };
