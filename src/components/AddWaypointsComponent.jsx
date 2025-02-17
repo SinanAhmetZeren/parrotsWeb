@@ -19,6 +19,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 // import './styles.css';
 import { Pagination, FreeMode } from 'swiper/modules';
+import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
+import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 
 const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
 
@@ -234,6 +236,9 @@ export const AddWaypointsPage = ({
                                         }}
                                     />
                                 )}
+
+                                <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
+                                <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
                             </Map>
                         </APIProvider>
 
@@ -646,7 +651,7 @@ const deleteImageIconHover = {
 };
 
 const deleteImageIcon2 = {
-    backgroundColor: "rgba(211,1,1,0.4)",
+    backgroundColor: "#3e99",
     width: "3rem",
     height: "3rem",
     position: "absolute",
