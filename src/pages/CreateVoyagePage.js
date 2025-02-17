@@ -20,7 +20,7 @@ import {
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
 import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsComponent";
-import { AddWaypointsComponent } from "../components/AddWaypointsComponent";
+import { AddWaypointsPage } from "../components/AddWaypointsComponent";
 
 export default function CreateVoyagePage() {
   const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
@@ -30,7 +30,7 @@ export default function CreateVoyagePage() {
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(1)
+  const [pageState, setPageState] = useState(3)
   const [voyageBrief, setVoyageBrief] = useState("")
   const [voyageDescription, setVoyageDescription] = useState("")
   const [selectedVacancy, setSelectedVacancy] = useState();
@@ -41,9 +41,10 @@ export default function CreateVoyagePage() {
   const [isFixedPrice, setIsFixedPrice] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState(null);
-  const [voyageId, setVoyageId] = useState(88)
+  const [voyageId, setVoyageId] = useState(2214)
+  const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false)
-  const [vehicleId, setVehicleId] = useState(3)
+  const [vehicleId, setVehicleId] = useState("")
   const [vehiclesList, setVehiclesList] = useState([
     { label: "Walk", value: 63 },
     { label: "Run", value: 64 },
@@ -121,80 +122,33 @@ export default function CreateVoyagePage() {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
   }
 
-
-  function convertDateFormat_LastBidDate2(inputDate) {
-    const dateParts = inputDate.split("/");
-    if (dateParts.length !== 3) {
-      throw new Error("Invalid date format");
-    }
-
-    const year = parseInt(dateParts[2], 10);
-    const month = parseInt(dateParts[0], 10);
-    const day = parseInt(dateParts[1], 10);
-
-    const date = new Date(Date.UTC(year, month - 1, day));
-
-    const formattedDate = `${date.getUTCFullYear()}-${(
-      "0" +
-      (date.getUTCMonth() + 1)
-    ).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)} 00:00:00.000`;
-
-    return formattedDate;
-  }
-
   function convertDateFormat_LastBidDate(inputDate) {
     const date = new Date(`${inputDate}T00:00:00.000Z`);
     const formattedDate = `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth() + 1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`;
     return formattedDate;
   }
 
-  // Example usage:
-  console.log(convertDateFormat_LastBidDate("2025-02-26"));
 
   const handleCreateVoyage = async () => {
-    console.log("hello");
     if (!voyageImage) {
       return;
     }
 
-    // const formData = new FormData();
-    // formData.append("imageFile", {
-    //   uri: voyageImage,
-    //   type: "image/jpeg",
-    //   name: "profileImage.jpg",
-    // });
-    console.log("a->", dates[0]);
     const startDate = dates[0].startDate
     const endDate = dates[0].endDate
-    console.log("lastBidDate--->", lastBidDate);
 
     try {
-      console.log("1. startdate. ", startDate);
       const formattedStartDate = convertDateFormat(startDate);
-      console.log("2. formattedStartDate. ", formattedStartDate);
-
       const formattedEndDate = endDate
         ? convertDateFormat(endDate)
         : convertDateFormat(startDate);
-
-      console.log("3. endDate. ", endDate);
-      console.log("4. formattedEndDate. ", formattedEndDate);
-
-
-
-      console.log("5. lastbiddate. ", lastBidDate);
       const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
-      console.log("6. formattedlastbiddate. ", formattedLastBidDate);
-
-
       setIsCreatingVoyage(true);
-
-
       const response = await createVoyage({
         voyageImage,
-        name: "voyageName",
-        brief: "voyageBrief",
-        description: "voyageDescription",
+        name: voyageName,
+        brief: voyageBrief,
+        description: voyageDescription,
         vacancy: selectedVacancy,
         formattedStartDate,
         formattedEndDate,
@@ -210,23 +164,34 @@ export default function CreateVoyagePage() {
       const createdVoyageId = response.data.data.id;
       setVoyageId(createdVoyageId);
       console.log("created voyage id: ", createdVoyageId);
-      // setName("");
-      // setBrief("");
-      // setDescription("");
-      // setVacancy("");
-      // setStartDate("");
-      // setEndDate("");
-      // setLastBidDate("");
-      // setMinPrice("");
-      // setMaxPrice("");
-      // setIsAuction("");
-      // setIsFixedPrice("");
-      // setVehicleId("");
-      // setImage("");
-      // setVoyageImage("");
-      // setAddedVoyageImages("");
-
-      // setCurrentStep(2);
+      setVoyageImage(null);
+      setAddedVoyageImages([]);
+      setIsUploadingImage(false);
+      setPageState(1);
+      setVoyageBrief("");
+      setVoyageDescription("");
+      setSelectedVacancy(undefined);
+      setVoyageName("");
+      setMinPrice(null);
+      setMaxPrice(null);
+      setIsAuction(true);
+      setIsFixedPrice(true);
+      setCalendarOpen(true);
+      setLastBidDate(null);
+      setIsCreatingVoyage(false);
+      setVehicleId("");
+      setVehiclesList([
+        { label: "Walk", value: 63 },
+        { label: "Run", value: 64 },
+      ]);
+      setDates([
+        {
+          startDate: null,
+          endDate: null,
+          key: "selection",
+        },
+      ]);
+      setPageState(2)
     } catch (error) {
       console.error("Error uploading image", error);
     }
@@ -270,7 +235,7 @@ export default function CreateVoyagePage() {
               </div>
             </div>
 
-            {pageState === 1 &&
+            {false && pageState === 1 &&
               <>
                 <div style={{ position: "relative" }}>
                   <ProfileImageandDetailsTitlesComponent />
@@ -399,10 +364,13 @@ export default function CreateVoyagePage() {
                   />
                 </div>
                 <CreateVoyageButton handleCreateVoyage={handleCreateVoyage} />
+                <div style={addWaypointButton}
+                  onClick={() => setPageState(2)}
+                >Back</div>
               </>
             }
 
-            {pageState === 2 &&
+            {false && pageState === 2 &&
               <>
                 <VoyageImageUploaderComponent
                   voyageImage={voyageImage} setVoyageImage={setVoyageImage}
@@ -411,18 +379,24 @@ export default function CreateVoyagePage() {
                   isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
                   setPageState={setPageState}
                 />
+                <div style={addWaypointButton}
+                  onClick={() => setPageState(1)}
+                >Back</div>
+                <div style={addWaypointButton}
+                  onClick={() => handlePrintState()}
+                >Print States</div>
+
+
               </>
             }
 
-            {pageState === 3 &&
+            {pageState !== 3 ||
               <>
-
-                <AddWaypointsComponent
-                  voyageImage={voyageImage} setVoyageImage={setVoyageImage}
-                  addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
-                  voyageId={voyageId} addVoyageImage={addVoyageImage}
-                  isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
+                <AddWaypointsPage
+                  voyageId={voyageId}
                   setPageState={setPageState}
+                  order={order}
+                  setOrder={setOrder}
                 />
 
               </>

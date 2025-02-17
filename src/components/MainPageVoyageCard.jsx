@@ -135,7 +135,6 @@ const cardImageStyle = {
 const cardContentStyle = {
   display: "flex",
   height: "16rem",
-  // backgroundColor: "yellow",
   flexDirection: "column",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.4),

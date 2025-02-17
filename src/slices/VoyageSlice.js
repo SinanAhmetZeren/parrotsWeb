@@ -103,6 +103,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       query: (data) => {
         const { voyageImage, voyageId } = data;
         const formData = new FormData();
+        console.log("voyageId:...", voyageId);
+        console.log("voyageImage:...", voyageImage);
         formData.append("imageFile", voyageImage);
         const url = `/api/Voyage/${voyageId}/AddVoyageImage`;
         return {
@@ -164,7 +166,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     addWaypoint: builder.mutation({
       query: (data) => {
         const {
-          formData,
+          waypointImage,
           latitude,
           longitude,
           title,
@@ -172,7 +174,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           voyageId,
           order,
         } = data;
-
         const queryParams = new URLSearchParams({
           Latitude: latitude,
           Longitude: longitude,
@@ -181,14 +182,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           VoyageId: voyageId,
           Order: order,
         });
-
         const url = `/api/Waypoint/AddWaypoint?${queryParams}`;
-
+        const formData = new FormData();
+        formData.append("imageFile", waypointImage);
         return {
           url,
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };

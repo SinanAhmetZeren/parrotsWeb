@@ -29,24 +29,35 @@ export const VoyageImageUploaderComponent = ({
     const deleteImageIconHover2 = {
         transform: "scale(1.2)",
     };
-
+    console.log("voyageId:....", voyageId);
     const handleUploadImage = useCallback(async () => {
         if (!voyageImage) {
             return;
         }
         setIsUploadingImage(true);
         try {
+            console.log("hello 1");
             const addedVoyageImageResponse = await addVoyageImage({
                 voyageImage,
                 voyageId,
             });
+            console.log("hello 2");
 
+            console.log("addedVoyageImageResponse:...", addedVoyageImageResponse);
             const addedvoyageImageId = addedVoyageImageResponse.data.imagePath;
             const newItem = {
                 addedvoyageImageId,
                 voyageImage,
             };
-            setAddedVoyageImages((prevImages) => [...prevImages, newItem]);
+            // setAddedVoyageImages((prevImages) => [...prevImages, newItem]);
+
+            setAddedVoyageImages((prevImages) => {
+                const newState = [...prevImages, newItem];
+                console.log("Updated ---->>>>:", newState);
+                return newState;
+            });
+
+
             setVoyageImage(null);
             setImagePreview2(null);
 
@@ -371,7 +382,7 @@ export const VoyageImageUploaderComponent = ({
 
 
 
-const CreateVoyageButton = ({ setPageState }) => {
+const CreateVoyageButton = ({ setPageState, addedVoyageImages }) => {
 
     const buttonStyle = {
         width: "30%",
@@ -393,6 +404,11 @@ const CreateVoyageButton = ({ setPageState }) => {
     };
 
 
+    useEffect(() => {
+        console.log("--->>>", addedVoyageImages?.length);
+
+
+    }, [addedVoyageImages])
     return (
 
         <div
@@ -408,7 +424,7 @@ const CreateVoyageButton = ({ setPageState }) => {
                 }}
                 style={buttonStyle}
             >
-                Next
+                Next 1
             </button>
         </div>
 

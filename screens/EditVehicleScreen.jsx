@@ -250,13 +250,13 @@ const EditVehicleScreen = () => {
     const data =
       addedVoyageImages.length < maxItems
         ? [
-            ...addedVoyageImages,
-            ...placeholders.slice(addedVoyageImages.length),
-          ]
+          ...addedVoyageImages,
+          ...placeholders.slice(addedVoyageImages.length),
+        ]
         : addedVoyageImages.map((item) => ({
-            ...item,
-            key: item.addedVoyageImageId,
-          }));
+          ...item,
+          key: item.addedVoyageImageId,
+        }));
 
     return (
       <>
@@ -420,8 +420,8 @@ const EditVehicleScreen = () => {
                   addedVoyageImages.length <= 1
                     ? styles.length1
                     : addedVoyageImages.length === 2
-                    ? styles.length2
-                    : styles.length3
+                      ? styles.length2
+                      : styles.length3
                 }
               >
                 <FlatList
@@ -449,13 +449,13 @@ const EditVehicleScreen = () => {
 
                             source={
                               item.vehicleImagePath &&
-                              item.vehicleImagePath.startsWith("file://")
+                                item.vehicleImagePath.startsWith("file://")
                                 ? { uri: item.vehicleImagePath }
                                 : item.id
-                                ? {
+                                  ? {
                                     uri: `${API_URL}/Uploads/VehicleImages/${item.vehicleImagePath}`,
                                   }
-                                : require("../assets/placeholder.png")
+                                  : require("../assets/placeholder.png")
                             }
                             style={styles2.voyageImage1}
                           />

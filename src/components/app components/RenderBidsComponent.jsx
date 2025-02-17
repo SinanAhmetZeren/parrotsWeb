@@ -316,7 +316,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     width: vw(40),
-    // backgroundColor: "yellow",
   },
   offerPrice2: {
     fontSize: 16,
