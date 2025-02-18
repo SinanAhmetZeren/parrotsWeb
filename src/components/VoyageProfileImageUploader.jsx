@@ -33,7 +33,6 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
 
     const fileInputRef = React.createRef();
     const [imagePreview, setImagePreview] = useState(null);
-    // const [image1, setImage1] = useState(null);
     const [hoveredUserImg, setHoveredUserImg] = useState(false)
 
     const handleImageChange = (e) => {

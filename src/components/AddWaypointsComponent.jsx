@@ -21,6 +21,7 @@ import 'swiper/css/pagination';
 import { Pagination, FreeMode } from 'swiper/modules';
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
+import { useNavigate } from "react-router-dom";
 
 const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
 
@@ -30,22 +31,22 @@ export const AddWaypointsPage = ({
     order,
     setOrder
 }) => {
-
-    console.log("voyageid", voyageId);
     const [waypointTitle, setWaypointTitle] = useState("")
     const [waypointLatitude, setWaypointLatitude] = useState(null)
     const [waypointLongitude, setWaypointLongitude] = useState(null)
     const [waypointImage, setWaypointImage] = useState("")
     const [waypointBrief, setWaypointBrief] = useState("")
-
     const [initialLatitude, setInitialLatitude] = useState();
     const [initialLongitude, setInitialLongitude] = useState();
     const [addedWaypoints, setAddedWaypoints] = useState([]);
+    const [imagePreview, setImagePreview] = useState("")
+    const [addWaypointDisabled, setAddWaypointDisabled] = useState("")
     const [targetLocation, setTargetLocation] = useState({});
     const [isUploadingWaypointImage, setIsUploadingWaypointImage] =
         useState(false);
     const [addWaypoint] = useAddWaypointMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
+    const navigate = useNavigate();
 
     const handleAddWaypoint = async () => {
         if (!waypointImage) {
@@ -59,7 +60,7 @@ export const AddWaypointsPage = ({
                 longitude: waypointLongitude,
                 title: waypointTitle,
                 description: waypointBrief,
-                voyageId,
+                voyageId: "2214",
                 order,
             });
 
@@ -81,15 +82,17 @@ export const AddWaypointsPage = ({
                 ];
                 return newWaypoints;
             });
-            // setImageUri(null);
-            setLatitude("");
-            setLongitude("");
+            setWaypointLongitude(null)
+            setWaypointLatitude(null)
+            setWaypointTitle("")
+            setWaypointBrief("")
+            setImagePreview("")
+            // setWaypointImage("")
         } catch (error) {
             console.error("Error uploading image", error);
         }
         setIsUploadingWaypointImage(false);
     };
-
 
     const handleDeleteWaypoint = async (waypointId) => {
         console.log("delete waypoint id:", waypointId);
@@ -106,7 +109,10 @@ export const AddWaypointsPage = ({
 
     }
 
-
+    function handleGoToProfilePage() {
+        console.log("bye...");
+        navigate(`/profile`);
+    }
 
     return (
         <div style={{
@@ -123,6 +129,8 @@ export const AddWaypointsPage = ({
                                 <WaypointImageUploader
                                     waypointImage={waypointImage}
                                     setWaypointImage={setWaypointImage}
+                                    imagePreview={imagePreview}
+                                    setImagePreview={setImagePreview}
                                 />
                             </div>
                             <div style={WaypointDetailsContainer}>
@@ -174,18 +182,54 @@ export const AddWaypointsPage = ({
                             </div>
                         </div>
 
-                        <div style={addWaypointButton}
-                            onClick={() => {
-                                handleAddWaypoint()
+                        <div
+                            style={{
+                                ...addWaypointButton,
+                                opacity:
+                                    (
+                                        !(waypointTitle &&
+                                            waypointLatitude &&
+                                            waypointLongitude &&
+                                            waypointImage &&
+                                            waypointBrief &&
+                                            imagePreview)
+                                    )
+                                        ? 0.5 : 1,
+                                pointerEvents:
+
+                                    !(waypointTitle &&
+                                        waypointLatitude &&
+                                        waypointLongitude &&
+                                        waypointImage &&
+                                        waypointBrief &&
+                                        imagePreview)
+
+                                        ? 'none' : 'auto'
                             }}
-                        >Add Waypoint</div>
+                            onClick={() => {
+                                if ((waypointTitle &&
+                                    waypointLatitude &&
+                                    waypointLongitude &&
+                                    waypointImage &&
+                                    waypointBrief &&
+                                    imagePreview)) {
+                                    handleAddWaypoint();
+                                }
+                            }}
+                        >
+                            Add Waypoint
+                        </div>
+
                     </div>
                     <div style={{
-                        height: "22rem",
-                        marginTop: "1rem",
-                        paddingTop: "2rem",
-                        // marginLeft: "1.5rem",
-                        backgroundColor: "rgba(255,255,255,0.2)"
+                        height: "19rem",
+                        margin: "auto",
+                        marginTop: "1.5rem",
+                        marginBottom: "1rem",
+                        // paddingTop: "1rem",
+                        width: "95%",
+                        backgroundColor: "rgba(255,255,255,0.2)",
+                        borderRadius: "1.5rem"
                     }}>
                         <AddedWaypointsSlider
                             addedWaypoints={addedWaypoints}
@@ -193,6 +237,24 @@ export const AddWaypointsPage = ({
                             handleDeleteWaypoint={handleDeleteWaypoint}
                         />
                     </div>
+
+                    <div
+                        style={{
+                            ...addWaypointButton,
+                            opacity:
+                                addedWaypoints?.length > 0
+                                    ? 1 : 0.5,
+                            pointerEvents:
+                                addedWaypoints?.length > 0
+                                    ? 'auto' : 'none'
+                        }}
+                        onClick={() => {
+                            if (addedWaypoints?.length > 0) {
+                                handleGoToProfilePage()
+                            }
+                        }}
+                    >Complete</div>
+
                 </div>
                 <div style={mapContainerBox}>
                     <div style={mapContainer}>
@@ -249,11 +311,10 @@ export const AddWaypointsPage = ({
     )
 }
 
-const WaypointImageUploader = ({ waypointImage, setWaypointImage
+const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, setImagePreview
 }) => {
 
     const fileInputRef = React.createRef();
-    const [imagePreview, setImagePreview] = useState(null);
     const [hoveredUserImg, setHoveredUserImg] = useState(false)
 
     const handleImageChange = (e) => {
@@ -321,7 +382,7 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage
                                 />
                             </div>
                         }
-                        {waypointImage && (
+                        {imagePreview && (
                             <div onClick={handleCancelUpload}
                                 style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
                                 onMouseEnter={() => {
@@ -337,9 +398,6 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage
             </div>
         </div>
     )
-
-
-
 }
 
 const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => {
@@ -364,7 +422,6 @@ const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => {
                     marginTop: "0.5rem",
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
-
                 }}
             />
         </div>
@@ -382,7 +439,7 @@ const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints, handleDeleteW
         paddingLeft: "2rem",
         scrollbarWidth: "none",
         msOverflowStyle: "none",
-        // backgroundColor: "rgba(255,255,255,0.2)"
+        height: "100%"
     }
 
     const swiperRef = useRef(null);
@@ -395,39 +452,69 @@ const AddedWaypointsSlider = ({ addedWaypoints, setAddedWaypoints, handleDeleteW
 
     return (
         <div style={uploadedWaypointsContainer}>
-            <Swiper
-                slidesPerView={1}
-                centeredSlides={true}
-                spaceBetween={30}
-                pagination={{
-                    clickable: true,
-                }}
-                modules={[Pagination]}
-                className="mySwiper"
-                onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance
+            {
+                addedWaypoints?.length > 0 ?
 
-            >
-                {addedWaypoints.map((waypoint, index) => {
-                    return (
+                    <Swiper
+                        slidesPerView={1}
+                        centeredSlides={true}
+                        spaceBetween={30}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        modules={[Pagination]}
+                        className="mySwiper"
+                        onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance
 
-                        <SwiperSlide>
-                            <div style={{ marginTop: "1rem" }} key={index} >
-                                <WaypointComponent
-                                    waypointId={waypoint.waypointId}
-                                    key={index}
-                                    description={waypoint.description}
-                                    latitude={waypoint.latitude}
-                                    longitude={waypoint.longitude}
-                                    profileImage={waypoint.waypointImage} // Assuming waypointImage is the profileImage
-                                    title={waypoint.title}
-                                    pinColor={"blue"} // You can replace this with a dynamic value if needed
-                                    handleDeleteWaypoint={handleDeleteWaypoint}
-                                />
-                            </div>
-                        </SwiperSlide>)
-                }
-                )}
-            </Swiper>
+                    >
+                        {addedWaypoints.map((waypoint, index) => {
+                            return (
+
+                                <SwiperSlide>
+                                    <div style={{ marginTop: "1rem" }} key={index} >
+                                        <WaypointComponent
+                                            waypointId={waypoint.waypointId}
+                                            key={index}
+                                            description={waypoint.description}
+                                            latitude={waypoint.latitude}
+                                            longitude={waypoint.longitude}
+                                            profileImage={waypoint.waypointImage} // Assuming waypointImage is the profileImage
+                                            title={waypoint.title}
+                                            pinColor={"blue"} // You can replace this with a dynamic value if needed
+                                            handleDeleteWaypoint={handleDeleteWaypoint}
+                                        />
+                                    </div>
+                                </SwiperSlide>)
+                        }
+                        )}
+                    </Swiper>
+                    :
+
+                    <div style={{
+                        height: "100%",
+                        width: "100%",
+                        display: "flex", // Enables Flexbox
+                        justifyContent: "center", // Centers horizontally
+                        alignItems: "center" // Centers vertically
+                    }}>
+                        <span
+                            style={{
+                                color: "white",
+                                padding: "1vh",
+                                fontSize: "1.6rem",
+                                fontWeight: 800,
+                                textShadow: `2px 2px 4px rgba(0, 0, 0, 0.6),  -2px -2px 4px rgba(255, 255, 255, 0.2)`,
+                                filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4))",
+                                opacity: "0.7"
+                            }}
+                        >
+                            Add Waypoints
+                        </span>
+                    </div>
+
+
+
+            }
         </div>
     )
 }

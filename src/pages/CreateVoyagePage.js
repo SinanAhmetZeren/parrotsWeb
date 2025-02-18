@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css"
@@ -10,12 +10,12 @@ import 'swiper/css/pagination';
 import {
   useGetVehiclesByUserByIdQuery,
 } from "../slices/VehicleSlice";
-import { useNavigate } from "react-router-dom";
 import { CreateVoyageDatePicker } from "../components/CreateVoyageDatePicker";
 
 import {
   useAddVoyageImageMutation,
-  useCreateVoyageMutation
+  useCreateVoyageMutation,
+  useDeleteVoyageImageMutation
 } from "../slices/VoyageSlice";
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
@@ -23,10 +23,9 @@ import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsC
 import { AddWaypointsPage } from "../components/AddWaypointsComponent";
 
 export default function CreateVoyagePage() {
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const userName = "Ahmet Zeren";
-  const navigate = useNavigate();
-  const [selectedVehicleType, setSelectedVehicleType] = useState("");
+  // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+  const userId = localStorage.getItem("storedUserId")
+  console.log("user id: ", userId);
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -37,11 +36,11 @@ export default function CreateVoyagePage() {
   const [voyageName, setVoyageName] = useState("")
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
-  const [isAuction, setIsAuction] = useState(true);
-  const [isFixedPrice, setIsFixedPrice] = useState(true);
+  const [isAuction, setIsAuction] = useState("");
+  const [isFixedPrice, setIsFixedPrice] = useState("");
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState(null);
-  const [voyageId, setVoyageId] = useState(2214)
+  const [voyageId, setVoyageId] = useState("")
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false)
   const [vehicleId, setVehicleId] = useState("")
@@ -59,6 +58,7 @@ export default function CreateVoyagePage() {
 
 
   const [addVoyageImage] = useAddVoyageImageMutation();
+  const [deleteVoyageImage] = useDeleteVoyageImageMutation();
   const [createVoyage] = useCreateVoyageMutation();
 
   const {
@@ -198,9 +198,6 @@ export default function CreateVoyagePage() {
     setIsCreatingVoyage(false);
   };
 
-
-
-
   const handlePrintState = () => {
     console.log("voyageImage:", voyageImage);
     console.log("voyageBrief:", voyageBrief);
@@ -235,7 +232,9 @@ export default function CreateVoyagePage() {
               </div>
             </div>
 
-            {false && pageState === 1 &&
+            {
+              // false && 
+              pageState === 1 &&
               <>
                 <div style={{ position: "relative" }}>
                   <ProfileImageandDetailsTitlesComponent />
@@ -252,62 +251,7 @@ export default function CreateVoyagePage() {
                       <VoyageProfileImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage} />
                     </div>
                     <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
-                      {/*                       
-                      <div style={voyageDetails}>
-                        <div style={{
-                          backgroundColor: "rgba(255,255,255,0.7)"
-                        }}>
-                          <CreateVoyageVacancyPicker
-                            selectedVacancy={selectedVacancy}
-                            setSelectedVacancy={setSelectedVacancy}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                          <CreateVoyageVehicleSelector
-                            vehicleId={vehicleId}
-                            setVehicleId={setVehicleId}
-                            vehiclesList={vehiclesList}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                          <CreateVoyagePageNameInput
-                            voyageName={voyageName}
-                            setVoyageName={setVoyageName}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)", }}>
-                          <CreateVoyagePriceInput
-                            minPrice={minPrice}
-                            setMinPrice={setMinPrice}
-                            maxPrice={maxPrice}
-                            setMaxPrice={setMaxPrice}
-                            type={"Min Price"}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                          <CreateVoyagePriceInput
-                            minPrice={minPrice}
-                            setMinPrice={setMinPrice}
-                            maxPrice={maxPrice}
-                            setMaxPrice={setMaxPrice}
-                            type={"Max Price"}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                          <CreateVoyageLastBidDateInput
-                            lastBidDate={lastBidDate}
-                            setLastBidDate={setLastBidDate}
-                          />
-                        </div>
-                        <div style={{ backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
-                          <AuctionFixedPrice
-                            isAuction={isAuction}
-                            isFixedPrice={isFixedPrice}
-                            setIsAuction={setIsAuction}
-                            setIsFixedPrice={setIsFixedPrice}
-                          />
-                        </div>
-                      </div> */}
+
                       <VoyageDetailsInputsComponent
                         selectedVacancy={selectedVacancy}
                         setSelectedVacancy={setSelectedVacancy}
@@ -330,15 +274,7 @@ export default function CreateVoyagePage() {
 
                     </div>
                     <div style={{ backgroundColor: "rgba(255,255,255,.31)", borderRadius: "1.5rem" }}>
-                      <div style={{
-                        alignContent: "center",
-                        backgroundColor: "rgba(255,255,255,31)",
-                        borderRadius: "1.5rem",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        transform: "scale(.93)"
-                      }}>
+                      <div style={datePickerContainer}>
                         <CreateVoyageDatePicker
                           dates={dates}
                           setDates={setDates}
@@ -348,9 +284,9 @@ export default function CreateVoyagePage() {
                       </div>
                     </div>
 
-                    <div style={addWaypointButton}
+                    {/* <div style={addWaypointButton}
                       onClick={() => handlePrintState()}
-                    >Print State</div>
+                    >Print State</div> */}
 
                   </div>
                 </div>
@@ -363,34 +299,55 @@ export default function CreateVoyagePage() {
                     setVoyageBrief={setVoyageBrief}
                   />
                 </div>
-                <CreateVoyageButton handleCreateVoyage={handleCreateVoyage} />
-                <div style={addWaypointButton}
+                <CreateVoyageButton
+                  handleCreateVoyage={handleCreateVoyage}
+                  disabled={!(
+                    voyageDescription &&
+                    voyageBrief &&
+                    voyageImage &&
+                    selectedVacancy &&
+                    vehicleId &&
+                    voyageName &&
+                    minPrice &&
+                    maxPrice &&
+                    lastBidDate &&
+                    isAuction !== "" &&
+                    isFixedPrice !== "" &&
+                    dates[0]?.startDate
+                  )}
+                />
+                {/* <div style={addWaypointButton}
                   onClick={() => setPageState(2)}
-                >Back</div>
+                >Back</div> */}
               </>
             }
 
-            {false && pageState === 2 &&
+            {
+              // false && 
+              pageState === 2 &&
               <>
                 <VoyageImageUploaderComponent
                   voyageImage={voyageImage} setVoyageImage={setVoyageImage}
                   addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
-                  voyageId={voyageId} addVoyageImage={addVoyageImage}
+                  voyageId={voyageId}
+                  addVoyageImage={addVoyageImage}
+                  deleteVoyageImage={deleteVoyageImage}
                   isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
                   setPageState={setPageState}
                 />
-                <div style={addWaypointButton}
+                {/* <div style={addWaypointButton}
                   onClick={() => setPageState(1)}
-                >Back</div>
-                <div style={addWaypointButton}
+                >Back</div> */}
+                {/* <div style={addWaypointButton}
                   onClick={() => handlePrintState()}
-                >Print States</div>
+                >Print States</div> */}
 
 
               </>
             }
 
-            {pageState !== 3 ||
+            {/* {pageState !== 3 || */}
+            {pageState === 3 &&
               <>
                 <AddWaypointsPage
                   voyageId={voyageId}
@@ -398,7 +355,6 @@ export default function CreateVoyagePage() {
                   order={order}
                   setOrder={setOrder}
                 />
-
               </>
             }
 
@@ -432,8 +388,7 @@ const ProfileImageandDetailsTitlesComponent = () => {
   )
 }
 
-const CreateVoyageButton = ({ handleCreateVoyage }) => {
-
+const CreateVoyageButton = ({ handleCreateVoyage, disabled }) => {
   const buttonStyle = {
     width: "30%",
     backgroundColor: "#007bff",
@@ -455,7 +410,6 @@ const CreateVoyageButton = ({ handleCreateVoyage }) => {
 
 
   return (
-
     <div
       style={{
         display: "flex",
@@ -467,12 +421,12 @@ const CreateVoyageButton = ({ handleCreateVoyage }) => {
           console.log("create voyage");
           handleCreateVoyage()
         }}
-        style={buttonStyle}
+        disabled={disabled}
+        style={disabled ? { ...buttonStyle, opacity: 0.5 } : buttonStyle}
       >
         Next
       </button>
     </div>
-
   )
 }
 
@@ -587,6 +541,16 @@ const BriefAndDescriptionTitlesComponent = () => {
   )
 }
 
+const datePickerContainer = {
+  alignContent: "center",
+  backgroundColor: "rgba(255,255,255,31)",
+  borderRadius: "1.5rem",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  transform: "scale(.93)"
+}
+
 const shadowText = {
   color: "white",
   padding: "1vh",
@@ -632,7 +596,6 @@ const BriefAndDescriptionTitles = {
   paddingLeft: "2rem",
   paddingRight: "2rem"
 }
-
 
 const profileImageandDetailsContainer = {
   backgroundColor: "rgba(255,255,255,0.3)",

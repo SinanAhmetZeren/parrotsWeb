@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import ReactDOM from "react-dom/client";
-import parrot1 from "../assets/images/sailboat.jpg";
 import * as d3 from "d3";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import parrotMarker1 from "../assets/images/parrotMarker1.png";
@@ -10,17 +8,12 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import { useNavigate } from "react-router-dom";
 
 
 export const CreateVoyageWaypointsMarkers = ({ waypoints }) => {
-  const navigate = useNavigate();
   const [markers, setMarkers] = useState({});
   const map = useMap();
-
-  const handleGoToVoyage = (voyageId) => {
-    navigate(`/voyage-details/${voyageId}`);
-  };
+  console.log("xxx----->>>>", waypoints);
 
   const clusterer = useMemo(() => {
     if (!map) return null;
@@ -116,8 +109,14 @@ export const CreateVoyageWaypointsMarkers = ({ waypoints }) => {
   }, []);
 
   const voyageMarkers = useMemo(() => {
+    if (waypoints.length === 0) {
+      return []; // Ensure markers are cleared when waypoints are empty
+    }
+
+
     return waypoints
       .map((waypoint, index) => {
+        console.log(index, waypoint);
         if (!waypoint.latitude || !waypoint.longitude) return null;
 
         const position = {
@@ -154,100 +153,21 @@ export const CreateVoyageWaypointsMarkers = ({ waypoints }) => {
   }, [waypoints, setMarkerRef]);
 
   useEffect(() => {
-    if (!clusterer || voyageMarkers.length === 0) return;
+    if (!clusterer) return;
+    if (voyageMarkers.length === 0) {
+      clusterer.clearMarkers();
+      return;
+    }
 
     clusterer.clearMarkers();
     clusterer.addMarkers(voyageMarkers);
   }, [clusterer, voyageMarkers]);
 
+
   return null;
 };
 
-
-const voyageDetailSpan = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
-  color: "#007bff",
-  borderRadius: "1rem",
-  padding: "0.1rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-};
-
-const imageStyle = {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-};
-
-const cardTitleStyle = {
-  fontSize: "1.3rem",
-  fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
-};
-
-function formatCustomDate(dateString) {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "2-digit",
-  })
-    .format(new Date(dateString))
-    .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
-}
-
-const cardContainerStyle = {
-  display: "flex", // Flex for horizontal layout
-  flexDirection: "row", // Ensure content is side-by-side
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  overflow: "hidden",
-  width: "33rem",
-  height: "15rem",
-  backgroundColor: "#fff",
-  margin: "0rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
-`,
-};
-
-// 12 & 18 -> 15 & 18
-
-const cardImageStyle = {
-  width: "45.45%", // Image takes half the width
-  height: "auto", // Maintain aspect ratio
-  objectFit: "cover",
-};
-
-const cardContentStyle = {
-  display: "flex",
-  flexDirection: "column",
-  width: "54.54%", // Text content takes half the width
-  padding: "1rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.4),
-  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
-`,
-  backgroundColor: "#fff", // Neutral background
-};
-
-const cardBriefStyle = {
-  fontSize: "1rem",
-  color: "black",
-  display: "-webkit-box",
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-  WebkitLineClamp: 5,
-  textOverflow: "ellipsis",
-};
-
-const cardDescriptionStyle = {
-  fontSize: "1rem",
-  color: "blue",
-  fontWeight: "600",
-  marginTop: "0.5rem",
-};
-
+/*
 export default function VehicleIcon({ vehicleType }) {
   const getVehicleEmoji = (typeIndex) => {
     if (typeIndex >= 0 && typeIndex < vehicles.length) {
@@ -273,13 +193,4 @@ const vehicles = [
   "🏠", // Tinyhouse
   "✈️", // Airplane
 ];
-
-const buttonStyle = {
-  width: "55%", // Match the input width
-  textAlign: "end",
-  color: "#007bff",
-  fontWeight: "bold",
-  cursor: "pointer",
-  fontSize: "1rem",
-  marginTop: "auto",
-};
+*/

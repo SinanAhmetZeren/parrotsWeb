@@ -21,6 +21,7 @@ export const VoyageImageUploaderComponent = ({
     setAddedVoyageImages,
     voyageId,
     addVoyageImage,
+    deleteVoyageImage,
     isUploadingImage,
     setIsUploadingImage,
     setPageState
@@ -29,38 +30,28 @@ export const VoyageImageUploaderComponent = ({
     const deleteImageIconHover2 = {
         transform: "scale(1.2)",
     };
-    console.log("voyageId:....", voyageId);
     const handleUploadImage = useCallback(async () => {
         if (!voyageImage) {
             return;
         }
         setIsUploadingImage(true);
         try {
-            console.log("hello 1");
             const addedVoyageImageResponse = await addVoyageImage({
                 voyageImage,
-                voyageId,
+                voyageId: "2216"
+                // voyageId,
             });
-            console.log("hello 2");
-
-            console.log("addedVoyageImageResponse:...", addedVoyageImageResponse);
             const addedvoyageImageId = addedVoyageImageResponse.data.imagePath;
             const newItem = {
                 addedvoyageImageId,
                 voyageImage,
             };
-            // setAddedVoyageImages((prevImages) => [...prevImages, newItem]);
-
             setAddedVoyageImages((prevImages) => {
                 const newState = [...prevImages, newItem];
-                console.log("Updated ---->>>>:", newState);
                 return newState;
             });
-
-
             setVoyageImage(null);
             setImagePreview2(null);
-
         } catch (error) {
             console.error("Error uploading image", error);
             alert(
@@ -68,7 +59,25 @@ export const VoyageImageUploaderComponent = ({
             );
         }
         setIsUploadingImage(false);
-    }, [voyageImage, voyageId, addVoyageImage]);
+    }, [voyageImage, voyageId, addVoyageImage, setAddedVoyageImages, setIsUploadingImage, setVoyageImage]);
+
+    const handleDeleteImage = useCallback(async (imageId) => {
+
+        console.log("image Id", imageId);
+        if (!imageId) return;
+
+        try {
+            await deleteVoyageImage(imageId); // Call API to delete the image
+
+            setAddedVoyageImages((prevImages) =>
+                prevImages.filter((img) => img.addedvoyageImageId !== imageId)
+            );
+        } catch (error) {
+            console.error("Error deleting image", error);
+        }
+    }, [deleteVoyageImage, setAddedVoyageImages]);
+
+
 
     const addImageButton = {
         backgroundColor: "#007bff",
@@ -111,7 +120,6 @@ export const VoyageImageUploaderComponent = ({
         transition: "transform 0.3s ease-in-out",
     }
 
-
     const placeHolderImage = {
         width: "20rem",
         height: "20rem",
@@ -142,7 +150,6 @@ export const VoyageImageUploaderComponent = ({
 
     }
 
-
     const deleteImageIcon3 = {
         backgroundColor: " #3e99",
         width: "3rem",
@@ -156,7 +163,6 @@ export const VoyageImageUploaderComponent = ({
         cursor: "pointer",
         transition: "transform 0.3s ease-in-out",
     }
-
 
     const maxItems = 10;
     const placeholders = Array.from({ length: maxItems }, (_, index) => ({
@@ -203,19 +209,14 @@ export const VoyageImageUploaderComponent = ({
         }
     };
 
-    const goToWaypoints = () => {
-        console.log("hello");
-        setPageState(3)
-    }
-
-
     return (
         <>
             <div>
                 <div style={{
                     display: "flex",
                     flexDirection: "row",
-                    marginTop: "1rem"
+                    marginTop: "1rem",
+                    marginLeft: "1rem"
                 }}>
                     <div style={{
                         width: "26rem",
@@ -286,7 +287,7 @@ export const VoyageImageUploaderComponent = ({
                                     console.log("item:", item);
                                 return (
                                     <SwiperSlide>
-                                        <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
+                                        <div key={index} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
                                             {item.addedvoyageImageId ? (
                                                 <>
                                                     <img
@@ -322,7 +323,10 @@ export const VoyageImageUploaderComponent = ({
                 onClick={() => goToWaypoints()}
             >Complete Voyage</div> */}
 
-            <CreateVoyageButton setPageState={setPageState} />
+            <GoToWaypointsButton
+                setPageState={setPageState}
+                addedVoyageImages={addedVoyageImages}
+            />
 
 
             <style>
@@ -382,7 +386,11 @@ export const VoyageImageUploaderComponent = ({
 
 
 
-const CreateVoyageButton = ({ setPageState, addedVoyageImages }) => {
+const GoToWaypointsButton = ({ setPageState, addedVoyageImages }) => {
+
+    useEffect(() => {
+        console.log("addedvoyage images  :--->", addedVoyageImages);
+    }, [addedVoyageImages])
 
     const buttonStyle = {
         width: "30%",
@@ -403,14 +411,7 @@ const CreateVoyageButton = ({ setPageState, addedVoyageImages }) => {
         MozOsxFontSmoothing: "grayscale",
     };
 
-
-    useEffect(() => {
-        console.log("--->>>", addedVoyageImages?.length);
-
-
-    }, [addedVoyageImages])
     return (
-
         <div
             style={{
                 display: "flex",
@@ -422,9 +423,11 @@ const CreateVoyageButton = ({ setPageState, addedVoyageImages }) => {
                     console.log("apply");
                     setPageState(3)
                 }}
-                style={buttonStyle}
+                disabled={addedVoyageImages?.length === 0}
+                style={addedVoyageImages?.length > 0 ? buttonStyle : { ...buttonStyle, opacity: "0.5" }}
+
             >
-                Next 1
+                Next
             </button>
         </div>
 
