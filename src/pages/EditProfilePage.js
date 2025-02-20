@@ -11,9 +11,10 @@ import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesCom
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
+import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
 
 
-function ProfilePage() {
+export function EditProfilePage() {
   const local_userId = localStorage.getItem("storedUserId")
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
@@ -72,10 +73,6 @@ function ProfilePage() {
                       <div className="profilePage_SendMessage" onClick={() => handleGoToPublicPage()}>
                         <span>Public Profile</span>
                       </div>
-                      <div className="profilePage_gotoPublicProfileButton" onClick={() => handleGoToEditProfilePage()}>
-                        <span>Edit Profile</span>
-                      </div>
-
                       <div className="flex profilePage_CoverImage">
                         <img src={userBaseUrl + userData?.backgroundImageUrl} className=" profilePage_CoverImage_Img" alt="a" />
 
@@ -101,9 +98,9 @@ function ProfilePage() {
                           <BlueHashtagText originalText={userData.bio} />
                         </div>
                       </div>
-                      <div className="flex profilePage_ContactDetails">
+                      <div className="flex editProfilePage_ContactDetails" style={{ backgroundColor: "yellow" }}>
                         {isSuccessUser ?
-                          <SocialRenderComponent userData={userData} />
+                          <EditProfileSocialsComponent userData={userData} />
                           : null
                         }
                       </div>
@@ -111,54 +108,25 @@ function ProfilePage() {
                   </div>
 
                   <div className="flex flex-col profilePage_BottomRight">
-                    <div className="flex profilePage_Vehicles ">
-
-                      {isSuccessUser ? (
-                        userData?.usersVehicles.length > 0 ?
-                          (<>
-                            <div style={{
-                              display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
-                              marginTop: ".5rem"
-                            }}>
-
-                              <span style={VehiclesVoyagesTitle}>Vehicles</span>
-                              <span
-                                onClick={() => { gotoNewVehicle() }}
-                                style={NewVehicle}>New Vehicle</span>
-                            </div>
-
-                            <ProfilePageVehiclesComponent userData={userData}
-                            // userFavoriteVehicles={state_favVehicles} 
-                            />
-                          </>) : null)
-                        : null
-                      }
-                    </div>
-                    <div className="flex profilePage_Voyages ">
-                      {isSuccessUser ? (
-                        userData?.usersVoyages.length > 0 ?
-                          (<>
-
-
-                            <div style={{
-                              display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
-                              marginTop: ".5rem"
-                            }}>
-
-                              <span style={VehiclesVoyagesTitle}>Voyages</span>
-                              <span
-                                onClick={() => { gotoNewVoyage() }}
-                                style={NewVehicle}>New Voyage</span>
-                            </div>
-
-
-                            <ProfilePageVoyagesComponent userData={userData}
-                            // userFavoriteVoyages={state_favVoyages} 
-                            />
-                          </>) : null)
-                        : null
-                      }
-
+                    <div className="flex flex-col"
+                      style={{
+                        paddingLeft: ".5rem",
+                        borderRadius: "1.5rem",
+                        height: "calc(100vh - 3.5rem)",
+                        width: "calc(100% - 0%)",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: "rgba(255, 255, 255, 0.2)",
+                          borderRadius: "1.5rem",
+                          height: "100%",
+                          flexDirection: "column",
+                          width: "100%"
+                        }}
+                      >
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,7 +140,6 @@ function ProfilePage() {
 
 }
 
-export default ProfilePage;
 
 
 

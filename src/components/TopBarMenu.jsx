@@ -73,6 +73,21 @@ export function TopBarMenu() {
           >
             Profile
           </NavLink>
+
+
+          <NavLink
+            to="/edit-profile"
+            className={({ isActive }) =>
+              isActive
+                ? `${activeStyle} ${commonStyle}`
+                : `${inactiveStyle} ${commonStyle}`
+            }
+          >
+            EditProfile
+          </NavLink>
+
+
+
           <NavLink
             to="/favorites"
             className={({ isActive }) =>

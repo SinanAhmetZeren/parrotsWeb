@@ -17,13 +17,10 @@ import {
   useGetFavoriteVehicleIdsByUserIdQuery,
   updateUserFavorites
 } from "../slices/UserSlice"
-
 import { useSelector, useDispatch } from "react-redux";
-
 import { TopBarMenu } from "../components/TopBarMenu";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-
 import { MainPageFiltersComponent } from "../components/MainPageFiltersComponent";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { MainPageNewVoyageButton } from "../components/MainPageNewVoyageButton";
@@ -32,7 +29,6 @@ import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
-import { retry } from "@reduxjs/toolkit/query";
 
 
 function MainPage() {

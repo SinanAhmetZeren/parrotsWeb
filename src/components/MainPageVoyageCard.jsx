@@ -1,7 +1,8 @@
 import parrot1 from "../assets/images/sailboat.jpg";
 import { useNavigate } from "react-router-dom";
 
-
+const apiUrl = process.env.REACT_APP_API_URL;
+const voyageBaseUrl = `${apiUrl}/Uploads/voyageimages/`;
 
 
 export function MainPageVoyageCard({ cardData, panToLocation }) {
@@ -14,7 +15,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
   return (
     <div className="card" style={cardContainerStyle}>
       <div className="card-image" style={cardImageStyle}>
-        <img src={parrot1} style={imageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + cardData.profileImage} style={imageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle}>{cardData.name}</div>
@@ -158,6 +159,9 @@ const cardBriefStyle = {
   textOverflow: "ellipsis",
   paddingLeft: "1rem",
   paddingRight: "1rem",
+  lineHeight: "1.2rem",
+  fontFamily: "Roboto, Arial, sans-serif",
+  fontWeight: "300"
   // backgroundColor: "pink",
 };
 

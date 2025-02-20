@@ -7,7 +7,7 @@ import tiktok from '../assets/images/tiktok_logo.png';
 import email from '../assets/images/email_logo.png';
 import phone from '../assets/images/phone_logo.jpeg';
 
-
+<div style={{ backgroundColor: "red", height: "100%", width: "100%" }}></div>
 export function SocialRenderComponent({ userData }) {
   let contactDataArray = [];
 
@@ -36,38 +36,53 @@ export function SocialRenderComponent({ userData }) {
     contactDataArray.push({ key: 'tiktok', value: userData.tiktok });
   }
 
-
+  console.log(contactDataArray.length);
 
   return (
-    <div style={socialItemsContainer}>
-      {contactDataArray.map(({ key, value }) => {
-        if (value) {
-          return (
-            <div style={socialRow} key={key}>
-              <div>
-                {key === 'instagram' && <img style={socialIcon} src={instagram} alt="instagram" />}
-                {key === 'youtube' && <img style={socialIcon} src={youtube} alt="youtube" />}
-                {key === 'facebook' && <img style={socialIcon} src={facebook} alt="facebook" />}
-                {key === 'twitter' && <img style={socialIcon} src={twitter} alt="twitter" />}
-                {key === 'linkedin' && <img style={socialIcon} src={linkedin} alt="linkedin" />}
-                {key === 'tiktok' && <img style={socialIcon} src={tiktok} alt="tiktok" />}
-                {key === 'email' && <img style={socialIcon} src={email} alt="email" />}
-                {key === 'phoneNumber' && <img style={socialIcon} src={phone} alt="phone" />}
-              </div>
-              <div style={socialIconTextContainer}>
-                <a href={key === 'email' ? `mailto:${value}`
-                  : key === 'phoneNumber' ? `tel:${value}`
-                    : `https://${key}.com/${value}`} target="_blank" rel="noopener noreferrer" style={socialIconText}>
-                  {value.toLowerCase()}
-                </a>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      })}
-    </div>
+    <>
+      <div style={socialItemsContainer}>
+        {
+          contactDataArray.map(({ key, value }) => {
+            if (value) {
+              return (
+                <div style={socialRow} key={key}>
+                  <div>
+                    {key === 'instagram' && <img style={socialIcon} src={instagram} alt="instagram" />}
+                    {key === 'youtube' && <img style={socialIcon} src={youtube} alt="youtube" />}
+                    {key === 'facebook' && <img style={socialIcon} src={facebook} alt="facebook" />}
+                    {key === 'twitter' && <img style={socialIcon} src={twitter} alt="twitter" />}
+                    {key === 'linkedin' && <img style={socialIcon} src={linkedin} alt="linkedin" />}
+                    {key === 'tiktok' && <img style={socialIcon} src={tiktok} alt="tiktok" />}
+                    {key === 'email' && <img style={socialIcon} src={email} alt="email" />}
+                    {key === 'phoneNumber' && <img style={socialIcon} src={phone} alt="phone" />}
+                  </div>
+                  <div style={socialIconTextContainer}>
+                    <a href={key === 'email' ? `mailto:${value}`
+                      : key === 'phoneNumber' ? `tel:${value}`
+                        : `https://${key}.com/${value}`} target="_blank" rel="noopener noreferrer" style={socialIconText}>
+                      {value.toLowerCase()}
+                    </a>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })}
+      </div>
+      {
+        contactDataArray.length === 0 &&
+        <div style={placeHolderForContacts}>hello</div>
+      }
+    </>
   );
+}
+
+const placeHolderForContacts = {
+  backgroundColor: "red",
+  height: "100%",
+  width: "100%",
+  backgroundColor: "rgba(255,255,255,0.2)",
+  borderRadius: "1.5rem"
 }
 
 const socialIcon = {

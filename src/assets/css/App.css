@@ -204,7 +204,10 @@ img {
   align-items: center;
   justify-content: center;
   border-radius: 1.5rem;
+  /* border-top-right-radius: 0;
+  border-bottom-right-radius: 0; */
   overflow: hidden;
+
 }
 
 .mainpage_MapContainer {

@@ -12,6 +12,9 @@ import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import { useNavigate } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const voyageBaseUrl = `${apiUrl}/Uploads/voyageimages/`;
+
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const navigate = useNavigate()
   const [markers, setMarkers] = useState({});
@@ -153,7 +156,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           return (
             <div className="" style={cardContainerStyle}>
               <div className="" style={cardImageStyle}>
-                <img src={parrot1} style={imageStyle} alt="Boat tour" />
+                <img src={voyageBaseUrl + cardData.profileImage} style={imageStyle} alt="Boat tour" />
               </div>
               <div className="" style={cardContentStyle}>
                 <div style={cardTitleStyle}>{cardData.name}</div>

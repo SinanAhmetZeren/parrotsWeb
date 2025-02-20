@@ -17,6 +17,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import LoginPage from "./pages/LoginPage";
 import CreateVehiclePage from "./pages/CreateVehiclePage";
 import CreateVoyagePage from "./pages/CreateVoyagePage";
+import { EditProfilePage } from "./pages/EditProfilePage";
 
 function App() {
   const isLoggedIn = localStorage.getItem("storedToken");
@@ -32,6 +33,7 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/newVehicle" element={<CreateVehiclePage />} />
             <Route path="/newVoyage" element={<CreateVoyagePage />} />
             <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
