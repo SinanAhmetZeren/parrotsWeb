@@ -51,7 +51,7 @@ export function TopBarMenu() {
           </NavLink> */}
 
 
-          <NavLink
+          {/* <NavLink
             to="/newVoyage"
             className={({ isActive }) =>
               isActive
@@ -60,7 +60,7 @@ export function TopBarMenu() {
             }
           >
             New Voyage
-          </NavLink>
+          </NavLink> */}
 
 
           <NavLink

@@ -202,8 +202,8 @@ function ConnectPage() {
 
 
   return (
-    true ||
-      isLoadingmessagePreviews ? (
+    // true ||
+    isLoadingmessagePreviews ? (
       <ConnectPagePlaceHolder />
     ) : (
       <div className="App">

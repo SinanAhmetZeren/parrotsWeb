@@ -29,6 +29,11 @@ function ProfilePage() {
     navigate(`/newVehicle`);
   }
 
+
+  const gotoNewVoyage = () => {
+    navigate(`/newVoyage`);
+  }
+
   const {
     data: userData,
     isLoading: isLoadingUser,
@@ -139,7 +144,7 @@ function ProfilePage() {
 
                               <span style={VehiclesVoyagesTitle}>Voyages</span>
                               <span
-                                onClick={() => { gotoNewVehicle() }}
+                                onClick={() => { gotoNewVoyage() }}
                                 style={NewVehicle}>New Voyage</span>
                             </div>
 

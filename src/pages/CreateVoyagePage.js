@@ -29,7 +29,7 @@ export default function CreateVoyagePage() {
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(3)
+  const [pageState, setPageState] = useState(1)
   const [voyageBrief, setVoyageBrief] = useState("")
   const [voyageDescription, setVoyageDescription] = useState("")
   const [selectedVacancy, setSelectedVacancy] = useState();
