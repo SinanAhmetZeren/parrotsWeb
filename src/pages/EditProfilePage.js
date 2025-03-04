@@ -12,13 +12,17 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 
 export function EditProfilePage() {
   const local_userId = localStorage.getItem("storedUserId")
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
-
+  const [userName, setUserName] = useState("");
+  const [userTitle, setUserTitle] = useState("");
+  const [userBio, setUserBio] = useState("");
 
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -26,14 +30,7 @@ export function EditProfilePage() {
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
-  const gotoNewVehicle = () => {
-    navigate(`/newVehicle`);
-  }
 
-
-  const gotoNewVoyage = () => {
-    navigate(`/newVoyage`);
-  }
 
   const {
     data: userData,
@@ -46,9 +43,15 @@ export function EditProfilePage() {
 
 
   useEffect(() => {
-    if (isSuccessUser)
+    if (isSuccessUser) {
       console.log("userData: ", userData);
+      setUserName(userData.userName);
+      setUserTitle(userData.title);
+      setUserBio(userData.bio);
+    }
+
   }, [userData, isSuccessUser])
+
 
   return (
     isLoadingUser ? (
@@ -87,18 +90,50 @@ export function EditProfilePage() {
 
                     </div>
                     <div className="flex profilePage_BioAndContactDetails">
-                      <div className="flex profilePage_BioTitleUserName">
+                      <div className="flex profilePage_BioTitleUserName" style={{ backgroundColor: " " }}>
                         <div className="flex profilePage_UserName">
-                          <span className="profilePage_UserName">{userData.userName}</span>
+                          <span className="profilePage_UserName"
+
+                          ><UserNameInputComponent userName={userName} setUserName={setUserName} /></span>
                         </div>
                         <div className="flex profilePage_Title">
-                          <span className="profilePage_Title">{userData.title}</span>
+                          <span className="profilePage_Title">
+                            <UserTitleInputComponent userTitle={userTitle} setUserTitle={setUserTitle} />
+                          </span>
                         </div>
                         <div className="flex profilePage_Bio">
-                          <BlueHashtagText originalText={userData.bio} />
+
+                          <ReactQuill
+                            value={userBio}
+                            onChange={(value) => setUserBio(value)}
+                            placeholder="Tell us about your vehicle"
+                            modules={{
+                              // toolbar: [
+                              // [{ header: [1, 2, false] }],
+                              // ["bold", "italic", "underline"],
+                              // [{ list: "ordered" }, { list: "bullet" }],
+                              // ["emoji"],
+
+                              // ],
+                              toolbar: false,  // Disable the toolbar completely
+
+                            }}
+                            theme="snow"  // Ensure the theme is set to snow
+
+                            style={{
+                              color: "rgba(0, 119, 234, 0.9)",
+                              fontWeight: "600",
+                              fontSize: "1.1rem",
+                              backgroundColor: "white",
+                              borderRadius: "0.5rem",
+                              padding: "0.5rem",
+                              backgroundColor: "#007bff21",
+
+                            }}
+                          />
                         </div>
                       </div>
-                      <div className="flex editProfilePage_ContactDetails" style={{ backgroundColor: "yellow" }}>
+                      <div className="flex editProfilePage_ContactDetails" style={{ backgroundColor: " " }}>
                         {isSuccessUser ?
                           <EditProfileSocialsComponent userData={userData} />
                           : null
@@ -140,38 +175,66 @@ export function EditProfilePage() {
 
 }
 
+const UserNameInputComponent = ({ userName, setUserName }) => {
+  return (
+    <input
+      className="font-bold text-base custom-input"
+      type="text"
+      placeholder="Username"
+      style={inputStyleUserName}
+      value={userName}
+      onChange={(e) => setUserName(e.target.value)}
+    />
+  );
+}
 
+const UserTitleInputComponent = ({ userTitle, setUserTitle }) => {
+  return (
+    <input
+      className="font-bold text-base custom-input"
+      type="text"
+      placeholder="Title"
+      style={inputStyleTitle}
+      value={userTitle}
+      onChange={(e) => setUserTitle(e.target.value)}
+    />
+  );
+}
 
-
-const spinnerContainer = {
-  marginTop: "20%",
-};
-
-const VehiclesVoyagesTitle = {
-  width: "100%", // Added quotes around "100%"
-  fontSize: "2rem", // Changed to camelCase
-  fontWeight: 800, // Correct format for font-weight
-  color: "white"
-};
-
-
-const NewVehicle = {
-  width: "70%", // Added quotes around "100%"
-  height: "80%",
-  fontSize: "1.6rem", // Changed to camelCase
-  fontWeight: 800, // Correct format for font-weight
-  color: "white",
+const inputStyle = {
+  width: "50%",
+  padding: ".3rem",
   borderRadius: "1.5rem",
-  paddingRight: ".1rem",
-  paddingLeft: ".1rem",
-  marginTop: "0.3rem",
-  backgroundColor: "#007bff",
+  textAlign: "center",
   cursor: "pointer",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-};
+  height: "3rem",
+  fontSize: "2rem",
+  color: "#007bff",
+  backgroundColor: "#007bff21",
+}
 
 
+const inputStyleUserName = {
+  width: "50%",
+  padding: ".3rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
+  cursor: "pointer",
+  height: "3rem",
+  fontSize: "2rem",
+  color: "#007bff",
+  backgroundColor: "#007bff21",
+}
 
 
+const inputStyleTitle = {
+  width: "85%",
+  padding: ".3rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
+  cursor: "pointer",
+  height: "3rem",
+  fontSize: "1.5rem",
+  color: "#007bff",
+  backgroundColor: "#007bff21",
+}

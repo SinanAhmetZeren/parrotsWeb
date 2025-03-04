@@ -43,66 +43,40 @@ export function EditProfileSocialsComponent({ userData }) {
   ];
 
   return (
-    <div style={{ backgroundColor: "green" }}>
+    <div style={{ backgroundColor: "", width: "100%" }}>
       {socialInputs.map(({ key, state, setter }) => (
-        <div
-          key={key}
-          style={{
-            backgroundColor: "rgba(255,255,255,0.8)",
-            borderRadius: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            padding: "0.5rem"
-          }}
-        >
-          <img src={socialIcons[key]} alt={key} style={socialIcon} />
-          <input
-            className="font-bold text-base custom-input"
-            type="text"
-            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-            value={state}
-            style={inputStyle}
-            onChange={(e) => setter(e.target.value)}
-          />
+        <div style={socialRow} key={key}>
+          <div>
+            <img style={socialIcon} src={socialIcons[key]} alt={key} />
+          </div>
+          <div style={socialIconTextContainer}>
+            <input
+              className="font-bold text-base custom-input"
+              type="text"
+              placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+              value={state}
+              style={inputStyle}
+              onChange={(e) => setter(e.target.value)}
+            />
+          </div>
         </div>
       ))}
     </div>
   );
 }
 
-
 const inputStyle = {
-  width: "100%",
+  width: "95%",
   padding: ".3rem",
-  border: "1px solid #ccc",
   borderRadius: "1.5rem",
   textAlign: "center",
   cursor: "pointer",
-  boxShadow: `
-0 4px 6px rgba(0, 0, 0, 0.1),
-inset 0 -4px 6px rgba(0, 0, 0, 0.1)
-`,
   height: "3rem",
   fontSize: "1.1rem",
   color: "#007bff",
-
+  backgroundColor: "#007bff21",
 }
 
-const labelStyle = {
-  width: "28%",
-  display: "inline-block",
-  textAlign: "end",
-  alignSelf: "center",
-  color: "black",
-  fontSize: "1.3rem"
-}
-
-const placeHolderStyle = `
-      .custom-input::placeholder {
-        font-size: 1.0rem;
-        color: gray !important;
-      }
-    `
 const socialIcon = {
   width: '3rem',
   height: '3rem',
@@ -111,3 +85,22 @@ const socialIcon = {
   borderRadius: "5rem",
   objectFit: "cover"
 };
+
+const socialRow = {
+  backgroundColor: 'white',
+  display: 'flex',
+  margin: '5px',
+  width: "23rem",
+  boxShadow: `
+  0 2px 2px rgba(0, 0, 0, 0.31),
+  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
+`,
+  borderRadius: "2rem",
+}
+
+const socialIconTextContainer = {
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  marginLeft: '1rem',
+}
