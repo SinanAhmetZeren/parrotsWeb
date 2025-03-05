@@ -4,24 +4,34 @@ import facebook from '../assets/images/facebook_logo.png';
 import twitter from '../assets/images/twitter_logo.png';
 import linkedin from '../assets/images/linkedin_logo.png';
 import tiktok from '../assets/images/tiktok_logo.png';
-import email from '../assets/images/email_logo.png';
+import emaillogo from '../assets/images/email_logo.png';
 import phone from '../assets/images/phone_logo.jpeg';
 import "../assets/css/CreateVehicle.css"
 
-import { useState } from 'react';
+export function EditProfileSocialsComponent({
+  userData,
+  setEmail,
+  setPhoneNumber,
+  setFacebookProfile,
+  setInstagramProfile,
+  setTwitterProfile,
+  setTiktokProfile,
+  setLinkedinProfile,
+  setYoutubeProfile,
+  email,
+  phoneNumber,
+  facebookProfile,
+  instagramProfile,
+  twitterProfile,
+  tiktokProfile,
+  linkedinProfile,
+  youtubeProfile,
 
-export function EditProfileSocialsComponent({ userData }) {
-  const [emailValue, setEmail] = useState(userData.email || "");
-  const [instagramValue, setInstagram] = useState(userData.instagram || "");
-  const [youtubeValue, setYoutube] = useState(userData.youtube || "");
-  const [facebookValue, setFacebook] = useState(userData.facebook || "");
-  const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber || "");
-  const [twitterValue, setTwitter] = useState(userData.twitter || "");
-  const [linkedinValue, setLinkedin] = useState(userData.linkedin || "");
-  const [tiktokValue, setTiktok] = useState(userData.tiktok || "");
+}) {
+
 
   const socialIcons = {
-    email: email,
+    email: emaillogo,
     instagram: instagram,
     youtube: youtube,
     facebook: facebook,
@@ -32,18 +42,18 @@ export function EditProfileSocialsComponent({ userData }) {
   };
 
   const socialInputs = [
-    { key: "email", state: emailValue, setter: setEmail },
-    { key: "instagram", state: instagramValue, setter: setInstagram },
-    { key: "youtube", state: youtubeValue, setter: setYoutube },
-    { key: "facebook", state: facebookValue, setter: setFacebook },
+    { key: "email", state: email, setter: setEmail },
+    { key: "instagram", state: instagramProfile, setter: setInstagramProfile },
+    { key: "youtube", state: youtubeProfile, setter: setYoutubeProfile },
+    { key: "facebook", state: facebookProfile, setter: setFacebookProfile },
     { key: "phoneNumber", state: phoneNumber, setter: setPhoneNumber },
-    { key: "twitter", state: twitterValue, setter: setTwitter },
-    { key: "linkedin", state: linkedinValue, setter: setLinkedin },
-    { key: "tiktok", state: tiktokValue, setter: setTiktok },
+    { key: "twitter", state: twitterProfile, setter: setTwitterProfile },
+    { key: "linkedin", state: linkedinProfile, setter: setLinkedinProfile },
+    { key: "tiktok", state: tiktokProfile, setter: setTiktokProfile },
   ];
 
   return (
-    <div style={{ backgroundColor: "", width: "100%" }}>
+    <div style={{ marginTop: "2rem", width: "100%" }}>
       {socialInputs.map(({ key, state, setter }) => (
         <div style={socialRow} key={key}>
           <div>
@@ -56,7 +66,10 @@ export function EditProfileSocialsComponent({ userData }) {
               placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
               value={state}
               style={inputStyle}
-              onChange={(e) => setter(e.target.value)}
+              onChange={(e) => {
+                setter(e.target.value);
+                console.log("e", e.target.value);
+              }}
             />
           </div>
         </div>
@@ -89,13 +102,15 @@ const socialIcon = {
 const socialRow = {
   backgroundColor: 'white',
   display: 'flex',
-  margin: '5px',
-  width: "23rem",
+  // width: "23rem",
+  width: "30rem",
   boxShadow: `
   0 2px 2px rgba(0, 0, 0, 0.31),
   inset 0 -4px 6px rgba(0, 0, 0, 0.31)
 `,
   borderRadius: "2rem",
+  margin: "auto",
+  marginTop: ".5rem",
 }
 
 const socialIconTextContainer = {
