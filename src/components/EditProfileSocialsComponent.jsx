@@ -66,7 +66,7 @@ export function EditProfileSocialsComponent({ userData }) {
 }
 
 const inputStyle = {
-  width: "95%",
+  width: "98%",
   padding: ".3rem",
   borderRadius: "1.5rem",
   textAlign: "center",

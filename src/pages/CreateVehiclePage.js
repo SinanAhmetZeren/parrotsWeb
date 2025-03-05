@@ -140,13 +140,6 @@ function CreateVehiclePage() {
     }
   };
 
-  const gotootherpage = () => {
-    if (pageState === "s1")
-      setPageState("s2")
-    if (pageState === "s2")
-      setPageState("s1")
-  }
-
   const completeVehicleCreate = () => {
     navigate(`/profile`);
   }
@@ -433,8 +426,7 @@ function CreateVehiclePage() {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange2}
-                      onClick={(e) => (e.target.value = null)} // Reset value before selection
-
+                      onClick={(e) => (e.target.value = null)}
                       style={{ display: "none" }}
                       ref={fileInputRef2}
                     />
@@ -495,8 +487,8 @@ function CreateVehiclePage() {
                           console.log("data:", data);
                         return (
                           <SwiperSlide>
-                            <div key={item.key} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
-
+                            <div key={item.key} className="placeholder_imageContainer"
+                              style={{ borderRadius: "2rem", overflow: "hidden" }}>
                               {item.addedvehicleImageId ? (
                                 <>
                                   <img
