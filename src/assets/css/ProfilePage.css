@@ -313,8 +313,8 @@
 }
 
 .editprofilePage_BioTitleUserName {
-  height: calc(100%- 2rem);
-  width: 80%;
+  height: calc(100% - 2rem);
+  width: 98%;
   background-color: white;
   flex-direction: column;
   padding: .5rem;

@@ -8,13 +8,14 @@ const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
 export function MessagePreviewsComponent({
   messagesData,
   userId,
+  selectedUserId,
   setConversationUserId,
   setConversationUserUsername,
   handleGoToUser
 }) {
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
-
+  const [selectedConversationUserId, setSelectedConversationUserId] = React.useState(selectedUserId);
   if (!messagesData || messagesData.length === 0) {
     return <p
       style={{
@@ -42,11 +43,17 @@ export function MessagePreviewsComponent({
 
       const setUserDetails = () => {
         setConversationUserId(otherUserUserId);
-        setConversationUserUsername(otherUserUsername)
+        setConversationUserUsername(otherUserUsername);
+        setSelectedConversationUserId(otherUserUserId);
       }
 
       return (
-        <div key={index} style={containerStyle} title={message.text} onClick={() => setUserDetails()}>
+        <div key={index}
+          style={{
+            ...containerStyle,
+            ...(otherUserUserId === selectedConversationUserId && selectedContainerStyle)
+          }}
+          title={message.text} onClick={() => setUserDetails()}>
           <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
             console.log("going to other user: ", otherUserUserId);
             handleGoToUser(otherUserUserId, otherUserUsername)
@@ -85,6 +92,10 @@ export function MessagePreviewsComponent({
   );
 }
 
+const selectedContainerStyle = {
+  boxShadow: "inset 0 0 3px rgba(60, 157, 222,0.5)",
+  backgroundColor: "white"
+}
 
 const userprofileimg = {
   height: "4rem",

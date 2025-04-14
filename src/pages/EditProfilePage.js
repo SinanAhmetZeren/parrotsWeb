@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useGetUserByIdQuery, usePatchUserMutation } from "../slices/UserSlice";
+import { useGetUserByIdQuery, usePatchUserMutation, useUpdateBackgroundImageMutation, useUpdateProfileImageMutation } from "../slices/UserSlice";
 import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
@@ -14,16 +14,12 @@ import { UserNameInputComponent } from "../components/UserNameInputComponent";
 import { UserTitleInputComponent } from "../components/UserTitleInputComponent";
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
 
-
 /* TODO:
-
 when pressed update:
   1. handle upload profile image
   2. handle upload background image
   3. handle patch user
-
   4. update state changes to local storage
-
 */
 
 export function EditProfilePage() {
@@ -31,14 +27,14 @@ export function EditProfilePage() {
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
 
-  const fileInputRef = createRef();
-  const fileInputRefProfile = createRef();
-  const [imagePreview, setImagePreview] = useState(null);
-  const [image1, setImage1] = useState(null);
-  const [backGroundImage, setBackGroundImage] = useState("");
-  const [imagePreviewProfile, setImagePreviewProfile] = useState(null);
-  const [imageProfile, setImageProfile] = useState(null);
-  const [profileImage, setProfileImage] = useState("");
+  const fileInputRef_ProfileImage = createRef();
+  const fileInputRef_BackgroundImage = createRef();
+
+  const [backGroundImage, setBackGroundImage] = useState(null);
+  const [backGroundImagePreview, setBackGroundImagePreview] = useState(null);
+
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
 
   const [userName, setUserName] = useState("");
   const [userTitle, setUserTitle] = useState("");
@@ -54,7 +50,6 @@ export function EditProfilePage() {
   const [youtubeProfile, setYoutubeProfile] = useState("");
   const [emailHidden, setEmailHidden] = useState(false);
 
-  const [patchUser] = usePatchUserMutation();
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -62,6 +57,10 @@ export function EditProfilePage() {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
 
+
+  const [patchUser] = usePatchUserMutation();
+  const [updateBackgroundImage] = useUpdateBackgroundImageMutation();
+  const [updateProfileImage] = useUpdateProfileImageMutation();
 
   const {
     data: userData,
@@ -72,7 +71,24 @@ export function EditProfilePage() {
     refetch: refetchUserData,
   } = useGetUserByIdQuery(userId);
 
+  useEffect(() => {
+    if (isSuccessUser) {
+      setUserName(userData.userName);
+      setUserTitle(userData.title);
+      setUserBio(userData.bio);
+      setProfileImage(userData.profileImageUrl);
+      setBackGroundImage(userData.backgroundImageUrl);
+      setEmail(userData.email || "");
+      setInstagramProfile(userData.instagram || "");
+      setYoutubeProfile(userData.youtube || "");
+      setFacebookProfile(userData.facebook || "");
+      setPhoneNumber(userData.phoneNumber || "");
+      setTwitterProfile(userData.twitter || "");
+      setLinkedinProfile(userData.linkedin || "");
+      setTiktokProfile(userData.tiktok || "");
+    }
 
+  }, [userData, isSuccessUser])
 
 
   const handlePatchUser = async () => {
@@ -91,8 +107,10 @@ export function EditProfilePage() {
       { op: "replace", path: "/emailVisible", value: !emailHidden },
     ];
     try {
-      /*
       const response = await patchUser({ patchDoc, userId });
+      console.log("patch user response: ", response);
+
+      /*
       dispatch(
         updateUserName({
           username,
@@ -104,121 +122,95 @@ export function EditProfilePage() {
         })
       );
       */
-      console.log("patchDoc: ", patchDoc);
       console.log("updating user");
     } catch (error) {
       console.error("Error uploading image", error);
     }
+
+
   };
 
+  const handleBackGroundImageChange = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setBackGroundImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setBackGroundImagePreview(previewUrl);
+    }
+  };
 
+  const handleProfileImageChange = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setProfileImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setProfileImagePreview(previewUrl);
+    }
+  };
 
-  const handleUploadProfile = async () => {
-    if (!image) {
+  const handleBackGroundImageClick = () => {
+    fileInputRef_BackgroundImage.current.click();
+  };
+
+  const handleProfileImageClick = () => {
+    fileInputRef_ProfileImage.current.click();
+  };
+
+  const handleCancelUploadBackGroundImage = () => {
+    backGroundImagePreview && URL.revokeObjectURL(backGroundImagePreview);
+    setBackGroundImage(userData.backgroundImageUrl);
+    setBackGroundImagePreview(null);
+    if (fileInputRef_BackgroundImage.current) {
+      fileInputRef_BackgroundImage.current.value = "";
+    }
+  };
+
+  const handleCancelUploadProfileImage = () => {
+    profileImagePreview && URL.revokeObjectURL(profileImagePreview);
+    setProfileImage(userData.profileImageUrl);
+    setProfileImagePreview(null);
+    if (fileInputRef_ProfileImage.current) {
+      fileInputRef_ProfileImage.current.value = "";
+    }
+  };
+
+  const handleUploadProfileImage = async () => {
+    if (!profileImage) {
       return;
     }
-    const formData = new FormData();
-    formData.append("imageFile", {
-      uri: image,
-      type: "image/jpeg",
-      name: "profileImage.jpg",
-    });
     try {
-      const response = await updateProfileImage({ formData, userId });
+      const response = await updateProfileImage({ profileImage, userId });
+      console.log("update profile image response: ", response);
     } catch (error) {
       console.error("Error uploading image", error);
     }
   };
 
-  const handleUploadBackground = async () => {
-    if (!image2) {
+  const handleUploadBackgroundImage = async () => {
+    if (!backGroundImage) {
       return;
     }
-    const formData = new FormData();
-    formData.append("imageFile", {
-      uri: image2,
-      type: "image/jpeg",
-      name: "backgroundImage.jpg",
-    });
     try {
-      const response = await updateBackgroundImage({ formData, userId });
+      const response = await updateBackgroundImage({ backGroundImage, userId });
+      console.log("update background image response: ", response);
     } catch (error) {
       console.error("Error uploading image", error);
     }
   };
 
-
-  useEffect(() => {
-    if (isSuccessUser) {
-      // console.log("userData: ", userData);
-      setUserName(userData.userName);
-      setUserTitle(userData.title);
-      setUserBio(userData.bio);
-      setBackGroundImage(userData.backgroundImageUrl);
-      setProfileImage(userData.profileImageUrl);
-      setEmail(userData.email || "");
-      setInstagramProfile(userData.instagram || "");
-      setYoutubeProfile(userData.youtube || "");
-      setFacebookProfile(userData.facebook || "");
-      setPhoneNumber(userData.phoneNumber || "");
-      setTwitterProfile(userData.twitter || "");
-      setLinkedinProfile(userData.linkedin || "");
-      setTiktokProfile(userData.tiktok || "");
+  const handleUpdateChanges = async () => {
+    if (backGroundImage) {
+      await handleUploadBackgroundImage();
     }
-
-  }, [userData, isSuccessUser])
-
-
-  const handleImageChange = (e) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      setImage1(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+    if (profileImage) {
+      await handleUploadProfileImage();
     }
+    await handlePatchUser();
+    await refetchUserData();
   };
 
-  const handleImageChangeProfile = (e) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-      setImageProfile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreviewProfile(previewUrl);
-    }
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
-
-
-  const handleImageClickProfile = () => {
-    fileInputRefProfile.current.click();
-  };
-
-  const handleCancelUpload = () => {
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setImage1(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleCancelUploadProfile = () => {
-    if (imagePreviewProfile) {
-      URL.revokeObjectURL(imagePreviewProfile);
-    }
-    setImageProfile(null);
-    setImagePreviewProfile(null);
-    if (fileInputRefProfile.current) {
-      fileInputRefProfile.current.value = "";
-    }
-  };
 
 
   return (
@@ -249,15 +241,15 @@ export function EditProfilePage() {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={handleImageChange}
+                          onChange={handleBackGroundImageChange}
                           style={{ display: "none" }}
-                          ref={fileInputRef}
+                          ref={fileInputRef_BackgroundImage}
                         />
-                        {imagePreview ? (
+                        {backGroundImagePreview ? (
                           <div className="
                             // image-preview 
                             profilePage_CoverImage_Img">
-                            <img src={imagePreview} alt="Uploaded preview"
+                            <img src={backGroundImagePreview} alt="Uploaded preview"
                               style={{
                                 width: "100%",
                                 height: "100%",
@@ -272,7 +264,7 @@ export function EditProfilePage() {
                           <img
                             src={userBaseUrl + backGroundImage}
                             alt="Upload Icon"
-                            onClick={handleImageClick}
+                            onClick={handleBackGroundImageClick}
                             style={{
                               width: "100%",
                               height: "100%",
@@ -283,8 +275,8 @@ export function EditProfilePage() {
                             }}
                           />
                         }
-                        {image1 ? (
-                          <div onClick={handleCancelUpload}
+                        {backGroundImage !== userData.backgroundImageUrl ? (
+                          <div onClick={handleCancelUploadBackGroundImage}
                             style={deleteImageIcon}
                           >
                             <IoRemoveCircleOutline
@@ -294,7 +286,7 @@ export function EditProfilePage() {
                           </div>
                         ) :
 
-                          <div onClick={handleImageClick} style={clickToAddImage}>
+                          <div onClick={handleBackGroundImageClick} style={clickToAddImage}>
                             <IoCameraReverseOutline
                               color="rgb(0, 119, 234)"
                               size={"2rem"}
@@ -311,13 +303,13 @@ export function EditProfilePage() {
                             <input
                               type="file"
                               accept="image/*"
-                              onChange={handleImageChangeProfile}
+                              onChange={handleProfileImageChange}
                               style={{ display: "none" }}
-                              ref={fileInputRefProfile}
+                              ref={fileInputRef_ProfileImage}
                             />
-                            {imagePreviewProfile ? (
+                            {profileImagePreview ? (
                               <div className="profilePage_ProfileImage_Img">
-                                <img src={imagePreviewProfile} alt="Uploaded preview"
+                                <img src={profileImagePreview} alt="Uploaded preview"
                                   style={{
                                     width: "100%",
                                     height: "100%",
@@ -334,7 +326,7 @@ export function EditProfilePage() {
                                 <img
                                   src={userBaseUrl + profileImage}
                                   alt="Upload Icon"
-                                  onClick={handleImageClickProfile}
+                                  onClick={handleProfileImageClick}
                                   style={{
                                     width: "100%",
                                     height: "100%",
@@ -346,8 +338,8 @@ export function EditProfilePage() {
                                 />
                               </div>
                             }
-                            {imageProfile ? (
-                              <div onClick={handleCancelUploadProfile}
+                            {profileImage !== userData.profileImageUrl ? (
+                              <div onClick={handleCancelUploadProfileImage}
                                 style={deleteImageIcon}
                               >
                                 <IoRemoveCircleOutline
@@ -357,7 +349,7 @@ export function EditProfilePage() {
                               </div>
                             ) :
 
-                              <div onClick={handleImageClickProfile} style={clickToAddImage}>
+                              <div onClick={handleProfileImageClick} style={clickToAddImage}>
                                 <IoCameraReverseOutline
                                   color="rgb(0, 119, 234)"
                                   size={"2rem"}
@@ -478,7 +470,7 @@ export function EditProfilePage() {
                         }}>
 
                           <span
-                            onClick={() => { handlePatchUser() }}
+                            onClick={() => { handleUpdateChanges() }}
                             style={NewVehicle}>Update Changes</span>
                         </div>
 

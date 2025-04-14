@@ -202,7 +202,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
-    updateProfileImage: builder.mutation({
+    /*
+    updateProfileImage2: builder.mutation({
       query: (data) => {
         const { formData, userId } = data;
         return {
@@ -218,7 +219,9 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 
       invalidatesTags: [],
     }),
-    updateBackgroundImage: builder.mutation({
+    */
+    /*
+    updateBackgroundImage2: builder.mutation({
       query: (data) => {
         const { formData, userId } = data;
         return {
@@ -232,6 +235,41 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
 
       invalidatesTags: [],
+    }),
+    */
+    updateProfileImage: builder.mutation({
+      query: (data) => {
+        const { profileImage, userId } = data;
+        console.log("profileImage: ", profileImage);
+        const formData = new FormData();
+        formData.append("imageFile", profileImage);
+        const url = `/api/User/${userId}/updateProfileImage`;
+        return {
+          url,
+          method: "POST",
+          headers: {
+            // "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        };
+      },
+    }),
+    updateBackgroundImage: builder.mutation({
+      query: (data) => {
+        const { backGroundImage, userId } = data;
+        console.log("backGroundImage: ", backGroundImage);
+        const formData = new FormData();
+        formData.append("imageFile", backGroundImage);
+        const url = `/api/User/${userId}/updateBackgroundImage`;
+        return {
+          url,
+          method: "POST",
+          headers: {
+            // "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        };
+      },
     }),
     patchUser: builder.mutation({
       query: ({ userId, patchDoc }) => {

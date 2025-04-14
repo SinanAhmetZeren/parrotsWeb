@@ -6,6 +6,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
+import { FaWalking, FaRunning } from "react-icons/fa";
 
 
 export function VoyageDetailPageDetails({ voyageData }) {
@@ -25,6 +26,8 @@ export function VoyageDetailPageDetails({ voyageData }) {
     navigate(`/profile-public/${user.id}/${user.userName}`);
 
   }
+
+  console.log("image: ", voyageData.vehicle);
 
   return (
     <div style={cardContainerStyle} className="flex row">
@@ -49,14 +52,21 @@ export function VoyageDetailPageDetails({ voyageData }) {
         <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData.vehicle.id)}>
           <span style={{ alignSelf: "center" }}>On</span>
           <div style={userAndVehicleBox}>
-            <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
-              //style={userImage}
-              style={{ ...userImage, ...((hoveredVehicle === true) ? userprofileimgHover : {}) }}
-              onMouseEnter={() => {
-                setHoveredVehicle(true)
-              }}
-              onMouseLeave={() => setHoveredVehicle(false)}
-              alt=" " />
+            <span style={userAndVehicleText}>
+              {voyageData.vehicle.name === "Run" ? <div style={runningStyle}> <FaRunning size={"2rem"} /></div> :
+                voyageData.vehicle.name === "Walk" ? <div style={runningStyle}> <FaWalking size={"2rem"} /></div> :
+                  null
+              }
+            </span>
+            {voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk" ? null :
+              <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
+                style={{ ...userImage, ...((hoveredVehicle === true) ? userprofileimgHover : {}) }}
+                onMouseEnter={() => {
+                  setHoveredVehicle(true)
+                }}
+                onMouseLeave={() => setHoveredVehicle(false)}
+                alt=" " />
+            }
             <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
         </div>
@@ -224,3 +234,13 @@ export default function VehicleIcon({ vehicleType }) {
 
 
 
+const runningStyle = {
+  color: "rgba(0, 119, 234,.7)",
+  fontWeight: "bold",
+  fontSize: "1.5rem",
+  marginRight: "0.5rem",
+  borderRadius: "2rem",
+  padding: "0.5rem",
+  backgroundColor: "white",
+  boxShadow: "inset 0 0 5px rgba(0, 119, 234,.66)",
+}

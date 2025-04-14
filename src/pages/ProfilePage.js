@@ -22,9 +22,16 @@ function ProfilePage() {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
+
+
+  const handleGoToEditProfilePage = () => {
+    navigate(`/edit-profile`);
+  }
+
   const gotoNewVehicle = () => {
     navigate(`/newVehicle`);
   }
@@ -130,7 +137,25 @@ function ProfilePage() {
                             <ProfilePageVehiclesComponent userData={userData}
                             // userFavoriteVehicles={state_favVehicles} 
                             />
-                          </>) : null)
+                          </>) :
+
+                          (<>
+                            <div style={{
+                              display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
+                              marginTop: ".5rem"
+                            }}>
+                              <span style={VehiclesVoyagesTitle}>Vehicles</span>
+                              <span
+                                onClick={() => { gotoNewVehicle() }}
+                                style={NewVehicle}>New Vehicle</span>
+                            </div>
+                            <div style={noVoyagesYetContainer}>
+                              <NoVoyagesVehiclesPlaceHolder type={"Vehicle"} />
+                            </div>
+                          </>)
+
+
+                      )
                         : null
                       }
                     </div>
@@ -138,24 +163,35 @@ function ProfilePage() {
                       {isSuccessUser ? (
                         userData?.usersVoyages.length > 0 ?
                           (<>
-
-
                             <div style={{
                               display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
                               marginTop: ".5rem"
                             }}>
-
                               <span style={VehiclesVoyagesTitle}>Voyages</span>
                               <span
                                 onClick={() => { gotoNewVoyage() }}
                                 style={NewVehicle}>New Voyage</span>
                             </div>
-
-
                             <ProfilePageVoyagesComponent userData={userData}
                             // userFavoriteVoyages={state_favVoyages} 
                             />
-                          </>) : null)
+                          </>) :
+
+                          (<>
+                            <div style={{
+                              display: "flex", flexDirection: "row", width: "70%", margin: "auto", marginBottom: ".5rem",
+                              marginTop: ".5rem"
+                            }}>
+                              <span style={VehiclesVoyagesTitle}>Voyages</span>
+                              <span
+                                onClick={() => { gotoNewVoyage() }}
+                                style={NewVehicle}>New Voyage</span>
+                            </div>
+                            <div style={noVoyagesYetContainer}>
+                              <NoVoyagesVehiclesPlaceHolder type={"Voyage"} />
+                            </div>
+                          </>)
+                      )
                         : null
                       }
 
@@ -205,6 +241,44 @@ const NewVehicle = {
     "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
 };
 
+const noVoyagesYetContainer = {
+  width: "100%",
+  height: "19rem",
+  marginBottom: "2rem",
+
+}
+
+const NoVoyagesVehiclesPlaceHolder = ({ type }) => {
+  return (
+
+    <div style={{
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      height: "100%",
+      width: "92%",
+      padding: "1vh",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      marginTop: "1rem",
+      display: "flex",           // Use flexbox
+      justifyContent: "center",  // Center horizontally
+      alignItems: "center",      // Center vertically
+      textAlign: "center"        // Ensure text alignment
+    }}>
+      <span style={{
+        color: "rgba(255, 255, 255, 0.8)",
+        fontSize: "1.6rem",
+        fontWeight: 800,
+        textShadow: `
+          2px 2px 4px rgba(0, 0, 0, 0.6),  
+          -2px -2px 4px rgba(255, 255, 255, 0.2)
+        `,
+        filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4))",
+      }}>
+        {/* Add a new {type} */}
+      </span>
+    </div>
 
 
-
+  )
+}

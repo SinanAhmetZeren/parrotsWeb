@@ -63,7 +63,7 @@ const voyageDetailCard = {
 };
 
 const imageContainer = {
-  backgroundColor: "pink",
+  backgroundColor: "white",
   width: "50%",
 };
 

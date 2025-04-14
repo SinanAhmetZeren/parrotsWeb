@@ -119,9 +119,7 @@ function ProfilePagePublic() {
                     (
                       <div className="flex flex-col"
                         style={{
-                          // backgroundColor: "rgba(0, 0, 0, .3)",
                           paddingLeft: ".5rem",
-
                           borderRadius: "1.5rem",
                           height: "calc(100vh - 3.5rem)",
                           width: "calc(100% - 0%)",

@@ -235,10 +235,11 @@ function ConnectPage() {
                   </div>
                 )}
                 {isSuccessmessagePreviews && query.length < 3 && (
-                  <div style={MessagePreviewsContainer}>
+                  <div style={MessagePreviewsContainer} >
                     <MessagePreviewsComponent
                       messagesData={messagePreviewsData}
                       userId={currentUserId}
+                      selectedUserId={conversationUserId}
                       setConversationUserId={setConversationUserId}
                       setConversationUserUsername={setConversationUserUsername}
                       handleGoToUser={handleGoToUser}
@@ -247,7 +248,7 @@ function ConnectPage() {
                   </div>
                 )}
               </div>
-              <div className="flex connectPage_BottomRight">
+              <div className="flex connectPage_BottomRight" >
                 <div style={ConversationComponentContainer}>
                   <ConversationComponent
                     conversationData={conversationData}

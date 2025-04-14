@@ -70,6 +70,7 @@ export function EditProfilePage() {
     ];
     try {
       const response = await patchUser({ patchDoc, userId });
+      console.log("response: ", response);
       dispatch(
         updateUserName({
           username,

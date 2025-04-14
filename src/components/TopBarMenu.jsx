@@ -74,7 +74,7 @@ export function TopBarMenu() {
             Profile
           </NavLink>
 
-
+          {/* 
           <NavLink
             to="/edit-profile"
             className={({ isActive }) =>
@@ -84,7 +84,7 @@ export function TopBarMenu() {
             }
           >
             EditProfile
-          </NavLink>
+          </NavLink> */}
 
 
 
