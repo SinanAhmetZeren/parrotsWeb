@@ -8,42 +8,99 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useMap } from "@vis.gl/react-google-maps";
 
+
 export function MainPageMapPanComponent({ targetLat, targetLng, setBounds }) {
   const map = useMap();
 
+  // Fetch bounds once on mount, retrying if needed
   useEffect(() => {
-    const logMapBounds = () => {
+    if (!map) return;
+
+    let intervalId = null;
+    let tryCount = 0;
+    const maxTries = 20;
+
+    const trySetInitialBounds = () => {
       const bounds = map.getBounds();
-      if (bounds) {
-        const northEast = bounds.getNorthEast();
-        const southWest = bounds.getSouthWest();
-
-        // console.log("Map Bounds:");
-        // console.log("North-East:", northEast.lat(), northEast.lng());
-        // console.log("South-West:", southWest.lat(), southWest.lng());
-
-        setBounds({
-          lat: { northEast: northEast.lat(), southWest: southWest.lat() },
-          lng: { northEast: northEast.lng(), southWest: southWest.lng() },
-        });
+      if (!bounds) {
+        tryCount++;
+        if (tryCount >= maxTries) clearInterval(intervalId);
+        return;
       }
+
+      const northEast = bounds.getNorthEast();
+      const southWest = bounds.getSouthWest();
+
+      const newBounds = {
+        lat: {
+          northEast: northEast.lat(),
+          southWest: southWest.lat(),
+        },
+        lng: {
+          northEast: northEast.lng(),
+          southWest: southWest.lng(),
+        },
+      };
+
+      setBounds((prevBounds) => {
+        const isSame =
+          prevBounds &&
+          prevBounds.lat?.northEast === newBounds.lat.northEast &&
+          prevBounds.lat?.southWest === newBounds.lat.southWest &&
+          prevBounds.lng?.northEast === newBounds.lng.northEast &&
+          prevBounds.lng?.southWest === newBounds.lng.southWest;
+
+        return isSame ? prevBounds : newBounds;
+      });
+
+      clearInterval(intervalId);
     };
 
-    if (map) {
-      logMapBounds();
-      const boundsChangedListener = google.maps.event.addListener(
-        map,
-        "bounds_changed",
-        logMapBounds
-      );
-      return () => {
-        google.maps.event.removeListener(boundsChangedListener);
-      };
-    }
+    intervalId = setInterval(trySetInitialBounds, 200);
+    return () => clearInterval(intervalId);
   }, [map, setBounds]);
 
+  // Listen for bounds_changed and update
   useEffect(() => {
-    if (map && targetLat && targetLng) {
+    if (!map) return;
+
+    const onBoundsChanged = () => {
+      const bounds = map.getBounds();
+      if (!bounds) return;
+
+      const northEast = bounds.getNorthEast();
+      const southWest = bounds.getSouthWest();
+
+      const newBounds = {
+        lat: {
+          northEast: northEast.lat(),
+          southWest: southWest.lat(),
+        },
+        lng: {
+          northEast: northEast.lng(),
+          southWest: southWest.lng(),
+        },
+      };
+
+      setBounds((prevBounds) => {
+        const isSame =
+          prevBounds &&
+          prevBounds.lat?.northEast === newBounds.lat.northEast &&
+          prevBounds.lat?.southWest === newBounds.lat.southWest &&
+          prevBounds.lng?.northEast === newBounds.lng.northEast &&
+          prevBounds.lng?.southWest === newBounds.lng.southWest;
+
+        return isSame ? prevBounds : newBounds;
+      });
+    };
+
+    const listener = google.maps.event.addListener(map, "bounds_changed", onBoundsChanged);
+    return () => google.maps.event.removeListener(listener);
+  }, [map, setBounds]);
+
+  // Pan to marker if targetLat/Lng is provided
+  useEffect(() => {
+    if (map && targetLat != null && targetLng != null) {
       map.panTo({ lat: targetLat, lng: targetLng });
       map.setZoom(16);
     }

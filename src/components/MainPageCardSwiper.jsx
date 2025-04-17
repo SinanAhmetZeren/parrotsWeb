@@ -17,7 +17,7 @@ export function MainPageCardSwiper({
   setCalendarOpen }) {
 
 
-  console.log(voyagesData.length);
+  // console.log(voyagesData.length);
   return (
     voyagesData.length === 0 ?
       <div style={{

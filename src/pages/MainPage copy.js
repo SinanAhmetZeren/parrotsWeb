@@ -30,15 +30,14 @@ import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
 
-// at zoom level of 10
-const initialLatDelta = 0.010;
-const initialLngDelta = 0.012;
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId")
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
+  const [initialLatDelta, setInitialLatDelta] = useState(null);
+  const [initialLngDelta, setInitialLngDelta] = useState(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialVoyages, setInitialVoyages] = useState([]);
@@ -56,7 +55,6 @@ function MainPage() {
   const [selectedVacancy, setSelectedVacancy] = useState();
   const [selectedVehicle, setSelectedVehicle] = useState();
   const [bounds, setBounds] = useState(null);
-  const hasMapInitialized = useRef(false);
 
   const dispatch = useDispatch()
   const [
@@ -88,8 +86,8 @@ function MainPage() {
     const data = {
       latitude: (bounds.lat.northEast + bounds.lat.southWest) / 2,
       longitude: (bounds.lng.northEast + bounds.lng.southWest) / 2,
-      latitudeDelta: (bounds.lat.northEast - bounds.lat.southWest) * 0.90,
-      longitudeDelta: (bounds.lng.northEast - bounds.lng.southWest) * 0.90,
+      latitudeDelta: bounds.lat.northEast - bounds.lat.southWest,
+      longitudeDelta: bounds.lng.northEast - bounds.lng.southWest,
       count: selectedVacancy ?? 1,
       selectedVehicleType: selectedVehicle,
       formattedStartDate: formattedStartDate,
@@ -112,23 +110,16 @@ function MainPage() {
     setTargetLocation({ lat, lng });
   };
 
-
   // get location from browser 
   useEffect(() => {
     const getLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            const currentLocation = position.coords;
-            const sapancaLocation = { latitude: 40.6940695769, longitude: 30.212527026 }; // sapanca
-            const istanbulLocation = { latitude: 40.9979256608, longitude: 29.03526596 }; // istanbul
-            const amsterdamLocation = { latitude: 52.372311619250, longitude: 4.9015447608601 }; // amsterdam
-
-            const selectedLocation = istanbulLocation;
-
-            const latitude = selectedLocation.latitude;
-            const longitude = selectedLocation.longitude;
-
+            //  const { latitude, longitude } = position.coords;
+            // const { latitude, longitude } = { latitude: 40.9979499, longitude: 29.035244 };
+            // const { latitude, longitude } = { latitude: 40.6940695769, longitude: 30.212527026 }; // sapanca
+            const { latitude, longitude } = { latitude: 52.368026, longitude: 4.903762571 }; // amsterdam
             setInitialLatitude(latitude);
             setInitialLongitude(longitude);
             setLocationError(null);
@@ -147,6 +138,9 @@ function MainPage() {
     getLocation();
   }, []);
 
+
+
+
   // get initial voyages using initial location and deltas
   useEffect(() => {
     const getInitialVoyagesAfterLocation = async () => {
@@ -158,7 +152,6 @@ function MainPage() {
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
-
         setInitialVoyages(voyages?.data || []);
       } catch (error) {
         console.error("Error fetching voyages:", error);
@@ -173,7 +166,6 @@ function MainPage() {
     initialLatDelta,
     initialLngDelta,
     getVoyagesByLocation,
-
   ]);
 
   // renders markers  
@@ -307,15 +299,7 @@ function MainPage() {
                             gestureHandling={"greedy"}
                             disableDefaultUI
                             onCameraChanged={() => setTargetLocation(null)}
-                            onLoad={() => {
-                              console.log("✅ Map has loaded");
-
-
-                            }}
-
                           >
-
-
                             <MainPageMapPanComponent
                               setBounds={setBounds}
                               targetLat={targetLocation?.lat}
