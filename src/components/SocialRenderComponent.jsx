@@ -71,7 +71,7 @@ export function SocialRenderComponent({ userData }) {
       </div>
       {
         contactDataArray.length === 0 &&
-        <div style={placeHolderForContacts}>hello</div>
+        <div style={placeHolderForContacts}></div>
       }
     </>
   );

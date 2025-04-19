@@ -19,7 +19,7 @@ import {
 } from "../slices/UserSlice"
 import { useSelector, useDispatch } from "react-redux";
 import { TopBarMenu } from "../components/TopBarMenu";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { MainPageFiltersComponent } from "../components/MainPageFiltersComponent";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -30,9 +30,6 @@ import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton"
 
-// at zoom level of 10
-const initialLatDelta = 0.010;
-const initialLngDelta = 0.012;
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId")
@@ -56,6 +53,7 @@ function MainPage() {
   const [selectedVacancy, setSelectedVacancy] = useState();
   const [selectedVehicle, setSelectedVehicle] = useState();
   const [bounds, setBounds] = useState(null);
+  const [initialBounds, setInitialBounds] = useState(null)
   const hasMapInitialized = useRef(false);
 
   const dispatch = useDispatch()
@@ -81,7 +79,6 @@ function MainPage() {
   const {
     data: favoriteVehiclesData
   } = useGetFavoriteVehicleIdsByUserIdQuery(userId);
-
   const applyFilter = useCallback(async () => {
     const formattedStartDate = convertDateFormat(dates.startDate, "startDate");
     const formattedEndDate = convertDateFormat(dates.endDate, "endDate");
@@ -107,7 +104,6 @@ function MainPage() {
     selectedVehicle,
     getFilteredVoyages,
   ]);
-
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -124,7 +120,16 @@ function MainPage() {
             const istanbulLocation = { latitude: 40.9979256608, longitude: 29.03526596 }; // istanbul
             const amsterdamLocation = { latitude: 52.372311619250, longitude: 4.9015447608601 }; // amsterdam
 
-            const selectedLocation = istanbulLocation;
+            const locations = [
+              currentLocation,   //0
+              sapancaLocation,   //1
+              istanbulLocation,  //2
+              amsterdamLocation, //3
+            ];
+
+            const selectedLocation = locations[
+              0
+            ];
 
             const latitude = selectedLocation.latitude;
             const longitude = selectedLocation.longitude;
@@ -150,15 +155,16 @@ function MainPage() {
   // get initial voyages using initial location and deltas
   useEffect(() => {
     const getInitialVoyagesAfterLocation = async () => {
-      if (!initialLatitude || !initialLongitude) return;
-      const lat1 = initialLatitude - initialLatDelta;
-      const lat2 = initialLatitude + initialLatDelta;
-      const lon1 = initialLongitude - initialLngDelta;
-      const lon2 = initialLongitude + initialLngDelta;
+      if (!initialBounds) return;
+      const { lat, lng } = initialBounds;
+      const lat1 = lat.southWest;
+      const lat2 = lat.northEast;
+      const lon1 = lng.southWest;
+      const lon2 = lng.northEast;
+
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
-
         setInitialVoyages(voyages?.data || []);
       } catch (error) {
         console.error("Error fetching voyages:", error);
@@ -168,12 +174,8 @@ function MainPage() {
     };
     getInitialVoyagesAfterLocation();
   }, [
-    initialLatitude,
-    initialLongitude,
-    initialLatDelta,
-    initialLngDelta,
     getVoyagesByLocation,
-
+    initialBounds
   ]);
 
   // renders markers  
@@ -233,6 +235,30 @@ function MainPage() {
     }
     updateFavorites()
   }, [favoriteVehiclesData, favoriteVoyagesData, dispatch])
+
+  function MapInitialBoundsComponent({ setInitialBounds }) {
+    const map = useMap();
+    useEffect(() => {
+      if (!map || hasMapInitialized.current) return;
+      const onLoadBounds = map.getBounds();
+      if (!onLoadBounds) return;
+      const northEast = onLoadBounds.getNorthEast();
+      const southWest = onLoadBounds.getSouthWest();
+      setInitialBounds({
+        lat: {
+          northEast: northEast.lat(),
+          southWest: southWest.lat(),
+        },
+        lng: {
+          northEast: northEast.lng(),
+          southWest: southWest.lng(),
+        },
+      });
+      console.log("onLoadBounds - Lat: ", onLoadBounds.getNorthEast().lat(), onLoadBounds.getSouthWest().lat());
+      hasMapInitialized.current = true;
+    }, [map, setInitialBounds]);
+    return null;
+  }
 
   return (
     <div className="App">
@@ -299,24 +325,15 @@ function MainPage() {
                         initialLatitude && (
                           <Map
                             mapId={"mainpageMap"}
-                            defaultZoom={10}
-                            defaultCenter={{
-                              lat: initialLatitude, //|| 37.7749,
-                              lng: initialLongitude //|| -122.4194,
-                            }}
+                            defaultZoom={15}
+                            defaultCenter={{ lat: initialLatitude, lng: initialLongitude }}
                             gestureHandling={"greedy"}
                             disableDefaultUI
                             onCameraChanged={() => setTargetLocation(null)}
-                            onLoad={() => {
-                              console.log("✅ Map has loaded");
-
-
-                            }}
-
                           >
-
-
+                            <MapInitialBoundsComponent setInitialBounds={setInitialBounds} />
                             <MainPageMapPanComponent
+                              initialBounds={initialBounds}
                               setBounds={setBounds}
                               targetLat={targetLocation?.lat}
                               targetLng={targetLocation?.lng}

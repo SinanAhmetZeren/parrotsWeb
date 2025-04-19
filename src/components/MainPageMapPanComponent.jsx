@@ -9,9 +9,9 @@ import "swiper/css/navigation";
 import { useMap } from "@vis.gl/react-google-maps";
 
 
-export function MainPageMapPanComponent({ targetLat, targetLng, setBounds }) {
+export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, initialBounds }) {
   const map = useMap();
-
+  console.log("initialbouds: ", initialBounds);
   // Fetch bounds once on mount, retrying if needed
   useEffect(() => {
     if (!map) return;
@@ -100,6 +100,7 @@ export function MainPageMapPanComponent({ targetLat, targetLng, setBounds }) {
 
   // Pan to marker if targetLat/Lng is provided
   useEffect(() => {
+    // if (map && targetLat && targetLng) {
     if (map && targetLat != null && targetLng != null) {
       map.panTo({ lat: targetLat, lng: targetLng });
       map.setZoom(16);
