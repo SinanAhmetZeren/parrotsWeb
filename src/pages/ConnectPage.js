@@ -37,6 +37,9 @@ function ConnectPage() {
     if (paramConversationUserId && paramConversationUserUsername) {
       setConversationUserId(paramConversationUserId);
       setConversationUserUsername(paramConversationUserUsername);
+    } else {
+      setConversationUserId("");
+      setConversationUserUsername("");
     }
   }, [paramConversationUserId, paramConversationUserUsername])
 

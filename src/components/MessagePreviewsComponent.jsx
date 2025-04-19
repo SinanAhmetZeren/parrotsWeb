@@ -1,6 +1,7 @@
 
 import "../assets/css/App.css";
 import * as React from "react";
+import { useParams } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -8,11 +9,12 @@ const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
 export function MessagePreviewsComponent({
   messagesData,
   userId,
-  selectedUserId,
+  // selectedUserId,
   setConversationUserId,
   setConversationUserUsername,
   handleGoToUser
 }) {
+  const { conversationUserId: selectedUserId } = useParams();
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
   const [selectedConversationUserId, setSelectedConversationUserId] = React.useState(selectedUserId);
@@ -51,7 +53,7 @@ export function MessagePreviewsComponent({
         <div key={index}
           style={{
             ...containerStyle,
-            ...(otherUserUserId === selectedConversationUserId && selectedContainerStyle)
+            ...((otherUserUserId === selectedConversationUserId) && selectedContainerStyle)
           }}
           title={message.text} onClick={() => setUserDetails()}>
           <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
@@ -64,7 +66,6 @@ export function MessagePreviewsComponent({
               style={{ ...userprofileimg, ...((hoveredUserImgID === otherUserUserId) ? userprofileimgHover : {}) }}
               alt="user"
               onMouseEnter={() => {
-                console.log("otheruser: ", otherUserUsername)
                 setHoveredUserImgID(otherUserUserId)
               }}
               onMouseLeave={() => setHoveredUserImgID("")}
@@ -86,7 +87,6 @@ export function MessagePreviewsComponent({
               <span style={messageTimeStyle}>{date}</span>
             </div>
           </div>
-
         </div>)
     })
   );
