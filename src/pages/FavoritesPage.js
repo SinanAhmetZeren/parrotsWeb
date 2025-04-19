@@ -12,19 +12,19 @@ import { FavoritesPlaceHolderComponent } from "../components/FavoritesPlaceHolde
 
 export default function FavoritePage() {
   const userId = localStorage.getItem("storedUserId")
-  console.log("userid", userId);
+  // console.log("userid", userId);
   const {
     data: FavoriteVoyagesData,
-    isError: isFavoriteErrorVoyages,
-    isSuccess: isFavoriteSuccessVoyages,
-    isLoading: isFavoriteLoadingVoyages,
+    isError: isFavoriteVoyagesError,
+    isSuccess: isFavoriteVoyagesSuccess,
+    isLoading: isFavoriteVoyagesLoading,
     refetch: refetchFavoriteVoyages,
   } = useGetFavoriteVoyagesByUserIdQuery(userId);
   const {
     data: FavoriteVehiclesData,
-    isError: isFavoriteErrorVehicles,
-    isSuccess: isFavoriteSuccessVehicles,
-    isLoading: isFavoriteLoadingVehicles,
+    isError: isFavoriteVehiclesError,
+    isSuccess: isFavoriteVehiclesSuccess,
+    isLoading: isFavoriteVehiclesLoading,
     refetch: refetchFavoriteVehicles,
   } = useGetFavoriteVehiclesByUserByIdQuery(userId);
 
@@ -35,65 +35,63 @@ export default function FavoritePage() {
   }, []);
 
   useEffect(() => {
-    if (isFavoriteSuccessVoyages)
+    if (isFavoriteVoyagesSuccess)
       console.log("FavoriteVoyagesData from api", FavoriteVoyagesData);
-    if (isFavoriteSuccessVehicles)
+    if (isFavoriteVehiclesSuccess)
       console.log("FavoriteVehiclesData from api", FavoriteVehiclesData);
   }, [FavoriteVehiclesData, FavoriteVoyagesData])
 
   return (
-    (isFavoriteLoadingVehicles || isFavoriteLoadingVoyages) ? (
-      // <div style={spinnerContainer}>
-      //   <div className="spinner"></div>
-      // </div>
+    // (isFavoriteVehiclesLoading || isFavoriteVoyagesLoading) ? (
 
-      <FavoritesPlaceHolderComponent />
+    //   null
 
-    ) : (isFavoriteSuccessVehicles && isFavoriteSuccessVoyages) ? (
-      <div className="App">
-        <header className="App-header">
-          <div className="flex mainpage_Container">
-            <div className="flex mainpage_TopRow">
-              <TopLeftComponent />
-              <div className="flex mainpage_TopRight">
-                <TopBarMenu />
+    // ) : (isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess) ? (
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row", height: "3rem" }}>
+            <span style={VehiclesVoyagesTitle}>Vehicles</span>
+            <span style={VehiclesVoyagesTitle}>Voyages</span>
+          </div>
+
+          <div className="flex favoritesPage_Bottom">
+            <div className="flex favoritesPage_BottomLeft">
+              <div className="flex favoritesPage_Vehicles">
+                {isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess ? (
+                  FavoriteVehiclesData?.length > 0 ?
+
+                    <FavoritesPageVehiclesComponent FavoriteVehiclesData={FavoriteVehiclesData} />
+                    :
+                    null
+                )
+                  : <FavoritesPlaceHolderComponent />
+                }
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "row", height: "3rem" }}>
-              <span style={VehiclesVoyagesTitle}>Vehicles</span>
-              <span style={VehiclesVoyagesTitle}>Voyages</span>
-            </div>
-
-            <div className="flex favoritesPage_Bottom">
-              <div className="flex favoritesPage_BottomLeft">
-                <div className="flex favoritesPage_Vehicles">
-                  {isFavoriteSuccessVehicles ? (
-                    FavoriteVehiclesData?.length > 0 ?
-                      (<>
-                        {/* <span style={VehiclesVoyagesTitle}>Vehicles</span> */}
-                        <FavoritesPageVehiclesComponent FavoriteVehiclesData={FavoriteVehiclesData} />
-                      </>) : null)
-                    : null
-                  }
-                </div>
-              </div>
-              <div className="flex flex-col favoritesPage_BottomRight">
-                <div className="flex favoritesPage_Voyages">
-                  {isFavoriteSuccessVoyages ? (
-                    FavoriteVoyagesData?.length > 0 ?
-                      (<>
-                        {/* <span style={VehiclesVoyagesTitle}>Voyages</span> */}
-                        <FavoritesPageVoyagesComponent FavoriteVoyages={FavoriteVoyagesData} />
-                      </>) : null)
-                    : null
-                  }
-                </div>
+            <div className="flex flex-col favoritesPage_BottomRight">
+              <div className="flex favoritesPage_Voyages">
+                {isFavoriteVoyagesSuccess && isFavoriteVehiclesSuccess ? (
+                  FavoriteVoyagesData?.length > 0 ?
+                    <FavoritesPageVoyagesComponent FavoriteVoyages={FavoriteVoyagesData} />
+                    :
+                    null
+                )
+                  : <FavoritesPlaceHolderComponent />
+                }
               </div>
             </div>
           </div>
-        </header >
-      </div >
-    ) : null
+        </div>
+      </header >
+    </div >
+    // ) : null
   );
 
 

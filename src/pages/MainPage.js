@@ -112,6 +112,7 @@ function MainPage() {
   // get location from browser 
   useEffect(() => {
     const getLocation = () => {
+      return;
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -150,6 +151,61 @@ function MainPage() {
       }
     };
     getLocation();
+  }, []);
+
+  // get location from browser 
+  useEffect(() => {
+    const sapancaLocation = { latitude: 40.6940695769, longitude: 30.212527026 };
+    const istanbulLocation = { latitude: 40.9979256608, longitude: 29.03526596 };
+    const amsterdamLocation = { latitude: 52.372311619250, longitude: 4.9015447608601 };
+
+    const selectedLocation = 0; // 0 = current location
+
+    if (selectedLocation === 0) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setInitialLatitude(latitude);
+            setInitialLongitude(longitude);
+            setLocationError(null);
+            handlePanToLocation(latitude, longitude);
+          },
+          (error) => {
+            console.error(error.message);
+            setLocationError("Unable to retrieve your location.");
+            setTimeout(() => {
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const { latitude, longitude } = position.coords;
+                  setInitialLatitude(latitude);
+                  setInitialLongitude(longitude);
+                  setLocationError(null);
+                  handlePanToLocation(latitude, longitude);
+                },
+                (err) => {
+                  console.error("Retry failed:", err.message);
+                  setLocationError("Still unable to retrieve your location.");
+                }
+              );
+            }, 5000);
+          }
+        );
+      } else {
+        setLocationError("Geolocation is not supported by your browser.");
+      }
+    } else {
+      let location;
+      if (selectedLocation === 1) location = sapancaLocation;
+      if (selectedLocation === 2) location = istanbulLocation;
+      if (selectedLocation === 3) location = amsterdamLocation;
+
+      const { latitude, longitude } = location;
+      setInitialLatitude(latitude);
+      setInitialLongitude(longitude);
+      setLocationError(null);
+      handlePanToLocation(latitude, longitude);
+    }
   }, []);
 
   // get initial voyages using initial location and deltas
