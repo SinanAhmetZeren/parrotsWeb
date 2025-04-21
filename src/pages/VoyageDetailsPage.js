@@ -191,13 +191,11 @@ function VoyageDetailsPage() {
                           ref={mapRef}
                           mapId={"mainpageMap"}
                           defaultBounds={latLngBoundsLiteral}
+                          style={{ borderRadius: "1rem", overflow: "hidden" }}
                           gestureHandling={"greedy"}
                           disableDefaultUI
-
                           zoom={latLngBoundsLiteral.east === latLngBoundsLiteral.west &&
                             latLngBoundsLiteral.north === latLngBoundsLiteral.south ? 13 : undefined}  // Adjust zoom if single point
-
-
                           onCameraChanged={() => setTargetLocation(null)}
                         >
                           <VoyageDetailMapPanComponent

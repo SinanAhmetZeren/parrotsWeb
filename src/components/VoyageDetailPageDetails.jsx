@@ -17,9 +17,19 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const [hoveredVehicle, setHoveredVehicle] = React.useState(false)
 
   const navigate = useNavigate();
-  const handleGoToVehicle = (vehicleID) => {
-    navigate(`/vehicle-details/${vehicleID}`);
-  };
+  // const handleGoToVehicle = (voyageData) => {
+  //   const vehicleID = voyageData.vehicle.id
+  //   if (voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk") {
+  //     return;
+  //   }
+  //   navigate(`/vehicle-details/${vehicleID}`);
+  // };
+
+  const handleGoToVehicle = (voyageData) =>
+    voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk"
+      ? null
+      : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
+
 
   const handleGoToUser = (user) => {
     console.log("go to user: ", user.userName);
@@ -49,24 +59,33 @@ export function VoyageDetailPageDetails({ voyageData }) {
             <span style={userAndVehicleText}>{voyageData.user.userName}</span>
           </div>
         </div>
-        <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData.vehicle.id)}>
+        <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData)}>
           <span style={{ alignSelf: "center" }}>On</span>
           <div style={userAndVehicleBox}>
             <span style={userAndVehicleText}>
-              {voyageData.vehicle.name === "Run" ? <div style={runningStyle}> <FaRunning size={"2rem"} /></div> :
-                voyageData.vehicle.name === "Walk" ? <div style={runningStyle}> <FaWalking size={"2rem"} /></div> :
-                  null
-              }
+              {(voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk") && (
+                <div style={runningStyle}
+                >
+                  {voyageData.vehicle.name === "Run" ? (
+                    <FaRunning size={"2rem"} />
+                  ) : (
+                    <FaWalking size={"2rem"} />
+                  )}
+                </div>
+              )}
             </span>
-            {voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk" ? null :
-              <img src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
-                style={{ ...userImage, ...((hoveredVehicle === true) ? userprofileimgHover : {}) }}
-                onMouseEnter={() => {
-                  setHoveredVehicle(true)
+            {(voyageData.vehicle.name !== "Run" && voyageData.vehicle.name !== "Walk") && (
+              <img
+                src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
+                style={{
+                  ...userImage,
+                  ...(hoveredVehicle ? userprofileimgHover : {}),
                 }}
+                onMouseEnter={() => setHoveredVehicle(true)}
                 onMouseLeave={() => setHoveredVehicle(false)}
-                alt=" " />
-            }
+                alt="vehicle"
+              />
+            )}
             <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
         </div>

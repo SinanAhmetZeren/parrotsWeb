@@ -107,7 +107,7 @@ function ProfilePagePublic() {
                   {isSuccessUser ? (
                     userData?.usersVoyages.length > 0 ?
                       (<>
-                        <span style={{ ...VehiclesVoyagesTitle, marginTop: "1rem" }}>Voyages</span>
+                        <span style={{ ...VehiclesVoyagesTitle }}>Voyages</span>
                         <ProfilePageVoyagesComponent userData={userData} />
                       </>) : null)
                     : null
@@ -165,5 +165,5 @@ const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
-  color: "white"
+  color: "white",
 };

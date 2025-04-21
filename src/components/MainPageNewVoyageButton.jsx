@@ -1,8 +1,11 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
+import { useNavigate } from "react-router-dom";
 
 export const MainPageNewVoyageButton = () => {
+  const navigate = useNavigate();
+
   const buttonStyle = {
     width: "40%",
     backgroundColor: "#007bff",
@@ -31,7 +34,7 @@ export const MainPageNewVoyageButton = () => {
     >
       <button
         onClick={() => {
-          console.log("apply");
+          navigate("/NewVoyage");
         }}
         style={buttonStyle}
       >

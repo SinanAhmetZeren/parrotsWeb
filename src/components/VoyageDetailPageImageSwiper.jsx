@@ -67,7 +67,7 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
 }
 
 const slideContainerStyle = {
-  height: "55vh",
+  height: "58vh",
   width: "100%",
 };
 

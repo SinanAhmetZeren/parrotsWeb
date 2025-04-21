@@ -220,7 +220,7 @@ const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
-  color: "white"
+  color: "white",
 };
 
 

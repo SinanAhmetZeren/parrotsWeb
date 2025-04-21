@@ -148,7 +148,10 @@ const cardBriefStyle = {
   paddingLeft: "1rem",
   paddingRight: "1rem",
   textAlign: "justify",  // Justifies the text
-
+  lineHeight: "1.2rem",
+  width: "90%",
+  margin: "auto",
+  marginTop: "0.6rem",
 };
 
 

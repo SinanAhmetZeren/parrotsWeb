@@ -1,7 +1,6 @@
 import { ProfilePageVoyageCard } from './ProfilePageVoyageCard';
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
 
 
 export function ProfilePageVoyagesComponent({ userData }) {

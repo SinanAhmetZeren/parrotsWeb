@@ -6,7 +6,7 @@ import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 
 export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
-
+  // .rdrDateDisplayItemActive input  -> i want to change this color with inline code
   const calendarRef = useRef(null);
   const handleDateChange = (item) => {
     setDates([item.selection]);
@@ -40,7 +40,6 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         justifyContent: "center",
         alignItems: "center",
         paddingTop: "3rem",
-        // marginTop: "-2rem"
       }}
     >
 
@@ -48,7 +47,6 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         ref={calendarRef}
         style={{
           zIndex: 1000,
-          // transform: "scale(0.9)",
           height: "27rem"
         }}
       >
@@ -61,7 +59,15 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
           ranges={dates}
           locale={enUS}
           style={{ width: "33rem" }}
+          className="custom-date-range"
         />
+        <style>
+          {`
+            .custom-date-range .rdrDateDisplayItem input {
+              color: rgb(0, 123, 255); 
+            }
+          `}
+        </style>
       </div>
     </div >
   );

@@ -414,7 +414,7 @@ export default function ProfileScreen({ navigation }) {
               {/* ------- BIO ------ */}
               <View style={styles.bioBox}>
                 {(socialItemCount > 5 && userData.emailVisible == true) ||
-                (socialItemCount > 6 && userData.emailVisible == false) ? (
+                  (socialItemCount > 6 && userData.emailVisible == false) ? (
                   <TouchableOpacity
                     onPress={() => {
                       setSocialModalVisible(true);

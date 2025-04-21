@@ -24,6 +24,9 @@ export const VoyageDetailsInputsComponent = ({
     setIsFixedPrice
 }) => {
 
+
+
+
     const voyageDetails = {
         backgroundColor: "rgba(255,255,255,1)",
         borderRadius: "1.5rem",
@@ -248,6 +251,16 @@ const CreateVoyageVehicleSelector = ({ vehicleId, setVehicleId, vehiclesList }) 
 
 const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const hoverTimeoutRef = useRef(null);
+    const handleMouseEnter = () => {
+        hoverTimeoutRef.current = setTimeout(() => {
+            setShowDatePicker(true); // Only triggers if cursor stays for 2 sec
+        }, 700);
+    };
+    const handleMouseLeave = () => {
+        clearTimeout(hoverTimeoutRef.current);
+        hoverTimeoutRef.current = null;
+    };
 
     return (
         <div style={{
@@ -269,7 +282,7 @@ const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
                         className="text-lg font-bold"
                         style={labelStyle}
                     >
-                        Last Bid&nbsp;
+                        Last Bid Date&nbsp;
                     </span>
 
                     <style>
@@ -298,8 +311,10 @@ const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
                             placeholder="Bids close on..."
                             value={lastBidDate || ""}
                             style={{ ...inputStyle, color: "gray" }}
-                            onMouseEnter={() => setShowDatePicker(true)} // Switch to date picker on hover
-                            readOnly // Prevent manual typing
+                            // onMouseEnter={() => setShowDatePicker(true)} // Switch to date picker on hover
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            readOnly
                         />
                     )}
 

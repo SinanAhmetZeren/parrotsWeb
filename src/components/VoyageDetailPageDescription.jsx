@@ -9,8 +9,26 @@ import "swiper/css/navigation";
 
 export function VoyageDetailPageDescription({ voyageDescription }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const descriptionCriticalLength = 300;
-  const isDescriptionLong = voyageDescription.length > descriptionCriticalLength;
+  const [isDescriptionLong, setIsDescriptionLong] = React.useState(false);
+  const descriptionRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = descriptionRef.current;
+    if (el) {
+      // Temporarily force clamp to 7 lines to check if it overflows
+      el.style.WebkitLineClamp = 7;
+      el.style.display = "-webkit-box";
+      el.style.WebkitBoxOrient = "vertical";
+      el.style.overflow = "hidden";
+
+      // Let the browser render the clamped version and check scroll height
+      requestAnimationFrame(() => {
+        if (el.scrollHeight > el.clientHeight + 1) {
+          setIsDescriptionLong(true);
+        }
+      });
+    }
+  }, [voyageDescription]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -25,23 +43,21 @@ export function VoyageDetailPageDescription({ voyageDescription }) {
         <div className={"flex"} style={dataRowItem}>
           <div style={infoBox}>
             <span
+              ref={descriptionRef}
               style={{
                 ...descriptionTextStyle,
-                WebkitLineClamp: isExpanded ? 'unset' : 7, // 7 lines when collapsed
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden', // Hide the overflowing text when collapsed
+                WebkitLineClamp: isExpanded ? "unset" : 7,
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
               }}
             >
               {voyageDescription}
             </span>
           </div>
         </div>
-        {voyageDescription.length > 0 && (
-          <span
-            onClick={toggleExpand}
-            style={readMore}
-          >
+        {isDescriptionLong && (
+          <span onClick={toggleExpand} style={readMore}>
             {isExpanded ? "Read Less" : "Read More"}
           </span>
         )}
@@ -101,7 +117,10 @@ const infoBox = {
 const descriptionTextStyle = {
   whiteSpace: "pre-wrap", // Respects line breaks and wraps text
   textIndent: "0", // Remove any indentation at the start of the first line
-  fontWeight: "500"
+  fontWeight: "500",
+  lineHeight: "1.3rem",
+  margin: "auto",
+  marginTop: "0.6rem",
 }
 
 
@@ -164,4 +183,5 @@ const readMore = {
   bottom: "0rem",
   right: 0
 }
+
 

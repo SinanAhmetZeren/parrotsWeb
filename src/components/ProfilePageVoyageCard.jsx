@@ -42,9 +42,8 @@ export function ProfilePageVoyageCard({ voyage, index }) {
             {formatCustomDate(voyage?.endDate)}
           </span>
         </div>
-
         {/* BRIEF */}
-        <div style={cardBriefStyle}>{voyage?.brief}</div>
+        <div style={cardBriefStyle} dangerouslySetInnerHTML={{ __html: voyage?.brief }}></div>
       </div>
     </div>
   );
@@ -107,6 +106,7 @@ const cardTitleStyle = {
   fontSize: "1.3rem",
   fontWeight: "bold",
   color: "rgba(10, 119, 234,1)",
+  marginTop: "0.5rem",
 };
 
 const cardBriefStyle = {
@@ -121,7 +121,10 @@ const cardBriefStyle = {
   paddingRight: "1rem",
   // backgroundColor: "pink",
   textAlign: "justify",  // Justifies the text
-
+  lineHeight: "1.2rem",
+  width: "94%",
+  margin: "auto",
+  marginTop: "0.6rem",
 };
 
 const cardDescriptionStyle = {

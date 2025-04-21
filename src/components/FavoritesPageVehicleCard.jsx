@@ -34,8 +34,7 @@ export function FavoritesPageVehicleCard({ vehicle, index }) {
             </span>
           </div>
         </div>
-        {/* <div style={cardBriefStyle}>{vehicle?.description}</div> */}
-        <div style={cardBriefStyle}>{vehicle?.description?.length > 280 ? `${vehicle?.description.substring(0, 280)}...` : vehicle?.description}</div>
+        <div style={cardBriefStyle} dangerouslySetInnerHTML={{ __html: vehicle?.description?.length > 280 ? `${vehicle?.description.substring(0, 280)}...` : vehicle?.description }}></div>
       </div>
     </div >
   );
@@ -141,7 +140,10 @@ const cardBriefStyle = {
   paddingLeft: "1rem",
   paddingRight: "1rem",
   textAlign: "justify",  // Justifies the text
-
+  lineHeight: "1.2rem",
+  width: "94%",
+  margin: "auto",
+  marginTop: "0.6rem",
 };
 
 function VehicleIcon({ vehicleType }) {

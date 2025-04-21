@@ -1,4 +1,3 @@
-
 import "../assets/css/App.css";
 import * as React from "react";
 
@@ -6,18 +5,6 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseWaypointImageUrl = `${apiUrl}/Uploads/WaypointImages/`;
-
-  /*
-{
-  "id": 107,
-  "latitude": 40.99,
-  "longitude": 29.09,
-  "title": "Istanbul",
-  "description": "Spend a day in Istanbul, starting with the stunning Hagia Sophia, a mix of history and beauty. Explore the lively Grand Bazaar, full of colors, sounds, and unique items. Finish with a relaxing Bosphorus cruise, enjoying the view of the city that connects two continents.",
-  "profileImage": "014b817b-142f-4777-9a6b-5e2a82b52e4f.jpg",
-  "order": 1,
-  "voyageId": 88
-}*/
 
   function onClick() {
     console.log("hi there ", waypoint.latitude);
@@ -59,7 +46,6 @@ const voyageDetailCard = {
   height: "18rem",
   borderRadius: "2rem",
   overflow: "hidden",
-
 };
 
 const imageContainer = {
@@ -69,7 +55,8 @@ const imageContainer = {
 
 const voyageImage = {
   height: "18rem",
-  width: "100%",
+  // width: "100%",
+  width: "30rem",
   objectFit: "cover",
 };
 
@@ -97,11 +84,16 @@ const heading = {
 const waypointBrief = {
   flexGrow: 1,
   color: "rgb(0, 119, 234)",
-  margin: ".3rem",
   overflow: "hidden",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   WebkitLineClamp: 7,
+  lineHeight: "1.2rem",
+  width: "88%",
+  margin: "auto",
+  marginTop: "0.6rem",
+  textAlign: "justify", // Align text to both sides
+  fontWeight: "500",
 
 };
 
