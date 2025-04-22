@@ -1,4 +1,3 @@
-
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
@@ -14,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
-
+  const [loadingBidId, setLoadingBidId] = React.useState(null); // Track loading state for a specific bid
 
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
@@ -42,16 +41,24 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
 
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
+    setLoadingBidId(bidId); // Set loading state
     const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
     console.log("state of the hub: ", hubConnection.state);
 
-    if (hubConnection.state === "Disconnected") {
-      await hubConnection.start();
+    try {
+      if (hubConnection.state === "Disconnected") {
+        await hubConnection.start();
+      }
+      await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+      const acceptBidResult = await acceptBid(bidId).unwrap(); // Ensure the mutation completes
+      console.log("acceptBidResult: ", acceptBidResult);
+      makeRefetch();
+    } catch (error) {
+      console.error("Error accepting bid:", error);
+    } finally {
+      // Only clear loading state if the bid is accepted
+      setTimeout(() => setLoadingBidId(null), 100); // Delay to ensure state updates
     }
-    hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
-    const acceptBidResult = await acceptBid(bidId).unwrap(); // Ensure the mutation completes
-    console.log("acceptBidResult: ", acceptBidResult);
-    makeRefetch();
   };
 
   const hubConnection = useMemo(() => {
@@ -112,6 +119,7 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
         handleAcceptBid={handleAcceptBid}
         bidId={bid.id}
         bidUserId={bid.userId}
+        loadingBidId={loadingBidId}
       />
     );
   });
@@ -124,8 +132,8 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
         <span style={voyageName}>Current Bids</span>
       </div>
       {bids}
-      <button onClick={() => stateOfTheHub()}>show state of the hub</button>
-      <button onClick={() => startTheHub()}>start the hub</button>
+      {/* <button onClick={() => stateOfTheHub()}>show state of the hub</button>
+      <button onClick={() => startTheHub()}>start the hub</button> */}
       <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
     </div>
   );
@@ -136,7 +144,7 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
 
 
-function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId }) {
+function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, loadingBidId }) {
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
 
@@ -175,20 +183,44 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         </span>
         <span style={bidAmount}>€{price}</span>
         <span
-          onClick={() => handleAcceptBid({ bidId, bidUserId })}
+          onClick={() => !accepted && !loadingBidId && handleAcceptBid({ bidId, bidUserId })}
           style={accepted ? acceptedBidStyle : acceptBidStyle}
         >
-          {accepted ? "Accepted" : "Accept"}
+          {loadingBidId === bidId && !accepted ? (
+
+            <AcceptBidSpinner />
+
+          ) : accepted ? "Accepted" : "Accept"}
         </span>
       </div>
     </div>
   );
 }
 
+const AcceptBidSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(0, 119, 234,0.1)",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      height: "1.2rem",
+      display: "flex", // Added for vertical alignment
+      alignItems: "center", // Center vertically
+    }}>
+      <div className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}></div>
+    </div>)
+}
+
 const userImageStyleHover = {
   transform: "scale(1.2)", // Enlarge on hover
 };
-
 
 const userImageStyle = {
   height: "3rem",
