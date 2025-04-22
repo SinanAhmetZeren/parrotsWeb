@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 
 export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
   const [loadingBidId, setLoadingBidId] = React.useState(null); // Track loading state for a specific bid
-  const [bidsData, setBidsData] = React.useState(voyageData.bids); // Local state for bids
 
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
@@ -37,6 +36,7 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+  const bids = [];
   const [acceptBid] = useAcceptBidMutation();
 
 
@@ -50,19 +50,14 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
         await hubConnection.start();
       }
       await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
-      await acceptBid(bidId).unwrap(); // Ensure the mutation completes
-
-      // Update the local bids state to mark the bid as accepted
-      setBidsData((prevBids) =>
-        prevBids.map((bid) =>
-          bid.id === bidId ? { ...bid, accepted: true } : bid
-        )
-      );
+      const acceptBidResult = await acceptBid(bidId).unwrap(); // Ensure the mutation completes
+      console.log("acceptBidResult: ", acceptBidResult);
       makeRefetch();
     } catch (error) {
       console.error("Error accepting bid:", error);
     } finally {
-      setLoadingBidId(null); // Clear loading state
+      // Only clear loading state if the bid is accepted
+      setTimeout(() => setLoadingBidId(null), 100); // Delay to ensure state updates
     }
   };
 
@@ -109,9 +104,9 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
     };
   }, [hubConnection, isSuccessVoyage]);
 
-  const bids = bidsData.map((bid, i) => {
+  voyageData.bids.forEach((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
-    return (
+    bids.push(
       <RenderBid
         key={bidId}
         username={bid.userName}
@@ -129,16 +124,25 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
     );
   });
 
+
+
   return (
     <div style={cardContainerStyle} className="flex row">
       <div style={userVehicleInfoRow}>
         <span style={voyageName}>Current Bids</span>
       </div>
       {bids}
+      {/* <button onClick={() => stateOfTheHub()}>show state of the hub</button>
+      <button onClick={() => startTheHub()}>start the hub</button> */}
       <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
     </div>
   );
 }
+
+
+
+
+
 
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, loadingBidId }) {
 
@@ -340,5 +344,3 @@ const acceptedBidStyle = {
   marginRight: "0.5rem"
 
 };
-
-
