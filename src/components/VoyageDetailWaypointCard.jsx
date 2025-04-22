@@ -40,12 +40,97 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
     </div>
   );
 }
+
+
+
+const voyageDetailCard = {
+  display: "flex",
+  flexDirection: "row",
+  height: "18rem",
+  borderRadius: "1rem",
+  overflow: "hidden",
+  backgroundColor: "white",
+};
+
+const imageContainer = {
+  backgroundColor: "white",
+  width: "50%",
+  overflow: "hidden",
+  padding: "0.2rem",
+};
+
+const voyageImage = {
+  height: "100%",
+  width: "100%",
+  objectFit: "cover",
+  display: "block",
+  borderRadius: "1.5rem",
+
+};
+
+const detailsContainer = {
+  backgroundColor: "white",
+  width: "50%",
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  border: "none",
+  boxSizing: "border-box",
+};
+
+const heading = {
+  backgroundColor: "white",
+  height: "2rem",
+  color: "#2ac898",
+  fontWeight: "600",
+};
+
+const waypointBrief = {
+  flexGrow: 1,
+  color: "rgb(0, 119, 234)",
+  overflow: "hidden",
+  display: "-webkit-box",
+  WebkitBoxOrient: "vertical",
+  WebkitLineClamp: 7,
+  lineHeight: "1.2rem",
+  width: "88%",
+  margin: "auto",
+  marginTop: "0.6rem",
+  textAlign: "justify",
+  fontWeight: "500",
+};
+
+const seeOnMap = {
+  height: "1.5rem",
+  alignSelf: "end",
+  color: "#2ac898",
+  fontWeight: "bold",
+  fontSize: "0.9rem",
+  cursor: "pointer",
+  backgroundColor: "rgba(42,200,152,0.1)",
+  borderRadius: "1rem",
+  marginLeft: "0.5rem",
+  marginRight: "1rem",
+  paddingLeft: "0.5rem",
+  paddingRight: "0.5rem",
+};
+
+const scrollableDescription = {
+  maxHeight: "25vh",
+  overflowY: "auto",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
+  WebkitOverflowScrolling: "touch",
+};
+/*
+
 const voyageDetailCard = {
   display: "flex",
   flexDirection: "row",
   height: "18rem",
   borderRadius: "2rem",
   overflow: "hidden",
+
 };
 
 const imageContainer = {
@@ -55,9 +140,12 @@ const imageContainer = {
 
 const voyageImage = {
   height: "18rem",
-  // width: "100%",
   width: "30rem",
+  borderRadius: "2rem",
   objectFit: "cover",
+  boxSizing: "border-box",
+  padding: "0.21rem",
+  backgroundColor: "white",
 };
 
 const detailsContainer = {
@@ -66,10 +154,8 @@ const detailsContainer = {
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.2)
-`,
+  border: "none", // Ensure no border is applied
+  boxSizing: "border-box", // Ensure consistent box model
 };
 
 
@@ -94,7 +180,6 @@ const waypointBrief = {
   marginTop: "0.6rem",
   textAlign: "justify", // Align text to both sides
   fontWeight: "500",
-
 };
 
 const seeOnMap = {
@@ -122,3 +207,4 @@ const scrollableDescription = {
     display: 'none',
   },
 };
+*/
