@@ -11,19 +11,18 @@ import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
 
-export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId, isSuccessVoyage, refetch }) {
+export function VoyageDetailBids({ voyageData, ownVoyage, userBid, userBidAccepted, currentUserId, isSuccessVoyage, refetch, setOpacity }) {
   const [loadingBidId, setLoadingBidId] = React.useState(null); // Track loading state for a specific bid
   const [bidsData, setBidsData] = React.useState(voyageData.bids); // Local state for bids
-
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
   }
-
   const makeRefetch = useCallback(() => {
     refetch();
   }, [refetch]);
-
   const startTheHub = async () => {
     if (hubConnection.state === "Disconnected") {
       await hubConnection.start();
@@ -33,13 +32,9 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
       console.log("state of the hub is already: ", hubConnection.state);
     }
   }
-
-
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+  // const apiUrl = process.env.REACT_APP_API_URL;
+  // const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const [acceptBid] = useAcceptBidMutation();
-
-
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId); // Set loading state
     const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
@@ -109,7 +104,38 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
     };
   }, [hubConnection, isSuccessVoyage]);
 
-  const bids = bidsData.map((bid, i) => {
+  return (
+    <div style={cardContainerStyle} className="flex row">
+      <div style={userVehicleInfoRow}>
+        <span style={voyageName}>Current Bids</span>
+      </div>
+      <div style={{
+        overflow: "auto",
+        minHeight: "35vh",
+        scrollbarColor: "#1e90ff50",
+      }}>
+
+        <div className="BidsList">
+          <BidsList
+            bidsData={bidsData}
+            ownVoyage={ownVoyage}
+            handleAcceptBid={handleAcceptBid}
+            loadingBidId={loadingBidId}
+          />
+        </div>
+      </div>
+      <VoyageDetailBidButton
+        ownVoyage={ownVoyage}
+        userBid={userBid}
+        userBidAccepted={userBidAccepted}
+        setOpacity={setOpacity}
+      />
+    </div>
+  );
+}
+
+function BidsList({ bidsData, ownVoyage, handleAcceptBid, loadingBidId }) {
+  return bidsData.map((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
     return (
       <RenderBid
@@ -128,28 +154,14 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
       />
     );
   });
-
-  return (
-    <div style={cardContainerStyle} className="flex row">
-      <div style={userVehicleInfoRow}>
-        <span style={voyageName}>Current Bids</span>
-      </div>
-      {bids}
-      <VoyageDetailBidButton ownVoyage={ownVoyage} userBid={userBid} />
-    </div>
-  );
 }
 
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, loadingBidId }) {
-
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
-
-
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
     navigate(`/profile-public/${bidUserId}/${username}`);
   }
-
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
@@ -160,8 +172,6 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
             setHoveredUserImgID(bidUserId)
           }}
           onMouseLeave={() => setHoveredUserImgID("")}
-
-
           alt="User" onClick={() => handleGoToUser(bidUserId, username)} />
         <span style={userNameStyle} title={username}>
           {username}
@@ -179,13 +189,14 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         </span>
         <span style={bidAmount}>€{price}</span>
         <span
-          onClick={() => !accepted && !loadingBidId && handleAcceptBid({ bidId, bidUserId })}
-          style={accepted ? acceptedBidStyle : acceptBidStyle}
+          onClick={() => ownVoyage && !accepted && !loadingBidId && handleAcceptBid({ bidId, bidUserId })}
+          style={{
+            ...(accepted ? acceptedBidStyle : acceptBidStyle),
+            cursor: (ownVoyage && !accepted) ? "pointer" : "default",
+          }}
         >
           {loadingBidId === bidId && !accepted ? (
-
             <AcceptBidSpinner />
-
           ) : accepted ? "Accepted" : "Accept"}
         </span>
       </div>
@@ -201,8 +212,8 @@ const AcceptBidSpinner = () => {
       position: "relative",
       margin: "auto",
       height: "1.2rem",
-      display: "flex", // Added for vertical alignment
-      alignItems: "center", // Center vertically
+      display: "flex",
+      alignItems: "center",
     }}>
       <div className="spinner"
         style={{
@@ -215,14 +226,14 @@ const AcceptBidSpinner = () => {
 }
 
 const userImageStyleHover = {
-  transform: "scale(1.2)", // Enlarge on hover
+  transform: "scale(1.2)",
 };
 
 const userImageStyle = {
   height: "3rem",
   width: "3rem",
   borderRadius: "3rem",
-  transition: "transform 0.3s ease-in-out", // Smooth transition
+  transition: "transform 0.3s ease-in-out",
   cursor: "pointer"
 };
 
@@ -236,7 +247,6 @@ const userVehicleInfoRow = {
   display: 'flex',
   flexDirection: 'row',
   margin: "0.2rem",
-  // justifyContent: "center"
   marginLeft: "1.3rem"
 };
 
@@ -256,14 +266,13 @@ const cardContainerStyle = {
   padding: "1rem",
   fontSize: "1.15rem",
   maxHeight: "50vh",
-  overflow: "scroll",
-  scrollbarWidth: "none", // Firefox
-  msOverflowStyle: "none", // Internet Explorer and Edge
+  // overflow: "scroll",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
 };
 
 const dataRowItem = {
   marginTop: ".3rem",
-  // backgroundColor: "red"
   backgroundColor: "rgba(0, 119, 234,0.05)",
   borderRadius: "1rem"
 };
@@ -272,7 +281,6 @@ const userAndVehicleBox = {
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
-  // backgroundColor: "rgba(0, 119, 234,0.1)",
   borderRadius: "4rem",
   marginLeft: "0.5rem",
   width: "100%",
@@ -281,19 +289,19 @@ const userAndVehicleBox = {
 
 
 const userNameStyle = {
-  width: "20%", // Fixed width
-  whiteSpace: "nowrap", // Prevent line breaks
-  overflow: "hidden", // Hide overflow text
-  textOverflow: "ellipsis", // Show "..." for overflow text
+  width: "20%",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   fontWeight: "700",
   paddingLeft: "0.2rem"
 };
 
 const personCountStyle = {
-  width: "10%", // Fixed width
-  whiteSpace: "nowrap", // Prevent line breaks
-  overflow: "hidden", // Hide overflow text
-  textOverflow: "ellipsis", // Show "..." for overflow text
+  width: "10%",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: "center",
@@ -301,27 +309,25 @@ const personCountStyle = {
 };
 
 const bidMessage = {
-  wordWrap: "break-word", // Allow the message to break into multiple lines
+  wordWrap: "break-word",
   marginLeft: "1rem",
   width: "50%",
 };
 
 const bidAmount = {
   alignSelf: "center",
-  // backgroundColor: "orange",
   color: "#2ac898",
   fontWeight: "700",
-  flexShrink: 0, // Prevent shrinking
-  width: "10%", // Fixed width for bid amount
+  flexShrink: 0,
+  width: "10%",
 };
 
 const acceptBidStyle = {
   fontWeight: "bold",
   color: "#0077EA",
-  cursor: "pointer",
+  // cursor: "pointer",
   fontSize: "0.9rem",
-  // backgroundColor: "green",
-  width: "12%", // Fixed width for the "Accept Bid" button
+  width: "12%",
   backgroundColor: "rgba(0, 119, 234,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
@@ -331,14 +337,12 @@ const acceptBidStyle = {
 const acceptedBidStyle = {
   fontWeight: "bold",
   color: "#2ac898",
-  cursor: "pointer",
+  // cursor: "pointer",
   fontSize: "0.9rem",
-  width: "12%", // Fixed width for the "Accept Bid" button
+  width: "12%",
   backgroundColor: "rgba(42,200,152,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
   marginRight: "0.5rem"
 
 };
-
-

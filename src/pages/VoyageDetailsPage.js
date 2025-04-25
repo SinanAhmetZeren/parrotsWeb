@@ -33,6 +33,7 @@ function VoyageDetailsPage() {
   const userId = localStorage.getItem("storedUserId")
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [userBid, setUserBid] = useState("")
+  const [userBidAccepted, setUserBidAccepted] = useState("")
   const mapRef = useRef()
   const [targetLocation, setTargetLocation] = useState({});
   const [latLngBoundsLiteral, setLatLngBoundsLiteral] = useState({
@@ -42,7 +43,7 @@ function VoyageDetailsPage() {
     west: null
   });
   const [isFavorited, setIsFavorited] = useState(false);
-
+  const [opacity, setOpacity] = useState(1);
   const {
     data: VoyageData,
     isSuccess: isSuccessVoyage,
@@ -137,6 +138,7 @@ function VoyageDetailsPage() {
 
     if (VoyageData) {
       setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
+      setUserBidAccepted(VoyageData.bids.find((bid) => bid.userId === userId)?.accepted ?? false);
     }
   }, [isSuccessVoyage, VoyageData]);
 
@@ -177,9 +179,11 @@ function VoyageDetailsPage() {
                     voyageData={VoyageData}
                     ownVoyage={userId === VoyageData.userId}
                     userBid={userBid}
+                    userBidAccepted={userBidAccepted}
                     currentUserId={userId}
                     isSuccessVoyage={isSuccessVoyage}
-                    refetch={refetch} />
+                    refetch={refetch}
+                    setOpacity={setOpacity} />
                 </div>
               </div>
               <div className="flex flex-col voyageDetails_BottomRight">
@@ -231,7 +235,10 @@ function VoyageDetailsPage() {
                   </APIProvider>
                 </div>
                 <div className="voyageDetails_waypointsContainer">
-                  <VoyageDetailWaypointSwiper waypoints={VoyageData.waypoints} handlePanToLocation={handlePanToLocation} />
+                  <VoyageDetailWaypointSwiper
+                    waypoints={VoyageData.waypoints}
+                    handlePanToLocation={handlePanToLocation}
+                    opacity={opacity} />
                 </div>
               </div>
             </div>

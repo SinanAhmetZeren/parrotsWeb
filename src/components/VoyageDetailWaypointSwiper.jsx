@@ -6,10 +6,10 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 
-export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation }) {
+export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity }) {
 
   return (
-    <div style={{}}>
+    <div style={{ opacity: opacity }}>
       <Swiper
         slidesPerView={1.5}
         spaceBetween={10}
@@ -17,7 +17,6 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation }) {
         pagination={{
           clickable: true,
         }}
-        // modules={[Pagination]}
         style={{
           width: "100%",
           height: "35vh",
