@@ -1,5 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
 
@@ -83,12 +84,15 @@ const heading = {
   // backgroundColor: "white",
   height: "2rem",
   color: "#2ac898",
+  color: "rgb(0, 119, 234)",
+
   fontWeight: "600",
 };
 
 const waypointBrief = {
   flexGrow: 1,
   color: "rgb(0, 119, 234)",
+  color: parrotTextDarkBlue,
   overflow: "hidden",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
@@ -98,7 +102,7 @@ const waypointBrief = {
   margin: "auto",
   marginTop: "0.6rem",
   textAlign: "justify",
-  fontWeight: "500",
+  // fontWeight: "500",
 };
 
 const seeOnMap = {

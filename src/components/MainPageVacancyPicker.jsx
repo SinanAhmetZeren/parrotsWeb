@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export const MainPageVacancyPicker = ({
   selectedVacancy,
   setSelectedVacancy,
 }) => {
-  // const [selectedVacancy, setSelectedVacancy] = useState(""); // State to track selected vacancy
   const [open, setOpen] = useState(false); // State to toggle the dropdown visibility
   const dropdownRef = useRef(null); // Ref for the dropdown container
 
@@ -56,7 +56,7 @@ export const MainPageVacancyPicker = ({
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
-            color: "black",
+            color: parrotTextDarkBlue,
             cursor: "pointer",
             boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
@@ -108,8 +108,7 @@ export const MainPageVacancyPicker = ({
                 style={{
                   padding: ".5rem 1rem",
                   cursor: "pointer",
-                  color: "black",
-
+                  color: parrotTextDarkBlue,
                   boxShadow: `
                   inset 0 -3px 8px rgba(0, 0, 0, 0.05)
                 `,

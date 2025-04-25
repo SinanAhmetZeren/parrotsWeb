@@ -1,5 +1,6 @@
 import parrot1 from "../assets/images/sailboat.jpg";
 import { useNavigate } from "react-router-dom";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = `${apiUrl}/Uploads/voyageimages/`;
@@ -151,7 +152,7 @@ const cardTitleStyle = {
 
 const cardBriefStyle = {
   fontSize: "1rem",
-  color: "black",
+  color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -160,16 +161,13 @@ const cardBriefStyle = {
   paddingLeft: "1rem",
   paddingRight: "1rem",
   lineHeight: "1.2rem",
-  fontFamily: "Roboto, Arial, sans-serif",
-  fontWeight: "300"
-  // backgroundColor: "pink",
+  marginTop: "0.5rem",
 };
 
 const cardDescriptionStyle = {
   fontSize: "1rem",
   color: "blue",
   fontWeight: "600",
-  // backgroundColor: "red",
 };
 
 const buttonContainerStyle = {

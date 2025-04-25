@@ -60,7 +60,7 @@ export const AddWaypointsPage = ({
                 longitude: waypointLongitude,
                 title: waypointTitle,
                 description: waypointBrief,
-                voyageId: "2214",
+                voyageId: voyageId,
                 order,
             });
 

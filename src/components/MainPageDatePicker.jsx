@@ -4,6 +4,7 @@ import { DateRange } from "react-date-range";
 import { useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
 
@@ -70,7 +71,7 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
               border: "1px solid #ccc",
               borderRadius: "1.5rem",
               textAlign: "center",
-              color: "black",
+              color: parrotTextDarkBlue,
               boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
             inset 0 -4px 6px rgba(0, 0, 0, 0.3)
@@ -101,10 +102,9 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
               width: "65%",
               border: "1px solid #ccc",
               padding: ".3rem",
-
               borderRadius: "1.5rem",
               textAlign: "center",
-              color: "black",
+              color: parrotTextDarkBlue,
               boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
             inset 0 -4px 6px rgba(0, 0, 0, 0.3)

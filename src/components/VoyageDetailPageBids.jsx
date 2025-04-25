@@ -10,6 +10,7 @@ import { useAcceptBidMutation } from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -239,6 +240,8 @@ const userImageStyle = {
 
 const voyageName = {
   color: "#2ac898",
+  color: "rgba(0, 119, 234,1)",
+
   fontWeight: "800",
   fontSize: "1.5rem"
 }
@@ -262,11 +265,10 @@ const cardContainerStyle = {
     0 4px 6px rgba(0, 0, 0, 0.3),
     inset 0 -8px 6px rgba(0, 0, 0, 0.2)
   `,
-  color: "rgba(0, 119, 234,1)",
+  color: parrotTextDarkBlue,
   padding: "1rem",
   fontSize: "1.15rem",
   maxHeight: "50vh",
-  // overflow: "scroll",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
 };
@@ -293,7 +295,7 @@ const userNameStyle = {
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  fontWeight: "700",
+  fontWeight: "500",
   paddingLeft: "0.2rem"
 };
 
@@ -317,6 +319,7 @@ const bidMessage = {
 const bidAmount = {
   alignSelf: "center",
   color: "#2ac898",
+
   fontWeight: "700",
   flexShrink: 0,
   width: "10%",
@@ -325,7 +328,6 @@ const bidAmount = {
 const acceptBidStyle = {
   fontWeight: "bold",
   color: "#0077EA",
-  // cursor: "pointer",
   fontSize: "0.9rem",
   width: "12%",
   backgroundColor: "rgba(0, 119, 234,0.1)",
@@ -337,7 +339,6 @@ const acceptBidStyle = {
 const acceptedBidStyle = {
   fontWeight: "bold",
   color: "#2ac898",
-  // cursor: "pointer",
   fontSize: "0.9rem",
   width: "12%",
   backgroundColor: "rgba(42,200,152,0.1)",

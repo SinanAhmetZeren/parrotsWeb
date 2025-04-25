@@ -127,6 +127,7 @@ img {
   margin: 0 !important;
   overflow: visible !important;
   color: transparent !important;
+  font-weight: 400 !important;
 }
 
 .gm-ui-hover-effect {

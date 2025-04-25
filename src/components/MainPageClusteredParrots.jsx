@@ -11,6 +11,7 @@ import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import { useNavigate } from "react-router-dom";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = `${apiUrl}/Uploads/voyageimages/`;
@@ -305,8 +306,6 @@ const cardContainerStyle = {
 `,
 };
 
-// 12 & 18 -> 15 & 18
-
 const cardImageStyle = {
   width: "45.45%", // Image takes half the width
   height: "auto", // Maintain aspect ratio
@@ -327,7 +326,7 @@ const cardContentStyle = {
 
 const cardBriefStyle = {
   fontSize: "1rem",
-  color: "black",
+  color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",

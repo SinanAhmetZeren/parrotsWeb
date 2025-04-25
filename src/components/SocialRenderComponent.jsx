@@ -6,6 +6,7 @@ import linkedin from '../assets/images/linkedin_logo.png';
 import tiktok from '../assets/images/tiktok_logo.png';
 import email from '../assets/images/email_logo.png';
 import phone from '../assets/images/phone_logo.jpeg';
+import { parrotTextDarkBlue } from "../styles/colors";
 
 <div style={{ backgroundColor: "red", height: "100%", width: "100%" }}></div>
 export function SocialRenderComponent({ userData }) {
@@ -96,7 +97,7 @@ const socialIcon = {
 
 const socialIconText = {
   fontSize: '1.2rem',
-  color: 'black',
+  color: parrotTextDarkBlue,
   margin: '5px'
 }
 

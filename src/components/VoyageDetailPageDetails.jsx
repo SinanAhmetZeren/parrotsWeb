@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
 import { FaWalking, FaRunning } from "react-icons/fa";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 
 export function VoyageDetailPageDetails({ voyageData }) {
@@ -56,7 +57,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
               }}
               onMouseLeave={() => setHoveredUser(false)}
               alt=" " />
-            <span style={userAndVehicleText}>{voyageData.user.userName}</span>
+            <span style={{ ...userAndVehicleText }}>{voyageData.user.userName}</span>
           </div>
         </div>
         <div className={"flex"} style={{ ...dataRowItem, cursor: "pointer" }} onClick={() => handleGoToVehicle(voyageData)}>
@@ -132,7 +133,6 @@ const userImage = {
   width: "3rem",
   borderRadius: "3rem",
   transition: "transform 0.3s ease-in-out", // Smooth transition
-
 }
 
 const userprofileimgHover = {
@@ -140,7 +140,7 @@ const userprofileimgHover = {
 };
 
 const voyageName = {
-  color: "#2ac898",
+  color: "rgba(0, 119, 234,1)",
   fontWeight: "800",
   fontSize: "1.5rem"
 }
@@ -158,10 +158,9 @@ const cardContainerStyle = {
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.2)
 `,
-  color: "rgba(0, 119, 234,1)",
+  color: parrotTextDarkBlue,
   padding: "1rem",
   fontSize: "1rem",
-  fontWeight: "500",
   paddingBottom: "2rem"
 };
 
@@ -177,9 +176,8 @@ const dataRowItem = {
   marginTop: ".3rem",
   marginRight: "0.8rem",
   marginLeft: "0.8rem",
+  fontWeight: "400",
 }
-
-
 
 
 const userAndVehicleBox = {

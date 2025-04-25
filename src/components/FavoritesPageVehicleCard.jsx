@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export function FavoritesPageVehicleCard({ vehicle, index }) {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -131,7 +132,7 @@ const cardContentStyle = {
 
 const cardBriefStyle = {
   fontSize: "1rem",
-  color: "black",
+  color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",

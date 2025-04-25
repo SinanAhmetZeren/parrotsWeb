@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export const MainPageVehiclePicker = ({
   selectedVehicle,
@@ -66,7 +67,7 @@ export const MainPageVehiclePicker = ({
             border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
-            color: "black",
+            color: parrotTextDarkBlue,
             cursor: "pointer",
             boxShadow: `
             0 4px 6px rgba(0, 0, 0, 0.3),
@@ -104,7 +105,7 @@ export const MainPageVehiclePicker = ({
                 style={{
                   padding: ".5rem 1rem",
                   cursor: "pointer",
-                  color: "black",
+                  color: parrotTextDarkBlue,
                   boxShadow: `
                   inset 0 -3px 8px rgba(0, 0, 0, 0.05)
                 `,

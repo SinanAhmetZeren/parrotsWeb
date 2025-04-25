@@ -5,6 +5,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 
 export function VoyageDetailPageDescription({ voyageDescription }) {
@@ -82,6 +83,7 @@ const cardContainerStyle = {
   inset 0 -8px 6px rgba(0, 0, 0, 0.2)
 `,
   color: "rgba(0, 119, 234,1)",
+  color: parrotTextDarkBlue,
   padding: "1rem",
   fontSize: "1.15rem",
 };
@@ -89,6 +91,8 @@ const cardContainerStyle = {
 
 const voyageName = {
   color: "#2ac898",
+  color: "rgba(0, 119, 234,1)",
+
   fontWeight: "800",
   fontSize: "1.5rem"
 }
@@ -117,7 +121,7 @@ const infoBox = {
 const descriptionTextStyle = {
   whiteSpace: "pre-wrap", // Respects line breaks and wraps text
   textIndent: "0", // Remove any indentation at the start of the first line
-  fontWeight: "500",
+  // fontWeight: "500",
   lineHeight: "1.3rem",
   margin: "auto",
   marginTop: "0.6rem",

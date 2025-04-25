@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
@@ -111,7 +112,7 @@ const cardTitleStyle = {
 
 const cardBriefStyle = {
   fontSize: "1rem",
-  color: "black",
+  color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -119,7 +120,6 @@ const cardBriefStyle = {
   textOverflow: "ellipsis",
   paddingLeft: "1rem",
   paddingRight: "1rem",
-  // backgroundColor: "pink",
   textAlign: "justify",  // Justifies the text
   lineHeight: "1.2rem",
   width: "94%",
@@ -131,7 +131,6 @@ const cardDescriptionStyle = {
   fontSize: "1rem",
   color: "blue",
   fontWeight: "600",
-  // backgroundColor: "red",
 };
 
 
