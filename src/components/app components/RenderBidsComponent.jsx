@@ -41,18 +41,12 @@ export const RenderBidsComponent = ({
     const startHubConnection = async () => {
       try {
         await hubConnection.start();
-        console.log("-------->SignalR connection  started successfully.");
+        console.log("->SignalR connection  started successfully.");
       } catch (error) {
-        console.error("----------------");
-        console.error("----------------");
         console.error("Failed to start SignalR connection:", error);
-        console.error("----------------");
-        console.error("----------------");
-
       }
     };
     startHubConnection();
-    console.log("hello:   ----");
     return () => { };
   }, [hubConnection]);
 

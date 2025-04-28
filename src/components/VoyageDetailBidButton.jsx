@@ -32,6 +32,8 @@ export const VoyageDetailBidButton = ({
   const [price, setPrice] = useState(0);
   const [message, setMessage] = useState("");
 
+  const [changingBidState, setChangingBidState] = useState(false)
+
   const openNewBidModal = () => {
     setIsNewBidModalOpen(true);
     setOpacity(0.5);
@@ -93,10 +95,11 @@ export const VoyageDetailBidButton = ({
       userProfileImage,
       userName,
     };
-
+    setChangingBidState(true)
     await sendBid(bidData);
     setIsNewBidModalOpen(false);
     await refetch();
+    setChangingBidState(false)
   };
 
   const handleChangeBid = async () => {
@@ -108,9 +111,11 @@ export const VoyageDetailBidButton = ({
       userId,
       bidId: userBid.id,
     };
+    setChangingBidState(true)
     await changeBid(bidData);
     setIsChangeBidModalOpen(false)//-iğü-
     await refetch();
+    setChangingBidState(false)
   };
 
 
@@ -251,7 +256,11 @@ export const VoyageDetailBidButton = ({
               ...buttonStyle, backgroundColor: "rgb(40, 167, 69)", ...actionButtonStyle
             }}
           >
-            Send Bid
+            {
+              changingBidState ?
+                <AcceptOrChangeBidSpinner /> :
+                "Send Bid"
+            }
           </button>
         </div>
       </Modal>
@@ -344,7 +353,11 @@ export const VoyageDetailBidButton = ({
               ...buttonStyle, backgroundColor: "rgb(40, 167, 69)", ...actionButtonStyle
             }}
           >
-            Change Bid
+            {
+              changingBidState ?
+                <AcceptOrChangeBidSpinner /> :
+                "Change Bid"
+            }
           </button>
         </div>
       </Modal>
@@ -354,12 +367,6 @@ export const VoyageDetailBidButton = ({
   );
 };
 
-
-const plusMinusButton = {
-  width: "2rem",
-  fontWeight: "900",
-  color: "blue"
-}
 
 const actionButtonStyle = {
   width: "45%"
@@ -493,3 +500,25 @@ const counterValue = {
   MozAppearance: 'textfield', // Firefox
   appearance: 'textfield', // Ensure compatibility across all browsers
 };
+
+
+const AcceptOrChangeBidSpinner = () => {
+  return (
+    <div style={{
+      // backgroundColor: "rgba(0, 119, 234,0.1)",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      height: "1.2rem",
+      display: "flex",
+      alignItems: "center",
+    }}>
+      <div className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}></div>
+    </div>)
+}
