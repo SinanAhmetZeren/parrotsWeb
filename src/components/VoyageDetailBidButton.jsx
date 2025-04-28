@@ -74,17 +74,6 @@ export const VoyageDetailBidButton = ({
   const [changeBid] = useChangeBidMutation();
 
   const handleSendBid = async (userProfileImage, userName) => {
-
-    /*
-    console.log("****", personCount)
-    console.log("****", message);
-    console.log("****", price);
-    console.log("****", voyageId);
-    console.log("****", userId);
-    console.log("****", userProfileImage);
-    console.log("****", userName);
-    */
-
     let bidData = {
       personCount: personCount,
       message: message,
@@ -97,7 +86,7 @@ export const VoyageDetailBidButton = ({
     };
     setChangingBidState(true)
     await sendBid(bidData);
-    setIsNewBidModalOpen(false);
+    closeNewBidModal();
     await refetch();
     setChangingBidState(false)
   };
@@ -113,7 +102,7 @@ export const VoyageDetailBidButton = ({
     };
     setChangingBidState(true)
     await changeBid(bidData);
-    setIsChangeBidModalOpen(false)//-iğü-
+    closeChangeBidModal()//-iğü-
     await refetch();
     setChangingBidState(false)
   };
