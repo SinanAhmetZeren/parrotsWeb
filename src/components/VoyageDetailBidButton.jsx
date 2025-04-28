@@ -1,17 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
-import { parrotDarkBlue, parrotBlue } from "../styles/colors";
+import { parrotDarkBlue } from "../styles/colors";
+import {
+  useSendBidMutation,
+  useChangeBidMutation,
+} from "../slices/VoyageSlice";
 
-export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, setOpacity }) => {
-  console.log("userBid", userBid);
+Modal.setAppElement('#root'); // Replace '#root' with the ID of your app's root element
+
+export const VoyageDetailBidButton = ({
+  userId,
+  userName,
+  userProfileImage,
+  voyageId,
+  ownVoyage,
+  userBid,
+  userBidAccepted,
+  setOpacity,
+  refetch
+}) => {
+
+
+  // console.log("userBid", userBid);
+
   const [isNewBidModalOpen, setIsNewBidModalOpen] = useState(false);
   const [isChangeBidModalOpen, setIsChangeBidModalOpen] = useState(false);
   const [personCount, setPersonCount] = useState(1);
   const [price, setPrice] = useState(0);
-  const [explanation, setExplanation] = useState("");
+  const [message, setMessage] = useState("");
 
   const openNewBidModal = () => {
     setIsNewBidModalOpen(true);
@@ -22,20 +41,25 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
     setOpacity(1);
     setPersonCount(1);
     setPrice(0);
-    setExplanation("");
+    setMessage("");
   }
 
-
   const openChangeBidModal = () => {
+    if (userBid) {
+      setPersonCount(userBid.personCount || 1);
+      setPrice(userBid.offerPrice || 0);
+      setMessage(userBid.message || "");
+    }
     setIsChangeBidModalOpen(true);
     setOpacity(0.5);
   }
+
   const closeChangeBidModal = () => {
     setIsChangeBidModalOpen(false);
     setOpacity(1);
     setPersonCount(1);
     setPrice(0);
-    setExplanation("");
+    setMessage("");
   }
 
   const incrementPersonCount = () => setPersonCount(personCount + 1);
@@ -43,17 +67,58 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
 
   const incrementPrice = () => setPrice(price + 1);
   const decrementPrice = () => setPrice(Math.max(0, price - 1));
-  const handlePriceChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 0) {
-      setPrice(value);
-    }
+
+  const [sendBid] = useSendBidMutation();
+  const [changeBid] = useChangeBidMutation();
+
+  const handleSendBid = async (userProfileImage, userName) => {
+
+    /*
+    console.log("****", personCount)
+    console.log("****", message);
+    console.log("****", price);
+    console.log("****", voyageId);
+    console.log("****", userId);
+    console.log("****", userProfileImage);
+    console.log("****", userName);
+    */
+
+    let bidData = {
+      personCount: personCount,
+      message: message,
+      offerPrice: price,
+      currency: "",
+      voyageId,
+      userId,
+      userProfileImage,
+      userName,
+    };
+
+    await sendBid(bidData);
+    setIsNewBidModalOpen(false);
+    await refetch();
   };
 
-  const sendBid = () => {
-    console.log("Bid Sent", { personCount, price, explanation });
-    // closeNewBidModal();
+  const handleChangeBid = async () => {
+    let bidData = {
+      personCount: personCount,
+      message: message,
+      offerPrice: price,
+      voyageId,
+      userId,
+      bidId: userBid.id,
+    };
+    await changeBid(bidData);
+    setIsChangeBidModalOpen(false)//-iğü-
+    await refetch();
   };
+
+
+  useEffect(() => {
+    if (personCount === 0) {
+      setPersonCount(1);
+    }
+  }, [personCount]);
 
   return (
     <div
@@ -69,23 +134,31 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
     >
       <div>
         {
-          ownVoyage ? null : (
-            !userBid ? (
-              <button
-                onClick={openNewBidModal}
-                style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
-              >
-                Enter Your Bid
-              </button>
-            ) : (
-              <button
-                onClick={openChangeBidModal}
-                style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
-              >
-                Change Bid
-              </button>
+          (userBidAccepted && !ownVoyage) ? (
+            <button
+              disabled={true}
+              style={{ ...buttonStyle, backgroundColor: "green" }}
+            >
+              Bid Accepted
+            </button>)
+            :
+            ownVoyage ? null : (
+              !userBid ? (
+                <button
+                  onClick={openNewBidModal}
+                  style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
+                >
+                  Enter Your Bid
+                </button>
+              ) : (
+                <button
+                  onClick={openChangeBidModal}
+                  style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
+                >
+                  Change Bid
+                </button>
+              )
             )
-          )
         }
       </div>
 
@@ -148,12 +221,12 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
 
 
 
-        {/* Explanation */}
+        {/* Message */}
         <div style={textareaWrapperStyle}>
           <label style={rowLabelStyle}>Message:</label>
           <textarea
-            value={explanation}
-            onChange={(e) => setExplanation(e.target.value)}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
             style={textareaStyle}
           />
         </div>
@@ -173,7 +246,7 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
             Cancel
           </button>
           <button
-            onClick={sendBid}
+            onClick={() => handleSendBid(userProfileImage, userName)}
             style={{
               ...buttonStyle, backgroundColor: "rgb(40, 167, 69)", ...actionButtonStyle
             }}
@@ -184,170 +257,99 @@ export const VoyageDetailBidButton = ({ ownVoyage, userBid, userBidAccepted, set
       </Modal>
 
 
-
-      {/* 
-      <Modal
-        isOpen={isNewBidModalOpen}
-        onRequestClose={closeNewBidModal}
-        style={{
-          content: {
-            top: "50%",
-            left: "25%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            padding: "2rem",
-            borderRadius: "1rem",
-            width: "400px",
-            zIndex: 1050, // Increased zIndex to ensure modal appears above other elements
-          },
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <span
-            className="text-xl font-bold"
-            style={{ color: "rgba(10, 119, 234,1)", fontWeight: "900" }}
-          >Enter Your Bid</span>
-        </div>
-        <div style={{ marginBottom: "1rem", backgroundColor: "lightgreen" }}>
-          <label>Voyagers:</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "lightgreen" }}>
-            <button onClick={decrementPersonCount}>-</button>
-            <span>{personCount}</span>
-            <button onClick={incrementPersonCount}>+</button>
-          </div>
-        </div>
-        <div style={{ marginBottom: "1rem", backgroundColor: "lightgreen" }}>
-          <label>Price:</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "lightgreen" }}>
-            <button onClick={decrementPrice}>-</button>
-            <span>{price}</span>
-            <button onClick={incrementPrice}>+</button>
-          </div>
-        </div>
-        <div style={{ marginBottom: "1rem", backgroundColor: "lightgreen" }}>
-          <label>Explanation:</label>
-          <textarea
-            value={explanation}
-            onChange={(e) => setExplanation(e.target.value)}
-            style={{ width: "100%", height: "4rem", backgroundColor: "lightgreen" }}
-          />
-        </div>
-        <button
-          onClick={sendBid}
-          style={{
-            ...buttonStyle,
-            backgroundColor: "rgb(40, 167, 69)",
-            width: "100%",
-          }}
-        >
-          Send Bid
-        </button>
-        <button
-          onClick={closeNewBidModal}
-          style={{
-            ...buttonStyle,
-            backgroundColor: "rgb(220, 53, 69)",
-            width: "100%",
-            marginTop: "1rem",
-          }}
-        >
-          Cancel
-        </button>
-      </Modal> */}
-
-
       <Modal
         isOpen={isChangeBidModalOpen}
         onRequestClose={closeChangeBidModal}
-        style={{
-          content: {
-            top: "50%",
-            left: "25%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-            padding: "2rem",
-            borderRadius: "1rem",
-            zIndex: 1050, // Increased zIndex to ensure modal appears above other elements
-          },
-        }}
+        style={modalStyle}
       >
-        <h2 style={{ marginBottom: "1rem" }}>Enter Your Bid</h2>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Person Count:</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <button onClick={decrementPersonCount} style={plusMinusButton}>-</button>
-            <input
-              type="text"
-              value={personCount}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                setPersonCount(value === "" ? "" : Math.max(0, parseInt(value, 10))); // Allow empty input or valid numbers
-              }}
-              style={{
-                ...counterValue,
-                textAlign: "center",
-                border: "1px solid #ccc",
-                width: "5rem",
-              }}
-            />
-            <button onClick={incrementPersonCount} style={plusMinusButton}>+</button>
+        <div style={titleWrapperStyle}>
+          <span className="text-xl font-bold" style={titleTextStyle}>
+            Enter Your Bid
+          </span>
+        </div>
+
+        {/* Voyagers */}
+        <div style={rowWrapperStyle}>
+          <label style={rowLabelStyle}>Voyagers:</label>
+          <div style={rowControlsWrapperStyle}>
+            <div style={counterGroup}>
+              <button style={counterButton} onClick={decrementPersonCount}>-</button>
+              <input
+                type="text"
+                value={personCount}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                  setPersonCount(value === "" ? "" : Math.max(0, parseInt(value, 10))); // Allow empty input or valid numbers
+                }}
+                style={{
+                  ...counterValue,
+                  textAlign: "center",
+                  border: "1px solid #ccc",
+                  width: "5rem",
+                }}
+              />
+              <button style={counterButton} onClick={incrementPersonCount}>+</button>
+            </div>
+          </div>
+          <label style={{ ...rowLabelStyle, justifySelf: "end" }}>Price:</label>
+          <div style={rowControlsWrapperStyle}>
+            <div style={counterGroup}>
+              <button style={counterButton} onClick={decrementPrice}>-</button>
+              <input
+                type="text"
+                value={price}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                  setPrice(Math.max(0, parseInt(value, 10) || 0));
+                }}
+                style={{
+                  ...counterValue,
+                  textAlign: "center",
+                  border: "1px solid #ccc",
+                  width: "5rem",
+                }}
+              />
+              <button style={counterButton} onClick={incrementPrice}>+</button>
+            </div>
           </div>
         </div>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Price:</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <button onClick={decrementPrice} style={plusMinusButton}>-</button>
-            <input
-              type="text"
-              value={price}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                setPrice(Math.max(0, parseInt(value, 10) || 0));
-              }}
-              style={{
-                ...counterValue,
-                textAlign: "center",
-                border: "1px solid #ccc",
-                width: "5rem",
-              }}
-            />
-            <button onClick={incrementPrice} style={plusMinusButton}>+</button>
-          </div>
-        </div>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Explanation:</label>
+
+
+
+        {/* Message */}
+        <div style={textareaWrapperStyle}>
+          <label style={rowLabelStyle}>Message:</label>
           <textarea
-            value={explanation}
-            onChange={(e) => setExplanation(e.target.value)}
-            style={{ width: "100%", height: "4rem" }}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            style={textareaStyle}
           />
         </div>
-        <button
-          onClick={sendBid}
-          style={{
-            ...buttonStyle,
-            backgroundColor: "rgb(40, 167, 69)",
-            width: "100%",
-          }}
-        >
-          Change Bid
-        </button>
-        <button
-          onClick={closeChangeBidModal}
-          style={{
-            ...buttonStyle,
-            backgroundColor: "rgb(220, 53, 69)",
-            width: "100%",
-            marginTop: "1rem",
-          }}
-        >
-          Cancel
-        </button>
+        <div style={{ display: "flex", justifyContent: "space-around" }}>
+          {/* Buttons */}
+          <button
+            onClick={closeChangeBidModal}
+            style={{
+              ...buttonStyle,
+              ...actionButtonStyle,
+              backgroundColor: "rgba(220, 53, 69,1)",
+
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleChangeBid(userProfileImage, userName)}
+            style={{
+              ...buttonStyle, backgroundColor: "rgb(40, 167, 69)", ...actionButtonStyle
+            }}
+          >
+            Change Bid
+          </button>
+        </div>
       </Modal>
+
+
     </div>
   );
 };

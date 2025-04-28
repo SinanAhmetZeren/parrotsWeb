@@ -15,12 +15,29 @@ import { parrotTextDarkBlue } from "../styles/colors";
 const apiUrl = process.env.REACT_APP_API_URL;
 const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
 
-export function VoyageDetailBids({ voyageData, ownVoyage, userBid, userBidAccepted, currentUserId, isSuccessVoyage, refetch, setOpacity }) {
-  const [loadingBidId, setLoadingBidId] = React.useState(null); // Track loading state for a specific bid
-  const [bidsData, setBidsData] = React.useState(voyageData.bids); // Local state for bids
-  const stateOfTheHub = () => {
-    console.log("state of the hub: ", hubConnection.state);
-  }
+export function VoyageDetailBids({
+  userId,
+  voyageId,
+  voyageData,
+  ownVoyage,
+  userBid,
+  userBidAccepted,
+  currentUserId,
+  isSuccessVoyage,
+  refetch,
+  setOpacity
+}) {
+
+
+  const [loadingBidId, setLoadingBidId] = React.useState(null);
+  const [bidsData, setBidsData] = React.useState(voyageData.bids);
+
+  // Synchronize bidsData with voyageData.bids
+  useEffect(() => {
+    setBidsData(voyageData.bids);
+  }, [voyageData.bids]);
+
+
   const makeRefetch = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -33,8 +50,10 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, userBidAccept
       console.log("state of the hub is already: ", hubConnection.state);
     }
   }
-  // const apiUrl = process.env.REACT_APP_API_URL;
-  // const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+  const stateOfTheHub = () => {
+    console.log("state of the hub: ", hubConnection.state);
+  }
+
   const [acceptBid] = useAcceptBidMutation();
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId); // Set loading state
@@ -128,8 +147,13 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, userBidAccept
       <VoyageDetailBidButton
         ownVoyage={ownVoyage}
         userBid={userBid}
+        userProfileImage={voyageData.user.profileImageUrl}
+        userName={voyageData.user.userName}
         userBidAccepted={userBidAccepted}
         setOpacity={setOpacity}
+        userId={userId}
+        voyageId={voyageId}
+        refetch={refetch}
       />
     </div>
   );
@@ -198,7 +222,8 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         >
           {loadingBidId === bidId && !accepted ? (
             <AcceptBidSpinner />
-          ) : accepted ? "Accepted" : "Accept"}
+          ) : accepted ? "Accepted" : ownVoyage ? "Accept" : "Pending"}
+
         </span>
       </div>
     </div>

@@ -100,10 +100,10 @@ function VoyageDetailsPage() {
 
 
 
-  useEffect(() => {
-    if (latLngBoundsLiteral?.east)
-      console.log("latLngBoundsLiteral", latLngBoundsLiteral);
-  }, [latLngBoundsLiteral])
+  // useEffect(() => {
+  //   if (latLngBoundsLiteral?.east)
+  //     console.log("latLngBoundsLiteral", latLngBoundsLiteral);
+  // }, [latLngBoundsLiteral])
 
   useEffect(() => {
     if (isSuccessVoyage && VoyageData?.waypoints?.length > 0) {
@@ -120,7 +120,6 @@ function VoyageDetailsPage() {
         if (longitude > tempMaxLng) tempMaxLng = longitude;
         if (longitude < tempMinLng) tempMinLng = longitude;
       });
-      console.log("diff:....", tempMaxLat - tempMinLat);
       setLatLngBoundsLiteral({
         north: tempMaxLat,
         south: tempMinLat,
@@ -139,8 +138,9 @@ function VoyageDetailsPage() {
     if (VoyageData) {
       setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
       setUserBidAccepted(VoyageData.bids.find((bid) => bid.userId === userId)?.accepted ?? false);
+      console.log("user bid: -->", VoyageData.bids.find((bid) => bid.userId === userId));
     }
-  }, [isSuccessVoyage, VoyageData]);
+  }, [isSuccessVoyage, VoyageData, userId]);
 
 
   const handlePanToLocation = (lat, lng) => {
@@ -176,6 +176,9 @@ function VoyageDetailsPage() {
                 </div>
                 <div className="flex voyageDetails_Bids">
                   <VoyageDetailBids
+                    //  render  the bids + the bid button 
+                    userId={userId}
+                    voyageId={voyageId}
                     voyageData={VoyageData}
                     ownVoyage={userId === VoyageData.userId}
                     userBid={userBid}
@@ -183,7 +186,8 @@ function VoyageDetailsPage() {
                     currentUserId={userId}
                     isSuccessVoyage={isSuccessVoyage}
                     refetch={refetch}
-                    setOpacity={setOpacity} />
+                    setOpacity={setOpacity}
+                  />
                 </div>
               </div>
               <div className="flex flex-col voyageDetails_BottomRight">

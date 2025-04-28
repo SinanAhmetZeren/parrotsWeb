@@ -18,28 +18,14 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const [hoveredVehicle, setHoveredVehicle] = React.useState(false)
 
   const navigate = useNavigate();
-  // const handleGoToVehicle = (voyageData) => {
-  //   const vehicleID = voyageData.vehicle.id
-  //   if (voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk") {
-  //     return;
-  //   }
-  //   navigate(`/vehicle-details/${vehicleID}`);
-  // };
-
   const handleGoToVehicle = (voyageData) =>
     voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk"
       ? null
       : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
-
-
   const handleGoToUser = (user) => {
     console.log("go to user: ", user.userName);
     navigate(`/profile-public/${user.id}/${user.userName}`);
-
   }
-
-  console.log("image: ", voyageData.vehicle);
-
   return (
     <div style={cardContainerStyle} className="flex row">
       <div style={userVehicleInfoRow}>

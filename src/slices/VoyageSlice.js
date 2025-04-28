@@ -126,6 +126,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     sendBid: builder.mutation({
       query: (bidData) => {
+        console.log("biddata:", bidData);
         return {
           url: "/api/Bid/createBid",
           method: "POST",
@@ -145,6 +146,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           message,
           offerPrice,
         };
+
+        console.log("formattedBidData:", personCount, offerPrice, message);
 
         return {
           url: "/api/Bid/changeBid",
