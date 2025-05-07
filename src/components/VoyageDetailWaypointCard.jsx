@@ -8,7 +8,6 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
   const baseWaypointImageUrl = `${apiUrl}/Uploads/WaypointImages/`;
 
   function onClick() {
-    console.log("hi there ", waypoint.latitude);
     handlePanToLocation(
       waypoint.latitude,
       waypoint.longitude

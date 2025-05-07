@@ -120,12 +120,31 @@ function VoyageDetailsPage() {
         if (longitude > tempMaxLng) tempMaxLng = longitude;
         if (longitude < tempMinLng) tempMinLng = longitude;
       });
+
+      // Add padding if latitudes or longitudes are equal
+      if (tempMaxLat === tempMinLat) {
+        tempMaxLat += 0.025;
+        tempMinLat -= 0.025;
+      }
+
+      if (tempMaxLng === tempMinLng) {
+        tempMaxLng += 0.025;
+        tempMinLng -= 0.025;
+      }
+
       setLatLngBoundsLiteral({
         north: tempMaxLat,
         south: tempMinLat,
         east: tempMaxLng,
         west: tempMinLng,
       });
+      console.log("***********");
+      console.log("temopMaxLat", tempMaxLat);
+      console.log("tempMinLat", tempMinLat);
+      console.log("tempMaxLng", tempMaxLng);
+      console.log("tempMinLng", tempMinLng);
+      console.log("***********");
+
     } else {
       setLatLngBoundsLiteral({
         north: 0,
@@ -202,8 +221,9 @@ function VoyageDetailsPage() {
                           style={{ borderRadius: "1rem", overflow: "hidden" }}
                           gestureHandling={"greedy"}
                           disableDefaultUI
-                          zoom={latLngBoundsLiteral.east === latLngBoundsLiteral.west &&
-                            latLngBoundsLiteral.north === latLngBoundsLiteral.south ? 13 : undefined}  // Adjust zoom if single point
+                          // zoom={latLngBoundsLiteral.east === latLngBoundsLiteral.west &&
+                          //   latLngBoundsLiteral.north === latLngBoundsLiteral.south ? 13 : undefined}  // Adjust zoom if single point
+                          zoom={undefined}
                           onCameraChanged={() => setTargetLocation(null)}
                         >
                           <VoyageDetailMapPanComponent

@@ -134,6 +134,15 @@
   overflow: visible;
 }
 
+.gm-style *:focus {
+  outline: none !important;
+}
+
+:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .buttonStyle {
   width: 40%;
   background-color: #007bff;
