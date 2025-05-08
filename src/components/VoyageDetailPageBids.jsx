@@ -301,7 +301,7 @@ const cardContainerStyle = {
 const dataRowItem = {
   marginTop: ".3rem",
   backgroundColor: "rgba(0, 119, 234,0.05)",
-  borderRadius: "1rem"
+  borderRadius: "1rem",
 };
 
 const userAndVehicleBox = {

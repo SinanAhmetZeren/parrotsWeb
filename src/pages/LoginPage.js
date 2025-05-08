@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function LoginPage() {
   const [showPasswordRegister2, setShowPasswordRegister2] = useState(false);
   const [showPasswordUpdate1, setShowPasswordUpdate1] = useState(false);
   const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
-
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const dispatch = useDispatch()
   const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
@@ -114,11 +115,15 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
+      setIsLoggingIn(true);
       const loginResponse = await loginUser({
         Email: username,
         Password: password,
       }).unwrap();
+      // setIsLoggingIn(false);
       if (!loginResponse?.token) {
+        setIsLoggingIn(false);
+
         console.error("Login failed: No token received");
         return;
       }
@@ -224,6 +229,27 @@ function LoginPage() {
     }
   };
 
+  const LoginSpinner = () => {
+    return (
+      <div style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        height: "1.7rem",
+        display: "flex",
+        alignItems: "center",
+      }}>
+        <div className="spinner"
+          style={{
+            height: "1rem",
+            width: "1rem",
+            border: "3px solid white",
+            borderTop: "3px solid #1e90ff",
+          }}></div>
+      </div>)
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -248,6 +274,7 @@ function LoginPage() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className="username-input"
+                        style={{ color: parrotTextDarkBlue }}
                       />
                     </div>
                     <div
@@ -258,12 +285,14 @@ function LoginPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="password-input"
+                        style={{ color: parrotTextDarkBlue }}
+
                       />
                       <span style={{
                         padding: "1rem",
                         position: "absolute",
                         marginLeft: "-5rem",
-                        marginTop: "-.2rem"
+                        // marginTop: "-.2rem"
                       }}
                         onClick={() => makeVisible()}
                       >
@@ -276,6 +305,7 @@ function LoginPage() {
                     </div>
                     <div className="forgot-password">
                       <span className="forgotPasswordSpan"
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
                         onClick={() => handleForgotPassword()}
                       >
                         Forgot password?
@@ -283,13 +313,23 @@ function LoginPage() {
                     </div>
                     <div className="login-button"
                       onClick={() => handleLogin()}
-                    > Login</div>
+                    > {isLoggingIn ? <LoginSpinner /> : "Login"}</div>
+
+
                     <div className="signup">
-                      <span className="signupSpan">
-                        Don't have an account?
-                        <span className="signupLinkSpan"
+                      <span>
+                        <span style={{ fontWeight: "bold", color: parrotTextDarkBlue, opacity: "0.5" }}>
+                          Don't have an account?
+                        </span>
+                        <span
                           onClick={() => handleSignup()}
-                        >
+                          style={{
+                            color: parrotTextDarkBlue,
+                            opacity: "0.8",
+                            fontWeight: "bold",
+                            paddingLeft: "0.5rem",
+                            cursor: "pointer"
+                          }}>
                           Sign up
                         </span>
                       </span>
@@ -308,6 +348,8 @@ function LoginPage() {
                           value={usernameRegister}
                           onChange={(e) => setUsernameRegister(e.target.value)}
                           className="username-input"
+                          style={{ color: parrotTextDarkBlue }}
+
                         />
                       </div>
                       <div
@@ -318,6 +360,8 @@ function LoginPage() {
                           value={emailRegister}
                           onChange={(e) => setEmailRegister(e.target.value)}
                           className="username-input"
+                          style={{ color: parrotTextDarkBlue }}
+
                         />
                       </div>
 
@@ -329,12 +373,14 @@ function LoginPage() {
                           value={passwordRegister}
                           onChange={(e) => setPasswordRegister(e.target.value)}
                           className="password-input"
+                          style={{ color: parrotTextDarkBlue }}
+
                         />
                         <span style={{
                           padding: "1rem",
                           position: "absolute",
                           marginLeft: "-5rem",
-                          marginTop: "-.2rem"
+                          // marginTop: "-.2rem"
                         }}
                           onClick={() => makeVisibleRegister()}
                         >
@@ -355,12 +401,14 @@ function LoginPage() {
                           value={passwordRegister2}
                           onChange={(e) => setPasswordRegister2(e.target.value)}
                           className="password-input"
+                          style={{ color: parrotTextDarkBlue }}
+
                         />
                         <span style={{
                           padding: "1rem",
                           position: "absolute",
                           marginLeft: "-5rem",
-                          marginTop: "-.2rem"
+                          // marginTop: "-.2rem"
                         }}
                           onClick={() => makeVisibleRegister2()}
                         >
@@ -381,6 +429,7 @@ function LoginPage() {
 
                           <span className="signupLinkSpan"
                             onClick={() => setPageState("Login")}
+                            style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
                           >
                             Back to Login
                           </span>
@@ -400,6 +449,8 @@ function LoginPage() {
                             value={confirmationCode}
                             onChange={(e) => setConfirmationCode(e.target.value)}
                             className="username-input"
+                            style={{ color: parrotTextDarkBlue }}
+
                           />
                         </div>
                         <div className="login-button"
@@ -411,6 +462,7 @@ function LoginPage() {
                           >
                             <span className="signupLinkSpan"
                               onClick={() => setPageState("Login")}
+                              style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
                             >
                               Back to Login
                             </span>
@@ -430,6 +482,8 @@ function LoginPage() {
                               value={emailForgotPassword}
                               onChange={(e) => setEmailForgotPassword(e.target.value)}
                               className="username-input"
+                              style={{ color: parrotTextDarkBlue }}
+
                             />
                           </div>
                           <div className="login-button"
@@ -442,6 +496,7 @@ function LoginPage() {
                             >
                               <span className="signupLinkSpan"
                                 onClick={() => setPageState("Login")}
+                                style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
                               >
                                 Back to Login
                               </span>
@@ -461,12 +516,14 @@ function LoginPage() {
                                 value={passwordUpdate1}
                                 onChange={(e) => setPasswordUpdate1(e.target.value)}
                                 className="password-input"
+                                style={{ color: parrotTextDarkBlue }}
+
                               />
                               <span style={{
                                 padding: "1rem",
                                 position: "absolute",
                                 marginLeft: "-5rem",
-                                marginTop: "-.2rem"
+                                // marginTop: "-.2rem"
                               }}
                                 onClick={() => makeVisibleUpdate()}
                               >
@@ -485,12 +542,14 @@ function LoginPage() {
                                 value={passwordUpdate2}
                                 onChange={(e) => setPasswordUpdate2(e.target.value)}
                                 className="password-input"
+                                style={{ color: parrotTextDarkBlue }}
+
                               />
                               <span style={{
                                 padding: "1rem",
                                 position: "absolute",
                                 marginLeft: "-5rem",
-                                marginTop: "-.2rem"
+                                // marginTop: "-.2rem"
                               }}
                                 onClick={() => makeVisibleUpdate2()}
                               >
@@ -510,6 +569,8 @@ function LoginPage() {
                                 value={sixDigitCode}
                                 onChange={(e) => setSixDigitCode(e.target.value)}
                                 className="username-input"
+                                style={{ color: parrotTextDarkBlue }}
+
                               />
                             </div>
 
@@ -523,6 +584,7 @@ function LoginPage() {
 
                                 <span className="signupLinkSpan"
                                   onClick={() => setPageState("Login")}
+                                  style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
                                 >
                                   Back to Login
                                 </span>

@@ -60,7 +60,8 @@ export function SocialRenderComponent({ userData }) {
                   <div style={socialIconTextContainer}>
                     <a href={key === 'email' ? `mailto:${value}`
                       : key === 'phoneNumber' ? `tel:${value}`
-                        : `https://${key}.com/${value}`} target="_blank" rel="noopener noreferrer" style={socialIconText}>
+                        : key === "linkedin" ? `https://www.linkedin.com/in/${value}`
+                          : `https://${key}.com/${value}`} target="_blank" rel="noopener noreferrer" style={socialIconText}>
                       {value.toLowerCase()}
                     </a>
                   </div>
