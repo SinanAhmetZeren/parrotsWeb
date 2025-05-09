@@ -210,6 +210,8 @@ function CreateVehiclePage() {
         vehicleId,
       });
 
+      console.log("vehicleImage", vehicleImage);
+
       const addedvehicleImageId = addedVehicleImageResponse.data.imagePath;
       const newItem = {
         addedvehicleImageId,
@@ -532,8 +534,7 @@ function CreateVehiclePage() {
                       className="mySwiper"
                     >
                       {data.map((item, index) => {
-                        if (index === 1)
-                          console.log("data:", data);
+
                         return (
                           <SwiperSlide>
                             <div key={item.key} className="placeholder_imageContainer"

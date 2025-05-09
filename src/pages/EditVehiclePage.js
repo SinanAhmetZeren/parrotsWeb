@@ -62,7 +62,7 @@ function EditVehiclePage() {
   const [hoveredUserImg, setHoveredUserImg] = useState(false)
   const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s2")
+  const [pageState, setPageState] = useState("s1")
   // const [vehicleId, setVehicleId] = useState("")
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false)
@@ -130,10 +130,7 @@ function EditVehiclePage() {
   const handleRevertImage = () => {
     setImage1(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
     setImagePreview(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
-
   };
-
-
 
   const handleCancelUpload2 = () => {
     if (imagePreview2) {
@@ -155,41 +152,6 @@ function EditVehiclePage() {
     fileInputRef2.current.click();
   };
 
-  const handleCreateVehicle = async () => {
-    if (!image1) {
-      return;
-    }
-    setIsRegisteringVehicle(true);
-    try {
-      const response = await createVehicle({
-        vehicleImage: image1,
-        name: vehicleName,
-        description: vehicleDescription,
-        userId,
-        vehicleType: selectedVehicleType,
-        capacity: vehicleCapacity,
-      });
-      const createdVehicleId = response.data.data.id;
-
-      setVehicleId(createdVehicleId);
-      setVehicleDescription("");
-      setVehicleCapacity("");
-      setSelectedVehicleType("");
-      setVehicleName("");
-      setImage1("");
-      setImagePreview("")
-      setVehicleImage("");
-      setAddedVehicleImages([]);
-      setPageState("s2");
-    } catch (error) {
-      alert(
-        "Failed to create vehicle. Please check your connection and try again."
-      );
-      console.error("Error creating vehicle:", error);
-    } finally {
-      setIsRegisteringVehicle(false);
-    }
-  };
 
   const completeVehicleCreate = () => {
     setIsCompleting(true);
@@ -197,20 +159,56 @@ function EditVehiclePage() {
   }
 
   const handleDeleteImage = async (imageId) => {
+    console.log("imageId", imageId);
     const previousImages = [...addedVehicleImages];
+
     setAddedVehicleImages(
-      previousImages.filter((item) => item.addedvehicleImageId !== imageId)
+      previousImages.filter((item) =>
+        item.addedvehicleImageId !== imageId && item.id !== imageId
+      )
     );
 
     try {
-      await deleteVehicleImage(imageId);
+      const imageToDelete = previousImages.find(
+        (item) => item.addedvehicleImageId === imageId || item.id === imageId
+      );
+
+      if (imageToDelete?.addedvehicleImageId) {
+        await deleteVehicleImage(imageToDelete.addedvehicleImageId);
+      } else if (imageToDelete?.id) {
+        await deleteVehicleImage(imageToDelete.id);
+      }
     } catch (error) {
       console.error("Error deleting image", error);
-      setAddedVehicleImages(previousImages);
+      setAddedVehicleImages(previousImages); // Revert to the previous state
       alert(
         "Failed to delete image. Please check your connection and try again."
       );
     }
+
+
+  };
+
+  // xxxxx
+  const handleUpdateButtonClick = async () => {
+    setIsRegisteringVehicle(true);
+    try {
+      const formData = new FormData();
+      formData.append("vehicleId", vehicleId);
+      formData.append("name", vehicleName);
+      formData.append("capacity", vehicleCapacity);
+      formData.append("description", vehicleDescription);
+      formData.append("type", selectedVehicleType);
+      formData.append("profileImage", image1);
+
+      const response = await patchVehicle(formData).unwrap();
+      console.log("Vehicle updated successfully:", response);
+
+    } catch (error) {
+      console.error("Error updating vehicle:", error);
+    }
+    setIsRegisteringVehicle(false);
+    setPageState("s1");
   };
 
   const maxItems = 10;
@@ -228,7 +226,6 @@ function EditVehiclePage() {
         ...item,
         key: item.addedvehicleImageId,
       })), [addedVehicleImages, maxItems, placeholders]);
-
 
 
   const handleUploadImage = useCallback(async () => {
@@ -455,8 +452,6 @@ function EditVehiclePage() {
               </div>
 
               {isRegisteringVehicle ?
-
-
                 <div className="createVehicleButton"
                   style={{
                     ...registerVehicleButton,
@@ -465,15 +460,13 @@ function EditVehiclePage() {
                 >
                   <RegisterSpinner />
                 </div>
-
-
                 :
                 <div className="createVehicleButton"
                   style={{
                     ...registerVehicleButton,
                     ...(isFormValid ? {} : { opacity: "0.7" }),
                   }}
-                  onClick={isFormValid ? setPageState("s2") : () => { console.log("Form is not valid") }}>
+                  onClick={isFormValid ? handleUpdateButtonClick : () => { console.log("Form is not valid") }}>
                   Update Details
                 </div>
               }
@@ -598,6 +591,46 @@ function EditVehiclePage() {
                       )} */}
 
                       {data?.map((item, index) => {
+                        return (
+                          <SwiperSlide key={item.id || item.addedvehicleImageId}>
+                            <div className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
+                              {item.vehicleImagePath ? (
+                                <>
+                                  <img
+                                    src={`${apiUrl}/Uploads/VehicleImages/` + item.vehicleImagePath} // Replace with your actual image base URL
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={userUploadedImage}
+                                  />
+                                  <div onClick={() => handleDeleteImage(item.id)} style={deleteImageIcon3}>
+                                    <IoRemoveCircleOutline size={"2.5rem"} />
+                                  </div>
+                                </>
+                              ) : item.vehicleImage ? (
+                                <>
+                                  <img
+                                    src={URL.createObjectURL(item.vehicleImage)}
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={userUploadedImage}
+                                  />
+                                  <div onClick={() => handleDeleteImage(item.addedvehicleImageId)} style={deleteImageIcon3}>
+                                    <IoRemoveCircleOutline size={"2.5rem"} />
+                                  </div>
+                                </>
+                              ) : (
+                                <img
+                                  src={placeHolder}
+                                  alt={`Placeholder ${index + 1}`}
+                                  style={placeHolderImage}
+                                />
+                              )}
+                            </div>
+                          </SwiperSlide>
+                        );
+                      })}
+
+
+                      {null && data?.map((item, index) => {
+                        console.log("item", item);
                         return (
                           <SwiperSlide key={item.id}>
                             <div className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
