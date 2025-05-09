@@ -18,6 +18,7 @@ import LoginPage from "./pages/LoginPage";
 import CreateVehiclePage from "./pages/CreateVehiclePage";
 import CreateVoyagePage from "./pages/CreateVoyagePage";
 import { EditProfilePage } from "./pages/EditProfilePage";
+import EditVehiclePage from "./pages/EditVehiclePage";
 
 function App() {
   const isLoggedIn = localStorage.getItem("storedToken");
@@ -39,6 +40,7 @@ function App() {
             <Route path="/profile-public/:userId/:userName" element={<ProfilePagePublic />} />
             <Route path="/voyage-details/:voyageId" element={<VoyageDetailsPage />} />
             <Route path="/vehicle-details/:vehicleId" element={<VehicleDetailsPage />} />
+            <Route path="/edit-vehicle/:vehicleId" element={<EditVehiclePage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="/connect/:conversationUserId/:conversationUserUsername" element={<ConnectPage />} />

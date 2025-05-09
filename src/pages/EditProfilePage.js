@@ -50,17 +50,22 @@ export function EditProfilePage() {
   const [youtubeProfile, setYoutubeProfile] = useState("");
   const [emailHidden, setEmailHidden] = useState(false);
 
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
-  const handleGoToPublicPage = () => {
+  const handleGoToPublicProfilePage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
-
+  const handleGoToProfilePage = () => {
+    navigate(`/profile`);
+  }
 
   const [patchUser] = usePatchUserMutation();
   const [updateBackgroundImage] = useUpdateBackgroundImageMutation();
   const [updateProfileImage] = useUpdateProfileImageMutation();
+
 
   const {
     data: userData,
@@ -201,6 +206,7 @@ export function EditProfilePage() {
   };
 
   const handleUpdateChanges = async () => {
+    setIsUpdatingProfile(true);
     if (backGroundImage) {
       await handleUploadBackgroundImage();
     }
@@ -209,6 +215,7 @@ export function EditProfilePage() {
     }
     await handlePatchUser();
     await refetchUserData();
+    setIsUpdatingProfile(false);
   };
 
 
@@ -233,8 +240,12 @@ export function EditProfilePage() {
                   <div className="flex profilePage_BottomLeft">
                     <div className="flex profilePage_CoverAndProfile">
 
-                      <div className="editProfilePage_gotoPublicProfileButton" onClick={() => handleGoToPublicPage()}>
+                      <div className="editProfilePage_gotoPublicProfileButton" onClick={() => handleGoToPublicProfilePage()}>
                         <span>Public Profile</span>
+                      </div>
+
+                      <div className="editProfilePage_gotoProfileButton" onClick={() => handleGoToProfilePage()}>
+                        <span>Profile</span>
                       </div>
 
                       <div className="flex profilePage_CoverImage">
@@ -469,11 +480,16 @@ export function EditProfilePage() {
 
                         }}>
 
-                          <span
-                            onClick={() => { handleUpdateChanges() }}
-                            style={NewVehicle}>Update Changes</span>
+                          {isUpdatingProfile ?
+                            <span
+                              onClick={() => { handleUpdateChanges() }}
+                              style={UpdateChangesButton}><UpdateProfileSpinner /></span>
+                            :
+                            <span
+                              onClick={() => { handleUpdateChanges() }}
+                              style={UpdateChangesButton}>Update Changes</span>
+                          }
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -483,6 +499,27 @@ export function EditProfilePage() {
           </div >
         ) : null
   );
+}
+
+const UpdateProfileSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(0, 119, 234,0.1)",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      height: "2.2rem",
+      display: "flex", // Added for vertical alignment
+      alignItems: "center", // Center vertically
+    }}>
+      <div className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}></div>
+    </div>)
 }
 
 const deleteImageIcon = {
@@ -512,9 +549,9 @@ const clickToAddImage = {
   padding: "1rem",
 }
 
-const NewVehicle = {
+const UpdateChangesButton = {
   position: "absolute",
-  fontSize: "1.6rem",
+  fontSize: "1.4rem",
   fontWeight: 800,
   color: "white",
   borderRadius: "1.5rem",

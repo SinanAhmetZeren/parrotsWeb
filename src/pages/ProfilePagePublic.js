@@ -11,7 +11,6 @@ import { useGetUserByIdQuery } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 
-
 function ProfilePagePublic() {
   const { userId } = useParams();
   const { userName } = useParams();
@@ -23,7 +22,6 @@ function ProfilePagePublic() {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
-
 
   const {
     data: userData,

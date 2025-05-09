@@ -26,6 +26,7 @@ import {
   updateUserFavoriteVehicles
 } from "../slices/UserSlice";
 import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
+import { parrotBlue } from "../styles/colors";
 
 
 function VehicleDetailsPage() {
@@ -56,12 +57,12 @@ function VehicleDetailsPage() {
   }, [favoriteVehiclesData])
 
 
-  useEffect(() => {
-    console.log("-->", vehicleId);
-    console.log("-->", favoriteVehicles);
-    console.log("-->", isInFavorites);
+  // useEffect(() => {
+  //   console.log("-->", vehicleId);
+  //   console.log("-->", favoriteVehicles);
+  //   console.log("-->", isInFavorites);
 
-  }, [vehicleId, favoriteVehicles, isInFavorites])
+  // }, [vehicleId, favoriteVehicles, isInFavorites])
 
   const navigate = useNavigate();
   const dispatch = useDispatch()
@@ -107,6 +108,13 @@ function VehicleDetailsPage() {
   } = useGetVehicleByIdQuery(vehicleId);
 
 
+  useEffect(() => {
+    if (VehicleData) {
+      console.log("VehicleData", VehicleData.user.id);
+      // console.log("VehicleData", VehicleData.user);
+    }
+  }
+    , [VehicleData]);
   return (
     // true ||
     isLoadingVehicle ? (
@@ -218,9 +226,18 @@ function VehicleDetailsPage() {
               </div>
 
             </div>
+
+            {VehicleData?.user.id === userId ?
+              <div style={editVehicleButtonContainer}
+                onClick={() => {
+                  navigate(`/edit-vehicle/${vehicleId}`);
+                }}>
+                <span style={editVehicleButton}>Edit Vehicle</span>
+              </div> : null}
+
           </div>
-        </header>
-      </div>
+        </header >
+      </div >
     ) : null
   );
 
@@ -230,6 +247,23 @@ function VehicleDetailsPage() {
 
 export default VehicleDetailsPage;
 
+
+const editVehicleButtonContainer = {
+  position: "absolute",
+  left: "50%",
+  transform: "translateX(-50%)",
+  bottom: "3rem",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const editVehicleButton = {
+  backgroundColor: parrotBlue,
+  borderRadius: "1.5rem",
+  padding: "0 1.5rem",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+}
 
 const heartIcon = {
   position: "absolute",

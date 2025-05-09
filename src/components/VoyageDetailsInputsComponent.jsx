@@ -23,10 +23,6 @@ export const VoyageDetailsInputsComponent = ({
     setIsAuction,
     setIsFixedPrice
 }) => {
-
-
-
-
     const voyageDetails = {
         backgroundColor: "rgba(255,255,255,1)",
         borderRadius: "1.5rem",
@@ -65,6 +61,7 @@ export const VoyageDetailsInputsComponent = ({
                     maxPrice={maxPrice}
                     setMaxPrice={setMaxPrice}
                     type={"Min Price"}
+                    isFixedPrice={isFixedPrice}
                 />
             </div>
             <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
@@ -74,6 +71,7 @@ export const VoyageDetailsInputsComponent = ({
                     maxPrice={maxPrice}
                     setMaxPrice={setMaxPrice}
                     type={"Max Price"}
+                    isFixedPrice={isFixedPrice}
                 />
             </div>
             <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
@@ -83,7 +81,7 @@ export const VoyageDetailsInputsComponent = ({
                 />
             </div>
             <div style={{ backgroundColor: "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
-                <AuctionFixedPrice
+                <IsAuctionAndFixedPrice
                     isAuction={isAuction}
                     isFixedPrice={isFixedPrice}
                     setIsAuction={setIsAuction}
@@ -439,7 +437,9 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
     );
 };
 
-const CreateVoyagePriceInput = ({ minPrice, setMinPrice, maxPrice, setMaxPrice, type }) => {
+const CreateVoyagePriceInput = ({ minPrice, setMinPrice, maxPrice, setMaxPrice, type, isFixedPrice }) => {
+
+    console.log("isfixedPrice", isFixedPrice);
     return (
         <div style={{
             height: "4rem",
@@ -474,20 +474,30 @@ const CreateVoyagePriceInput = ({ minPrice, setMinPrice, maxPrice, setMaxPrice, 
                         style={inputStyle}
                         onChange={(e) => {
                             let newValue = e.target.value;
+
                             if (newValue.startsWith("0") && newValue.length > 1) {
                                 newValue = newValue.slice(1);
                             }
-                            if (newValue === "0" || newValue === "") {
+
+                            if (newValue === "0" || newValue === "" || Number(newValue) < 0) {
                                 newValue = null;
                             } else {
                                 newValue = Number(newValue);
                             }
-                            if (type === "Max Price") {
+
+                            if (isFixedPrice) {
+                                setMinPrice(newValue);
                                 setMaxPrice(newValue);
                             } else {
-                                setMinPrice(newValue);
+                                if (type === "Max Price") {
+                                    setMaxPrice(newValue);
+                                } else {
+                                    setMinPrice(newValue);
+                                }
                             }
                         }}
+
+
                     />
                 </div>
             </div>
@@ -495,7 +505,7 @@ const CreateVoyagePriceInput = ({ minPrice, setMinPrice, maxPrice, setMaxPrice, 
     )
 }
 
-const AuctionFixedPrice = ({ isAuction, setIsAuction, isFixedPrice, setIsFixedPrice }) => {
+const IsAuctionAndFixedPrice = ({ isAuction, setIsAuction, isFixedPrice, setIsFixedPrice }) => {
     return (
         <div
             style={{

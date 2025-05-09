@@ -5,29 +5,48 @@ import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css"
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles
-import { IoRemoveCircleOutline } from "react-icons/io5";
+import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
 import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
 import placeHolder from "../assets/images/placeholder.png"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 // import '../assets/css/VehicleImagesSwiper.css';
-import { Pagination, FreeMode } from 'swiper/modules';
+import { FreeMode } from 'swiper/modules';
 import {
   useCreateVehicleMutation,
   useAddVehicleImageMutation,
   useDeleteVehicleImageMutation,
   useCheckAndDeleteVehicleMutation,
+  useGetVehicleByIdQuery,
+  useUpdateVehicleProfileImageMutation,
+  useDeleteVehicleMutation,
+  usePatchVehicleMutation
 } from "../slices/VehicleSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+const apiUrl = process.env.REACT_APP_API_URL;
 
-function CreateVehiclePage() {
+function EditVehiclePage() {
   const [createVehicle] = useCreateVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const userName = "Ahmet Zeren";
+  const [updateVehicleProfileImage] = useUpdateVehicleProfileImageMutation();
+  const [deleteVehicle] = useDeleteVehicleMutation();
+  const [patchVehicle] = usePatchVehicleMutation();
+  const { vehicleId } = useParams();
+
+  const userId = localStorage.getItem("storedUserId")
+
+  const {
+    data: VehicleData,
+    isSuccess: isSuccessVehicles,
+    isLoading: isLoadingVehicles,
+    isError: isErrorVehicles,
+    refetch,
+  } = useGetVehicleByIdQuery(vehicleId);
+  // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
+
   const navigate = useNavigate();
 
   const [vehicleName, setVehicleName] = useState("")
@@ -43,16 +62,16 @@ function CreateVehiclePage() {
   const [hoveredUserImg, setHoveredUserImg] = useState(false)
   const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s1")
-  const [vehicleId, setVehicleId] = useState(3)
+  const [pageState, setPageState] = useState("s2")
+  // const [vehicleId, setVehicleId] = useState("")
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
 
   const isFormValid = useMemo(() => {
     return (
-      vehicleName.trim() &&
-      vehicleDescription.trim().length > 0 &&
+      vehicleName?.trim() &&
+      vehicleDescription?.trim().length > 0 &&
       vehicleDescription !== "<p><br></p>" &&
       vehicleCapacity &&
       selectedVehicleType &&
@@ -61,9 +80,17 @@ function CreateVehiclePage() {
   }, [vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType, image1]);
 
   useEffect(() => {
-    console.log("--->>>", vehicleDescription);
-    console.log("--->>>", vehicleDescription === "<p><br></p>");
-  }, [vehicleDescription])
+    console.log("--->", VehicleData);
+    setVehicleCapacity(VehicleData?.capacity);
+    setVehicleDescription(VehicleData?.description);
+    setVehicleName(VehicleData?.name);
+    setSelectedVehicleType(Object.entries(vehicles)?.[VehicleData?.type]?.[0] ?? "");
+    setAddedVehicleImages(VehicleData?.vehicleImages);
+    setImagePreview(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
+    setImage1(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
+    setVehicleImage(VehicleData?.vehicleImage);
+    setImagePreview2(VehicleData?.vehicleImage);
+  }, [VehicleData])
 
   useEffect(() => {
     console.log("useffect added images: ", addedVehicleImages);
@@ -99,6 +126,14 @@ function CreateVehiclePage() {
       fileInputRef.current.value = "";
     }
   };
+
+  const handleRevertImage = () => {
+    setImage1(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
+    setImagePreview(`${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl);
+
+  };
+
+
 
   const handleCancelUpload2 = () => {
     if (imagePreview2) {
@@ -162,9 +197,6 @@ function CreateVehiclePage() {
   }
 
   const handleDeleteImage = async (imageId) => {
-
-    console.log("iamge Id: ...", imageId);
-
     const previousImages = [...addedVehicleImages];
     setAddedVehicleImages(
       previousImages.filter((item) => item.addedvehicleImageId !== imageId)
@@ -187,12 +219,12 @@ function CreateVehiclePage() {
   }));
 
   const data = useMemo(() =>
-    addedVehicleImages.length < maxItems
+    addedVehicleImages?.length < maxItems
       ? [
         ...addedVehicleImages,
-        ...placeholders.slice(addedVehicleImages.length),
+        ...placeholders.slice(addedVehicleImages?.length),
       ]
-      : addedVehicleImages.map((item) => ({
+      : addedVehicleImages?.map((item) => ({
         ...item,
         key: item.addedvehicleImageId,
       })), [addedVehicleImages, maxItems, placeholders]);
@@ -228,9 +260,6 @@ function CreateVehiclePage() {
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
 
-  // useEffect(() => {
-  //   console.log("data", data);
-  // }, [data])
 
   return (
     <div className="App">
@@ -276,11 +305,6 @@ function CreateVehiclePage() {
                           type="text"
                           placeholder="Vehicle Name"
                           value={vehicleName}
-
-                          style={{
-                            // backgroundColor: "rgb(249, 245, 244)"
-                          }}
-
                           onChange={(e) => setVehicleName(e.target.value)}
                           className="vehicle-name-input"
                         />
@@ -385,9 +409,7 @@ function CreateVehiclePage() {
                               height: "35rem",
                               objectFit: "cover",
                               borderRadius: "1.5rem",
-                              // border: "2px solid #3c9dee42"
                               border: "2px solid transparent"
-
                             }}
                           />
                         </div>
@@ -416,6 +438,17 @@ function CreateVehiclePage() {
                           <IoRemoveCircleOutline size={"2.5rem"} />
                         </div>
                       )}
+                      {!image1 && (
+                        <div onClick={handleRevertImage}
+                          style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
+                          onMouseEnter={() => {
+                            setHoveredUserImg(true)
+                          }}
+                          onMouseLeave={() => setHoveredUserImg(false)}
+                        >
+                          <IoCameraReverseOutline size={"2.5rem"} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -440,8 +473,8 @@ function CreateVehiclePage() {
                     ...registerVehicleButton,
                     ...(isFormValid ? {} : { opacity: "0.7" }),
                   }}
-                  onClick={isFormValid ? handleCreateVehicle : () => { console.log("Form is not valid") }}>
-                  Register Vehicle
+                  onClick={isFormValid ? setPageState("s2") : () => { console.log("Form is not valid") }}>
+                  Update Details
                 </div>
               }
             </>
@@ -531,7 +564,7 @@ function CreateVehiclePage() {
                       modules={[FreeMode]}
                       className="mySwiper"
                     >
-                      {data.map((item, index) => {
+                      {/* {data.map((item, index) => {
                         if (index === 1)
                           console.log("data:", data);
                         return (
@@ -562,7 +595,36 @@ function CreateVehiclePage() {
                             </div>
                           </SwiperSlide>)
                       }
-                      )}
+                      )} */}
+
+                      {data?.map((item, index) => {
+                        return (
+                          <SwiperSlide key={item.id}>
+                            <div className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
+                              {item.vehicleImagePath ? (
+                                <>
+                                  <img
+                                    src={`${apiUrl}/Uploads/VehicleImages/` + item.vehicleImagePath} // Replace with your actual image base URL
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={userUploadedImage}
+                                  />
+                                  <div onClick={() => handleDeleteImage(item.id)} style={deleteImageIcon3}>
+                                    <IoRemoveCircleOutline size={"2.5rem"} />
+                                  </div>
+                                </>
+                              ) : (
+                                <img
+                                  src={placeHolder}
+                                  alt={`Placeholder ${index + 1}`}
+                                  style={placeHolderImage}
+                                />
+                              )}
+                            </div>
+                          </SwiperSlide>
+                        );
+                      })}
+
+
                     </Swiper>
                   </div>
                 </div>
@@ -644,7 +706,7 @@ function CreateVehiclePage() {
   );
 }
 
-export default CreateVehiclePage;
+export default EditVehiclePage;
 
 const AddImageSpinner = () => {
   return (
