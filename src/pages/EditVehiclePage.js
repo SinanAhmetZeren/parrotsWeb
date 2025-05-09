@@ -65,7 +65,7 @@ function EditVehiclePage() {
   const [pageState, setPageState] = useState("s1")
   // const [vehicleId, setVehicleId] = useState("")
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false)
+  const [isUpdatingVehicle, setIsUpdatingVehicle] = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
 
   const isFormValid = useMemo(() => {
@@ -191,23 +191,20 @@ function EditVehiclePage() {
 
   // xxxxx
   const handleUpdateButtonClick = async () => {
-    setIsRegisteringVehicle(true);
+    setIsUpdatingVehicle(true);
+    const patchDoc = [
+      { op: "replace", path: "/name", value: vehicleName },
+      { op: "replace", path: "/description", value: vehicleDescription },
+      { op: "replace", path: "/capacity", value: vehicleCapacity },
+    ];
+
     try {
-      const formData = new FormData();
-      formData.append("vehicleId", vehicleId);
-      formData.append("name", vehicleName);
-      formData.append("capacity", vehicleCapacity);
-      formData.append("description", vehicleDescription);
-      formData.append("type", selectedVehicleType);
-      formData.append("profileImage", image1);
-
-      const response = await patchVehicle(formData).unwrap();
-      console.log("Vehicle updated successfully:", response);
-
+      const response = await patchVehicle({ patchDoc, currentVehicleId: vehicleId });
     } catch (error) {
-      console.error("Error updating vehicle:", error);
+      console.error("Error", error);
     }
-    setIsRegisteringVehicle(false);
+
+    setIsUpdatingVehicle(false);
     setPageState("s1");
   };
 
@@ -330,6 +327,7 @@ function EditVehiclePage() {
                       </div>
                       <div className=" ">
                         <select
+                          disabled={true}
                           id="vehicle-type"
                           value={selectedVehicleType}
                           onChange={(e) => {
@@ -337,7 +335,7 @@ function EditVehiclePage() {
                           }}
                           className="type-input"
                           style={{
-                            color: selectedVehicleType ? "#00008b" : "#96989c",
+                            color: selectedVehicleType ? "#00008b66" : "#96989c",
                           }}
                         >
                           <option value="" disabled className="placeholderOption">
@@ -451,7 +449,7 @@ function EditVehiclePage() {
                 </div>
               </div>
 
-              {isRegisteringVehicle ?
+              {isUpdatingVehicle ?
                 <div className="createVehicleButton"
                   style={{
                     ...registerVehicleButton,
