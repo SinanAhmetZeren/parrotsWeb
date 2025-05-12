@@ -36,8 +36,8 @@ export default function CreateVoyagePage() {
   const [voyageName, setVoyageName] = useState("")
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
-  const [isAuction, setIsAuction] = useState("");
-  const [isFixedPrice, setIsFixedPrice] = useState("");
+  const [isAuction, setIsAuction] = useState(false);
+  const [isFixedPrice, setIsFixedPrice] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState(null);
   const [voyageId, setVoyageId] = useState("")
@@ -133,6 +133,8 @@ export default function CreateVoyagePage() {
     if (!voyageImage) {
       return;
     }
+    setIsCreatingVoyage(true);
+    console.log("hello ");
 
     const startDate = dates[0].startDate
     const endDate = dates[0].endDate
@@ -143,7 +145,6 @@ export default function CreateVoyagePage() {
         ? convertDateFormat(endDate)
         : convertDateFormat(startDate);
       const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
-      setIsCreatingVoyage(true);
       const response = await createVoyage({
         voyageImage,
         name: voyageName,
@@ -301,6 +302,8 @@ export default function CreateVoyagePage() {
                 </div>
                 <CreateVoyageButton
                   handleCreateVoyage={handleCreateVoyage}
+                  isCreatingVoyage={isCreatingVoyage}
+
                   disabled={!(
                     voyageDescription &&
                     voyageBrief &&
@@ -311,10 +314,11 @@ export default function CreateVoyagePage() {
                     minPrice &&
                     maxPrice &&
                     lastBidDate &&
-                    isAuction !== "" &&
-                    isFixedPrice !== "" &&
+                    // isAuction !== "" &&
+                    // isFixedPrice !== "" &&
                     dates[0]?.startDate
                   )}
+
                 />
                 {/* <div style={addWaypointButton}
                   onClick={() => setPageState(2)}
@@ -388,7 +392,7 @@ const ProfileImageandDetailsTitlesComponent = () => {
   )
 }
 
-const CreateVoyageButton = ({ handleCreateVoyage, disabled }) => {
+const CreateVoyageButton = ({ handleCreateVoyage, disabled, isCreatingVoyage }) => {
   const buttonStyle = {
     width: "30%",
     backgroundColor: "#007bff",
@@ -416,15 +420,15 @@ const CreateVoyageButton = ({ handleCreateVoyage, disabled }) => {
         justifyContent: "center",
       }}
     >
+
       <button
         onClick={() => {
-          console.log("create voyage");
           handleCreateVoyage()
         }}
         disabled={disabled}
         style={disabled ? { ...buttonStyle, opacity: 0.5 } : buttonStyle}
       >
-        Next
+        {isCreatingVoyage ? <CreateVogageSpinner /> : "Next"}
       </button>
     </div>
   )
@@ -638,3 +642,24 @@ const quellStyleDescription = `
     color: black
     }
   `
+
+const CreateVogageSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(0, 119, 234,0.1)",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      display: "flex",
+      alignItems: "center",
+      height: "2rem",
+    }}>
+      <div className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}></div>
+    </div>)
+}
