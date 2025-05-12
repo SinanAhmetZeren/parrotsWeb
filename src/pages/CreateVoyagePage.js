@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css"
@@ -8,12 +8,14 @@ import "react-quill/dist/quill.snow.css";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import {
+  useCheckAndDeleteVehicleMutation,
   useGetVehiclesByUserByIdQuery,
 } from "../slices/VehicleSlice";
 import { CreateVoyageDatePicker } from "../components/CreateVoyageDatePicker";
 
 import {
   useAddVoyageImageMutation,
+  useCheckAndDeleteVoyageMutation,
   useCreateVoyageMutation,
   useDeleteVoyageImageMutation
 } from "../slices/VoyageSlice";
@@ -21,29 +23,29 @@ import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderC
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
 import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsComponent";
 import { AddWaypointsPage } from "../components/AddWaypointsComponent";
+import { useLocation } from "react-router-dom";
 
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userId = localStorage.getItem("storedUserId")
-  console.log("user id: ", userId);
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [pageState, setPageState] = useState(1)
-  const [voyageBrief, setVoyageBrief] = useState("")
-  const [voyageDescription, setVoyageDescription] = useState("")
-  const [selectedVacancy, setSelectedVacancy] = useState();
-  const [voyageName, setVoyageName] = useState("")
-  const [minPrice, setMinPrice] = useState(null);
-  const [maxPrice, setMaxPrice] = useState(null);
+  const [voyageBrief, setVoyageBrief] = useState("333")
+  const [voyageDescription, setVoyageDescription] = useState("333")
+  const [selectedVacancy, setSelectedVacancy] = useState(3);  // empty  
+  const [voyageName, setVoyageName] = useState("xyz")
+  const [minPrice, setMinPrice] = useState(5); // null
+  const [maxPrice, setMaxPrice] = useState(5);
   const [isAuction, setIsAuction] = useState(false);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(true);
-  const [lastBidDate, setLastBidDate] = useState(null);
+  const [lastBidDate, setLastBidDate] = useState("2025-04-30");
   const [voyageId, setVoyageId] = useState("")
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false)
-  const [vehicleId, setVehicleId] = useState("")
+  const [vehicleId, setVehicleId] = useState(3) //""
   const [vehiclesList, setVehiclesList] = useState([
     { label: "Walk", value: 63 },
     { label: "Run", value: 64 },
@@ -87,6 +89,8 @@ export default function CreateVoyagePage() {
     setVehiclesList(dropdownData)
 
   }, [usersVehiclesSuccess, usersVehiclesData, setVehiclesList]);
+
+
 
 
   const addWaypointButton = {
@@ -134,8 +138,6 @@ export default function CreateVoyagePage() {
       return;
     }
     setIsCreatingVoyage(true);
-    console.log("hello ");
-
     const startDate = dates[0].startDate
     const endDate = dates[0].endDate
 

@@ -439,7 +439,7 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
 
 const CreateVoyagePriceInput = ({ minPrice, setMinPrice, maxPrice, setMaxPrice, type, isFixedPrice }) => {
 
-    console.log("isfixedPrice", isFixedPrice);
+    // console.log("isfixedPrice", isFixedPrice);
     return (
         <div style={{
             height: "4rem",

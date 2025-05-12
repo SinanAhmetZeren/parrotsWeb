@@ -628,7 +628,7 @@ function EditVehiclePage() {
 
 
                       {null && data?.map((item, index) => {
-                        console.log("item", item);
+                        // console.log("item", item);
                         return (
                           <SwiperSlide key={item.id}>
                             <div className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>

@@ -89,7 +89,7 @@ export function EditProfilePage() {
 
   useEffect(() => {
     if (isSuccessUser) {
-      console.log("userData: ", userData);
+      // console.log("userData: ", userData);
       setUserName(userData.userName);
       setUserTitle(userData.title);
       setUserBio(userData.bio);

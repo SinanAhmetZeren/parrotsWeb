@@ -29,17 +29,16 @@ export default function FavoritePage() {
   } = useGetFavoriteVehiclesByUserByIdQuery(userId);
 
   useEffect(() => {
-    console.log("Component mounted, refetching data...");
     refetchFavoriteVoyages();
     refetchFavoriteVehicles();
   }, []);
 
-  useEffect(() => {
-    if (isFavoriteVoyagesSuccess)
-      console.log("FavoriteVoyagesData from api", FavoriteVoyagesData);
-    if (isFavoriteVehiclesSuccess)
-      console.log("FavoriteVehiclesData from api", FavoriteVehiclesData);
-  }, [FavoriteVehiclesData, FavoriteVoyagesData])
+  // useEffect(() => {
+  //   if (isFavoriteVoyagesSuccess)
+  //     console.log("FavoriteVoyagesData from api", FavoriteVoyagesData);
+  //   if (isFavoriteVehiclesSuccess)
+  //     console.log("FavoriteVehiclesData from api", FavoriteVehiclesData);
+  // }, [FavoriteVehiclesData, FavoriteVoyagesData])
 
   return (
     // (isFavoriteVehiclesLoading || isFavoriteVoyagesLoading) ? (

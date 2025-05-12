@@ -51,10 +51,10 @@ function ProfilePage() {
   } = useGetUserByIdQuery(userId);
 
 
-  useEffect(() => {
-    if (isSuccessUser)
-      console.log("userData: ", userData);
-  }, [userData, isSuccessUser])
+  // useEffect(() => {
+  //   if (isSuccessUser)
+  //     console.log("userData: ", userData);
+  // }, [userData, isSuccessUser])
 
   return (
     isLoadingUser ? (

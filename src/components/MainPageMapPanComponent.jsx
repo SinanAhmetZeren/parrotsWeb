@@ -11,7 +11,7 @@ import { useMap } from "@vis.gl/react-google-maps";
 
 export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, initialBounds }) {
   const map = useMap();
-  console.log("initialbouds: ", initialBounds);
+  // console.log("initialbouds: ", initialBounds);
   // Fetch bounds once on mount, retrying if needed
   useEffect(() => {
     if (!map) return;

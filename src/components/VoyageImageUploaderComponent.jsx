@@ -283,8 +283,8 @@ export const VoyageImageUploaderComponent = ({
                             className="mySwiper"
                         >
                             {data.map((item, index) => {
-                                if (index === 0)
-                                    console.log("item:", item);
+                                // if (index === 0)
+                                //     console.log("item:", item);
                                 return (
                                     <SwiperSlide>
                                         <div key={index} className="placeholder_imageContainer" style={{ borderRadius: "2rem", overflow: "hidden" }}>
@@ -388,9 +388,9 @@ export const VoyageImageUploaderComponent = ({
 
 const GoToWaypointsButton = ({ setPageState, addedVoyageImages }) => {
 
-    useEffect(() => {
-        console.log("addedvoyage images  :--->", addedVoyageImages);
-    }, [addedVoyageImages])
+    // useEffect(() => {
+    //     console.log("addedvoyage images  :--->", addedVoyageImages);
+    // }, [addedVoyageImages])
 
     const buttonStyle = {
         width: "30%",

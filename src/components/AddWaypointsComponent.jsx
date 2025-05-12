@@ -13,12 +13,11 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import { useAddWaypointMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
-import { useNavigation } from "react-router-dom";
+import { useAddWaypointMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
 import 'swiper/css';
 import 'swiper/css/pagination';
 // import './styles.css';
-import { Pagination, FreeMode } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +45,7 @@ export const AddWaypointsPage = ({
         useState(false);
     const [addWaypoint] = useAddWaypointMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
+    const [confirmVoyage] = useConfirmVoyageMutation();
     const navigate = useNavigate();
 
     const handleAddWaypoint = async () => {
@@ -110,7 +110,8 @@ export const AddWaypointsPage = ({
     }
 
     function handleGoToProfilePage() {
-        console.log("bye...");
+        confirmVoyage(voyageId);
+        console.log("--->> confirm voyage id:", voyageId);
         navigate(`/profile`);
     }
 

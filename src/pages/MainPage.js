@@ -310,7 +310,7 @@ function MainPage() {
           southWest: southWest.lng(),
         },
       });
-      console.log("onLoadBounds - Lat: ", onLoadBounds.getNorthEast().lat(), onLoadBounds.getSouthWest().lat());
+      // console.log("onLoadBounds - Lat: ", onLoadBounds.getNorthEast().lat(), onLoadBounds.getSouthWest().lat());
       hasMapInitialized.current = true;
     }, [map, setInitialBounds]);
     return null;

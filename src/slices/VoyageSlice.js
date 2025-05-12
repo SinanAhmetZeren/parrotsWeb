@@ -77,6 +77,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
       // ... other configuration options
     }),
+    confirmVoyage: builder.mutation({
+      query: (voyageId) => ({
+        url: `/api/Voyage/confirmVoyage/${voyageId}`,
+        method: "POST",
+      }),
+    }),
     checkAndDeleteVoyage: builder.mutation({
       query: (voyageId) => ({
         url: `/api/Voyage/checkAndDeleteVoyage/${voyageId}`,
@@ -117,7 +123,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
-
     deleteVoyageImage: builder.mutation({
       query: (imageId) => ({
         url: `/api/Voyage/${imageId}/deleteVoyageImage`,
@@ -306,6 +311,7 @@ export const {
   useCreateVoyageMutation,
   useAddVoyageImageMutation,
   useAddWaypointMutation,
+  useConfirmVoyageMutation,
   useDeleteWaypointMutation,
   useDeleteVoyageImageMutation,
   useCheckAndDeleteVoyageMutation,
