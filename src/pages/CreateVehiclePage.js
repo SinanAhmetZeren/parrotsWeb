@@ -18,11 +18,13 @@ import {
   useAddVehicleImageMutation,
   useDeleteVehicleImageMutation,
   useCheckAndDeleteVehicleMutation,
+  useConfirmVehicleMutation,
 } from "../slices/VehicleSlice";
 import { useNavigate } from "react-router-dom";
 
 function CreateVehiclePage() {
   const [createVehicle] = useCreateVehicleMutation();
+  const [confirmVehicle] = useConfirmVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
@@ -157,7 +159,13 @@ function CreateVehiclePage() {
   };
 
   const completeVehicleCreate = () => {
+    if (addedVehicleImages.length === 0) {
+      console.log("images length: -->", addedVehicleImages.length);
+      return;
+    }
     setIsCompleting(true);
+    console.log("confirming vehicle: ", vehicleId);
+    confirmVehicle(vehicleId);
     navigate(`/profile`);
   }
 
@@ -578,7 +586,7 @@ function CreateVehiclePage() {
                 :
 
                 <div className="completeVehicleButton"
-                  style={completeVehicleButton}
+                  style={{ ...completeVehicleButton, ...(addedVehicleImages.length === 0) ? { opacity: "0.7" } : {} }}
                   onClick={() => completeVehicleCreate()}
                 >Complete</div>
 

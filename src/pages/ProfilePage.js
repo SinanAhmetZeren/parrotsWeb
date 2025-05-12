@@ -17,8 +17,6 @@ function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId")
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
-
-
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -27,7 +25,6 @@ function ProfilePage() {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
   }
 
-
   const handleGoToEditProfilePage = () => {
     navigate(`/edit-profile`);
   }
@@ -35,7 +32,6 @@ function ProfilePage() {
   const gotoNewVehicle = () => {
     navigate(`/newVehicle`);
   }
-
 
   const gotoNewVoyage = () => {
     navigate(`/newVoyage`);
@@ -50,11 +46,14 @@ function ProfilePage() {
     refetch: refetchUserData,
   } = useGetUserByIdQuery(userId);
 
+  useEffect(() => {
+    refetchUserData(); // Force refetch of user data when the page is visited
+  }, [refetchUserData]);
 
-  // useEffect(() => {
-  //   if (isSuccessUser)
-  //     console.log("userData: ", userData);
-  // }, [userData, isSuccessUser])
+  useEffect(() => {
+    if (isSuccessUser)
+      console.log("userData: ", userData);
+  }, [userData, isSuccessUser])
 
   return (
     isLoadingUser ? (

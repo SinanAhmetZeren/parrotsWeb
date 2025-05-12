@@ -63,6 +63,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    confirmVehicle: builder.mutation({
+      query: (vehicleId) => ({
+        url: `/api/Vehicle/confirmVehicle/${vehicleId}`,
+        method: "POST",
+      }),
+    }),
     addVehicleImage: builder.mutation({
       query: (data) => {
         const { vehicleImage, vehicleId } = data;
@@ -173,6 +179,7 @@ export const {
   useGetVehiclesByUserByIdQuery,
   useGetVehicleByIdQuery,
   useCreateVehicleMutation,
+  useConfirmVehicleMutation,
   useAddVehicleImageMutation,
   useUpdateVehicleProfileImageMutation,
   useDeleteVehicleImageMutation,
