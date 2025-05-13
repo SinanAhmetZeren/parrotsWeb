@@ -47,8 +47,14 @@ function ProfilePage() {
   } = useGetUserByIdQuery(userId);
 
   useEffect(() => {
-    refetchUserData(); // Force refetch of user data when the page is visited
-  }, [refetchUserData]);
+    if (userId) {
+      refetchUserData(); // Force refetch of user data when the page is visited
+    }
+    return () => {
+      // Cleanup to prevent stale data
+      console.log("Cleanup: Unsubscribing or resetting data if necessary");
+    };
+  }, [refetchUserData, userId]);
 
   useEffect(() => {
     if (isSuccessUser)

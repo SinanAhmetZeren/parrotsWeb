@@ -80,7 +80,7 @@ function EditVehiclePage() {
   }, [vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType, image1]);
 
   useEffect(() => {
-    console.log("--->", VehicleData);
+    // console.log("--->", VehicleData);
     setVehicleCapacity(VehicleData?.capacity);
     setVehicleDescription(VehicleData?.description);
     setVehicleName(VehicleData?.name);
@@ -769,7 +769,7 @@ const RegisterSpinner = () => {
       margin: "auto",
       display: "flex",
       alignItems: "center",
-      height: "2.5rem",
+      height: "1.7rem",
     }}>
       <div className="spinner"
         style={{
@@ -957,21 +957,16 @@ const pageStateDisplayContainer = {
 }
 
 const registerVehicleButton = {
-  // position: "absolute",
-  fontSize: "1.4rem",
+  fontSize: "1.2rem",
   fontWeight: 800,
   color: "white",
   borderRadius: "1.5rem",
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
   marginTop: "0.3rem",
   backgroundColor: "#007bff",
   cursor: "pointer",
   border: "none",
   boxShadow:
     "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-  padding: "0.2rem",
-  width: "20rem",
 };
 
 const completeVehicleButton = {

@@ -7,6 +7,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import {
+  useDeleteVehicleMutation,
   useGetVehicleByIdQuery,
 } from "../slices/VehicleSlice";
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -26,13 +27,14 @@ import {
   updateUserFavoriteVehicles
 } from "../slices/UserSlice";
 import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
-import { parrotBlue } from "../styles/colors";
+import { parrotBlue, parrotRed } from "../styles/colors";
 
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
   const userId = localStorage.getItem("storedUserId");
   // const favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"))
+  const [isDeleting, setIsDeleting] = useState(false);
   let favoriteVehicles;
   try {
     favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"));
@@ -56,14 +58,6 @@ function VehicleDetailsPage() {
 
   }, [favoriteVehiclesData])
 
-
-  // useEffect(() => {
-  //   console.log("-->", vehicleId);
-  //   console.log("-->", favoriteVehicles);
-  //   console.log("-->", isInFavorites);
-
-  // }, [vehicleId, favoriteVehicles, isInFavorites])
-
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const handleGoToUser = ({ userId, userName }) => {
@@ -72,7 +66,7 @@ function VehicleDetailsPage() {
   const [isFavorited, setIsFavorited] = useState(isInFavorites)
   const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
   const [deleteVehicleFromFavorites] = useDeleteVehicleFromFavoritesMutation();
-
+  const [deleteVehicle] = useDeleteVehicleMutation();
 
   const handleAddVehicleToFavorites = () => {
     const vehicleId_number = Number(vehicleId)
@@ -94,6 +88,14 @@ function VehicleDetailsPage() {
         favoriteVehicle: vehicleId_number,
       })
     );
+  };
+
+  const handleDeleteVehicle = async () => {
+    setIsDeleting(true);
+    const result = await deleteVehicle(vehicleId);
+    console.log("delete result:", result);
+    navigate("/profile", { state: { refetch: true } });
+    setIsDeleting(false);
   };
 
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -228,12 +230,56 @@ function VehicleDetailsPage() {
             </div>
 
             {VehicleData?.user.id === userId ?
-              <div style={editVehicleButtonContainer}
-                onClick={() => {
-                  navigate(`/edit-vehicle/${vehicleId}`);
-                }}>
-                <span style={editVehicleButton}>Edit Vehicle</span>
-              </div> : null}
+              <div style={editVehicleButtonContainer}>
+                <div
+                  onClick={() => {
+                    navigate(`/edit-vehicle/${vehicleId}`);
+                  }}>
+                  <span style={editVehicleButton}>Edit Vehicle</span>
+                </div>
+                <div
+                  onClick={() => {
+                    handleDeleteVehicle()
+                  }}>
+                  {isDeleting ?
+
+                    <div style={{
+                      backgroundColor: parrotRed,
+                      borderRadius: "1.5rem",
+                      padding: "0.25rem 1.5rem",
+                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+                      fontSize: "1.4rem",
+                      fontWeight: 800,
+                      color: "white",
+                      marginTop: "0.3rem",
+                      cursor: "pointer", border: "none",
+                      height: "2.1rem",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginLeft: "0.5rem",
+                      width: "13.5rem"
+                    }}>
+                      <div className="spinner" style={{
+                        height: "1.5rem",
+                        width: "1.5rem",
+                        border: "5px solid white",
+                        borderTop: "5px solid orange",
+                      }} />
+                    </div>
+
+
+
+                    :
+                    <div style={{}}>
+                      <span style={deleteVehicleButton}>Delete Vehicle</span>
+                    </div>
+
+                  }
+
+                </div>
+              </div>
+              : null}
 
           </div>
         </header >
@@ -247,23 +293,68 @@ function VehicleDetailsPage() {
 
 export default VehicleDetailsPage;
 
+const deletingVehicleButton = {
+  backgroundColor: parrotRed,
+  borderRadius: "1.5rem",
+  padding: "0.25rem 1.5rem",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+}
+
 
 const editVehicleButtonContainer = {
   position: "absolute",
   left: "50%",
   transform: "translateX(-50%)",
-  bottom: "3rem",
+  bottom: "0.5rem",
   display: "flex",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
   justifyContent: "center",
   alignItems: "center",
+  gap: "1rem",
+  backgroundColor: "pink",
+  width: "30rem"
 }
 
 const editVehicleButton = {
   backgroundColor: parrotBlue,
   borderRadius: "1.5rem",
-  padding: "0 1.5rem",
+  padding: "0.25rem 1.5rem",
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  // fontWeight: "bold",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+  width: "100%",
 }
+
+const deleteVehicleButton = {
+  backgroundColor: parrotRed,
+  borderRadius: "1.5rem",
+  padding: "0.25rem 1.5rem",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+}
+
+
 
 const heartIcon = {
   position: "absolute",
@@ -326,4 +417,24 @@ const VehicleTypes = [
   "Airplane",
 ];
 
+const DeleteVehicleSpinner = () => {
+  return (
+    <div style={{
+      backgroundColor: "rgba(0, 119, 234,0.1)",
+      borderRadius: "1.5rem",
+      position: "relative",
+      margin: "auto",
+      display: "flex",
+      alignItems: "center",
+      height: "1.7rem",
+    }}>
+      <div className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}></div>
+    </div>)
+}
 
