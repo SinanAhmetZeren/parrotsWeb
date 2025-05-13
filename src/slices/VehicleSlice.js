@@ -93,13 +93,17 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     updateVehicleProfileImage: builder.mutation({
       query: (data) => {
-        const { formData, vehicleId } = data;
+        const { vehicleImage, vehicleId } = data;
+        console.log("vehicleImage: ", vehicleImage);
+        console.log("vehicleId: ", vehicleId);
+        const formData = new FormData();
+        formData.append("imageFile", vehicleImage);
         const url = `/api/Vehicle/${vehicleId}/updateProfileImage`;
         return {
           url,
           method: "POST",
           headers: {
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };

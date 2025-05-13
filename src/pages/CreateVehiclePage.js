@@ -170,9 +170,6 @@ function CreateVehiclePage() {
   }
 
   const handleDeleteImage = async (imageId) => {
-
-    console.log("iamge Id: ...", imageId);
-
     const previousImages = [...addedVehicleImages];
     setAddedVehicleImages(
       previousImages.filter((item) => item.addedvehicleImageId !== imageId)

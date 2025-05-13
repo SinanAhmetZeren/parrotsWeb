@@ -24,6 +24,7 @@ import {
   usePatchVehicleMutation
 } from "../slices/VehicleSlice";
 import { useNavigate, useParams } from "react-router-dom";
+import { image } from "d3";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function EditVehiclePage() {
@@ -35,9 +36,8 @@ function EditVehiclePage() {
   const [deleteVehicle] = useDeleteVehicleMutation();
   const [patchVehicle] = usePatchVehicleMutation();
   const { vehicleId } = useParams();
-
   const userId = localStorage.getItem("storedUserId")
-
+  // xxxxxx
   const {
     data: VehicleData,
     isSuccess: isSuccessVehicles,
@@ -92,9 +92,9 @@ function EditVehiclePage() {
     setImagePreview2(VehicleData?.vehicleImage);
   }, [VehicleData])
 
-  useEffect(() => {
-    console.log("useffect added images: ", addedVehicleImages);
-  }, [addedVehicleImages])
+  // useEffect(() => {
+  //   console.log("useffect added images: ", addedVehicleImages);
+  // }, [addedVehicleImages])
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -203,9 +203,9 @@ function EditVehiclePage() {
     } catch (error) {
       console.error("Error", error);
     }
-
+    updateVehicleProfileImage({ vehicleImage: image1, vehicleId: vehicleId });
     setIsUpdatingVehicle(false);
-    setPageState("s1");
+    setPageState("s2");
   };
 
   const maxItems = 10;
