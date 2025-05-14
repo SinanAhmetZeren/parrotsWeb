@@ -9,21 +9,35 @@ const initialState = voyagesAdapter.getInitialState();
 export const extendedApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getVoyagesByUserById: builder.query({
-      query: (userId) => `/api/Voyage/GetVoyageByUserId/${userId}`,
-      transformResponse: (responseData) => {
-        return responseData.data;
+      query: (userId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/GetVoyageByUserId/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
       },
+      transformResponse: (responseData) => responseData.data,
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+
     getVoyageById2: builder.query({
-      query: (voyageId) => `/api/Voyage/GetVoyageById/${voyageId}`,
-      transformResponse: (responseData) => {
-        return responseData.data;
+      query: (voyageId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/GetVoyageById/${voyageId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
       },
+      transformResponse: (responseData) => responseData.data,
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+
     getVoyageById: builder.query({
       query: (voyageId) => {
         const token = localStorage.getItem("storedToken");
@@ -38,6 +52,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+
     createVoyage: builder.mutation({
       query: (data) => {
         const {
@@ -76,61 +91,85 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           VehicleId: vehicleId,
         });
 
-        const url = `/api/Voyage/AddVoyage?${queryParams}`;
+        const token = localStorage.getItem("storedToken");
 
         return {
-          url,
+          url: `/api/Voyage/AddVoyage?${queryParams}`,
           method: "POST",
           headers: {
-            // "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
         };
       },
-      // ... other configuration options
     }),
+
     confirmVoyage: builder.mutation({
-      query: (voyageId) => ({
-        url: `/api/Voyage/confirmVoyage/${voyageId}`,
-        method: "POST",
-      }),
+      query: (voyageId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/confirmVoyage/${voyageId}`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
     }),
+
     checkAndDeleteVoyage: builder.mutation({
-      query: (voyageId) => ({
-        url: `/api/Voyage/checkAndDeleteVoyage/${voyageId}`,
-        method: "DELETE",
-      }),
+      query: (voyageId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/checkAndDeleteVoyage/${voyageId}`,
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
     }),
+
     addVoyageImage: builder.mutation({
       query: (data) => {
         const { voyageImage, voyageId } = data;
         const formData = new FormData();
-        console.log("voyageId:...", voyageId);
-        console.log("voyageImage:...", voyageImage);
         formData.append("imageFile", voyageImage);
-        const url = `/api/Voyage/${voyageId}/AddVoyageImage`;
+        const token = localStorage.getItem("storedToken");
+
         return {
-          url,
+          url: `/api/Voyage/${voyageId}/AddVoyageImage`,
           method: "POST",
           headers: {
-            // "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
         };
       },
     }),
+
     deleteVoyageImage: builder.mutation({
-      query: (imageId) => ({
-        url: `/api/Voyage/${imageId}/deleteVoyageImage`,
-        method: "DELETE",
-      }),
+      query: (imageId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/${imageId}/deleteVoyageImage`,
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
     }),
+
     sendBid: builder.mutation({
       query: (bidData) => {
-        console.log("biddata:", bidData);
+        const token = localStorage.getItem("storedToken");
         return {
           url: "/api/Bid/createBid",
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: {
             ...bidData,
             dateTime: new Date().toISOString(),
@@ -138,35 +177,42 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+
     changeBid: builder.mutation({
       query: (bidData) => {
         const { bidId, message, offerPrice, personCount } = bidData;
-        const formattedBidData = {
-          id: bidId,
-          personCount,
-          message,
-          offerPrice,
-        };
-
-        console.log("formattedBidData:", personCount, offerPrice, message);
-
+        const token = localStorage.getItem("storedToken");
         return {
           url: "/api/Bid/changeBid",
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: {
-            ...formattedBidData,
+            id: bidId,
+            personCount,
+            message,
+            offerPrice,
             dateTime: new Date().toISOString(),
           },
         };
       },
     }),
+
     acceptBid: builder.mutation({
-      query: (bidId) => ({
-        url: `/api/Bid/acceptbid?bidId=${bidId}`,
-        method: "POST",
-        body: { bidId },
-      }),
+      query: (bidId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Bid/acceptbid?bidId=${bidId}`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: { bidId },
+        };
+      },
     }),
+
     addWaypoint: builder.mutation({
       query: (data) => {
         const {
@@ -178,6 +224,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           voyageId,
           order,
         } = data;
+
         const queryParams = new URLSearchParams({
           Latitude: latitude,
           Longitude: longitude,
@@ -186,39 +233,49 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           VoyageId: voyageId,
           Order: order,
         });
-        const url = `/api/Waypoint/AddWaypoint?${queryParams}`;
+
         const formData = new FormData();
         formData.append("imageFile", waypointImage);
+
         const token = localStorage.getItem("storedToken");
+
         return {
-          url,
+          url: `/api/Waypoint/AddWaypoint?${queryParams}`,
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            // "Content-Type": "multipart/form-data",
           },
           body: formData,
         };
       },
     }),
+
     deleteWaypoint: builder.mutation({
-      query: (data) => {
-        const { waypointId } = data;
+      query: ({ waypointId }) => {
+        const token = localStorage.getItem("storedToken");
         return {
           url: `/api/Waypoint/deleteWaypoint/${waypointId}`,
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         };
       },
     }),
+
     getVoyagesByLocation: builder.mutation({
-      query: (data) => {
-        const { lat1, lat2, lon1, lon2 } = data;
-        return `/api/Voyage/GetVoyagesByCoords/${lat1}/${lat2}/${lon1}/${lon2}`;
+      query: ({ lat1, lat2, lon1, lon2 }) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/GetVoyagesByCoords/${lat1}/${lat2}/${lon1}/${lon2}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
       },
-      transformResponse: (responseData) => {
-        return responseData.data;
-      },
+      transformResponse: (responseData) => responseData.data,
     }),
+
     getFilteredVoyages: builder.mutation({
       query: (data) => {
         const {
@@ -232,8 +289,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           formattedEndDate,
         } = data;
 
-        console.log("data: ", data);
-
         const queryParams = new URLSearchParams({
           Lat1: (latitude - latitudeDelta / 2).toString(),
           Lat2: (latitude + latitudeDelta / 2).toString(),
@@ -242,66 +297,77 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           Vacancy: count.toString(),
         });
 
-        if (selectedVehicleType !== undefined && selectedVehicleType !== null) {
+        if (selectedVehicleType) {
           queryParams.append("VehicleType", selectedVehicleType);
         }
 
-        if (formattedStartDate !== null) {
+        if (formattedStartDate) {
           queryParams.append("StartDate", formattedStartDate);
         }
 
-        if (formattedEndDate !== null) {
+        if (formattedEndDate) {
           queryParams.append("EndDate", formattedEndDate);
         }
 
-        console.log("queryParams:", queryParams);
-        const endpoint = `/api/Voyage/GetFilteredVoyages?${queryParams.toString()}`;
+        const token = localStorage.getItem("storedToken");
 
-        return endpoint;
+        return {
+          url: `/api/Voyage/GetFilteredVoyages?${queryParams}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
       },
-      transformResponse: (responseData) => {
-        return responseData.data;
-      },
+      transformResponse: (responseData) => responseData.data,
     }),
+
     getFavoriteVoyagesByUserId: builder.query({
-      query: (userId) => `/api/Favorite/getFavoriteVoyagesByUserId/${userId}`,
-      transformResponse: (responseData) => {
-        return responseData.data;
+      query: (userId) => {
+        const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Favorite/getFavoriteVoyagesByUserId/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
       },
+      transformResponse: (responseData) => responseData.data,
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
-    addVoyageToFavorites: builder.mutation({
-      query: (data) => {
-        const { userId, voyageId } = data;
 
-        const body = {
-          userId: userId,
-          type: "voyage",
-          itemId: voyageId,
-        };
-        const url = `/api/Favorite/addFavorite`;
+    addVoyageToFavorites: builder.mutation({
+      query: ({ userId, voyageId }) => {
+        const token = localStorage.getItem("storedToken");
         return {
-          url,
+          url: `/api/Favorite/addFavorite`,
           method: "POST",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: body,
+          body: {
+            userId,
+            type: "voyage",
+            itemId: voyageId,
+          },
         };
       },
     }),
+
     deleteVoyageFromFavorites: builder.mutation({
-      query: (data) => {
-        const { userId, voyageId } = data;
+      query: ({ userId, voyageId }) => {
+        const token = localStorage.getItem("storedToken");
         return {
           url: `/api/Favorite/deleteFavoriteVoyage/${userId}/${voyageId}`,
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         };
       },
     }),
   }),
-
   overrideExisting: true,
 });
 
