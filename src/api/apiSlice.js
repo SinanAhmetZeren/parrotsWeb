@@ -28,7 +28,8 @@ export const apiSlice = createApi({
       baseUrl: "https://measured-wolf-grossly.ngrok-free.app",
       prepareHeaders: async (headers) => {
         headers.set("ngrok-skip-browser-warning", "1");
-        const token = await localStorage.getItem("token");
+        const token = await localStorage.getItem("storedToken");
+        console.log("---->Token from localStorage:", token);
         if (token) {
           headers.set("Authorization", `Bearer ${token}`);
         }
