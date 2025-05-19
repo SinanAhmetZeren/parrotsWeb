@@ -9,7 +9,7 @@ const apiSlice2 = createApi({
   // }),
 
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://measured-wolf-grossly.ngrok-free.app",
+    baseUrl: API_URL,
     prepareHeaders: (headers, { getState }) => {
       headers.set("ngrok-skip-browser-warning", "1");
       return headers;
@@ -25,7 +25,7 @@ export const apiSlice = createApi({
 
   baseQuery: async (...args) => {
     const rawBaseQuery = fetchBaseQuery({
-      baseUrl: "https://measured-wolf-grossly.ngrok-free.app",
+      baseUrl: API_URL,
       prepareHeaders: async (headers) => {
         headers.set("ngrok-skip-browser-warning", "1");
         const token = await localStorage.getItem("storedToken");

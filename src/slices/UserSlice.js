@@ -25,7 +25,10 @@ const usersSlice = createSlice({
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedUserId", action.payload.userId);
         localStorage.setItem("storedUserName", action.payload.userName);
-        localStorage.setItem("storedProfileImageUrl", action.payload.profileImageUrl);
+        localStorage.setItem(
+          "storedProfileImageUrl",
+          action.payload.profileImageUrl
+        );
       } catch (error) {
         console.error("Error setting localStorage:", error);
       }
@@ -37,14 +40,13 @@ const usersSlice = createSlice({
         state.token = "";
         state.userName = "";
         state.userProfileImage = "";
-        localStorage.removeItem("storedToken")
-        localStorage.removeItem("storedUserId")
-        localStorage.removeItem("storedUserName")
-        localStorage.removeItem("storedProfileImageUrl")
-        localStorage.removeItem("storedFavoriteVehicles")
-        localStorage.removeItem("storedFavoriteVoyages")
-      }
-      catch (err) {
+        localStorage.removeItem("storedToken");
+        localStorage.removeItem("storedUserId");
+        localStorage.removeItem("storedUserName");
+        localStorage.removeItem("storedProfileImageUrl");
+        localStorage.removeItem("storedFavoriteVehicles");
+        localStorage.removeItem("storedFavoriteVoyages");
+      } catch (err) {
         console.error("Error setting localStorage:", err);
       }
     },
@@ -63,54 +65,97 @@ const usersSlice = createSlice({
       state.userName = action.payload.username;
     },
     updateUserFavorites: (state, action) => {
-      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(action.payload.favoriteVehicles));
-      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(action.payload.favoriteVoyages));
+      localStorage.setItem(
+        "storedFavoriteVehicles",
+        JSON.stringify(action.payload.favoriteVehicles)
+      );
+      localStorage.setItem(
+        "storedFavoriteVoyages",
+        JSON.stringify(action.payload.favoriteVoyages)
+      );
     },
     updateUserFavoriteVehicles: (state, action) => {
       if (action.payload.userFavoriteVehicles)
-        localStorage.setItem("storedFavoriteVehicles", JSON.stringify(action.payload.favoriteVehicles));
+        localStorage.setItem(
+          "storedFavoriteVehicles",
+          JSON.stringify(action.payload.favoriteVehicles)
+        );
     },
     addVoyageToUserFavorites: (state, action) => {
-      const currentFavoriteVoyages = JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
+      const currentFavoriteVoyages =
+        JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
       if (!Array.isArray(currentFavoriteVoyages)) {
-        console.error("Error: currentFavoriteVoyages is not an array", currentFavoriteVoyages);
+        console.error(
+          "Error: currentFavoriteVoyages is not an array",
+          currentFavoriteVoyages
+        );
         return;
       }
-      const updatedFavoriteVoyages = [...currentFavoriteVoyages, action.payload.favoriteVehicle];
-      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(updatedFavoriteVoyages));
+      const updatedFavoriteVoyages = [
+        ...currentFavoriteVoyages,
+        action.payload.favoriteVehicle,
+      ];
+      localStorage.setItem(
+        "storedFavoriteVoyages",
+        JSON.stringify(updatedFavoriteVoyages)
+      );
     },
     removeVoyageFromUserFavorites: (state, action) => {
       const voyageToRemove = action.payload.favoriteVoyage;
-      const currentFavoriteVoyages = JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
+      const currentFavoriteVoyages =
+        JSON.parse(localStorage.getItem("storedFavoriteVoyages")) || [];
       if (!Array.isArray(currentFavoriteVoyages)) {
-        console.error("Error: currentFavoriteVoyages is not an array", currentFavoriteVoyages);
+        console.error(
+          "Error: currentFavoriteVoyages is not an array",
+          currentFavoriteVoyages
+        );
         return;
       }
       const updatedFavoriteVoyages = currentFavoriteVoyages.filter(
         (voyage) => voyage !== voyageToRemove
       );
-      localStorage.setItem("storedFavoriteVoyages", JSON.stringify(updatedFavoriteVoyages));
+      localStorage.setItem(
+        "storedFavoriteVoyages",
+        JSON.stringify(updatedFavoriteVoyages)
+      );
     },
     addVehicleToUserFavorites: (state, action) => {
-      const currentFavoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
+      const currentFavoriteVehicles =
+        JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
       if (!Array.isArray(currentFavoriteVehicles)) {
-        console.error("Error: currentFavoriteVehicles is not an array", currentFavoriteVehicles);
+        console.error(
+          "Error: currentFavoriteVehicles is not an array",
+          currentFavoriteVehicles
+        );
         return;
       }
-      const updatedFavoriteVehicles = [...currentFavoriteVehicles, action.payload.favoriteVehicle];
-      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(updatedFavoriteVehicles));
+      const updatedFavoriteVehicles = [
+        ...currentFavoriteVehicles,
+        action.payload.favoriteVehicle,
+      ];
+      localStorage.setItem(
+        "storedFavoriteVehicles",
+        JSON.stringify(updatedFavoriteVehicles)
+      );
     },
     removeVehicleFromUserFavorites: (state, action) => {
       const vehicleToRemove = action.payload.favoriteVehicle;
-      const currentFavoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
+      const currentFavoriteVehicles =
+        JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [];
       if (!Array.isArray(currentFavoriteVehicles)) {
-        console.error("Error: currentFavoriteVehicles is not an array", currentFavoriteVehicles);
+        console.error(
+          "Error: currentFavoriteVehicles is not an array",
+          currentFavoriteVehicles
+        );
         return;
       }
       const updatedFavoriteVehicles = currentFavoriteVehicles.filter(
         (vehicle) => vehicle !== vehicleToRemove
       );
-      localStorage.setItem("storedFavoriteVehicles", JSON.stringify(updatedFavoriteVehicles));
+      localStorage.setItem(
+        "storedFavoriteVehicles",
+        JSON.stringify(updatedFavoriteVehicles)
+      );
     },
   },
 });

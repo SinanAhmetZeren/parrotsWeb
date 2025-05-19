@@ -2,17 +2,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import "../assets/css/CreateVehicle.css"
+import "../assets/css/CreateVehicle.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline } from "react-icons/io5";
-import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
-import placeHolder from "../assets/images/placeholder.png"
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
+import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
+import placeHolder from "../assets/images/placeholder.png";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
 // import '../assets/css/VehicleImagesSwiper.css';
-import { Pagination, FreeMode } from 'swiper/modules';
+import { Pagination, FreeMode } from "swiper/modules";
 import {
   useCreateVehicleMutation,
   useAddVehicleImageMutation,
@@ -32,8 +32,8 @@ function CreateVehiclePage() {
   const userName = "Ahmet Zeren";
   const navigate = useNavigate();
 
-  const [vehicleName, setVehicleName] = useState("")
-  const [vehicleDescription, setVehicleDescription] = useState("")
+  const [vehicleName, setVehicleName] = useState("");
+  const [vehicleDescription, setVehicleDescription] = useState("");
   const [vehicleCapacity, setVehicleCapacity] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [image1, setImage1] = useState(null);
@@ -42,14 +42,14 @@ function CreateVehiclePage() {
   const [imagePreview2, setImagePreview2] = useState(null);
   const fileInputRef = React.createRef();
   const fileInputRef2 = React.createRef();
-  const [hoveredUserImg, setHoveredUserImg] = useState(false)
-  const [hoveredUserImg2, setHoveredUserImg2] = useState(false)
+  const [hoveredUserImg, setHoveredUserImg] = useState(false);
+  const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s1")
-  const [vehicleId, setVehicleId] = useState(3)
+  const [pageState, setPageState] = useState("s1");
+  const [vehicleId, setVehicleId] = useState(3);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false)
-  const [isCompleting, setIsCompleting] = useState(false)
+  const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const isFormValid = useMemo(() => {
     return (
@@ -60,21 +60,34 @@ function CreateVehiclePage() {
       selectedVehicleType &&
       image1
     );
-  }, [vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType, image1]);
+  }, [
+    vehicleName,
+    vehicleDescription,
+    vehicleCapacity,
+    selectedVehicleType,
+    image1,
+  ]);
 
   useEffect(() => {
     console.log("--->>>", vehicleDescription);
     console.log("--->>>", vehicleDescription === "<p><br></p>");
-  }, [vehicleDescription])
+  }, [vehicleDescription]);
 
   useEffect(() => {
     console.log("useffect added images: ", addedVehicleImages);
-  }, [addedVehicleImages])
+  }, [addedVehicleImages]);
 
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+      if (file.size > maxSizeBytes) {
+        alert("File size must be 5MB or less.");
+        return;
+      }
       setImage1(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
@@ -82,12 +95,20 @@ function CreateVehiclePage() {
   };
 
   const handleImageChange2 = (e) => {
-    const files2 = e.target.files;
-    if (files2 && files2.length > 0) {
-      const file2 = files2[0];
-      setVehicleImage(file2);
-      const previewUrl2 = URL.createObjectURL(file2);
-      setImagePreview2(previewUrl2);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+      if (file.size > maxSizeBytes) {
+        alert("File size must be 5MB or less.");
+        return;
+      }
+
+      setVehicleImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview2(previewUrl);
     }
   };
 
@@ -117,7 +138,6 @@ function CreateVehiclePage() {
     fileInputRef.current.click();
   };
 
-
   const handleImageClick2 = () => {
     fileInputRef2.current.click();
   };
@@ -144,7 +164,7 @@ function CreateVehiclePage() {
       setSelectedVehicleType("");
       setVehicleName("");
       setImage1("");
-      setImagePreview("")
+      setImagePreview("");
       setVehicleImage("");
       setAddedVehicleImages([]);
       setPageState("s2");
@@ -167,7 +187,7 @@ function CreateVehiclePage() {
     console.log("confirming vehicle: ", vehicleId);
     confirmVehicle(vehicleId);
     navigate(`/profile`);
-  }
+  };
 
   const handleDeleteImage = async (imageId) => {
     const previousImages = [...addedVehicleImages];
@@ -191,18 +211,19 @@ function CreateVehiclePage() {
     key: `placeholder_${index + 1}`,
   }));
 
-  const data = useMemo(() =>
-    addedVehicleImages.length < maxItems
-      ? [
-        ...addedVehicleImages,
-        ...placeholders.slice(addedVehicleImages.length),
-      ]
-      : addedVehicleImages.map((item) => ({
-        ...item,
-        key: item.addedvehicleImageId,
-      })), [addedVehicleImages, maxItems, placeholders]);
-
-
+  const data = useMemo(
+    () =>
+      addedVehicleImages.length < maxItems
+        ? [
+            ...addedVehicleImages,
+            ...placeholders.slice(addedVehicleImages.length),
+          ]
+        : addedVehicleImages.map((item) => ({
+            ...item,
+            key: item.addedvehicleImageId,
+          })),
+    [addedVehicleImages, maxItems, placeholders]
+  );
 
   const handleUploadImage = useCallback(async () => {
     if (!vehicleImage) {
@@ -225,7 +246,6 @@ function CreateVehiclePage() {
       setAddedVehicleImages((prevImages) => [...prevImages, newItem]);
       setVehicleImage(null);
       setImagePreview2(null);
-
     } catch (error) {
       console.error("Error uploading image", error);
       alert(
@@ -257,19 +277,21 @@ function CreateVehiclePage() {
                   ...VehiclesVoyagesTitle,
                   ...(pageState === "s1" ? activeStyle : {}),
                 }}
-              >Vehicle Details</span>
+              >
+                Vehicle Details
+              </span>
               <span
                 style={{
                   ...VehiclesVoyagesTitle,
                   ...(pageState === "s2" ? activeStyle : {}),
                 }}
-              >Vehicle Images</span>
+              >
+                Vehicle Images
+              </span>
             </div>
           </div>
 
-
-
-          {pageState === "s1" &&
+          {pageState === "s1" && (
             <>
               <div className="vehiclePage_vehicleContainer">
                 <div className="vehiclePage_dataContainer">
@@ -283,11 +305,11 @@ function CreateVehiclePage() {
                           type="text"
                           placeholder="Vehicle Name"
                           value={vehicleName}
-
-                          style={{
-                            // backgroundColor: "rgb(249, 245, 244)"
-                          }}
-
+                          style={
+                            {
+                              // backgroundColor: "rgb(249, 245, 244)"
+                            }
+                          }
                           onChange={(e) => setVehicleName(e.target.value)}
                           className="vehicle-name-input"
                         />
@@ -326,11 +348,18 @@ function CreateVehiclePage() {
                             color: selectedVehicleType ? "#00008b" : "#96989c",
                           }}
                         >
-                          <option value="" disabled className="placeholderOption">
+                          <option
+                            value=""
+                            disabled
+                            className="placeholderOption"
+                          >
                             Select
                           </option>
                           {Object.keys(vehicles)
-                            .filter((vehicle) => vehicle !== "Walk" && vehicle !== "Run")
+                            .filter(
+                              (vehicle) =>
+                                vehicle !== "Walk" && vehicle !== "Run"
+                            )
                             .map((vehicle) => (
                               <option key={vehicle} value={vehicle}>
                                 {vehicle}
@@ -345,11 +374,8 @@ function CreateVehiclePage() {
                       <div className="vehiclePage_descriptionContainer_descriptionTitle">
                         <span>Description</span>
                       </div>
-                      <div className="vehiclePage_descriptionContainer_descriptionContent"
-                      >
-
+                      <div className="vehiclePage_descriptionContainer_descriptionContent">
                         <div className="editor-container">
-
                           <ReactQuill
                             value={vehicleDescription}
                             onChange={setVehicleDescription}
@@ -369,8 +395,7 @@ function CreateVehiclePage() {
                   </div>
                 </div>
                 <div className="vehicle_imageContainer">
-                  <div style={{
-                  }}>
+                  <div style={{}}>
                     <input
                       type="file"
                       accept="image/*"
@@ -386,19 +411,20 @@ function CreateVehiclePage() {
                     >
                       {imagePreview ? (
                         <div className="image-preview">
-                          <img src={imagePreview} alt="Uploaded preview"
+                          <img
+                            src={imagePreview}
+                            alt="Uploaded preview"
                             style={{
                               width: "35rem",
                               height: "35rem",
                               objectFit: "cover",
                               borderRadius: "1.5rem",
                               // border: "2px solid #3c9dee42"
-                              border: "2px solid transparent"
-
+                              border: "2px solid transparent",
                             }}
                           />
                         </div>
-                      ) :
+                      ) : (
                         <img
                           src={uploadImage}
                           alt="Upload Icon"
@@ -408,15 +434,19 @@ function CreateVehiclePage() {
                             height: "35rem",
                             objectFit: "cover",
                             borderRadius: "1.5rem",
-                            border: "2px solid transparent"
+                            border: "2px solid transparent",
                           }}
                         />
-                      }
+                      )}
                       {image1 && (
-                        <div onClick={handleCancelUpload}
-                          style={{ ...deleteImageIcon, ...((hoveredUserImg) ? deleteImageIconHover : {}) }}
+                        <div
+                          onClick={handleCancelUpload}
+                          style={{
+                            ...deleteImageIcon,
+                            ...(hoveredUserImg ? deleteImageIconHover : {}),
+                          }}
                           onMouseEnter={() => {
-                            setHoveredUserImg(true)
+                            setHoveredUserImg(true);
                           }}
                           onMouseLeave={() => setHoveredUserImg(false)}
                         >
@@ -428,42 +458,53 @@ function CreateVehiclePage() {
                 </div>
               </div>
 
-              {isRegisteringVehicle ?
-
-
-                <div className="createVehicleButton"
+              {isRegisteringVehicle ? (
+                <div
+                  className="createVehicleButton"
                   style={{
                     ...registerVehicleButton,
-                    ...(isFormValid ? {} : { backgroundColor: "#007bff", cursor: "not-allowed" }),
+                    ...(isFormValid
+                      ? {}
+                      : { backgroundColor: "#007bff", cursor: "not-allowed" }),
                   }}
                 >
                   <RegisterSpinner />
                 </div>
-
-
-                :
-                <div className="createVehicleButton"
+              ) : (
+                <div
+                  className="createVehicleButton"
                   style={{
                     ...registerVehicleButton,
                     ...(isFormValid ? {} : { opacity: "0.7" }),
                   }}
-                  onClick={isFormValid ? handleCreateVehicle : () => { console.log("Form is not valid") }}>
+                  onClick={
+                    isFormValid
+                      ? handleCreateVehicle
+                      : () => {
+                          console.log("Form is not valid");
+                        }
+                  }
+                >
                   Register Vehicle
                 </div>
-              }
+              )}
             </>
-          }
-          {pageState === "s2" &&
+          )}
+          {pageState === "s2" && (
             <>
               <div>
-                <div style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  marginTop: "1rem"
-                }}>
-                  <div style={{
-                    width: "26rem"
-                  }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "1rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "26rem",
+                    }}
+                  >
                     <input
                       type="file"
                       accept="image/*"
@@ -475,52 +516,56 @@ function CreateVehiclePage() {
                     <div
                       style={{
                         position: "relative",
-                        width: "25rem"
+                        width: "25rem",
                       }}
                     >
                       {imagePreview2 ? (
                         <div className="image-preview">
-                          <img src={imagePreview2} alt="Uploaded preview"
+                          <img
+                            src={imagePreview2}
+                            alt="Uploaded preview"
                             style={uploadImage2}
                           />
                         </div>
-                      ) :
+                      ) : (
                         <img
                           src={uploadImage}
                           alt="Upload Icon"
                           onClick={handleImageClick2}
                           style={uploadImage2}
                         />
-                      }
+                      )}
                       {vehicleImage && (
                         <>
-                          <div onClick={handleCancelUpload2}
-                            style={{ ...deleteImageIcon2, ...((hoveredUserImg2) ? deleteImageIconHover2 : {}) }}
+                          <div
+                            onClick={handleCancelUpload2}
+                            style={{
+                              ...deleteImageIcon2,
+                              ...(hoveredUserImg2 ? deleteImageIconHover2 : {}),
+                            }}
                             onMouseEnter={() => {
-                              setHoveredUserImg2(true)
+                              setHoveredUserImg2(true);
                             }}
                             onMouseLeave={() => setHoveredUserImg2(false)}
                           >
                             <IoRemoveCircleOutline size={"2.5rem"} />
                           </div>
 
-
-                          {isUploadingImage ?
-
-                            <div style={addImageButton}><AddImageSpinner /></div>
-
-                            :
-
-                            <div style={addImageButton}
+                          {isUploadingImage ? (
+                            <div style={addImageButton}>
+                              <AddImageSpinner />
+                            </div>
+                          ) : (
+                            <div
+                              style={addImageButton}
                               onClick={() => {
                                 handleUploadImage();
                                 // console.log("hi");
-                              }
-                              }
-                            >Add Image</div>
-
-                          }
-
+                              }}
+                            >
+                              Add Image
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
@@ -539,11 +584,16 @@ function CreateVehiclePage() {
                       className="mySwiper"
                     >
                       {data.map((item, index) => {
-
                         return (
                           <SwiperSlide>
-                            <div key={item.key} className="placeholder_imageContainer"
-                              style={{ borderRadius: "2rem", overflow: "hidden" }}>
+                            <div
+                              key={item.key}
+                              className="placeholder_imageContainer"
+                              style={{
+                                borderRadius: "2rem",
+                                overflow: "hidden",
+                              }}
+                            >
                               {item.addedvehicleImageId ? (
                                 <>
                                   <img
@@ -551,13 +601,17 @@ function CreateVehiclePage() {
                                     alt={`Uploaded ${index + 1}`}
                                     style={userUploadedImage}
                                   />
-                                  <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
+                                  <div
+                                    onClick={() =>
+                                      handleDeleteImage(
+                                        item.addedvehicleImageId
+                                      )
+                                    }
                                     style={deleteImageIcon3}
                                   >
                                     <IoRemoveCircleOutline size={"2.5rem"} />
                                   </div>
                                 </>
-
                               ) : (
                                 <img
                                   src={placeHolder}
@@ -566,32 +620,37 @@ function CreateVehiclePage() {
                                 />
                               )}
                             </div>
-                          </SwiperSlide>)
-                      }
-                      )}
+                          </SwiperSlide>
+                        );
+                      })}
                     </Swiper>
                   </div>
                 </div>
               </div>
 
-              {isCompleting ?
-
-                <div className="completeVehicleButton"
+              {isCompleting ? (
+                <div
+                  className="completeVehicleButton"
                   style={completeVehicleButton}
-                ><CompleteSpinner /></div>
-
-                :
-
-                <div className="completeVehicleButton"
-                  style={{ ...completeVehicleButton, ...(addedVehicleImages.length === 0) ? { opacity: "0.7" } : {} }}
+                >
+                  <CompleteSpinner />
+                </div>
+              ) : (
+                <div
+                  className="completeVehicleButton"
+                  style={{
+                    ...completeVehicleButton,
+                    ...(addedVehicleImages.length === 0
+                      ? { opacity: "0.7" }
+                      : {}),
+                  }}
                   onClick={() => completeVehicleCreate()}
-                >Complete</div>
-
-              }
-
-
+                >
+                  Complete
+                </div>
+              )}
             </>
-          }
+          )}
         </div>
       </header>
 
@@ -644,8 +703,6 @@ function CreateVehiclePage() {
           }
         `}
       </style>
-
-
     </div>
   );
 }
@@ -654,68 +711,81 @@ export default CreateVehiclePage;
 
 const AddImageSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      display: "flex",
-      alignItems: "center",
-      height: "2.5rem",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "2.5rem",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
+        }}
+      ></div>
+    </div>
+  );
+};
 
 const RegisterSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      display: "flex",
-      alignItems: "center",
-      height: "2.5rem",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "2.5rem",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
-
+        }}
+      ></div>
+    </div>
+  );
+};
 
 const CompleteSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      display: "flex",
-      alignItems: "center",
-      height: "2.5rem",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "2.5rem",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
-
+        }}
+      ></div>
+    </div>
+  );
+};
 
 const addImageButton = {
   backgroundColor: "#007bff",
@@ -734,7 +804,7 @@ const addImageButton = {
   transform: "translateX(-50%)", // Centers it horizontally
   width: "15rem",
   height: "2.5rem",
-}
+};
 
 const placeHolderImage = {
   width: "20rem",
@@ -744,8 +814,7 @@ const placeHolderImage = {
   borderRadius: "1rem",
   overflow: "hidden",
   objectFit: "cover",
-
-}
+};
 
 const userUploadedImage = {
   width: "20rem",
@@ -754,16 +823,15 @@ const userUploadedImage = {
   maxWidth: "20rem",
   borderRadius: "1rem",
   margin: "0.5rem",
-
-}
+};
 
 const uploadImage2 = {
   width: "25rem",
   height: "25rem",
   objectFit: "cover",
   borderRadius: "1.5rem",
-  border: "2px solid transparent"
-}
+  border: "2px solid transparent",
+};
 
 const uploadedImagesContainer = {
   display: "flex",
@@ -773,7 +841,7 @@ const uploadedImagesContainer = {
   margin: "auto",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
-}
+};
 
 const vehicles = {
   Boat: "⛵",
@@ -800,7 +868,7 @@ const deleteImageIcon = {
   justifyItems: "center",
   cursor: "pointer",
   transition: "transform 0.3s ease-in-out",
-}
+};
 
 const deleteImageIconHover = {
   transform: "scale(1.2)",
@@ -818,7 +886,7 @@ const deleteImageIcon2 = {
   justifyItems: "center",
   cursor: "pointer",
   transition: "transform 0.3s ease-in-out",
-}
+};
 
 const deleteImageIcon3 = {
   backgroundColor: " #3e99",
@@ -832,15 +900,11 @@ const deleteImageIcon3 = {
   justifyItems: "center",
   cursor: "pointer",
   transition: "transform 0.3s ease-in-out",
-}
-
-
+};
 
 const deleteImageIconHover2 = {
   transform: "scale(1.2)",
 };
-
-
 
 const VehiclesVoyagesTitle = {
   fontSize: "1.6rem",
@@ -850,7 +914,7 @@ const VehiclesVoyagesTitle = {
   padding: ".3rem",
   paddingLeft: "1rem",
   paddingRight: "1rem",
-  borderRadius: "1.5rem"
+  borderRadius: "1.5rem",
 };
 
 const activeStyle = {
@@ -864,10 +928,9 @@ const pageStateDisplay = {
   width: "28%",
   margin: "auto",
   justifyContent: "space-between",
-}
+};
 
-const pageStateDisplayContainer = {
-}
+const pageStateDisplayContainer = {};
 
 const registerVehicleButton = {
   // position: "absolute",

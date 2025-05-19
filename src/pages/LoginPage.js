@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import "../assets/css/App.css";
-import "../assets/css/LoginPage.css"
+import "../assets/css/LoginPage.css";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -13,7 +13,7 @@ import {
   useResetPasswordMutation,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
-  updateUserFavorites
+  updateUserFavorites,
 } from "../slices/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
@@ -42,7 +42,7 @@ function LoginPage() {
   const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
   const [requestCode] = useRequestCodeMutation();
   const [resetPassword] = useResetPasswordMutation();
@@ -51,8 +51,10 @@ function LoginPage() {
     { isLoading: isLoadingRegisterUser, isSuccess: isSuccessRegisterUser },
   ] = useRegisterUserMutation();
 
-  const [getFavoriteVehicleIdsByUserId] = useLazyGetFavoriteVehicleIdsByUserIdQuery();
-  const [getFavoriteVoyageIdsByUserId] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
+  const [getFavoriteVehicleIdsByUserId] =
+    useLazyGetFavoriteVehicleIdsByUserIdQuery();
+  const [getFavoriteVoyageIdsByUserId] =
+    useLazyGetFavoriteVoyageIdsByUserIdQuery();
 
   const [
     confirmUser,
@@ -60,30 +62,30 @@ function LoginPage() {
   ] = useConfirmUserMutation();
 
   const handleForgotPassword = () => {
-    setPageState("ForgotPassword")
-  }
+    setPageState("ForgotPassword");
+  };
 
   const handleSignup = () => {
-    setPageState("Register1")
-  }
+    setPageState("Register1");
+  };
 
   const makeVisible = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   const makeVisibleRegister = () => {
-    setShowPasswordRegister(!showPasswordRegister)
-  }
+    setShowPasswordRegister(!showPasswordRegister);
+  };
   const makeVisibleRegister2 = () => {
-    setShowPasswordRegister2(!showPasswordRegister2)
-  }
+    setShowPasswordRegister2(!showPasswordRegister2);
+  };
 
   const makeVisibleUpdate = () => {
-    setShowPasswordUpdate1(!showPasswordUpdate1)
-  }
+    setShowPasswordUpdate1(!showPasswordUpdate1);
+  };
   const makeVisibleUpdate2 = () => {
-    setShowPasswordUpdate2(!showPasswordUpdate2)
-  }
+    setShowPasswordUpdate2(!showPasswordUpdate2);
+  };
   const handleConfirmCode = async () => {
     try {
       const confirmResponse = await confirmUser({
@@ -95,8 +97,7 @@ function LoginPage() {
       console.log("confirmResponse:...", confirmResponse);
       if (confirmResponse.token) {
         setPageState("Login");
-        // await 
-
+        // await
 
         dispatch(
           updateAsLoggedIn({
@@ -107,7 +108,6 @@ function LoginPage() {
           })
         );
       }
-
     } catch (err) {
       console.log(err);
     }
@@ -128,9 +128,13 @@ function LoginPage() {
         return;
       }
 
-      const favoriteVehicles = await getFavoriteVehicleIdsByUserId(loginResponse.userId)
+      const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
+        loginResponse.userId
+      );
       console.log("lazy -> favoriteVehicles: ", favoriteVehicles.data);
-      const favoriteVoyages = await getFavoriteVoyageIdsByUserId(loginResponse.userId)
+      const favoriteVoyages = await getFavoriteVoyageIdsByUserId(
+        loginResponse.userId
+      );
       console.log("lazy -> favoriteVoyages: ", favoriteVoyages.data);
 
       dispatch(
@@ -148,8 +152,6 @@ function LoginPage() {
           profileImageUrl: loginResponse.profileImageUrl,
         })
       );
-
-
 
       setUsername("");
       setPassword("");
@@ -195,7 +197,6 @@ function LoginPage() {
     }
   };
 
-
   const handleSendResetCode = async () => {
     requestCode(emailForgotPassword);
     setPageState("ResetPassword");
@@ -213,7 +214,7 @@ function LoginPage() {
       setPasswordUpdate2("");
       setSixDigitCode("");
       if (resetPasswordResponse.token) {
-        // await 
+        // await
         dispatch(
           updateAsLoggedIn({
             userId: resetPasswordResponse.userId,
@@ -231,24 +232,29 @@ function LoginPage() {
 
   const LoginSpinner = () => {
     return (
-      <div style={{
-        backgroundColor: "rgba(0, 119, 234,0.1)",
-        borderRadius: "1.5rem",
-        position: "relative",
-        margin: "auto",
-        height: "1.7rem",
-        display: "flex",
-        alignItems: "center",
-      }}>
-        <div className="spinner"
+      <div
+        style={{
+          backgroundColor: "rgba(0, 119, 234,0.1)",
+          borderRadius: "1.5rem",
+          position: "relative",
+          margin: "auto",
+          height: "1.7rem",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className="spinner"
           style={{
             height: "1rem",
             width: "1rem",
             border: "3px solid white",
             borderTop: "3px solid #1e90ff",
-          }}></div>
-      </div>)
-  }
+          }}
+        ></div>
+      </div>
+    );
+  };
 
   return (
     <div className="App">
@@ -261,351 +267,367 @@ function LoginPage() {
             </div>
           </div>
           <div style={mainWrapper}>
-            {
-              pageState === "Login" ?
-                <div style={mainContainer}>
-                  <div style={wrapper}>
-                    <div style={welcomeStyle}> Welcome To Parrots!</div>
-                    <div
-                      className="username-wrapper">
-                      <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="username-input"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-                    <div
-                      className="password-wrapper">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="password-input"
-                        style={{ color: parrotTextDarkBlue }}
-
-                      />
-                      <span style={{
+            {pageState === "Login" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+                  <div style={welcomeStyle}> Welcome To Parrots!</div>
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                  </div>
+                  <div className="password-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="password-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                    <span
+                      style={{
                         padding: "1rem",
                         position: "absolute",
-                        marginLeft: "-5rem",
-                        // marginTop: "-.2rem"
+                        marginLeft: "-4rem",
+                        marginTop: "-.3rem",
                       }}
-                        onClick={() => makeVisible()}
-                      >
-                        {
-                          showPassword ?
-                            <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                            <AiOutlineEye size="2rem" color="grey" />
-                        }
-                      </span>
-                    </div>
-                    <div className="forgot-password">
-                      <span className="forgotPasswordSpan"
-                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                        onClick={() => handleForgotPassword()}
-                      >
-                        Forgot password?
-                      </span>
-                    </div>
-                    <div className="login-button"
-                      onClick={() => handleLogin()}
-                    > {isLoggingIn ? <LoginSpinner /> : "Login"}</div>
+                      onClick={() => makeVisible()}
+                    >
+                      {showPassword ? (
+                        <AiOutlineEyeInvisible
+                          size="2rem"
+                          color={parrotTextDarkBlue}
+                        />
+                      ) : (
+                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
+                      )}
+                    </span>
+                  </div>
+                  <div className="forgot-password">
+                    <span
+                      className="forgotPasswordSpan"
+                      style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                      onClick={() => handleForgotPassword()}
+                    >
+                      Forgot password?
+                    </span>
+                  </div>
+                  <div className="login-button" onClick={() => handleLogin()}>
+                    {" "}
+                    {isLoggingIn ? <LoginSpinner /> : "Login"}
+                  </div>
 
-
-                    <div className="signup">
-                      <span>
-                        <span style={{ fontWeight: "bold", color: parrotTextDarkBlue, opacity: "0.5" }}>
-                          Don't have an account?
-                        </span>
-                        <span
-                          onClick={() => handleSignup()}
-                          style={{
-                            color: parrotTextDarkBlue,
-                            opacity: "0.8",
-                            fontWeight: "bold",
-                            paddingLeft: "0.5rem",
-                            cursor: "pointer"
-                          }}>
-                          Sign up
-                        </span>
+                  <div className="signup">
+                    <span>
+                      <span
+                        style={{
+                          fontWeight: "bold",
+                          color: parrotTextDarkBlue,
+                          opacity: "0.5",
+                        }}
+                      >
+                        Don't have an account?
                       </span>
-                    </div>
+                      <span
+                        onClick={() => handleSignup()}
+                        style={{
+                          color: parrotTextDarkBlue,
+                          opacity: "0.8",
+                          fontWeight: "bold",
+                          paddingLeft: "0.5rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Sign up
+                      </span>
+                    </span>
                   </div>
                 </div>
-                : pageState === "Register1" ?
-                  <div style={mainContainer}>
-                    <div style={wrapper}>
-                      <div style={welcomeStyle}> Welcome To Parrots! </div>
-                      <div
-                        className="username-wrapper">
-                        <input
-                          type="text"
-                          placeholder="Username (max 25 characters)"
-                          value={usernameRegister}
-                          onChange={(e) => setUsernameRegister(e.target.value)}
-                          className="username-input"
-                          style={{ color: parrotTextDarkBlue }}
-
-                        />
-                      </div>
-                      <div
-                        className="username-wrapper">
-                        <input
-                          type="text"
-                          placeholder="Email"
-                          value={emailRegister}
-                          onChange={(e) => setEmailRegister(e.target.value)}
-                          className="username-input"
-                          style={{ color: parrotTextDarkBlue }}
-
-                        />
-                      </div>
-
-                      <div
-                        className="password-wrapper">
-                        <input
-                          type={showPasswordRegister ? "text" : "password"}
-                          placeholder="Password"
-                          value={passwordRegister}
-                          onChange={(e) => setPasswordRegister(e.target.value)}
-                          className="password-input"
-                          style={{ color: parrotTextDarkBlue }}
-
-                        />
-                        <span style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-5rem",
-                          // marginTop: "-.2rem"
-                        }}
-                          onClick={() => makeVisibleRegister()}
-                        >
-                          {
-                            showPasswordRegister ?
-                              <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                              <AiOutlineEye size="2rem" color="grey" />
-                          }
-                        </span>
-                      </div>
-
-
-                      <div
-                        className="password-wrapper">
-                        <input
-                          type={showPasswordRegister2 ? "text" : "password"}
-                          placeholder="Re-enter Password"
-                          value={passwordRegister2}
-                          onChange={(e) => setPasswordRegister2(e.target.value)}
-                          className="password-input"
-                          style={{ color: parrotTextDarkBlue }}
-
-                        />
-                        <span style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-5rem",
-                          // marginTop: "-.2rem"
-                        }}
-                          onClick={() => makeVisibleRegister2()}
-                        >
-                          {
-                            showPasswordRegister2 ?
-                              <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                              <AiOutlineEye size="2rem" color="grey" />
-                          }
-                        </span>
-                      </div>
-
-                      <div className="login-button"
-                        onClick={() => handleRegister()}
-                      > Register</div>
-
-                      <div className="signup">
-                        <span className="signupSpan">
-
-                          <span className="signupLinkSpan"
-                            onClick={() => setPageState("Login")}
-                            style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                          >
-                            Back to Login
-                          </span>
-                        </span>
-                      </div>
-                    </div>
+              </div>
+            ) : pageState === "Register1" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Username (max 25 characters)"
+                      value={usernameRegister}
+                      onChange={(e) => setUsernameRegister(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
                   </div>
-                  : pageState === "Register2" ?
-                    <div style={mainContainer}>
-                      <div style={wrapper}>
-                        <div style={welcomeStyle}> Welcome To Parrots! </div>
-                        <div
-                          className="username-wrapper">
-                          <input
-                            type="text"
-                            placeholder="Confirmation Code"
-                            value={confirmationCode}
-                            onChange={(e) => setConfirmationCode(e.target.value)}
-                            className="username-input"
-                            style={{ color: parrotTextDarkBlue }}
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Email"
+                      value={emailRegister}
+                      onChange={(e) => setEmailRegister(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                  </div>
 
-                          />
-                        </div>
-                        <div className="login-button"
-                          onClick={() => handleConfirmCode()}
-                        > Confirm</div>
-                        <div className="signup">
-                          <span className="signupSpan"
-                            style={{ marginTop: ".5rem" }}
-                          >
-                            <span className="signupLinkSpan"
-                              onClick={() => setPageState("Login")}
-                              style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                            >
-                              Back to Login
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    : pageState === "ForgotPassword" ?
-                      <div style={mainContainer}>
-                        <div style={wrapper}>
-                          <div style={welcomeStyle}> Welcome To Parrots! </div>
-                          <div
-                            className="username-wrapper">
-                            <input
-                              type="text"
-                              placeholder="Enter email"
-                              value={emailForgotPassword}
-                              onChange={(e) => setEmailForgotPassword(e.target.value)}
-                              className="username-input"
-                              style={{ color: parrotTextDarkBlue }}
+                  <div className="password-wrapper">
+                    <input
+                      type={showPasswordRegister ? "text" : "password"}
+                      placeholder="Password"
+                      value={passwordRegister}
+                      onChange={(e) => setPasswordRegister(e.target.value)}
+                      className="password-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                    <span
+                      style={{
+                        padding: "1rem",
+                        position: "absolute",
+                        marginLeft: "-4rem",
+                        marginTop: "-.3rem",
+                      }}
+                      onClick={() => makeVisibleRegister()}
+                    >
+                      {showPasswordRegister ? (
+                        <AiOutlineEyeInvisible
+                          size="2rem"
+                          color={parrotTextDarkBlue}
+                        />
+                      ) : (
+                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
+                      )}
+                    </span>
+                  </div>
 
-                            />
-                          </div>
-                          <div className="login-button"
-                            style={{ marginTop: "1rem" }}
-                            onClick={() => handleSendResetCode()}
-                          >Send Code</div>
-                          <div className="signup">
-                            <span className="signupSpan"
-                              style={{ marginTop: ".5rem" }}
-                            >
-                              <span className="signupLinkSpan"
-                                onClick={() => setPageState("Login")}
-                                style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                              >
-                                Back to Login
-                              </span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      : pageState === "ResetPassword" ?
-                        <div style={mainContainer}>
-                          <div style={wrapper}>
-                            <div style={welcomeStyle}> Welcome To Parrots! </div>
-                            <div
-                              className="password-wrapper">
-                              <input
-                                type={showPasswordUpdate1 ? "text" : "password"}
-                                placeholder="Password"
-                                value={passwordUpdate1}
-                                onChange={(e) => setPasswordUpdate1(e.target.value)}
-                                className="password-input"
-                                style={{ color: parrotTextDarkBlue }}
+                  <div className="password-wrapper">
+                    <input
+                      type={showPasswordRegister2 ? "text" : "password"}
+                      placeholder="Re-enter Password"
+                      value={passwordRegister2}
+                      onChange={(e) => setPasswordRegister2(e.target.value)}
+                      className="password-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                    <span
+                      style={{
+                        padding: "1rem",
+                        position: "absolute",
+                        marginLeft: "-4rem",
+                        marginTop: "-.3rem",
+                      }}
+                      onClick={() => makeVisibleRegister2()}
+                    >
+                      {showPasswordRegister2 ? (
+                        <AiOutlineEyeInvisible
+                          size="2rem"
+                          color={parrotTextDarkBlue}
+                        />
+                      ) : (
+                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
+                      )}
+                    </span>
+                  </div>
 
-                              />
-                              <span style={{
-                                padding: "1rem",
-                                position: "absolute",
-                                marginLeft: "-5rem",
-                                // marginTop: "-.2rem"
-                              }}
-                                onClick={() => makeVisibleUpdate()}
-                              >
-                                {
-                                  showPasswordUpdate1 ?
-                                    <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                                    <AiOutlineEye size="2rem" color="grey" />
-                                }
-                              </span>
-                            </div>
-                            <div
-                              className="password-wrapper">
-                              <input
-                                type={showPasswordUpdate2 ? "text" : "password"}
-                                placeholder="Re-enter Password"
-                                value={passwordUpdate2}
-                                onChange={(e) => setPasswordUpdate2(e.target.value)}
-                                className="password-input"
-                                style={{ color: parrotTextDarkBlue }}
+                  <div
+                    className="login-button"
+                    onClick={() => handleRegister()}
+                  >
+                    {" "}
+                    Register
+                  </div>
 
-                              />
-                              <span style={{
-                                padding: "1rem",
-                                position: "absolute",
-                                marginLeft: "-5rem",
-                                // marginTop: "-.2rem"
-                              }}
-                                onClick={() => makeVisibleUpdate2()}
-                              >
-                                {
-                                  showPasswordUpdate2 ?
-                                    <AiOutlineEyeInvisible size="2rem" color="grey" /> :
-                                    <AiOutlineEye size="2rem" color="grey" />
-                                }
-                              </span>
-                            </div>
+                  <div className="signup">
+                    <span className="signupSpan">
+                      <span
+                        className="signupLinkSpan"
+                        onClick={() => setPageState("Login")}
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                      >
+                        Back to Login
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "Register2" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Confirmation Code"
+                      value={confirmationCode}
+                      onChange={(e) => setConfirmationCode(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                  </div>
+                  <div
+                    className="login-button"
+                    onClick={() => handleConfirmCode()}
+                  >
+                    {" "}
+                    Confirm
+                  </div>
+                  <div className="signup">
+                    <span className="signupSpan" style={{ marginTop: ".5rem" }}>
+                      <span
+                        className="signupLinkSpan"
+                        onClick={() => setPageState("Login")}
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                      >
+                        Back to Login
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "ForgotPassword" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Enter email"
+                      value={emailForgotPassword}
+                      onChange={(e) => setEmailForgotPassword(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                  </div>
+                  <div
+                    className="login-button"
+                    style={{ marginTop: "1rem" }}
+                    onClick={() => handleSendResetCode()}
+                  >
+                    Send Code
+                  </div>
+                  <div className="signup">
+                    <span className="signupSpan" style={{ marginTop: ".5rem" }}>
+                      <span
+                        className="signupLinkSpan"
+                        onClick={() => setPageState("Login")}
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                      >
+                        Back to Login
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "ResetPassword" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+                  <div className="password-wrapper">
+                    <input
+                      type={showPasswordUpdate1 ? "text" : "password"}
+                      placeholder="Password"
+                      value={passwordUpdate1}
+                      onChange={(e) => setPasswordUpdate1(e.target.value)}
+                      className="password-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                    <span
+                      style={{
+                        padding: "1rem",
+                        position: "absolute",
+                        marginLeft: "-4rem",
+                        marginTop: "-.3rem",
+                      }}
+                      onClick={() => makeVisibleUpdate()}
+                    >
+                      {showPasswordUpdate1 ? (
+                        <AiOutlineEyeInvisible
+                          size="2rem"
+                          color={parrotTextDarkBlue}
+                        />
+                      ) : (
+                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
+                      )}
+                    </span>
+                  </div>
+                  <div className="password-wrapper">
+                    <input
+                      type={showPasswordUpdate2 ? "text" : "password"}
+                      placeholder="Re-enter Password"
+                      value={passwordUpdate2}
+                      onChange={(e) => setPasswordUpdate2(e.target.value)}
+                      className="password-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                    <span
+                      style={{
+                        padding: "1rem",
+                        position: "absolute",
+                        marginLeft: "-4rem",
+                        marginTop: "-.3rem",
+                      }}
+                      onClick={() => makeVisibleUpdate2()}
+                    >
+                      {showPasswordUpdate2 ? (
+                        <AiOutlineEyeInvisible
+                          size="2rem"
+                          color={parrotTextDarkBlue}
+                        />
+                      ) : (
+                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
+                      )}
+                    </span>
+                  </div>
 
-                            <div
-                              className="username-wrapper">
-                              <input
-                                type="text"
-                                placeholder="Enter 6 digit code"
-                                value={sixDigitCode}
-                                onChange={(e) => setSixDigitCode(e.target.value)}
-                                className="username-input"
-                                style={{ color: parrotTextDarkBlue }}
+                  <div className="username-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Enter 6 digit code"
+                      value={sixDigitCode}
+                      onChange={(e) => setSixDigitCode(e.target.value)}
+                      className="username-input"
+                      style={{ color: parrotTextDarkBlue }}
+                    />
+                  </div>
 
-                              />
-                            </div>
+                  <div
+                    className="login-button"
+                    onClick={() => handleResetPassword()}
+                  >
+                    {" "}
+                    Update Password
+                  </div>
 
-
-                            <div className="login-button"
-                              onClick={() => handleResetPassword()}
-                            > Update Password</div>
-
-                            <div className="signup">
-                              <span className="signupSpan">
-
-                                <span className="signupLinkSpan"
-                                  onClick={() => setPageState("Login")}
-                                  style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                                >
-                                  Back to Login
-                                </span>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        :
-                        <></>
-            }
+                  <div className="signup">
+                    <span className="signupSpan">
+                      <span
+                        className="signupLinkSpan"
+                        onClick={() => setPageState("Login")}
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                      >
+                        Back to Login
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
-      </header >
-    </div >
+      </header>
+    </div>
   );
 }
 
 export default LoginPage;
 
-const mainWrapper = {
-}
+const mainWrapper = {};
 
 const wrapper = {
   backgroundColor: "white",
@@ -614,7 +636,7 @@ const wrapper = {
   paddingTop: "2rem",
   paddingBottom: "3rem",
   borderRadius: "1.5rem",
-}
+};
 
 const mainContainer = {
   backgroundColor: "rgba(255, 255, 255, .3)",
@@ -624,14 +646,13 @@ const mainContainer = {
   padding: "1rem",
   display: "flex",
   justifyContent: "center",
-  marginTop: "3rem"
-}
+  marginTop: "3rem",
+};
 
 const welcomeStyle = {
   color: "rgba(10, 119, 234,.7)",
   margin: "0.5rem",
   fontSize: "1.8rem",
   fontWeight: "bold",
-  borderRadius: "2rem"
-}
-
+  borderRadius: "2rem",
+};

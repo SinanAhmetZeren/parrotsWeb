@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import "../assets/css/CreateVehicle.css"
+import "../assets/css/CreateVehicle.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import 'swiper/css';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/pagination";
 import {
   useCheckAndDeleteVehicleMutation,
   useGetVehiclesByUserByIdQuery,
@@ -17,7 +17,7 @@ import {
   useAddVoyageImageMutation,
   useCheckAndDeleteVoyageMutation,
   useCreateVoyageMutation,
-  useDeleteVoyageImageMutation
+  useDeleteVoyageImageMutation,
 } from "../slices/VoyageSlice";
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
@@ -27,29 +27,29 @@ import { useLocation } from "react-router-dom";
 
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const userId = localStorage.getItem("storedUserId")
+  const userId = localStorage.getItem("storedUserId");
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(1)
-  const [voyageBrief, setVoyageBrief] = useState("333")
-  const [voyageDescription, setVoyageDescription] = useState("333")
-  const [selectedVacancy, setSelectedVacancy] = useState(3);  // empty  
-  const [voyageName, setVoyageName] = useState("xyz")
+  const [pageState, setPageState] = useState(1);
+  const [voyageBrief, setVoyageBrief] = useState("333");
+  const [voyageDescription, setVoyageDescription] = useState("333");
+  const [selectedVacancy, setSelectedVacancy] = useState(3); // empty
+  const [voyageName, setVoyageName] = useState("xyz");
   const [minPrice, setMinPrice] = useState(5); // null
   const [maxPrice, setMaxPrice] = useState(5);
   const [isAuction, setIsAuction] = useState(false);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(true);
   const [lastBidDate, setLastBidDate] = useState("2025-04-30");
-  const [voyageId, setVoyageId] = useState("")
+  const [voyageId, setVoyageId] = useState("");
   const [order, setOrder] = useState(1);
-  const [isCreatingVoyage, setIsCreatingVoyage] = useState(false)
-  const [vehicleId, setVehicleId] = useState(3) //""
+  const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
+  const [vehicleId, setVehicleId] = useState(3); //""
   const [vehiclesList, setVehiclesList] = useState([
     { label: "Walk", value: 63 },
     { label: "Run", value: 64 },
-  ])
+  ]);
   const [dates, setDates] = useState([
     {
       startDate: null,
@@ -57,7 +57,6 @@ export default function CreateVoyagePage() {
       key: "selection",
     },
   ]);
-
 
   const [addVoyageImage] = useAddVoyageImageMutation();
   const [deleteVoyageImage] = useDeleteVoyageImageMutation();
@@ -73,7 +72,6 @@ export default function CreateVoyagePage() {
   } = useGetVehiclesByUserByIdQuery(userId);
 
   useEffect(() => {
-
     const dropdownData =
       usersVehiclesSuccess &&
       [
@@ -86,12 +84,8 @@ export default function CreateVoyagePage() {
         }))
       );
 
-    setVehiclesList(dropdownData)
-
+    setVehiclesList(dropdownData);
   }, [usersVehiclesSuccess, usersVehiclesData, setVehiclesList]);
-
-
-
 
   const addWaypointButton = {
     backgroundColor: "#007bff",
@@ -109,9 +103,8 @@ export default function CreateVoyagePage() {
     padding: "0.3rem",
     paddingRight: "1rem",
     paddingLeft: "1rem",
-    marginTop: "1rem"
-
-  }
+    marginTop: "1rem",
+  };
 
   function convertDateFormat(inputDate) {
     const date = new Date(inputDate);
@@ -128,18 +121,20 @@ export default function CreateVoyagePage() {
 
   function convertDateFormat_LastBidDate(inputDate) {
     const date = new Date(`${inputDate}T00:00:00.000Z`);
-    const formattedDate = `${date.getUTCFullYear()}-${("0" + (date.getUTCMonth() + 1)).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`;
+    const formattedDate = `${date.getUTCFullYear()}-${(
+      "0" +
+      (date.getUTCMonth() + 1)
+    ).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`;
     return formattedDate;
   }
-
 
   const handleCreateVoyage = async () => {
     if (!voyageImage) {
       return;
     }
     setIsCreatingVoyage(true);
-    const startDate = dates[0].startDate
-    const endDate = dates[0].endDate
+    const startDate = dates[0].startDate;
+    const endDate = dates[0].endDate;
 
     try {
       const formattedStartDate = convertDateFormat(startDate);
@@ -194,7 +189,7 @@ export default function CreateVoyagePage() {
           key: "selection",
         },
       ]);
-      setPageState(2)
+      setPageState(2);
     } catch (error) {
       console.error("Error uploading image", error);
     }
@@ -217,14 +212,15 @@ export default function CreateVoyagePage() {
     console.log("vehicleId:", vehicleId);
     console.log("dates - start:", dates[0].startDate);
     console.log("dates - end:", dates[0].startDate);
-  }
+  };
 
   return (
-    <div style={{
-      height: "100vh",
-      fontSize: "2rem"
-    }}>
-
+    <div
+      style={{
+        height: "100vh",
+        fontSize: "2rem",
+      }}
+    >
       <div className="App">
         <header className="App-header">
           <div className="flex mainpage_Container">
@@ -236,124 +232,136 @@ export default function CreateVoyagePage() {
             </div>
 
             {
-              // false && 
-              pageState === 1 &&
-              <>
-                <div style={{ position: "relative" }}>
-                  <ProfileImageandDetailsTitlesComponent />
-                  <div style={profileImageandDetailsContainer}>
-
-                    <div
-                      style={{
-                        backgroundColor: "rgba(255,255,255,.3)",
-                        borderRadius: "1.5rem",
-                        margin: "auto",
-                        padding: "1rem"
-                      }}
-                    >
-                      <VoyageProfileImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage} />
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "1.5rem" }}>
-
-                      <VoyageDetailsInputsComponent
-                        selectedVacancy={selectedVacancy}
-                        setSelectedVacancy={setSelectedVacancy}
-                        vehicleId={vehicleId}
-                        setVehicleId={setVehicleId}
-                        vehiclesList={vehiclesList}
-                        voyageName={voyageName}
-                        setVoyageName={setVoyageName}
-                        minPrice={minPrice}
-                        setMinPrice={setMinPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        lastBidDate={lastBidDate}
-                        setLastBidDate={setLastBidDate}
-                        isAuction={isAuction}
-                        isFixedPrice={isFixedPrice}
-                        setIsAuction={setIsAuction}
-                        setIsFixedPrice={setIsFixedPrice}
-                      />
-
-                    </div>
-                    <div style={{ backgroundColor: "rgba(255,255,255,.31)", borderRadius: "1.5rem" }}>
-                      <div style={datePickerContainer}>
-                        <CreateVoyageDatePicker
-                          dates={dates}
-                          setDates={setDates}
-                          calendarOpen={calendarOpen}
-                          setCalendarOpen={setCalendarOpen}
+              // false &&
+              pageState === 1 && (
+                <>
+                  <div style={{ position: "relative" }}>
+                    <ProfileImageandDetailsTitlesComponent />
+                    <div style={profileImageandDetailsContainer}>
+                      <div
+                        style={{
+                          backgroundColor: "rgba(255,255,255,.3)",
+                          borderRadius: "1.5rem",
+                          margin: "auto",
+                          padding: "1rem",
+                        }}
+                      >
+                        <VoyageProfileImageUploader
+                          voyageImage={voyageImage}
+                          setVoyageImage={setVoyageImage}
                         />
                       </div>
-                    </div>
+                      <div
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.3)",
+                          borderRadius: "1.5rem",
+                        }}
+                      >
+                        <VoyageDetailsInputsComponent
+                          selectedVacancy={selectedVacancy}
+                          setSelectedVacancy={setSelectedVacancy}
+                          vehicleId={vehicleId}
+                          setVehicleId={setVehicleId}
+                          vehiclesList={vehiclesList}
+                          voyageName={voyageName}
+                          setVoyageName={setVoyageName}
+                          minPrice={minPrice}
+                          setMinPrice={setMinPrice}
+                          maxPrice={maxPrice}
+                          setMaxPrice={setMaxPrice}
+                          lastBidDate={lastBidDate}
+                          setLastBidDate={setLastBidDate}
+                          isAuction={isAuction}
+                          isFixedPrice={isFixedPrice}
+                          setIsAuction={setIsAuction}
+                          setIsFixedPrice={setIsFixedPrice}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          backgroundColor: "rgba(255,255,255,.31)",
+                          borderRadius: "1.5rem",
+                        }}
+                      >
+                        <div style={datePickerContainer}>
+                          <CreateVoyageDatePicker
+                            dates={dates}
+                            setDates={setDates}
+                            calendarOpen={calendarOpen}
+                            setCalendarOpen={setCalendarOpen}
+                          />
+                        </div>
+                      </div>
 
-                    {/* <div style={addWaypointButton}
+                      {/* <div style={addWaypointButton}
                       onClick={() => handlePrintState()}
                     >Print State</div> */}
-
+                    </div>
                   </div>
-                </div>
-                <div style={{ position: "relative" }}>
-                  <BriefAndDescriptionTitlesComponent />
-                  <VoyageBriefAndDescriptionComponent
-                    voyageDescription={voyageDescription}
-                    setVoyageDescription={setVoyageDescription}
-                    voyageBrief={voyageBrief}
-                    setVoyageBrief={setVoyageBrief}
+                  <div style={{ position: "relative" }}>
+                    <BriefAndDescriptionTitlesComponent />
+                    <VoyageBriefAndDescriptionComponent
+                      voyageDescription={voyageDescription}
+                      setVoyageDescription={setVoyageDescription}
+                      voyageBrief={voyageBrief}
+                      setVoyageBrief={setVoyageBrief}
+                    />
+                  </div>
+                  <CreateVoyageButton
+                    handleCreateVoyage={handleCreateVoyage}
+                    isCreatingVoyage={isCreatingVoyage}
+                    disabled={
+                      !(
+                        voyageDescription &&
+                        voyageBrief &&
+                        voyageImage &&
+                        selectedVacancy &&
+                        vehicleId &&
+                        voyageName &&
+                        minPrice &&
+                        maxPrice &&
+                        lastBidDate &&
+                        // isAuction !== "" &&
+                        // isFixedPrice !== "" &&
+                        dates[0]?.startDate
+                      )
+                    }
                   />
-                </div>
-                <CreateVoyageButton
-                  handleCreateVoyage={handleCreateVoyage}
-                  isCreatingVoyage={isCreatingVoyage}
-
-                  disabled={!(
-                    voyageDescription &&
-                    voyageBrief &&
-                    voyageImage &&
-                    selectedVacancy &&
-                    vehicleId &&
-                    voyageName &&
-                    minPrice &&
-                    maxPrice &&
-                    lastBidDate &&
-                    // isAuction !== "" &&
-                    // isFixedPrice !== "" &&
-                    dates[0]?.startDate
-                  )}
-
-                />
-                {/* <div style={addWaypointButton}
+                  {/* <div style={addWaypointButton}
                   onClick={() => setPageState(2)}
                 >Back</div> */}
-              </>
+                </>
+              )
             }
 
             {
-              // false && 
-              pageState === 2 &&
-              <>
-                <VoyageImageUploaderComponent
-                  voyageImage={voyageImage} setVoyageImage={setVoyageImage}
-                  addedVoyageImages={addedVoyageImages} setAddedVoyageImages={setAddedVoyageImages}
-                  voyageId={voyageId}
-                  addVoyageImage={addVoyageImage}
-                  deleteVoyageImage={deleteVoyageImage}
-                  isUploadingImage={isUploadingImage} setIsUploadingImage={setIsUploadingImage}
-                  setPageState={setPageState}
-                />
-                {/* <div style={addWaypointButton}
+              // false &&
+              pageState === 2 && (
+                <>
+                  <VoyageImageUploaderComponent
+                    voyageImage={voyageImage}
+                    setVoyageImage={setVoyageImage}
+                    addedVoyageImages={addedVoyageImages}
+                    setAddedVoyageImages={setAddedVoyageImages}
+                    voyageId={voyageId}
+                    addVoyageImage={addVoyageImage}
+                    deleteVoyageImage={deleteVoyageImage}
+                    isUploadingImage={isUploadingImage}
+                    setIsUploadingImage={setIsUploadingImage}
+                    setPageState={setPageState}
+                  />
+                  {/* <div style={addWaypointButton}
                   onClick={() => setPageState(1)}
                 >Back</div> */}
-                {/* <div style={addWaypointButton}
+                  {/* <div style={addWaypointButton}
                   onClick={() => handlePrintState()}
                 >Print States</div> */}
-
-
-              </>
+                </>
+              )
             }
 
             {/* {pageState !== 3 || */}
-            {pageState === 3 &&
+            {pageState === 3 && (
               <>
                 <AddWaypointsPage
                   voyageId={voyageId}
@@ -362,39 +370,35 @@ export default function CreateVoyagePage() {
                   setOrder={setOrder}
                 />
               </>
-            }
-
-          </div >
-        </header >
-      </div >
-    </div >
-  )
+            )}
+          </div>
+        </header>
+      </div>
+    </div>
+  );
 }
-
 
 const ProfileImageandDetailsTitlesComponent = () => {
   return (
     <div style={profileImageandDetailsTitles}>
       <div>
-        <span
-          style={shadowText} >
-          Profile Image</span>
+        <span style={shadowText}>Profile Image</span>
       </div>
       <div>
-        <span
-          style={shadowText} >
-          Details</span>
+        <span style={shadowText}>Details</span>
       </div>
       <div>
-        <span
-          style={shadowText} >
-          Dates</span>
+        <span style={shadowText}>Dates</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-const CreateVoyageButton = ({ handleCreateVoyage, disabled, isCreatingVoyage }) => {
+const CreateVoyageButton = ({
+  handleCreateVoyage,
+  disabled,
+  isCreatingVoyage,
+}) => {
   const buttonStyle = {
     width: "30%",
     backgroundColor: "#007bff",
@@ -414,7 +418,6 @@ const CreateVoyageButton = ({ handleCreateVoyage, disabled, isCreatingVoyage }) 
     MozOsxFontSmoothing: "grayscale",
   };
 
-
   return (
     <div
       style={{
@@ -422,10 +425,9 @@ const CreateVoyageButton = ({ handleCreateVoyage, disabled, isCreatingVoyage }) 
         justifyContent: "center",
       }}
     >
-
       <button
         onClick={() => {
-          handleCreateVoyage()
+          handleCreateVoyage();
         }}
         disabled={disabled}
         style={disabled ? { ...buttonStyle, opacity: 0.5 } : buttonStyle}
@@ -433,17 +435,13 @@ const CreateVoyageButton = ({ handleCreateVoyage, disabled, isCreatingVoyage }) 
         {isCreatingVoyage ? <CreateVogageSpinner /> : "Next"}
       </button>
     </div>
-  )
-}
+  );
+};
 
 const VoyageBriefInput = ({ voyageBrief, setVoyageBrief }) => {
-
   return (
     <div className="brief-editor-container">
-      <style>
-        {quellStyleBrief}
-
-      </style>
+      <style>{quellStyleBrief}</style>
       <ReactQuill
         value={voyageBrief}
         onChange={setVoyageBrief}
@@ -458,17 +456,16 @@ const VoyageBriefInput = ({ voyageBrief, setVoyageBrief }) => {
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-const VoyageDescriptionInput = ({ voyageDescription, setVoyageDescription }) => {
-
+const VoyageDescriptionInput = ({
+  voyageDescription,
+  setVoyageDescription,
+}) => {
   return (
     <div className="description-editor-container">
-      <style>
-        {quellStyleDescription}
-
-      </style>
+      <style>{quellStyleDescription}</style>
       <ReactQuill
         value={voyageDescription}
         onChange={setVoyageDescription}
@@ -483,69 +480,79 @@ const VoyageDescriptionInput = ({ voyageDescription, setVoyageDescription }) => 
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-const VoyageBriefAndDescriptionComponent = ({ voyageBrief, setVoyageBrief,
-  voyageDescription, setVoyageDescription
+const VoyageBriefAndDescriptionComponent = ({
+  voyageBrief,
+  setVoyageBrief,
+  voyageDescription,
+  setVoyageDescription,
 }) => {
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "row",
-      backgroundColor: "rgba(255,255,255,.3)",
-      marginLeft: "1rem",
-      marginRight: "1rem",
-      borderRadius: "1.5rem",
-      marginBottom: "1rem",
-      alignItems: "flex-start", // Ensures children align to the top
-      justifyContent: "space-around", // Distributes space around children
-    }}>
-      <div style={{
-        backgroundColor: "rgba(255,255,255,.3)", // -- > this item should go to the top
-        padding: "1rem",
-        marginTop: "3rem",
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        backgroundColor: "rgba(255,255,255,.3)",
+        marginLeft: "1rem",
+        marginRight: "1rem",
         borderRadius: "1.5rem",
-        width: "35%",
         marginBottom: "1rem",
-      }}>
+        alignItems: "flex-start", // Ensures children align to the top
+        justifyContent: "space-around", // Distributes space around children
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "rgba(255,255,255,.3)", // -- > this item should go to the top
+          padding: "1rem",
+          marginTop: "3rem",
+          borderRadius: "1.5rem",
+          width: "35%",
+          marginBottom: "1rem",
+        }}
+      >
         <div style={BriefContainer}>
-          <VoyageBriefInput voyageBrief={voyageBrief} setVoyageBrief={setVoyageBrief} />
+          <VoyageBriefInput
+            voyageBrief={voyageBrief}
+            setVoyageBrief={setVoyageBrief}
+          />
         </div>
       </div>
-      <div style={{
-        backgroundColor: "rgba(255,255,255,.3)",
-        padding: "1rem",
-        marginBottom: "1.5rem",
-        marginTop: "3rem",
-        borderRadius: "1.5rem",
-        width: "62%",
-      }}>
+      <div
+        style={{
+          backgroundColor: "rgba(255,255,255,.3)",
+          padding: "1rem",
+          marginBottom: "1.5rem",
+          marginTop: "3rem",
+          borderRadius: "1.5rem",
+          width: "62%",
+        }}
+      >
         <div style={DescriptionContainer}>
-          <VoyageDescriptionInput voyageDescription={voyageDescription} setVoyageDescription={setVoyageDescription} />
+          <VoyageDescriptionInput
+            voyageDescription={voyageDescription}
+            setVoyageDescription={setVoyageDescription}
+          />
         </div>
-      </div >
-    </div >
-
-  )
-}
+      </div>
+    </div>
+  );
+};
 
 const BriefAndDescriptionTitlesComponent = () => {
   return (
     <div style={BriefAndDescriptionTitles}>
       <div>
-        <span
-          style={shadowText} >
-          Brief</span>
+        <span style={shadowText}>Brief</span>
       </div>
       <div>
-        <span
-          style={shadowText} >
-          Description</span>
+        <span style={shadowText}>Description</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const datePickerContainer = {
   alignContent: "center",
@@ -554,8 +561,8 @@ const datePickerContainer = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  transform: "scale(.93)"
-}
+  transform: "scale(.93)",
+};
 
 const shadowText = {
   color: "white",
@@ -572,7 +579,7 @@ const shadowText = {
 -2px -2px 4px rgba(255, 255, 255, 0.2) /* Inner highlight */
 `,
   filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4))", // Enhances shadow effect
-}
+};
 
 const profileImageandDetailsTitles = {
   // backgroundColor: "rgba(255,255,255,0.3)",
@@ -586,8 +593,8 @@ const profileImageandDetailsTitles = {
   position: "absolute",
   top: "1rem",
   paddingLeft: "2rem",
-  paddingRight: "2rem"
-}
+  paddingRight: "2rem",
+};
 
 const BriefAndDescriptionTitles = {
   marginLeft: "1rem",
@@ -600,8 +607,8 @@ const BriefAndDescriptionTitles = {
   position: "absolute",
   top: "0rem",
   paddingLeft: "2rem",
-  paddingRight: "2rem"
-}
+  paddingRight: "2rem",
+};
 
 const profileImageandDetailsContainer = {
   backgroundColor: "rgba(255,255,255,0.3)",
@@ -613,19 +620,19 @@ const profileImageandDetailsContainer = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr 1fr",
   gap: "1rem",
-}
+};
 
 const BriefContainer = {
   backgroundColor: "white",
   borderRadius: "1.5rem",
-  overflow: "hidden"
-}
+  overflow: "hidden",
+};
 
 const DescriptionContainer = {
   backgroundColor: "white",
   borderRadius: "1.5rem",
-  overflow: "hidden"
-}
+  overflow: "hidden",
+};
 
 const quellStyleBrief = `
       .brief-editor-container .ql-editor {
@@ -634,7 +641,7 @@ const quellStyleBrief = `
       line-height: 1.5;
       color: black
       }
-    `
+    `;
 
 const quellStyleDescription = `
     .description-editor-container .ql-editor {
@@ -643,25 +650,30 @@ const quellStyleDescription = `
     line-height: 1.5;
     color: black
     }
-  `
+  `;
 
 const CreateVogageSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      display: "flex",
-      alignItems: "center",
-      height: "2rem",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "2rem",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
+        }}
+      ></div>
+    </div>
+  );
+};

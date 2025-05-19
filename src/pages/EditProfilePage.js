@@ -1,10 +1,15 @@
 /* eslint-disable no-undef */
-import "../assets/css/ProfilePage.css"
+import "../assets/css/ProfilePage.css";
 import React, { useState, useEffect, useRef, createRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useGetUserByIdQuery, usePatchUserMutation, useUpdateBackgroundImageMutation, useUpdateProfileImageMutation } from "../slices/UserSlice";
+import {
+  useGetUserByIdQuery,
+  usePatchUserMutation,
+  useUpdateBackgroundImageMutation,
+  useUpdateProfileImageMutation,
+} from "../slices/UserSlice";
 import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
@@ -23,7 +28,7 @@ when pressed update:
 */
 
 export function EditProfilePage() {
-  const local_userId = localStorage.getItem("storedUserId")
+  const local_userId = localStorage.getItem("storedUserId");
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
 
@@ -57,15 +62,14 @@ export function EditProfilePage() {
   const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
   const handleGoToPublicProfilePage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
-  }
+  };
   const handleGoToProfilePage = () => {
     navigate(`/profile`);
-  }
+  };
 
   const [patchUser] = usePatchUserMutation();
   const [updateBackgroundImage] = useUpdateBackgroundImageMutation();
   const [updateProfileImage] = useUpdateProfileImageMutation();
-
 
   const {
     data: userData,
@@ -92,9 +96,7 @@ export function EditProfilePage() {
       setLinkedinProfile(userData.linkedin || "");
       setTiktokProfile(userData.tiktok || "");
     }
-
-  }, [userData, isSuccessUser])
-
+  }, [userData, isSuccessUser]);
 
   const handlePatchUser = async () => {
     const patchDoc = [
@@ -131,14 +133,20 @@ export function EditProfilePage() {
     } catch (error) {
       console.error("Error uploading image", error);
     }
-
-
   };
 
   const handleBackGroundImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      if (file.size > maxSizeBytes) {
+        alert("File size must be 5MB or less.");
+        return;
+      }
+
       setBackGroundImage(file);
       const previewUrl = URL.createObjectURL(file);
       setBackGroundImagePreview(previewUrl);
@@ -149,6 +157,14 @@ export function EditProfilePage() {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      if (file.size > maxSizeBytes) {
+        alert("File size must be 5MB or less.");
+        return;
+      }
+
       setProfileImage(file);
       const previewUrl = URL.createObjectURL(file);
       setProfileImagePreview(previewUrl);
@@ -218,64 +234,118 @@ export function EditProfilePage() {
     setIsUpdatingProfile(false);
   };
 
+  return isLoadingUser ? (
+    <LoadingProfilePage />
+  ) : isSuccessUser ? (
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
+            </div>
+          </div>
 
-
-  return (
-    isLoadingUser ? (
-      <LoadingProfilePage />
-    ) :
-      isSuccessUser
-        ? (
-          <div className="App">
-            <header className="App-header">
-              <div className="flex mainpage_Container">
-                <div className="flex mainpage_TopRow">
-                  <TopLeftComponent />
-                  <div className="flex mainpage_TopRight">
-                    <TopBarMenu />
-                  </div>
+          <div className="flex profilePage_Bottom">
+            <div className="flex profilePage_BottomLeft">
+              <div className="flex profilePage_CoverAndProfile">
+                <div
+                  className="editProfilePage_gotoPublicProfileButton"
+                  onClick={() => handleGoToPublicProfilePage()}
+                >
+                  <span>Public Profile</span>
                 </div>
 
-                <div className="flex profilePage_Bottom">
-                  <div className="flex profilePage_BottomLeft">
-                    <div className="flex profilePage_CoverAndProfile">
+                <div
+                  className="editProfilePage_gotoProfileButton"
+                  onClick={() => handleGoToProfilePage()}
+                >
+                  <span>Profile</span>
+                </div>
 
-                      <div className="editProfilePage_gotoPublicProfileButton" onClick={() => handleGoToPublicProfilePage()}>
-                        <span>Public Profile</span>
-                      </div>
-
-                      <div className="editProfilePage_gotoProfileButton" onClick={() => handleGoToProfilePage()}>
-                        <span>Profile</span>
-                      </div>
-
-                      <div className="flex profilePage_CoverImage">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleBackGroundImageChange}
-                          style={{ display: "none" }}
-                          ref={fileInputRef_BackgroundImage}
-                        />
-                        {backGroundImagePreview ? (
-                          <div className="
+                <div className="flex profilePage_CoverImage">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBackGroundImageChange}
+                    style={{ display: "none" }}
+                    ref={fileInputRef_BackgroundImage}
+                  />
+                  {backGroundImagePreview ? (
+                    <div
+                      className="
                             // image-preview 
-                            profilePage_CoverImage_Img">
-                            <img src={backGroundImagePreview} alt="Uploaded preview"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                border: "2px solid transparent",
-                                overFlow: "hidden",
-                                borderRadius: "1rem",
-                              }}
-                            />
-                          </div>
-                        ) :
+                            profilePage_CoverImage_Img"
+                    >
+                      <img
+                        src={backGroundImagePreview}
+                        alt="Uploaded preview"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          border: "2px solid transparent",
+                          overFlow: "hidden",
+                          borderRadius: "1rem",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <img
+                      src={userBaseUrl + backGroundImage}
+                      alt="Upload Icon"
+                      onClick={handleBackGroundImageClick}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        border: "2px solid transparent",
+                        overFlow: "hidden",
+                        borderRadius: "1rem",
+                      }}
+                    />
+                  )}
+                  {backGroundImage !== userData.backgroundImageUrl ? (
+                    <div
+                      onClick={handleCancelUploadBackGroundImage}
+                      style={deleteImageIcon}
+                    >
+                      <IoRemoveCircleOutline
+                        color="rgb(0, 119, 234)"
+                        size={"2rem"}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      onClick={handleBackGroundImageClick}
+                      style={clickToAddImage}
+                    >
+                      <IoCameraReverseOutline
+                        color="rgb(0, 119, 234)"
+                        size={"2rem"}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex profilePage_ProfileImage">
+                  <div>
+                    <div className="profilePage_ProfileImage_Img_Container">
+                      {/* <img src={userBaseUrl + userData?.profileImageUrl} className=" profilePage_ProfileImage_Img" alt="b" /> */}
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfileImageChange}
+                        style={{ display: "none" }}
+                        ref={fileInputRef_ProfileImage}
+                      />
+                      {profileImagePreview ? (
+                        <div className="profilePage_ProfileImage_Img">
                           <img
-                            src={userBaseUrl + backGroundImage}
-                            alt="Upload Icon"
-                            onClick={handleBackGroundImageClick}
+                            src={profileImagePreview}
+                            alt="Uploaded preview"
                             style={{
                               width: "100%",
                               height: "100%",
@@ -285,124 +355,86 @@ export function EditProfilePage() {
                               borderRadius: "1rem",
                             }}
                           />
-                        }
-                        {backGroundImage !== userData.backgroundImageUrl ? (
-                          <div onClick={handleCancelUploadBackGroundImage}
-                            style={deleteImageIcon}
-                          >
-                            <IoRemoveCircleOutline
-                              color="rgb(0, 119, 234)"
-                              size={"2rem"}
-                            />
-                          </div>
-                        ) :
-
-                          <div onClick={handleBackGroundImageClick} style={clickToAddImage}>
-                            <IoCameraReverseOutline
-                              color="rgb(0, 119, 234)"
-                              size={"2rem"}
-                            />
-                          </div>
-                        }
-                      </div>
-
-                      <div className="flex profilePage_ProfileImage">
-                        <div>
-                          <div className="profilePage_ProfileImage_Img_Container" >
-                            {/* <img src={userBaseUrl + userData?.profileImageUrl} className=" profilePage_ProfileImage_Img" alt="b" /> */}
-
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleProfileImageChange}
-                              style={{ display: "none" }}
-                              ref={fileInputRef_ProfileImage}
-                            />
-                            {profileImagePreview ? (
-                              <div className="profilePage_ProfileImage_Img">
-                                <img src={profileImagePreview} alt="Uploaded preview"
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                    border: "2px solid transparent",
-                                    overFlow: "hidden",
-                                    borderRadius: "1rem",
-                                  }}
-                                />
-                              </div>
-                            ) :
-                              <div className="profilePage_ProfileImage_Img">
-
-                                <img
-                                  src={userBaseUrl + profileImage}
-                                  alt="Upload Icon"
-                                  onClick={handleProfileImageClick}
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                    border: "2px solid transparent",
-                                    overFlow: "hidden",
-                                    borderRadius: "1rem",
-                                  }}
-                                />
-                              </div>
-                            }
-                            {profileImage !== userData.profileImageUrl ? (
-                              <div onClick={handleCancelUploadProfileImage}
-                                style={deleteImageIcon}
-                              >
-                                <IoRemoveCircleOutline
-                                  color="rgb(0, 119, 234)"
-                                  size={"2rem"}
-                                />
-                              </div>
-                            ) :
-
-                              <div onClick={handleProfileImageClick} style={clickToAddImage}>
-                                <IoCameraReverseOutline
-                                  color="rgb(0, 119, 234)"
-                                  size={"2rem"}
-                                />
-                              </div>
-                            }
-                          </div>
                         </div>
-                      </div>
-
-                    </div>
-                    <div className="flex editprofilePage_BioAndContactDetails">
-                      <div className="flex editprofilePage_BioTitleUserName">
-                        <div className="flex profilePage_UserName">
-                          <span className="profilePage_UserName">
-                            <UserNameInputComponent userName={userName} setUserName={setUserName} />
-                          </span>
-                        </div>
-                        <div className="flex profilePage_Title">
-                          <span className="profilePage_Title">
-                            <UserTitleInputComponent userTitle={userTitle} setUserTitle={setUserTitle} />
-                          </span>
-                        </div>
-                        <div className="flex profilePage_Bio">
-                          <ReactQuill
-                            value={userBio}
-                            onChange={(value) => setUserBio(value)}
-                            placeholder="Tell us about your vehicle"
-                            modules={{
-                              toolbar: false,
-                            }}
+                      ) : (
+                        <div className="profilePage_ProfileImage_Img">
+                          <img
+                            src={userBaseUrl + profileImage}
+                            alt="Upload Icon"
+                            onClick={handleProfileImageClick}
                             style={{
-                              color: "rgba(0, 119, 234, 0.9)",
-                              fontWeight: "600",
-                              fontSize: "1.1rem",
-                              borderRadius: "1.5rem",
-                              padding: "0.5rem",
-                              backgroundColor: "#007bff21",
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              border: "2px solid transparent",
+                              overFlow: "hidden",
+                              borderRadius: "1rem",
                             }}
                           />
-                          <style>
-                            {`
+                        </div>
+                      )}
+                      {profileImage !== userData.profileImageUrl ? (
+                        <div
+                          onClick={handleCancelUploadProfileImage}
+                          style={deleteImageIcon}
+                        >
+                          <IoRemoveCircleOutline
+                            color="rgb(0, 119, 234)"
+                            size={"2rem"}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          onClick={handleProfileImageClick}
+                          style={clickToAddImage}
+                        >
+                          <IoCameraReverseOutline
+                            color="rgb(0, 119, 234)"
+                            size={"2rem"}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex editprofilePage_BioAndContactDetails">
+                <div className="flex editprofilePage_BioTitleUserName">
+                  <div className="flex profilePage_UserName">
+                    <span className="profilePage_UserName">
+                      <UserNameInputComponent
+                        userName={userName}
+                        setUserName={setUserName}
+                      />
+                    </span>
+                  </div>
+                  <div className="flex profilePage_Title">
+                    <span className="profilePage_Title">
+                      <UserTitleInputComponent
+                        userTitle={userTitle}
+                        setUserTitle={setUserTitle}
+                      />
+                    </span>
+                  </div>
+                  <div className="flex profilePage_Bio">
+                    <ReactQuill
+                      value={userBio}
+                      onChange={(value) => setUserBio(value)}
+                      placeholder="Tell us about your vehicle"
+                      modules={{
+                        toolbar: false,
+                      }}
+                      style={{
+                        color: "rgba(0, 119, 234, 0.9)",
+                        fontWeight: "600",
+                        fontSize: "1.1rem",
+                        borderRadius: "1.5rem",
+                        padding: "0.5rem",
+                        backgroundColor: "#007bff21",
+                      }}
+                    />
+                    <style>
+                      {`
                             .ql-container {
                               border: none !important; /* Removes border around editor */
                             }
@@ -410,117 +442,130 @@ export function EditProfilePage() {
                               border: none !important; /* Removes inner border */
                             }
                           `}
-                          </style>
-                        </div>
-                      </div>
-                      {/* <div className="flex editProfilePage_ContactDetails" style={{ backgroundColor: " " }}>
+                    </style>
+                  </div>
+                </div>
+                {/* <div className="flex editProfilePage_ContactDetails" style={{ backgroundColor: " " }}>
                         {isSuccessUser ?
                           <EditProfileSocialsComponent userData={userData} />
                           : null
                         }
                       </div> */}
-                    </div>
-                  </div>
+              </div>
+            </div>
 
-                  <div className="flex flex-col profilePage_BottomRight">
-                    <div className="flex flex-col"
-                      style={{
-                        paddingLeft: ".5rem",
-                        borderRadius: "1.5rem",
-                        height: "calc(100vh - 3.5rem)",
-                        width: "calc(100% - 0%)",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <div
-                        style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.2)",
-                          borderRadius: "1.5rem",
-                          height: "100%",
-                          flexDirection: "column",
-                          width: "100%",
-                          position: "relative",
+            <div className="flex flex-col profilePage_BottomRight">
+              <div
+                className="flex flex-col"
+                style={{
+                  paddingLeft: ".5rem",
+                  borderRadius: "1.5rem",
+                  height: "calc(100vh - 3.5rem)",
+                  width: "calc(100% - 0%)",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    borderRadius: "1.5rem",
+                    height: "100%",
+                    flexDirection: "column",
+                    width: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {isSuccessUser ? (
+                    <EditProfileSocialsComponent
+                      userData={userData}
+                      setEmail={setEmail}
+                      setPhoneNumber={setPhoneNumber}
+                      setFacebookProfile={setFacebookProfile}
+                      setInstagramProfile={setInstagramProfile}
+                      setTwitterProfile={setTwitterProfile}
+                      setTiktokProfile={setTiktokProfile}
+                      setLinkedinProfile={setLinkedinProfile}
+                      setYoutubeProfile={setYoutubeProfile}
+                      setEmailHidden={setEmailHidden}
+                      email={email}
+                      phoneNumber={phoneNumber}
+                      facebookProfile={facebookProfile}
+                      instagramProfile={instagramProfile}
+                      twitterProfile={twitterProfile}
+                      tiktokProfile={tiktokProfile}
+                      linkedinProfile={linkedinProfile}
+                      youtubeProfile={youtubeProfile}
+                      emailHidden={emailHidden}
+                    />
+                  ) : null}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      position: "absolute",
+                      width: "20rem",
+                      height: "5rem",
+                      bottom: "0",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    {isUpdatingProfile ? (
+                      <span
+                        onClick={() => {
+                          handleUpdateChanges();
                         }}
+                        style={UpdateChangesButton}
                       >
-
-                        {isSuccessUser ?
-                          <EditProfileSocialsComponent
-                            userData={userData}
-                            setEmail={setEmail}
-                            setPhoneNumber={setPhoneNumber}
-                            setFacebookProfile={setFacebookProfile}
-                            setInstagramProfile={setInstagramProfile}
-                            setTwitterProfile={setTwitterProfile}
-                            setTiktokProfile={setTiktokProfile}
-                            setLinkedinProfile={setLinkedinProfile}
-                            setYoutubeProfile={setYoutubeProfile}
-                            setEmailHidden={setEmailHidden}
-                            email={email}
-                            phoneNumber={phoneNumber}
-                            facebookProfile={facebookProfile}
-                            instagramProfile={instagramProfile}
-                            twitterProfile={twitterProfile}
-                            tiktokProfile={tiktokProfile}
-                            linkedinProfile={linkedinProfile}
-                            youtubeProfile={youtubeProfile}
-                            emailHidden={emailHidden}
-                          />
-                          : null
-                        }
-
-                        <div style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          position: "absolute",
-                          width: "20rem",
-                          height: "5rem",
-                          bottom: "0",
-                          left: "50%",
-                          transform: "translateX(-50%)"
-
-                        }}>
-
-                          {isUpdatingProfile ?
-                            <span
-                              onClick={() => { handleUpdateChanges() }}
-                              style={UpdateChangesButton}><UpdateProfileSpinner /></span>
-                            :
-                            <span
-                              onClick={() => { handleUpdateChanges() }}
-                              style={UpdateChangesButton}>Update Changes</span>
-                          }
-                        </div>
-                      </div>
-                    </div>
+                        <UpdateProfileSpinner />
+                      </span>
+                    ) : (
+                      <span
+                        onClick={() => {
+                          handleUpdateChanges();
+                        }}
+                        style={UpdateChangesButton}
+                      >
+                        Update Changes
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
-            </header >
-          </div >
-        ) : null
-  );
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+  ) : null;
 }
 
 const UpdateProfileSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      height: "2.2rem",
-      display: "flex", // Added for vertical alignment
-      alignItems: "center", // Center vertically
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        height: "2.2rem",
+        display: "flex", // Added for vertical alignment
+        alignItems: "center", // Center vertically
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
+        }}
+      ></div>
+    </div>
+  );
+};
 
 const deleteImageIcon = {
   // backgroundColor: " #3c9dee",
@@ -535,7 +580,7 @@ const deleteImageIcon = {
   padding: "1rem",
   cursor: "pointer",
   transition: "transform 0.3s ease-in-out",
-}
+};
 
 const clickToAddImage = {
   backgroundColor: "white",
@@ -547,7 +592,7 @@ const clickToAddImage = {
   justifyItems: "center",
   lineHeight: "1.5rem",
   padding: "1rem",
-}
+};
 
 const UpdateChangesButton = {
   position: "absolute",
@@ -566,4 +611,3 @@ const UpdateChangesButton = {
   padding: "0.2rem",
   width: "20rem",
 };
-
