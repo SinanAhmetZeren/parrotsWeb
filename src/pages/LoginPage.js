@@ -120,10 +120,8 @@ function LoginPage() {
         Email: username,
         Password: password,
       }).unwrap();
-      // setIsLoggingIn(false);
       if (!loginResponse?.token) {
         setIsLoggingIn(false);
-
         console.error("Login failed: No token received");
         return;
       }
@@ -131,11 +129,11 @@ function LoginPage() {
       const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
         loginResponse.userId
       );
-      console.log("lazy -> favoriteVehicles: ", favoriteVehicles.data);
+      // console.log("lazy -> favoriteVehicles: ", favoriteVehicles.data);
       const favoriteVoyages = await getFavoriteVoyageIdsByUserId(
         loginResponse.userId
       );
-      console.log("lazy -> favoriteVoyages: ", favoriteVoyages.data);
+      // console.log("lazy -> favoriteVoyages: ", favoriteVoyages.data);
 
       dispatch(
         updateUserFavorites({

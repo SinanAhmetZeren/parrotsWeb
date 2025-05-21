@@ -4,13 +4,21 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton"
-import { IoPersonOutline, IoPeopleOutline } from 'react-icons/io5';
-import { useAcceptBidMutation } from "../slices/VoyageSlice";
+import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton";
+import {
+  IoPersonOutline,
+  IoPeopleOutline,
+  IoCloseCircleOutline,
+  IoCheckmarkCircleOutline,
+} from "react-icons/io5";
+import {
+  useAcceptBidMutation,
+  useDeleteBidMutation,
+} from "../slices/VoyageSlice";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
@@ -25,10 +33,11 @@ export function VoyageDetailBids({
   currentUserId,
   isSuccessVoyage,
   refetch,
-  setOpacity
+  setOpacity,
 }) {
-
-
+  const [acceptBid] = useAcceptBidMutation();
+  const [deleteBid] = useDeleteBidMutation();
+  const username = localStorage.getItem("storedUserName");
   const [loadingBidId, setLoadingBidId] = React.useState(null);
   const [bidsData, setBidsData] = React.useState(voyageData.bids);
 
@@ -37,7 +46,6 @@ export function VoyageDetailBids({
     setBidsData(voyageData.bids);
   }, [voyageData.bids]);
 
-
   const makeRefetch = useCallback(() => {
     refetch();
   }, [refetch]);
@@ -45,16 +53,14 @@ export function VoyageDetailBids({
     if (hubConnection.state === "Disconnected") {
       await hubConnection.start();
       console.log("state of the hub: ", hubConnection.state);
-
     } else {
       console.log("state of the hub is already: ", hubConnection.state);
     }
-  }
+  };
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
-  }
+  };
 
-  const [acceptBid] = useAcceptBidMutation();
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId); // Set loading state
     const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
@@ -81,14 +87,33 @@ export function VoyageDetailBids({
     }
   };
 
+  const handleDeleteBid = async ({ bidId, bidUserId }) => {
+    setLoadingBidId(bidId);
+    const text = `Hi there! 👋 Your bid was deleted by ${username}`;
+
+    try {
+      if (hubConnection.state === "Disconnected") {
+        await hubConnection.start();
+      }
+      await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+
+      await deleteBid(bidId).unwrap();
+      setBidsData((prevBids) => prevBids.filter((bid) => bid.id !== bidId));
+      makeRefetch();
+    } catch (error) {
+      console.error("Error deleting bid:", error);
+    } finally {
+      setLoadingBidId(null);
+    }
+  };
+
   const hubConnection = useMemo(() => {
     return new HubConnectionBuilder()
       .withUrl(`${apiUrl}/chathub/11?userId=${currentUserId}`, {
-        withCredentials: false // TODO: is this correct? 
+        withCredentials: false, // TODO: is this correct?
       })
       .build();
-  }, [currentUserId, apiUrl]);
-
+  }, [currentUserId]);
 
   useEffect(() => {
     console.log("hubconnect: ", hubConnection);
@@ -129,17 +154,19 @@ export function VoyageDetailBids({
       <div style={userVehicleInfoRow}>
         <span style={voyageName}>Current Bids</span>
       </div>
-      <div style={{
-        overflow: "auto",
-        minHeight: "35vh",
-        scrollbarColor: "#1e90ff50",
-      }}>
-
+      <div
+        style={{
+          overflow: "auto",
+          minHeight: "35vh",
+          scrollbarColor: "#1e90ff50",
+        }}
+      >
         <div className="BidsList">
           <BidsList
             bidsData={bidsData}
             ownVoyage={ownVoyage}
             handleAcceptBid={handleAcceptBid}
+            handleDeleteBid={handleDeleteBid}
             loadingBidId={loadingBidId}
           />
         </div>
@@ -159,7 +186,13 @@ export function VoyageDetailBids({
   );
 }
 
-function BidsList({ bidsData, ownVoyage, handleAcceptBid, loadingBidId }) {
+function BidsList({
+  bidsData,
+  ownVoyage,
+  handleAcceptBid,
+  handleDeleteBid,
+  loadingBidId,
+}) {
   return bidsData.map((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
     return (
@@ -176,54 +209,93 @@ function BidsList({ bidsData, ownVoyage, handleAcceptBid, loadingBidId }) {
         bidId={bid.id}
         bidUserId={bid.userId}
         loadingBidId={loadingBidId}
+        handleDeleteBid={handleDeleteBid}
       />
     );
   });
 }
 
-function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, loadingBidId }) {
-  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
+function RenderBid({
+  username,
+  userImage,
+  message,
+  price,
+  accepted,
+  personCount,
+  ownVoyage,
+  handleAcceptBid,
+  bidId,
+  bidUserId,
+  loadingBidId,
+  handleDeleteBid,
+}) {
+  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
     navigate(`/profile-public/${bidUserId}/${username}`);
-  }
+  };
   return (
     <div className={"flex"} style={dataRowItem}>
       <div style={userAndVehicleBox}>
-        <img src={userImage}
-
-          style={{ ...userImageStyle, ...((hoveredUserImgID === bidUserId) ? userImageStyleHover : {}) }}
+        <img
+          src={userImage}
+          style={{
+            ...userImageStyle,
+            ...(hoveredUserImgID === bidUserId ? userImageStyleHover : {}),
+          }}
           onMouseEnter={() => {
-            setHoveredUserImgID(bidUserId)
+            setHoveredUserImgID(bidUserId);
           }}
           onMouseLeave={() => setHoveredUserImgID("")}
-          alt="User" onClick={() => handleGoToUser(bidUserId, username)} />
+          alt="User"
+          onClick={() => handleGoToUser(bidUserId, username)}
+        />
         <span style={userNameStyle} title={username}>
           {username}
         </span>
         <span style={personCountStyle} title={personCount}>
-          {personCount === 1 ?
-            <IoPersonOutline size="1rem" style={{ marginRight: '0.15rem' }} />
-            : <IoPeopleOutline size="1rem" style={{ marginRight: '0.15rem' }} />
-          }
+          {personCount === 1 ? (
+            <IoPersonOutline size="1rem" style={{ marginRight: "0.15rem" }} />
+          ) : (
+            <IoPeopleOutline size="1rem" style={{ marginRight: "0.15rem" }} />
+          )}
           {personCount}
-
         </span>
-        <span style={bidMessage}>
-          {ownVoyage ? (message || " ") : " "}
-        </span>
+        <span style={bidMessage}>{ownVoyage ? message || " " : " "}</span>
         <span style={bidAmount}>€{price}</span>
         <span
-          onClick={() => ownVoyage && !accepted && !loadingBidId && handleAcceptBid({ bidId, bidUserId })}
+          onClick={() =>
+            ownVoyage &&
+            !accepted &&
+            !loadingBidId &&
+            handleAcceptBid({ bidId, bidUserId })
+          }
           style={{
             ...(accepted ? acceptedBidStyle : acceptBidStyle),
-            cursor: (ownVoyage && !accepted) ? "pointer" : "default",
+            cursor: ownVoyage && !accepted ? "pointer" : "default",
           }}
         >
           {loadingBidId === bidId && !accepted ? (
             <AcceptBidSpinner />
-          ) : accepted ? "Accepted" : ownVoyage ? "Accept" : "Pending"}
-
+          ) : accepted ? (
+            "Accepted"
+          ) : ownVoyage ? (
+            "Accept"
+          ) : (
+            "Pending"
+          )}
+          {}
+        </span>
+        <span
+          style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}
+          onClick={() => handleDeleteBid({ bidId, bidUserId })}
+        >
+          {ownVoyage &&
+            (accepted ? (
+              <IoCheckmarkCircleOutline color={parrotGreen} />
+            ) : (
+              <IoCloseCircleOutline color="orangered" />
+            ))}
         </span>
       </div>
     </div>
@@ -232,24 +304,29 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
 
 const AcceptBidSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      height: "1.2rem",
-      display: "flex",
-      alignItems: "center",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        height: "1.2rem",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
+        }}
+      ></div>
+    </div>
+  );
+};
 
 const userImageStyleHover = {
   transform: "scale(1.2)",
@@ -260,7 +337,7 @@ const userImageStyle = {
   width: "3rem",
   borderRadius: "3rem",
   transition: "transform 0.3s ease-in-out",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 const voyageName = {
@@ -268,14 +345,14 @@ const voyageName = {
   color: "rgba(0, 119, 234,1)",
 
   fontWeight: "800",
-  fontSize: "1.5rem"
-}
+  fontSize: "1.5rem",
+};
 
 const userVehicleInfoRow = {
-  display: 'flex',
-  flexDirection: 'row',
+  display: "flex",
+  flexDirection: "row",
   margin: "0.2rem",
-  marginLeft: "1.3rem"
+  marginLeft: "1.3rem",
 };
 
 const cardContainerStyle = {
@@ -314,14 +391,13 @@ const userAndVehicleBox = {
   justifyContent: "space-between",
 };
 
-
 const userNameStyle = {
   width: "20%",
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
   fontWeight: "500",
-  paddingLeft: "0.2rem"
+  paddingLeft: "0.2rem",
 };
 
 const personCountStyle = {
@@ -329,10 +405,10 @@ const personCountStyle = {
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  display: 'inline-flex',
-  alignItems: 'center',
+  display: "inline-flex",
+  alignItems: "center",
   justifyContent: "center",
-  fontWeight: "700"
+  fontWeight: "700",
 };
 
 const bidMessage = {
@@ -358,7 +434,7 @@ const acceptBidStyle = {
   backgroundColor: "rgba(0, 119, 234,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
-  marginRight: "0.5rem"
+  marginRight: "0.5rem",
 };
 
 const acceptedBidStyle = {
@@ -369,6 +445,5 @@ const acceptedBidStyle = {
   backgroundColor: "rgba(42,200,152,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
-  marginRight: "0.5rem"
-
+  marginRight: "0.5rem",
 };

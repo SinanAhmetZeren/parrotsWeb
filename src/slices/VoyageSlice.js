@@ -167,6 +167,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: { bidId },
       }),
     }),
+    deleteBid: builder.mutation({
+      query: (bidId) => ({
+        url: `/api/Bid/deleteBid?bidId=${bidId}`,
+        method: "DELETE",
+        body: { bidId },
+      }),
+    }),
     addWaypoint: builder.mutation({
       query: (data) => {
         const {
@@ -318,6 +325,7 @@ export const {
   useSendBidMutation,
   useChangeBidMutation,
   useAcceptBidMutation,
+  useDeleteBidMutation,
   useGetVoyagesByLocationMutation,
   useGetFilteredVoyagesMutation,
   useGetFavoriteVoyagesByUserIdQuery,
