@@ -24,11 +24,10 @@ import {
   addVehicleToUserFavorites,
   removeVehicleFromUserFavorites,
   useGetFavoriteVehicleIdsByUserIdQuery,
-  updateUserFavoriteVehicles
+  updateUserFavoriteVehicles,
 } from "../slices/UserSlice";
 import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
 import { parrotBlue, parrotRed } from "../styles/colors";
-
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
@@ -37,14 +36,15 @@ function VehicleDetailsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   let favoriteVehicles;
   try {
-    favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"));
+    favoriteVehicles = JSON.parse(
+      localStorage.getItem("storedFavoriteVehicles")
+    );
   } catch (err) {
     console.log(err);
   }
   const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
-  const {
-    data: favoriteVehiclesData
-  } = useGetFavoriteVehicleIdsByUserIdQuery(userId);
+  const { data: favoriteVehiclesData } =
+    useGetFavoriteVehicleIdsByUserIdQuery(userId);
 
   useEffect(() => {
     const updateFavoriteVehicles = () => {
@@ -53,23 +53,22 @@ function VehicleDetailsPage() {
           favoriteVehicles: favoriteVehiclesData,
         })
       );
-    }
-    updateFavoriteVehicles()
-
-  }, [favoriteVehiclesData])
+    };
+    updateFavoriteVehicles();
+  }, [favoriteVehiclesData]);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const handleGoToUser = ({ userId, userName }) => {
     navigate(`/profile-public/${userId}/${userName}`);
-  }
-  const [isFavorited, setIsFavorited] = useState(isInFavorites)
+  };
+  const [isFavorited, setIsFavorited] = useState(isInFavorites);
   const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
   const [deleteVehicleFromFavorites] = useDeleteVehicleFromFavoritesMutation();
   const [deleteVehicle] = useDeleteVehicleMutation();
 
   const handleAddVehicleToFavorites = () => {
-    const vehicleId_number = Number(vehicleId)
+    const vehicleId_number = Number(vehicleId);
     addVehicleToFavorites({ userId, vehicleId: vehicleId_number });
     setIsFavorited(true);
     dispatch(
@@ -80,7 +79,7 @@ function VehicleDetailsPage() {
   };
 
   const handleDeleteVehicleFromFavorites = () => {
-    const vehicleId_number = Number(vehicleId)
+    const vehicleId_number = Number(vehicleId);
     deleteVehicleFromFavorites({ userId, vehicleId: vehicleId_number });
     setIsFavorited(false);
     dispatch(
@@ -100,7 +99,7 @@ function VehicleDetailsPage() {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
-  const [hoveredUserImg, setHoveredUserImg] = useState(false)
+  const [hoveredUserImg, setHoveredUserImg] = useState(false);
   const {
     data: VehicleData,
     isSuccess: isSuccessVehicle,
@@ -109,14 +108,12 @@ function VehicleDetailsPage() {
     refetch,
   } = useGetVehicleByIdQuery(vehicleId);
 
-
   useEffect(() => {
     if (VehicleData) {
       console.log("VehicleData", VehicleData.user.id);
       // console.log("VehicleData", VehicleData.user);
     }
-  }
-    , [VehicleData]);
+  }, [VehicleData]);
   return (
     // true ||
     isLoadingVehicle ? (
@@ -124,8 +121,6 @@ function VehicleDetailsPage() {
       //   <div className="spinner"></div>
       // </div>
       <VehicleDetailPlaceHolderComponent />
-
-
     ) : isSuccessVehicle ? (
       <div className="App">
         <header className="App-header">
@@ -137,29 +132,31 @@ function VehicleDetailsPage() {
               </div>
             </div>
             <div className="vehiclePage1_vehicleContainer">
-              <div className="vehiclePage1_dataContainer" style={{ position: "relative" }}>
-
-
-                {isFavorited ?
+              <div
+                className="vehiclePage1_dataContainer"
+                style={{ position: "relative" }}
+              >
+                {isFavorited ? (
                   <div
                     onClick={() => handleDeleteVehicleFromFavorites()}
                     style={{
-                      ...heartIcon, border: "2px red solid"
-                    }}>
+                      ...heartIcon,
+                      border: "2px red solid",
+                    }}
+                  >
                     <IoHeartSharp size="2.5rem" color="red" />
                   </div>
-                  :
+                ) : (
                   <div
                     onClick={() => handleAddVehicleToFavorites()}
                     style={{
-                      ...heartIcon, border: "2px orange solid"
+                      ...heartIcon,
+                      border: "2px orange solid",
                     }}
                   >
                     <IoHeartSharp size="2.5rem" color="orange" />
                   </div>
-
-                }
-
+                )}
 
                 <div className="vehiclePage1_detailsContainer">
                   <div className="vehiclePage1_nameContainer">
@@ -177,7 +174,6 @@ function VehicleDetailsPage() {
                     <div className=" ">
                       <span>{VehicleData.capacity}</span>
                     </div>
-
                   </div>
                   <div className="vehiclePage1_typeContainer">
                     <div className=" ">
@@ -192,18 +188,44 @@ function VehicleDetailsPage() {
                     <div className=" ">
                       <span>Host</span>
                     </div>
-                    <div className=" " onClick={() => handleGoToUser({ userId: VehicleData.user.id, userName: VehicleData.user.userName })}>
-                      <div style={userNameStyle} onClick={() => { console.log("message") }}>
-                        <img src={baseUserImageUrl + VehicleData.user.profileImageUrl}
-                          style={{ ...userImageStyle, ...((hoveredUserImg) ? userImageStyleHover : {}) }}
+                    <div
+                      className=" "
+                      onClick={() =>
+                        handleGoToUser({
+                          userId: VehicleData.user.id,
+                          userName: VehicleData.user.userName,
+                        })
+                      }
+                    >
+                      <div
+                        style={userNameStyle}
+                        onClick={() => {
+                          console.log("message");
+                        }}
+                      >
+                        <img
+                          src={
+                            baseUserImageUrl + VehicleData.user.profileImageUrl
+                          }
+                          style={{
+                            ...userImageStyle,
+                            ...(hoveredUserImg ? userImageStyleHover : {}),
+                          }}
                           onMouseEnter={() => {
-                            setHoveredUserImg(true)
+                            setHoveredUserImg(true);
                           }}
                           onMouseLeave={() => setHoveredUserImg(false)}
-
-
-                          alt="User" onClick={() => handleGoToUser({ userId: VehicleData.user.id, userName: VehicleData.user.userName })} />
-                        <span style={userNameTextStyle} >{VehicleData.user.userName}</span>
+                          alt="User"
+                          onClick={() =>
+                            handleGoToUser({
+                              userId: VehicleData.user.id,
+                              userName: VehicleData.user.userName,
+                            })
+                          }
+                        />
+                        <span style={userNameTextStyle}>
+                          {VehicleData.user.userName}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -215,80 +237,79 @@ function VehicleDetailsPage() {
                     </div>
                     <div className="vehiclePage1_descriptionContainer_descriptionContent">
                       {/* <span> {VehicleData.description}</span> */}
-                      <div dangerouslySetInnerHTML={{ __html: VehicleData.description }} />
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: VehicleData.description,
+                        }}
+                      />
                     </div>
-
                   </div>
                 </div>
-
-
               </div>
               <div className="vehiclePage1_swiperContainer">
                 <VehiclePageImageSwiper vehicleData={VehicleData} />
               </div>
-
             </div>
 
-            {VehicleData?.user.id === userId ?
+            {VehicleData?.user.id === userId ? (
               <div style={editVehicleButtonContainer}>
                 <div
                   onClick={() => {
                     navigate(`/edit-vehicle/${vehicleId}`);
-                  }}>
+                  }}
+                >
                   <span style={editVehicleButton}>Edit Vehicle</span>
                 </div>
                 <div
                   onClick={() => {
-                    handleDeleteVehicle()
-                  }}>
-                  {isDeleting ?
-
-                    <div style={{
-                      backgroundColor: parrotRed,
-                      borderRadius: "1.5rem",
-                      padding: "0.25rem 1.5rem",
-                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-                      fontSize: "1.4rem",
-                      fontWeight: 800,
-                      color: "white",
-                      marginTop: "0.3rem",
-                      cursor: "pointer", border: "none",
-                      height: "2.1rem",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginLeft: "0.5rem",
-                      width: "13.5rem"
-                    }}>
-                      <div className="spinner" style={{
-                        height: "1.5rem",
-                        width: "1.5rem",
-                        border: "5px solid white",
-                        borderTop: "5px solid orange",
-                      }} />
+                    handleDeleteVehicle();
+                  }}
+                >
+                  {isDeleting ? (
+                    <div
+                      style={{
+                        backgroundColor: parrotRed,
+                        borderRadius: "1.5rem",
+                        padding: "0.25rem 1.5rem",
+                        boxShadow:
+                          "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+                        fontSize: "1.4rem",
+                        fontWeight: 800,
+                        color: "white",
+                        marginTop: "0.3rem",
+                        cursor: "pointer",
+                        border: "none",
+                        height: "2.1rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginLeft: "0.5rem",
+                        width: "13.5rem",
+                      }}
+                    >
+                      <div
+                        className="spinner"
+                        style={{
+                          height: "1.5rem",
+                          width: "1.5rem",
+                          border: "5px solid white",
+                          borderTop: "5px solid orange",
+                        }}
+                      />
                     </div>
-
-
-
-                    :
+                  ) : (
                     <div style={{}}>
                       <span style={deleteVehicleButton}>Delete Vehicle</span>
                     </div>
-
-                  }
-
+                  )}
                 </div>
               </div>
-              : null}
-
+            ) : null}
           </div>
-        </header >
-      </div >
+        </header>
+      </div>
     ) : null
   );
-
-
-
 }
 
 export default VehicleDetailsPage;
@@ -297,36 +318,37 @@ const deletingVehicleButton = {
   backgroundColor: parrotRed,
   borderRadius: "1.5rem",
   padding: "0.25rem 1.5rem",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
   fontSize: "1.4rem",
   fontWeight: 800,
   color: "white",
   marginTop: "0.3rem",
   cursor: "pointer",
   border: "none",
-}
-
+};
 
 const editVehicleButtonContainer = {
   position: "absolute",
   left: "50%",
   transform: "translateX(-50%)",
-  bottom: "0.5rem",
+  bottom: "1rem",
   display: "flex",
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
   justifyContent: "center",
   alignItems: "center",
   gap: "1rem",
-  backgroundColor: "pink",
-  width: "30rem"
-}
+  // backgroundColor: "pink",
+  width: "30rem",
+};
 
 const editVehicleButton = {
   backgroundColor: parrotBlue,
   borderRadius: "1.5rem",
   padding: "0.25rem 1.5rem",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
   // fontWeight: "bold",
   fontSize: "1.4rem",
   fontWeight: 800,
@@ -337,13 +359,14 @@ const editVehicleButton = {
   cursor: "pointer",
   border: "none",
   width: "100%",
-}
+};
 
 const deleteVehicleButton = {
   backgroundColor: parrotRed,
   borderRadius: "1.5rem",
   padding: "0.25rem 1.5rem",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
   fontSize: "1.4rem",
   fontWeight: 800,
   color: "white",
@@ -352,9 +375,7 @@ const deleteVehicleButton = {
   marginTop: "0.3rem",
   cursor: "pointer",
   border: "none",
-}
-
-
+};
 
 const heartIcon = {
   position: "absolute",
@@ -363,29 +384,30 @@ const heartIcon = {
   top: "-1rem",
   borderRadius: "3rem",
   padding: "0.5rem",
-}
+};
 
 const userNameStyle = {
-  borderRadius: '1.5rem', // Keep this as the final value for border-radius
-  backgroundColor: '#007bff',
-  color: 'white',
-  textAlign: 'center',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  fontSize: '1rem',
-  border: 'none',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)',
-  transition: 'box-shadow 0.2s ease',
-  WebkitFontSmoothing: 'antialiased',
-  MozOsxFontSmoothing: 'grayscale',
+  borderRadius: "1.5rem", // Keep this as the final value for border-radius
+  backgroundColor: "#007bff",
+  color: "white",
+  textAlign: "center",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1rem",
+  border: "none",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
   height: "1.8rem",
   display: "flex",
-  flexDirection: "row"
-}
+  flexDirection: "row",
+};
 
 const userNameTextStyle = {
   // backgroundColor: "red"
-}
+};
 
 const userImageStyleHover = {
   transform: "scale(1.2)", // Enlarge on hover
@@ -401,7 +423,7 @@ const userImageStyle = {
 
 const spinnerContainer = {
   marginTop: "20%",
-  backgroundColor: "red"
+  backgroundColor: "red",
 };
 
 const VehicleTypes = [
@@ -419,22 +441,26 @@ const VehicleTypes = [
 
 const DeleteVehicleSpinner = () => {
   return (
-    <div style={{
-      backgroundColor: "rgba(0, 119, 234,0.1)",
-      borderRadius: "1.5rem",
-      position: "relative",
-      margin: "auto",
-      display: "flex",
-      alignItems: "center",
-      height: "1.7rem",
-    }}>
-      <div className="spinner"
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "1.7rem",
+      }}
+    >
+      <div
+        className="spinner"
         style={{
           height: "1rem",
           width: "1rem",
           border: "3px solid white",
           borderTop: "3px solid #1e90ff",
-        }}></div>
-    </div>)
-}
-
+        }}
+      ></div>
+    </div>
+  );
+};

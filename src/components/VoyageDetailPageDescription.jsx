@@ -1,4 +1,3 @@
-
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
@@ -6,7 +5,6 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { parrotTextDarkBlue } from "../styles/colors";
-
 
 export function VoyageDetailPageDescription({ voyageDescription }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -52,8 +50,9 @@ export function VoyageDetailPageDescription({ voyageDescription }) {
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}
+              dangerouslySetInnerHTML={{ __html: voyageDescription }}
             >
-              {voyageDescription}
+              {/* {voyageDescription} */}
             </span>
           </div>
         </div>
@@ -65,9 +64,7 @@ export function VoyageDetailPageDescription({ voyageDescription }) {
       </div>
     </div>
   );
-
 }
-
 
 const cardContainerStyle = {
   display: "flex", // Flex for horizontal layout
@@ -88,34 +85,32 @@ const cardContainerStyle = {
   fontSize: "1.15rem",
 };
 
-
 const voyageName = {
   color: "#2ac898",
   color: "rgba(0, 119, 234,1)",
 
   fontWeight: "800",
-  fontSize: "1.5rem"
-}
+  fontSize: "1.5rem",
+};
 
 const userVehicleInfoRow = {
-  display: 'flex',
-  flexDirection: 'row',
+  display: "flex",
+  flexDirection: "row",
   margin: "0.2rem",
   // justifyContent: "center"
-  marginLeft: "1.3rem"
+  marginLeft: "1.3rem",
 };
 
 const dataRowItem = {
   marginTop: ".3rem",
   marginRight: "0.8rem",
-  marginLeft: "0.8rem"
-}
+  marginLeft: "0.8rem",
+};
 
 const infoBox = {
   marginLeft: "0.5rem",
   marginBottom: "2rem",
-  textAlign: "justify"
-
+  textAlign: "justify",
 };
 
 const descriptionTextStyle = {
@@ -125,9 +120,7 @@ const descriptionTextStyle = {
   lineHeight: "1.3rem",
   margin: "auto",
   marginTop: "0.6rem",
-}
-
-
+};
 
 const vehicles = [
   "⛵", // Boat
@@ -142,8 +135,6 @@ const vehicles = [
   "✈️", // Airplane
 ];
 
-
-
 function formatCustomDate(dateString) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -153,7 +144,6 @@ function formatCustomDate(dateString) {
     .format(new Date(dateString))
     .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
 }
-
 
 export default function VehicleIcon({ vehicleType }) {
   const getVehicleEmoji = (typeIndex) => {
@@ -168,9 +158,7 @@ export default function VehicleIcon({ vehicleType }) {
   );
 }
 
-
 const readMore = {
-
   height: "1.5rem",
   alignSelf: "end",
   color: "#2ac898",
@@ -185,7 +173,5 @@ const readMore = {
   paddingRight: "0.5rem",
   position: "absolute",
   bottom: "0rem",
-  right: 0
-}
-
-
+  right: 0,
+};

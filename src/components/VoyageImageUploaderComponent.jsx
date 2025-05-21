@@ -199,7 +199,7 @@ export const VoyageImageUploaderComponent = ({
       const file = files[0];
       setVoyageImage(file);
       const previewUrl = URL.createObjectURL(file);
-      setImagePreview2(previewUrl2);
+      setImagePreview2(previewUrl);
     }
   };
 

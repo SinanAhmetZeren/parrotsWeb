@@ -29,9 +29,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     createVehicle: builder.mutation({
       query: (data) => {
-
-        const { vehicleImage, name, description, userId, capacity, vehicleType } =
-          data;
+        const {
+          vehicleImage,
+          name,
+          description,
+          userId,
+          capacity,
+          vehicleType,
+        } = data;
 
         console.log("data: --->>> ", data);
         console.log("1", vehicleImage);
@@ -40,7 +45,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         console.log("4", userId);
         console.log("5", capacity);
         console.log("6", vehicleType);
-
 
         const queryParams = new URLSearchParams({
           Name: name,

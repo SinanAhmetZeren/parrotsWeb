@@ -68,10 +68,10 @@ function CreateVehiclePage() {
     image1,
   ]);
 
-  useEffect(() => {
-    console.log("--->>>", vehicleDescription);
-    console.log("--->>>", vehicleDescription === "<p><br></p>");
-  }, [vehicleDescription]);
+  // useEffect(() => {
+  //   console.log("--->>>", vehicleDescription);
+  //   console.log("--->>>", vehicleDescription === "<p><br></p>");
+  // }, [vehicleDescription]);
 
   useEffect(() => {
     console.log("useffect added images: ", addedVehicleImages);
@@ -178,14 +178,15 @@ function CreateVehiclePage() {
     }
   };
 
-  const completeVehicleCreate = () => {
+  const completeVehicleCreate = async () => {
     if (addedVehicleImages.length === 0) {
       console.log("images length: -->", addedVehicleImages.length);
       return;
     }
     setIsCompleting(true);
     console.log("confirming vehicle: ", vehicleId);
-    confirmVehicle(vehicleId);
+    var confirmResult = await confirmVehicle(vehicleId);
+    console.log("confirmResult: ", confirmResult);
     navigate(`/profile`);
   };
 

@@ -29,7 +29,6 @@ export const apiSlice = createApi({
       prepareHeaders: async (headers) => {
         headers.set("ngrok-skip-browser-warning", "1");
         const token = await localStorage.getItem("storedToken");
-        console.log("---->Token from localStorage:", token);
         if (token) {
           headers.set("Authorization", `Bearer ${token}`);
         }
