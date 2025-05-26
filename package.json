@@ -6,6 +6,7 @@
     "@googlemaps/markerclusterer": "^2.5.3",
     "@microsoft/signalr": "^8.0.7",
     "@react-google-maps/api": "^2.20.3",
+    "@react-oauth/google": "^0.12.2",
     "@reduxjs/toolkit": "^2.3.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

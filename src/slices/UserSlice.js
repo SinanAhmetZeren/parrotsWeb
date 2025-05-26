@@ -235,6 +235,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: userData,
       }),
     }),
+    googleLoginInternal: builder.mutation({
+      query: (idToken) => ({
+        url: "/api/account/google-login",
+        method: "POST",
+        body: { idToken },
+      }),
+    }),
     getUserById: builder.query({
       query: (userId) => {
         if (userId) {
@@ -364,6 +371,7 @@ export const {
   useRequestCodeMutation,
   useConfirmUserMutation,
   useLoginUserMutation,
+  useGoogleLoginInternalMutation,
   useResetPasswordMutation,
   useGetUserByIdQuery,
   useUpdateProfileImageMutation,

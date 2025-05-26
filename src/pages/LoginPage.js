@@ -3,6 +3,9 @@ import "../assets/css/App.css";
 import "../assets/css/LoginPage.css";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"; // optional helper library
+import { useGoogleLoginInternalMutation as googleLoginMutation } from "../slices/UserSlice";
+
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import {
@@ -19,10 +22,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
+import {
+  parrotBlue,
+  parrotDarkBlue,
+  parrotTextDarkBlue,
+} from "../styles/colors";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [triggerGoogleLogin, { isLoading: isLoadingGoogle, data, error }] =
+    googleLoginMutation();
+
   const [pageState, setPageState] = useState("Login");
   const [username, setUsername] = useState("sinanzen@gmail.com");
   const [usernameRegister, setUsernameRegister] = useState("");
@@ -159,6 +170,26 @@ function LoginPage() {
     }
   };
 
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      console.log("hello from google login");
+      const idToken = tokenResponse.id_token || tokenResponse.access_token; // depends on config
+
+      // Call your backend mutation with the Google ID token
+      try {
+        const userData = await triggerGoogleLogin(idToken).unwrap();
+        // userData contains your JWT + user info from backend
+        // store token in redux, localStorage or context, then redirect or update UI
+        console.log("Logged in user:", userData);
+      } catch (err) {
+        console.error("Google login failed:", err);
+      }
+    },
+    onError: () => {
+      console.error("Google login error");
+    },
+  });
+
   const handleRegister = async () => {
     try {
       const registerResponse = await registerUser({
@@ -266,88 +297,108 @@ function LoginPage() {
           </div>
           <div style={mainWrapper}>
             {pageState === "Login" ? (
-              <div style={mainContainer}>
-                <div style={wrapper}>
-                  <div style={welcomeStyle}> Welcome To Parrots!</div>
-                  <div className="username-wrapper">
-                    <input
-                      type="text"
-                      placeholder="Username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="username-input"
-                      style={{ color: parrotTextDarkBlue }}
-                    />
-                  </div>
-                  <div className="password-wrapper">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="password-input"
-                      style={{ color: parrotTextDarkBlue }}
-                    />
-                    <span
-                      style={{
-                        padding: "1rem",
-                        position: "absolute",
-                        marginLeft: "-4rem",
-                        marginTop: "-.3rem",
-                      }}
-                      onClick={() => makeVisible()}
-                    >
-                      {showPassword ? (
-                        <AiOutlineEyeInvisible
-                          size="2rem"
-                          color={parrotTextDarkBlue}
-                        />
-                      ) : (
-                        <AiOutlineEye size="2rem" color={parrotTextDarkBlue} />
-                      )}
-                    </span>
-                  </div>
-                  <div className="forgot-password">
-                    <span
-                      className="forgotPasswordSpan"
-                      style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
-                      onClick={() => handleForgotPassword()}
-                    >
-                      Forgot password?
-                    </span>
-                  </div>
-                  <div className="login-button" onClick={() => handleLogin()}>
-                    {" "}
-                    {isLoggingIn ? <LoginSpinner /> : "Login"}
-                  </div>
+              <>
+                <div style={mainContainer}>
+                  <div style={wrapper}>
+                    <div style={welcomeStyle}> Welcome To Parrots!</div>
+                    <div className="username-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="username-input"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+                    <div className="password-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="password-input"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                      <span
+                        style={{
+                          padding: "1rem",
+                          position: "absolute",
+                          marginLeft: "-4rem",
+                          marginTop: "-.3rem",
+                        }}
+                        onClick={() => makeVisible()}
+                      >
+                        {showPassword ? (
+                          <AiOutlineEyeInvisible
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        ) : (
+                          <AiOutlineEye
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        )}
+                      </span>
+                    </div>
+                    <div className="forgot-password">
+                      <span
+                        className="forgotPasswordSpan"
+                        style={{ color: parrotTextDarkBlue, opacity: "0.5" }}
+                        onClick={() => handleForgotPassword()}
+                      >
+                        Forgot password?
+                      </span>
+                    </div>
+                    <div className="login-button" onClick={() => handleLogin()}>
+                      {" "}
+                      {isLoggingIn ? <LoginSpinner /> : "Login"}
+                    </div>
 
-                  <div className="signup">
-                    <span>
-                      <span
+                    <div className="signup">
+                      <span>
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: parrotTextDarkBlue,
+                            opacity: "0.5",
+                          }}
+                        >
+                          Don't have an account?
+                        </span>
+                        <span
+                          onClick={() => handleSignup()}
+                          style={{
+                            color: parrotTextDarkBlue,
+                            opacity: "0.8",
+                            fontWeight: "bold",
+                            paddingLeft: "0.5rem",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Sign up
+                        </span>
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        marginTop: "2rem",
+                      }}
+                    >
+                      <div
                         style={{
-                          fontWeight: "bold",
-                          color: parrotTextDarkBlue,
-                          opacity: "0.5",
+                          margin: "auto",
+                          marginTop: "2rem",
+                          width: "80%",
                         }}
                       >
-                        Don't have an account?
-                      </span>
-                      <span
-                        onClick={() => handleSignup()}
-                        style={{
-                          color: parrotTextDarkBlue,
-                          opacity: "0.8",
-                          fontWeight: "bold",
-                          paddingLeft: "0.5rem",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Sign up
-                      </span>
-                    </span>
+                        <GoogleLoginButton />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             ) : pageState === "Register1" ? (
               <div style={mainContainer}>
                 <div style={wrapper}>
