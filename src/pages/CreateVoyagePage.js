@@ -78,7 +78,7 @@ export default function CreateVoyagePage() {
         { label: "Walk", value: 63 },
         { label: "Run", value: 64 },
       ].concat(
-        usersVehiclesData.map((vehicle) => ({
+        usersVehiclesData?.map((vehicle) => ({
           label: vehicle.name,
           value: vehicle.id,
         }))

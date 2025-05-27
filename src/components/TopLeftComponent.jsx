@@ -3,27 +3,24 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
 import parrotsLogo from "../assets/images/parrots-logo-mini.png";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export const TopLeftComponent = () => {
-
-  const storedUserName = localStorage.getItem("storedUserName")
+  const storedUserName = useSelector((state) => state.users.userName);
   const navigate = useNavigate();
   const handleCardClick = () => {
     navigate(`/profile`);
   };
 
-
   return (
     <div
       className="flex mainpage_TopLeft  cursor-pointer"
-
       style={{
         height: "3rem",
         width: "33%",
         alignItems: "center",
         justifyContent: "center",
-        hover: "pointer"
-
+        hover: "pointer",
       }}
       onClick={() => handleCardClick()}
     >

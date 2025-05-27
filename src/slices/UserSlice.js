@@ -62,6 +62,7 @@ const usersSlice = createSlice({
       state.userProfileImage = action.payload.image;
     },
     updateUserName: (state, action) => {
+      console.log("updateUserName action payload: ", action.payload);
       state.userName = action.payload.username;
     },
     updateUserFavorites: (state, action) => {
@@ -292,7 +293,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     updateProfileImage: builder.mutation({
       query: (data) => {
         const { profileImage, userId } = data;
-        console.log("profileImage: ", profileImage);
+        console.log("profileImage--->> ", profileImage);
         const formData = new FormData();
         formData.append("imageFile", profileImage);
         const url = `/api/User/${userId}/updateProfileImage`;

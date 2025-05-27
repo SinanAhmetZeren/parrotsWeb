@@ -10,7 +10,7 @@ import {
   useUpdateBackgroundImageMutation,
   useUpdateProfileImageMutation,
 } from "../slices/UserSlice";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
 import ReactQuill from "react-quill";
@@ -18,6 +18,8 @@ import "react-quill/dist/quill.snow.css";
 import { UserNameInputComponent } from "../components/UserNameInputComponent";
 import { UserTitleInputComponent } from "../components/UserTitleInputComponent";
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
+import { updateUserName } from "../slices/UserSlice";
+import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 
 /* TODO:
 when pressed update:
@@ -31,6 +33,7 @@ export function EditProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
+  const dispatch = useDispatch();
 
   const fileInputRef_ProfileImage = createRef();
   const fileInputRef_BackgroundImage = createRef();
@@ -116,20 +119,17 @@ export function EditProfilePage() {
     try {
       const response = await patchUser({ patchDoc, userId });
       console.log("patch user response: ", response);
-
-      /*
-      dispatch(
-        updateUserName({
-          username,
-        })
-      );
-      dispatch(
-        updateUserData({
-          image: profileImage,
-        })
-      );
-      */
-      console.log("updating user");
+      console.log("patch user response success: ", response.data.success);
+      if (response.data.success) {
+        console.log("Profile updated successfully");
+        dispatch(
+          updateUserName({
+            username: userName,
+          })
+        );
+      } else {
+        alert("Failed to update profile. Please try again.");
+      }
     } catch (error) {
       console.error("Error uploading image", error);
     }
@@ -420,17 +420,18 @@ export function EditProfilePage() {
                     <ReactQuill
                       value={userBio}
                       onChange={(value) => setUserBio(value)}
-                      placeholder="Tell us about your vehicle"
+                      placeholder="Tell us about yourself..."
                       modules={{
                         toolbar: false,
                       }}
                       style={{
-                        color: "rgba(0, 119, 234, 0.9)",
-                        fontWeight: "600",
+                        color: parrotTextDarkBlue,
+                        fontWeight: "500",
                         fontSize: "1.1rem",
                         borderRadius: "1.5rem",
                         padding: "0.5rem",
                         backgroundColor: "#007bff21",
+                        width: "100%",
                       }}
                     />
                     <style>

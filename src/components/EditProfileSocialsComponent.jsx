@@ -1,12 +1,12 @@
-import instagram from "../assets/images/instagram_icon.png"
-import youtube from '../assets/images/youtube_icon.png';
-import facebook from '../assets/images/facebook_logo.png';
-import twitter from '../assets/images/twitter_logo.png';
-import linkedin from '../assets/images/linkedin_logo.png';
-import tiktok from '../assets/images/tiktok_logo.png';
-import emaillogo from '../assets/images/email_logo.png';
-import phone from '../assets/images/phone_logo.jpeg';
-import "../assets/css/CreateVehicle.css"
+import instagram from "../assets/images/instagram_icon.png";
+import youtube from "../assets/images/youtube_icon.png";
+import facebook from "../assets/images/facebook_logo.png";
+import twitter from "../assets/images/twitter_logo.png";
+import linkedin from "../assets/images/linkedin_logo.png";
+import tiktok from "../assets/images/tiktok_logo.png";
+import emaillogo from "../assets/images/email_logo.png";
+import phone from "../assets/images/phone_logo.jpeg";
+import "../assets/css/CreateVehicle.css";
 
 export function EditProfileSocialsComponent({
   userData,
@@ -19,6 +19,8 @@ export function EditProfileSocialsComponent({
   setLinkedinProfile,
   setYoutubeProfile,
   email,
+  emailHidden,
+  setEmailHidden,
   phoneNumber,
   facebookProfile,
   instagramProfile,
@@ -26,10 +28,7 @@ export function EditProfileSocialsComponent({
   tiktokProfile,
   linkedinProfile,
   youtubeProfile,
-
 }) {
-
-
   const socialIcons = {
     email: emaillogo,
     instagram: instagram,
@@ -74,6 +73,10 @@ export function EditProfileSocialsComponent({
           </div>
         </div>
       ))}
+      <EmailHiddenCheckBox
+        emailHidden={emailHidden}
+        setEmailHidden={setEmailHidden}
+      />
     </div>
   );
 }
@@ -88,20 +91,20 @@ const inputStyle = {
   fontSize: "1.1rem",
   color: "#007bff",
   backgroundColor: "#007bff21",
-}
+};
 
 const socialIcon = {
-  width: '3rem',
-  height: '3rem',
-  margin: '5px',
-  cursor: 'pointer',
+  width: "3rem",
+  height: "3rem",
+  margin: "5px",
+  cursor: "pointer",
   borderRadius: "5rem",
-  objectFit: "cover"
+  objectFit: "cover",
 };
 
 const socialRow = {
-  backgroundColor: 'white',
-  display: 'flex',
+  backgroundColor: "white",
+  display: "flex",
   // width: "23rem",
   width: "30rem",
   boxShadow: `
@@ -111,11 +114,45 @@ const socialRow = {
   borderRadius: "2rem",
   margin: "auto",
   marginTop: ".5rem",
-}
+};
 
 const socialIconTextContainer = {
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  marginLeft: '1rem',
-}
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+  marginLeft: "1rem",
+};
+
+const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
+  return (
+    <div
+      style={{
+        height: "4rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "1rem",
+        borderRadius: "1.5rem",
+      }}
+    >
+      <label
+        className="text-lg font-bold"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          color: "black",
+          cursor: "pointer",
+        }}
+      >
+        Display email on profile
+        <input
+          type="checkbox"
+          checked={!emailHidden}
+          onChange={() => setEmailHidden(!emailHidden)}
+          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
+        />
+      </label>
+    </div>
+  );
+};

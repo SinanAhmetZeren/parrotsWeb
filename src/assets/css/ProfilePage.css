@@ -80,8 +80,6 @@
   }
 }
 
-
-
 .card-container {
   transform: scale(0.3) translateY(0%);
   opacity: 1;
@@ -192,13 +190,13 @@
 
 .profilePage_MapContainer {
   width: 100%;
-  padding: .2rem;
+  padding: 0.2rem;
   height: 58vh;
 }
 
 .profilePage_waypointsContainer {
   flex-grow: 1;
-  margin: .2rem;
+  margin: 0.2rem;
   height: auto;
 }
 
@@ -206,7 +204,7 @@
   height: calc(100vh - 3rem);
   width: 60%;
   flex-direction: column;
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .profilePage_BottomRight {
@@ -214,8 +212,7 @@
   width: 40%;
   flex-direction: column;
   /* background-color: slateblue; */
-  background-color: rgba(0, 0, 0, .3);
-
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .profilePage_Vehicles {
@@ -247,7 +244,6 @@
   height: 60%;
   width: 100%;
   position: relative;
-
 }
 
 .profilePage_BioAndContactDetails {
@@ -267,8 +263,6 @@
   border-radius: 2rem;
 }
 
-
-
 .profilePage_CoverImage {
   height: 100%;
   width: 100%;
@@ -281,7 +275,7 @@
   overflow: scroll;
   scrollbar-width: none;
   color: #007bff;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .editProfilePage_ContactDetails {
@@ -290,10 +284,9 @@
   overflow: scroll;
   scrollbar-width: none;
   color: #007bff;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   /* background-color: orange; */
 }
-
 
 .profilePage_ContactDetails::-webkit-scrollbar {
   display: none;
@@ -304,12 +297,10 @@
   width: 60%;
   background-color: white;
   flex-direction: column;
-  padding: .5rem;
+  padding: 0.5rem;
   margin: 0.5rem;
   border-radius: 2rem;
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 -8px 6px rgba(0, 0, 0, 0.2)
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.2);
 }
 
 .editprofilePage_BioTitleUserName {
@@ -317,12 +308,10 @@
   width: 98%;
   background-color: white;
   flex-direction: column;
-  padding: .5rem;
+  padding: 0.5rem;
   margin: 0.5rem;
   border-radius: 2rem;
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 -8px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.2);
   margin: auto;
 }
 
@@ -330,14 +319,14 @@
   width: 100%;
   font-size: 2rem;
   font-weight: 800;
-  color: #3c9dde
+  color: #3c9dde;
 }
 
 .profilePage_Title {
   width: 100%;
   font-size: 1.45rem;
   font-weight: 700;
-  color: #68b3e5
+  color: #68b3e5;
 }
 
 .profilePage_Bio {
@@ -364,7 +353,6 @@
   margin-bottom: 1rem;
   border-radius: 10rem;
 }
-
 
 .profilePage_ProfileImage_Img_Container {
   height: 17rem;
@@ -407,10 +395,7 @@
   transition: box-shadow 0.2s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
-
-
 
 .editProfilePage_gotoPublicProfileButton {
   position: absolute;
@@ -434,7 +419,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 .editProfilePage_gotoProfileButton {
   position: absolute;
   right: 5rem;
@@ -456,7 +440,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 
 .profilePage_gotoPublicProfileButton {
   position: absolute;
@@ -481,5 +464,4 @@
   transition: box-shadow 0.2s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }

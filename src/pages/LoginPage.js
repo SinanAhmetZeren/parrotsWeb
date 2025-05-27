@@ -170,26 +170,6 @@ function LoginPage() {
     }
   };
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      console.log("hello from google login");
-      const idToken = tokenResponse.id_token || tokenResponse.access_token; // depends on config
-
-      // Call your backend mutation with the Google ID token
-      try {
-        const userData = await triggerGoogleLogin(idToken).unwrap();
-        // userData contains your JWT + user info from backend
-        // store token in redux, localStorage or context, then redirect or update UI
-        console.log("Logged in user:", userData);
-      } catch (err) {
-        console.error("Google login failed:", err);
-      }
-    },
-    onError: () => {
-      console.error("Google login error");
-    },
-  });
-
   const handleRegister = async () => {
     try {
       const registerResponse = await registerUser({
@@ -202,24 +182,8 @@ function LoginPage() {
       setPasswordRegister("");
       setPasswordRegister2("");
 
-      // if registration response is 200
-      // go to Registration-2
-
-      // if ConfirmCode returns token etc
-      // then updateasLoggedIn
-
       if (registerResponse.token) {
         setPageState("Register2");
-        /*
-        await dispatch(
-          updateAsLoggedIn({
-            userId: registerResponse.userId,
-            token: registerResponse.token,
-            userName: registerResponse.userName,
-            profileImageUrl: registerResponse.profileImageUrl,
-          })
-        );
-        */
       }
     } catch (err) {
       console.log(err);
