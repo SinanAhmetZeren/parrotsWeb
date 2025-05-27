@@ -10,7 +10,6 @@ import {
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
 } from "../slices/UserSlice";
-import "../assets/css/GoogleButton.css"; // Assuming you have a CSS file for styles
 
 export default function GoogleLoginButton() {
   const dispatch = useDispatch();
@@ -65,21 +64,14 @@ export default function GoogleLoginButton() {
   });
 
   return (
-    <button
-      className="gsi-material-button"
-      style={{ width: "30rem" }}
-      onClick={() => {
-        login();
-      }}
-    >
-      <div className="gsi-material-button-state"></div>
-      <div className="gsi-material-button-content-wrapper">
-        <div className="gsi-material-button-icon">
+    <button style={styles.button} onClick={login} type="button">
+      <div style={styles.buttonState}></div>
+      <div style={styles.contentWrapper}>
+        <div style={styles.icon}>
           <svg
-            version="1.1"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
-            style={{ display: "block" }}
+            style={{ display: "block", width: 20, height: 20 }}
           >
             <path
               fill="#EA4335"
@@ -100,10 +92,8 @@ export default function GoogleLoginButton() {
             <path fill="none" d="M0 0h48v48H0z" />
           </svg>
         </div>
-        <span className="gsi-material-button-contents">
-          Sign in with Google
-        </span>
-        <span style={{ display: "none" }}>Sign in with Google</span>
+        <span style={styles.contents}>Sign in with Google</span>
+        <span style={styles.hiddenSpan}>Sign in with Google</span>
       </div>
     </button>
   );

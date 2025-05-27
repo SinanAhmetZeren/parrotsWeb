@@ -1,6 +1,6 @@
 .username-input::placeholder,
 .password-input::placeholder {
-  color: rgba(4, 4, 4, .2);
+  color: rgba(4, 4, 4, 0.2);
   font-size: 1.1rem;
   font-weight: 600;
   padding-left: 1rem;
@@ -10,8 +10,9 @@
 .password-input {
   border-radius: 0.5rem;
   background-color: white;
-  border: 1px solid rgba(4, 4, 4, .2);
-  width: 80%;
+  border: 1px solid rgba(4, 4, 4, 0.2);
+  /* width: 80%; */
+  width: 73%;
   padding: 0.5rem;
   font-size: 1.2rem;
 
@@ -41,9 +42,10 @@
   display: flex;
   justify-content: flex-end;
   width: 80%;
+  width: 73%;
   margin: auto;
   margin-bottom: 1rem;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .signupSpan {

@@ -315,7 +315,11 @@ function LoginPage() {
                         Forgot password?
                       </span>
                     </div>
-                    <div className="login-button" onClick={() => handleLogin()}>
+                    <div
+                      className="login-button"
+                      style={{ width: "27rem" }}
+                      onClick={() => handleLogin()}
+                    >
                       {" "}
                       {isLoggingIn ? <LoginSpinner /> : "Login"}
                     </div>
@@ -354,7 +358,7 @@ function LoginPage() {
                         style={{
                           margin: "auto",
                           marginTop: "2rem",
-                          width: "80%",
+                          // width: "100%",
                         }}
                       >
                         <GoogleLoginButton />
