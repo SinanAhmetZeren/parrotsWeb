@@ -12,6 +12,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 export function SocialRenderComponent({ userData }) {
   let contactDataArray = [];
 
+  // using DisplayEmail
   if (userData.displayEmail !== null && userData.emailVisible === true) {
     contactDataArray.push({ key: "email", value: userData.displayEmail });
   }

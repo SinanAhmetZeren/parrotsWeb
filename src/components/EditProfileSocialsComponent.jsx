@@ -8,6 +8,8 @@ import emaillogo from "../assets/images/email_logo.png";
 import phone from "../assets/images/phone_logo.jpeg";
 import "../assets/css/CreateVehicle.css";
 import { parrotTextDarkBlue } from "../styles/colors";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import { useState } from "react";
 
 export function EditProfileSocialsComponent({
   userData,
@@ -42,9 +44,9 @@ export function EditProfileSocialsComponent({
     linkedin: linkedin,
     tiktok: tiktok,
   };
+  const [isHovered, setIsHovered] = useState(false);
 
   const socialInputs = [
-    { key: "email", state: displayEmail, setter: setDisplayEmail },
     { key: "instagram", state: instagramProfile, setter: setInstagramProfile },
     { key: "youtube", state: youtubeProfile, setter: setYoutubeProfile },
     { key: "facebook", state: facebookProfile, setter: setFacebookProfile },
@@ -52,38 +54,80 @@ export function EditProfileSocialsComponent({
     { key: "twitter", state: twitterProfile, setter: setTwitterProfile },
     { key: "linkedin", state: linkedinProfile, setter: setLinkedinProfile },
     { key: "tiktok", state: tiktokProfile, setter: setTiktokProfile },
+    { key: "email", state: displayEmail, setter: setDisplayEmail },
   ];
 
   return (
-    <div style={{ marginTop: "2rem", width: "100%" }}>
-      {socialInputs.map(({ key, state, setter }) => (
-        <div style={socialRow} key={key}>
-          <div>
-            <img style={socialIcon} src={socialIcons[key]} alt={key} />
-          </div>
-          <div style={socialIconTextContainer}>
-            <input
-              className="font-bold text-base custom-input"
-              type="text"
-              placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-              value={state}
-              style={inputStyle}
-              onChange={(e) => {
-                setter(e.target.value);
-                console.log("e", e.target.value);
-              }}
-            />
-          </div>
-        </div>
-      ))}
+    <>
+      <div style={{ marginTop: "2rem", width: "100%" }}>
+        {socialInputs.map(({ key, state, setter }) => (
+          <div key={key}>
+            <div style={socialRow}>
+              <div>
+                <img style={socialIcon} src={socialIcons[key]} alt={key} />
+              </div>
+              <div style={socialIconTextContainer}>
+                <input
+                  className="font-bold text-base custom-input"
+                  type="text"
+                  placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                  value={state}
+                  style={inputStyle}
+                  onChange={(e) => {
+                    setter(e.target.value);
+                  }}
+                />
+              </div>
+              {key === "email" && (
+                <div
+                  style={{
+                    alignContent: "center",
+                    cursor: "pointer",
+                    position: "absolute",
+                    right: "1rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    backgroundColor: "white",
+                    borderRadius: "50%",
+                    padding: "0.2rem",
+                  }}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  <IoMdInformationCircleOutline
+                    size="1.5rem"
+                    color={parrotTextDarkBlue}
+                  />
+                </div>
+              )}
+            </div>
 
-      <div style={emailHiddenRow} key={"34254243242342342"}>
-        <EmailHiddenCheckBox
-          emailHidden={emailHidden}
-          setEmailHidden={setEmailHidden}
-        />
+            {key === "email" && (
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginTop: "0.5rem",
+
+                  opacity: isHovered ? 1 : 0,
+                  maxHeight: isHovered ? "100px" : "0px",
+                  overflow: "hidden",
+                  transition: "opacity 1s ease, max-height .5s ease",
+                }}
+              >
+                <div style={messageRow}>
+                  <EmailHiddenCheckBox
+                    emailHidden={emailHidden}
+                    setEmailHidden={setEmailHidden}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -120,21 +164,7 @@ const socialRow = {
   borderRadius: "2rem",
   margin: "auto",
   marginTop: ".5rem",
-};
-
-const emailHiddenRow = {
-  backgroundColor: "white",
-  display: "flex",
-  width: "20rem",
-  boxShadow: `
-  0 2px 2px rgba(0, 0, 0, 0.31),
-  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
-`,
-  borderRadius: "2rem",
-  margin: "auto",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "1rem",
+  position: "relative",
 };
 
 const socialIconTextContainer = {
@@ -144,16 +174,31 @@ const socialIconTextContainer = {
   marginLeft: "1rem",
 };
 
+const messageRow = {
+  backgroundColor: "white",
+  display: "flex",
+  width: "28rem",
+  boxShadow: `
+  0 2px 2px rgba(0, 0, 0, 0.31),
+  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
+`,
+  // borderRadius: "2rem",
+  margin: "auto",
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: ".2rem",
+};
+
 const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
   return (
     <div
       style={{
-        height: "2.5rem",
+        height: "4rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         gap: "1rem",
-        borderRadius: "1.5rem",
+        // borderRadius: "1.5rem",
       }}
     >
       <label
@@ -164,15 +209,19 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
           gap: "0.5rem",
           color: parrotTextDarkBlue,
           cursor: "pointer",
+          fontSize: "0.8rem",
+          width: "95%",
+          fontWeight: "400",
         }}
       >
-        Display email on profile
-        <input
+        This email address will be publicly visible on your profile. It may
+        differ from your login email and is optional to provide.
+        {/* <input
           type="checkbox"
           checked={!emailHidden}
           onChange={() => setEmailHidden(!emailHidden)}
           style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
-        />
+        /> */}
       </label>
     </div>
   );
