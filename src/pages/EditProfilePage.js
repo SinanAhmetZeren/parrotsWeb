@@ -13,7 +13,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { EditProfileSocialsComponent } from "../components/EditProfileSocialsComponent";
-import ReactQuill from "react-quill";
+import ReactQuill, { displayName } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { UserNameInputComponent } from "../components/UserNameInputComponent";
 import { UserTitleInputComponent } from "../components/UserTitleInputComponent";
@@ -49,6 +49,7 @@ export function EditProfilePage() {
   const [userBio, setUserBio] = useState("");
 
   const [email, setEmail] = useState("");
+  const [displayEmail, setDisplayEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [facebookProfile, setFacebookProfile] = useState("");
   const [instagramProfile, setInstagramProfile] = useState("");
@@ -56,7 +57,7 @@ export function EditProfilePage() {
   const [tiktokProfile, setTiktokProfile] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [youtubeProfile, setYoutubeProfile] = useState("");
-  const [emailHidden, setEmailHidden] = useState(false);
+  const [emailHidden, setEmailHidden] = useState();
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
@@ -91,6 +92,7 @@ export function EditProfilePage() {
       setProfileImage(userData.profileImageUrl);
       setBackGroundImage(userData.backgroundImageUrl);
       setEmail(userData.email || "");
+      setDisplayEmail(userData.displayEmail || "");
       setInstagramProfile(userData.instagram || "");
       setYoutubeProfile(userData.youtube || "");
       setFacebookProfile(userData.facebook || "");
@@ -98,13 +100,15 @@ export function EditProfilePage() {
       setTwitterProfile(userData.twitter || "");
       setLinkedinProfile(userData.linkedin || "");
       setTiktokProfile(userData.tiktok || "");
+      setEmailHidden(!userData.emailVisible);
     }
   }, [userData, isSuccessUser]);
 
   const handlePatchUser = async () => {
     const patchDoc = [
       { op: "replace", path: "/userName", value: userName },
-      { op: "replace", path: "/email", value: email },
+      // { op: "replace", path: "/email", value: email },
+      { op: "replace", path: "/displayEmail", value: displayEmail },
       { op: "replace", path: "/phonenumber", value: phoneNumber },
       { op: "replace", path: "/facebook", value: facebookProfile },
       { op: "replace", path: "/instagram", value: instagramProfile },
@@ -198,7 +202,8 @@ export function EditProfilePage() {
   };
 
   const handleUploadProfileImage = async () => {
-    if (!profileImage) {
+    if (!profileImage || profileImage === userData.profileImageUrl) {
+      console.log("---- not doing anything with profileImage");
       return;
     }
     try {
@@ -210,7 +215,9 @@ export function EditProfilePage() {
   };
 
   const handleUploadBackgroundImage = async () => {
-    if (!backGroundImage) {
+    if (!backGroundImage || backGroundImage === userData.backgroundImageUrl) {
+      console.log("---- not doing anything with profileImage");
+
       return;
     }
     try {
@@ -480,6 +487,7 @@ export function EditProfilePage() {
                     <EditProfileSocialsComponent
                       userData={userData}
                       setEmail={setEmail}
+                      setDisplayEmail={setDisplayEmail}
                       setPhoneNumber={setPhoneNumber}
                       setFacebookProfile={setFacebookProfile}
                       setInstagramProfile={setInstagramProfile}
@@ -489,6 +497,7 @@ export function EditProfilePage() {
                       setYoutubeProfile={setYoutubeProfile}
                       setEmailHidden={setEmailHidden}
                       email={email}
+                      displayEmail={displayEmail}
                       phoneNumber={phoneNumber}
                       facebookProfile={facebookProfile}
                       instagramProfile={instagramProfile}

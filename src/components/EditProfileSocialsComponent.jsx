@@ -7,10 +7,12 @@ import tiktok from "../assets/images/tiktok_logo.png";
 import emaillogo from "../assets/images/email_logo.png";
 import phone from "../assets/images/phone_logo.jpeg";
 import "../assets/css/CreateVehicle.css";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 export function EditProfileSocialsComponent({
   userData,
   setEmail,
+  setDisplayEmail,
   setPhoneNumber,
   setFacebookProfile,
   setInstagramProfile,
@@ -19,6 +21,7 @@ export function EditProfileSocialsComponent({
   setLinkedinProfile,
   setYoutubeProfile,
   email,
+  displayEmail,
   emailHidden,
   setEmailHidden,
   phoneNumber,
@@ -41,7 +44,7 @@ export function EditProfileSocialsComponent({
   };
 
   const socialInputs = [
-    { key: "email", state: email, setter: setEmail },
+    { key: "email", state: displayEmail, setter: setDisplayEmail },
     { key: "instagram", state: instagramProfile, setter: setInstagramProfile },
     { key: "youtube", state: youtubeProfile, setter: setYoutubeProfile },
     { key: "facebook", state: facebookProfile, setter: setFacebookProfile },
@@ -73,10 +76,13 @@ export function EditProfileSocialsComponent({
           </div>
         </div>
       ))}
-      <EmailHiddenCheckBox
-        emailHidden={emailHidden}
-        setEmailHidden={setEmailHidden}
-      />
+
+      <div style={emailHiddenRow} key={"34254243242342342"}>
+        <EmailHiddenCheckBox
+          emailHidden={emailHidden}
+          setEmailHidden={setEmailHidden}
+        />
+      </div>
     </div>
   );
 }
@@ -89,7 +95,7 @@ const inputStyle = {
   cursor: "pointer",
   height: "3rem",
   fontSize: "1.1rem",
-  color: "#007bff",
+  color: parrotTextDarkBlue,
   backgroundColor: "#007bff21",
 };
 
@@ -116,6 +122,21 @@ const socialRow = {
   marginTop: ".5rem",
 };
 
+const emailHiddenRow = {
+  backgroundColor: "white",
+  display: "flex",
+  width: "20rem",
+  boxShadow: `
+  0 2px 2px rgba(0, 0, 0, 0.31),
+  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
+`,
+  borderRadius: "2rem",
+  margin: "auto",
+  justifyContent: "center",
+  alignItems: "center",
+  marginTop: "1rem",
+};
+
 const socialIconTextContainer = {
   display: "flex",
   alignItems: "center",
@@ -127,7 +148,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "2.5rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -141,7 +162,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
           display: "flex",
           alignItems: "center",
           gap: "0.5rem",
-          color: "black",
+          color: parrotTextDarkBlue,
           cursor: "pointer",
         }}
       >

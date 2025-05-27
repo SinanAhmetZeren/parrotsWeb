@@ -56,7 +56,7 @@ function ProfilePage() {
   }, [refetchUserData, userId]);
 
   useEffect(() => {
-    if (isSuccessUser) console.log("userData: ", userData);
+    if (isSuccessUser) console.log("userData--------> ", userData);
   }, [userData, isSuccessUser]);
 
   return isLoadingUser ? (
@@ -98,11 +98,20 @@ function ProfilePage() {
                 <div className="flex profilePage_ProfileImage">
                   <div>
                     <div className="profilePage_ProfileImage_Img_Container">
-                      <img
-                        src={userBaseUrl + userData?.profileImageUrl}
-                        className=" profilePage_ProfileImage_Img"
-                        alt="b"
-                      />
+                      <div className="profilePage_ProfileImage_Img">
+                        <img
+                          src={userBaseUrl + userData?.profileImageUrl}
+                          alt="Uploaded preview"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            border: "2px solid transparent",
+                            overFlow: "hidden",
+                            borderRadius: "1rem",
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

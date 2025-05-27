@@ -12,8 +12,8 @@ import { parrotTextDarkBlue } from "../styles/colors";
 export function SocialRenderComponent({ userData }) {
   let contactDataArray = [];
 
-  if (userData.email !== null && userData.emailVisible === true) {
-    contactDataArray.push({ key: "email", value: userData.email });
+  if (userData.displayEmail !== null && userData.emailVisible === true) {
+    contactDataArray.push({ key: "email", value: userData.displayEmail });
   }
   if (userData.instagram !== null) {
     contactDataArray.push({ key: "instagram", value: userData.instagram });
