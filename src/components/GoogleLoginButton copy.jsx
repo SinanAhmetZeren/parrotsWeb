@@ -10,6 +10,8 @@ import {
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
 } from "../slices/UserSlice";
+import "../assets/css/GoogleButton.css"; // Assuming you have a CSS file for styles
+import { useEffect } from "react";
 
 export default function GoogleLoginButton() {
   const dispatch = useDispatch();
@@ -63,15 +65,48 @@ export default function GoogleLoginButton() {
     },
   });
 
+  useEffect(() => {
+    /* global google */
+    window.google?.accounts.id.initialize({
+      client_id: "<YOUR_GOOGLE_CLIENT_ID>",
+      callback: async (response) => {
+        const idToken = response.credential;
+        if (!idToken) {
+          console.error("No ID token received from Google");
+          return;
+        }
+
+        try {
+          const res = await googleLoginInternal(idToken).unwrap();
+          // ... handle success ...
+        } catch (err) {
+          console.error("Google login failed:", err);
+        }
+      },
+    });
+
+    window.google?.accounts.id.renderButton(
+      document.getElementById("google-login-button"),
+      { theme: "outline", size: "large" }
+    );
+  }, []);
+
   return (
-    <button style={styles.button} onClick={login} type="button">
-      <div style={styles.buttonState}></div>
-      <div style={styles.contentWrapper}>
-        <div style={styles.icon}>
+    <button
+      className="gsi-material-button"
+      style={{ width: "30rem" }}
+      onClick={() => {
+        login();
+      }}
+    >
+      <div className="gsi-material-button-state"></div>
+      <div className="gsi-material-button-content-wrapper">
+        <div className="gsi-material-button-icon">
           <svg
+            version="1.1"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
-            style={{ display: "block", width: 20, height: 20 }}
+            style={{ display: "block" }}
           >
             <path
               fill="#EA4335"
@@ -92,85 +127,11 @@ export default function GoogleLoginButton() {
             <path fill="none" d="M0 0h48v48H0z" />
           </svg>
         </div>
-        <span style={styles.contents}>Sign in with Google</span>
-        <span style={styles.hiddenSpan}>Sign in with Google</span>
+        <span className="gsi-material-button-contents">
+          Sign in with Google
+        </span>
+        <span style={{ display: "none" }}>Sign in with Google</span>
       </div>
     </button>
   );
 }
-
-const styles = {
-  button: {
-    userSelect: "none",
-    WebkitUserSelect: "none",
-    MozUserSelect: "none",
-    msUserSelect: "none",
-    WebkitAppearance: "none",
-    backgroundColor: "#f2f2f2",
-    backgroundImage: "none",
-    border: "none",
-    borderRadius: "20px",
-    boxSizing: "border-box",
-    color: "#1f1f1f",
-    cursor: "pointer",
-    fontFamily: "'Roboto', arial, sans-serif",
-    fontSize: 14,
-    height: 40,
-    letterSpacing: 0.25,
-    outline: "none",
-    overflow: "hidden",
-    padding: "0 12px",
-    position: "relative",
-    textAlign: "center",
-    transition: "background-color .218s, border-color .218s, box-shadow .218s",
-    verticalAlign: "middle",
-    whiteSpace: "nowrap",
-    maxWidth: 400,
-    minWidth: "min-content",
-    display: "inline-flex",
-    alignItems: "center",
-    width: "30rem",
-  },
-
-  buttonState: {
-    transition: "opacity .218s",
-    bottom: 0,
-    left: 0,
-    opacity: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
-  },
-
-  contentWrapper: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "nowrap",
-    height: "100%",
-    justifyContent: "space-between",
-    position: "relative",
-    width: "100%",
-  },
-
-  icon: {
-    height: 20,
-    marginRight: 12,
-    minWidth: 20,
-    width: 20,
-    flexShrink: 0,
-  },
-
-  contents: {
-    flexGrow: 1,
-    fontFamily: "'Roboto', arial, sans-serif",
-    fontWeight: 500,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    verticalAlign: "top",
-  },
-
-  hiddenSpan: {
-    display: "none",
-  },
-};

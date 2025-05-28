@@ -237,10 +237,10 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     googleLoginInternal: builder.mutation({
-      query: (idToken) => ({
+      query: (AccessToken) => ({
         url: "/api/account/google-login",
         method: "POST",
-        body: { idToken },
+        body: { AccessToken },
       }),
     }),
     getUserById: builder.query({

@@ -24,13 +24,14 @@ export default function GoogleLoginButton() {
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const idToken = tokenResponse.credential;
-      if (!idToken) {
+      const AccessToken = tokenResponse.access_token;
+      console.log("Google tokenResponse: ", AccessToken);
+      if (!AccessToken) {
         console.error("No ID token received from Google");
         return;
       }
       try {
-        const res = await googleLoginInternal(idToken).unwrap();
+        const res = await googleLoginInternal(AccessToken).unwrap();
         console.log("Login internal response--->", res);
 
         const favoriteVehicles = await getFavoriteVehicleIdsByUserId(

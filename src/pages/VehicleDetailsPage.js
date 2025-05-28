@@ -117,9 +117,6 @@ function VehicleDetailsPage() {
   return (
     // true ||
     isLoadingVehicle ? (
-      // <div style={spinnerContainer}>
-      //   <div className="spinner"></div>
-      // </div>
       <VehicleDetailPlaceHolderComponent />
     ) : isSuccessVehicle ? (
       <div className="App">
