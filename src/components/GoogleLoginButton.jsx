@@ -50,6 +50,7 @@ export default function GoogleLoginButton() {
           updateAsLoggedIn({
             userId: res.userId,
             token: res.token,
+            refreshToken: res.refreshToken,
             userName: res.userName,
             profileImageUrl: res.profileImageUrl,
           })

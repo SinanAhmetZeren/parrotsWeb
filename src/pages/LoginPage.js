@@ -114,6 +114,7 @@ function LoginPage() {
           updateAsLoggedIn({
             userId: confirmResponse.userId,
             token: confirmResponse.token,
+            refreshToken: confirmResponse.refreshToken,
             userName: confirmResponse.userName,
             profileImageUrl: confirmResponse.profileImageUrl,
           })
@@ -157,6 +158,7 @@ function LoginPage() {
         updateAsLoggedIn({
           userId: loginResponse.userId,
           token: loginResponse.token,
+          refreshToken: loginResponse.refreshToken,
           userName: loginResponse.userName,
           profileImageUrl: loginResponse.profileImageUrl,
         })
@@ -212,6 +214,7 @@ function LoginPage() {
           updateAsLoggedIn({
             userId: resetPasswordResponse.userId,
             token: resetPasswordResponse.token,
+            refreshToken: resetPasswordResponse.refreshToken,
             userName: resetPasswordResponse.userName,
             profileImageUrl: resetPasswordResponse.profileImageUrl,
           })

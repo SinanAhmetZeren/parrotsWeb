@@ -2,45 +2,52 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const API_URL = "https://measured-wolf-grossly.ngrok-free.app";
 
-const apiSlice2 = createApi({
-  reducerPath: "api",
-  // baseQuery: fetchBaseQuery({
-  //   baseUrl: API_URL,
-  // }),
-
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
-    prepareHeaders: (headers, { getState }) => {
-      headers.set("ngrok-skip-browser-warning", "1");
-      return headers;
-    },
-  }),
-
-  endpoints: (builder) => ({}),
-  tagTypes: ["User", "Voyage"],
+const baseQuery = fetchBaseQuery({
+  baseUrl: API_URL,
+  prepareHeaders: async (headers) => {
+    headers.set("ngrok-skip-browser-warning", "1");
+    const token = await localStorage.getItem("storedToken");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
 });
+
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 401) {
+    const refreshToken = localStorage.getItem("storedRefreshToken");
+    if (!refreshToken) {
+      return result;
+    }
+    const refreshResult = await baseQuery(
+      {
+        url: "/api/account/refresh-token",
+        method: "POST",
+        body: { refreshToken },
+      },
+      api,
+      extraOptions
+    );
+    if (refreshResult.data) {
+      localStorage.setItem("storedToken", refreshResult.data.token);
+      localStorage.setItem(
+        "storedRefreshToken",
+        refreshResult.data.refreshToken
+      );
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      localStorage.removeItem("storedToken");
+      localStorage.removeItem("storedRefreshToken");
+    }
+  }
+  return result;
+};
 
 export const apiSlice = createApi({
   reducerPath: "api",
-
-  baseQuery: async (...args) => {
-    const rawBaseQuery = fetchBaseQuery({
-      baseUrl: API_URL,
-      prepareHeaders: async (headers) => {
-        headers.set("ngrok-skip-browser-warning", "1");
-        const token = await localStorage.getItem("storedToken");
-        if (token) {
-          headers.set("Authorization", `Bearer ${token}`);
-        }
-        return headers;
-      },
-    });
-
-    // fetchBaseQuery doesn't support async prepareHeaders directly, so we wrap it here
-    return rawBaseQuery(...args);
-  },
-
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["User", "Voyage"],
-
   endpoints: (builder) => ({}),
 });

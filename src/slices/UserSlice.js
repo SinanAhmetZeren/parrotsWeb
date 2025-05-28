@@ -9,6 +9,7 @@ const usersSlice = createSlice({
     isLoggedIn: !!localStorage.getItem("storedToken"),
     userId: "",
     token: "",
+    refreshToken: "",
     userName: "",
     userProfileImage: "",
     userFavoriteVoyages: [0],
@@ -20,9 +21,11 @@ const usersSlice = createSlice({
         state.isLoggedIn = true;
         state.userId = action.payload.userId;
         state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken;
         state.userName = action.payload.userName;
         state.userProfileImage = action.payload.profileImageUrl;
         localStorage.setItem("storedToken", action.payload.token);
+        localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
         localStorage.setItem("storedUserId", action.payload.userId);
         localStorage.setItem("storedUserName", action.payload.userName);
         localStorage.setItem(
@@ -38,9 +41,11 @@ const usersSlice = createSlice({
         state.isLoggedIn = false;
         state.userId = "";
         state.token = "";
+        state.refreshToken = "";
         state.userName = "";
         state.userProfileImage = "";
         localStorage.removeItem("storedToken");
+        localStorage.removeItem("storedRefreshToken");
         localStorage.removeItem("storedUserId");
         localStorage.removeItem("storedUserName");
         localStorage.removeItem("storedProfileImageUrl");

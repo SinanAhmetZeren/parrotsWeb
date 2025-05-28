@@ -330,7 +330,7 @@ const NoVoyagesVehiclesPlaceHolder = ({ type }) => {
           filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4))",
         }}
       >
-        {/* Add a new {type} */}
+        Add a new {type}
       </span>
     </div>
   );
