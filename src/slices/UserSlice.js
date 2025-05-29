@@ -380,6 +380,7 @@ export const {
   useGoogleLoginInternalMutation,
   useResetPasswordMutation,
   useGetUserByIdQuery,
+  useLazyGetUserByIdQuery,
   useUpdateProfileImageMutation,
   useUpdateBackgroundImageMutation,
   usePatchUserMutation,

@@ -24,6 +24,8 @@ import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUplo
 import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsComponent";
 import { AddWaypointsPage } from "../components/AddWaypointsComponent";
 import { useLocation } from "react-router-dom";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
 
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
@@ -213,6 +215,14 @@ export default function CreateVoyagePage() {
     console.log("dates - start:", dates[0].startDate);
     console.log("dates - end:", dates[0].startDate);
   };
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
 
   return (
     <div

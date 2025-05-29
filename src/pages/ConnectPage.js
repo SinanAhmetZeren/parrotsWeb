@@ -5,33 +5,39 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { ConnectPagePlaceHolder } from "../components/ConnectPagePlaceHolder"
+import { ConnectPagePlaceHolder } from "../components/ConnectPagePlaceHolder";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useGetMessagesBetweenUsersQuery, useGetMessagesByUserIdQuery } from "../slices/MessageSlice";
+import {
+  useGetMessagesBetweenUsersQuery,
+  useGetMessagesByUserIdQuery,
+} from "../slices/MessageSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
   const { conversationUserId: paramConversationUserId } = useParams();
-  const { conversationUserUsername: paramConversationUserUsername } = useParams();
-  const currentUserId = localStorage.getItem("storedUserId")
+  const { conversationUserUsername: paramConversationUserUsername } =
+    useParams();
+  const currentUserId = localStorage.getItem("storedUserId");
   const navigate = useNavigate();
   const handleGoToUser = (userId, userName) => {
     navigate(`/profile-public/${userId}/${userName}`);
-  }
+  };
   const [query, setQuery] = useState("");
-  const [conversationUserId, setConversationUserId] = useState("")
-  const [conversationUserUsername, setConversationUserUsername] = useState("")
+  const [conversationUserId, setConversationUserId] = useState("");
+  const [conversationUserUsername, setConversationUserUsername] = useState("");
   const [users, setUsers] = useState({ currentUserId, conversationUserId });
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
-  const [sendButtonDisabled, setSendButtonDisabled] = useState(false)
+  const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
 
   useEffect(() => {
     if (paramConversationUserId && paramConversationUserUsername) {
@@ -41,12 +47,12 @@ function ConnectPage() {
       setConversationUserId("");
       setConversationUserUsername("");
     }
-  }, [paramConversationUserId, paramConversationUserUsername])
+  }, [paramConversationUserId, paramConversationUserUsername]);
 
   const hubConnection = useMemo(() => {
     return new HubConnectionBuilder()
       .withUrl(`${API_URL}/chathub/11?userId=${currentUserId}`, {
-        withCredentials: false // TODO: is this correct? 
+        withCredentials: false, // TODO: is this correct?
       })
       .build();
   }, [currentUserId]);
@@ -98,25 +104,24 @@ function ConnectPage() {
     startHubConnection();
     hubConnection.on(
       "ReceiveMessage",
-      async (senderId, content, newTime, senderProfileUrl, senderUsername) => { }
+      async (senderId, content, newTime, senderProfileUrl, senderUsername) => {}
     );
 
     hubConnection.on("ReceiveMessageRefetch", () => {
       refetchConversation();
     });
 
-    return () => { };
+    return () => {};
   }, []);
 
   useEffect(() => {
-    setUsers({ currentUserId, conversationUserId })
+    setUsers({ currentUserId, conversationUserId });
     // console.log("--->> conversationUserId: ", conversationUserId);
-  }, [conversationUserId])
-
+  }, [conversationUserId]);
 
   const stateOfTheHub = () => {
     console.log("state of the hub: ", hubConnection.state);
-  }
+  };
 
   const {
     data: messagePreviewsData,
@@ -124,7 +129,7 @@ function ConnectPage() {
     isError: isErrorMessages,
     error: errorMessages,
     isSuccess: isSuccessmessagePreviews,
-    refetch: refetchMessagePreviews
+    refetch: refetchMessagePreviews,
   } = useGetMessagesByUserIdQuery(currentUserId);
 
   const {
@@ -137,9 +142,8 @@ function ConnectPage() {
   } = useGetMessagesBetweenUsersQuery(users);
 
   useEffect(() => {
-    if (conversationData)
-      setMessagesToDisplay(conversationData.data)
-  }, [conversationData])
+    if (conversationData) setMessagesToDisplay(conversationData.data);
+  }, [conversationData]);
 
   useEffect(() => {
     if (conversationUserId) {
@@ -148,7 +152,7 @@ function ConnectPage() {
   }, [conversationUserId, refetchConversation]);
 
   const handleSendMessage = async () => {
-    setSendButtonDisabled(true)
+    setSendButtonDisabled(true);
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
@@ -174,7 +178,6 @@ function ConnectPage() {
     setMessage("");
 
     try {
-
       if (hubConnection.state === "Disconnected") {
         await hubConnection.start();
       }
@@ -185,7 +188,7 @@ function ConnectPage() {
         message
       );
       console.log("Message sent successfully.");
-      refetchMessagePreviews()
+      refetchMessagePreviews();
     } catch (error) {
       console.error("Failed to send message:", error);
       setMessagesToDisplay((prevMessages) => {
@@ -198,11 +201,20 @@ function ConnectPage() {
       );
     }
 
-    setSendButtonDisabled(false)
-
+    setSendButtonDisabled(false);
   };
 
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
 
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorMessages || isErrorConversation || errorMessages || error) {
+    return <SomethingWentWrong />;
+  }
 
   return (
     // true ||
@@ -238,7 +250,7 @@ function ConnectPage() {
                   </div>
                 )}
                 {isSuccessmessagePreviews && query.length < 3 && (
-                  <div style={MessagePreviewsContainer} >
+                  <div style={MessagePreviewsContainer}>
                     <MessagePreviewsComponent
                       messagesData={messagePreviewsData}
                       userId={currentUserId}
@@ -246,12 +258,11 @@ function ConnectPage() {
                       setConversationUserId={setConversationUserId}
                       setConversationUserUsername={setConversationUserUsername}
                       handleGoToUser={handleGoToUser}
-
                     />
                   </div>
                 )}
               </div>
-              <div className="flex connectPage_BottomRight" >
+              <div className="flex connectPage_BottomRight">
                 <div style={ConversationComponentContainer}>
                   <ConversationComponent
                     conversationData={conversationData}
@@ -260,21 +271,19 @@ function ConnectPage() {
                   />
                 </div>
 
-                {
-                  conversationUserId && (
-                    <div style={{ width: "100%" }}>
-                      <MessageSenderComponent
-                        conversationUserId={conversationUserId}
-                        conversationUserUsername={conversationUserUsername}
-                        currentUserId={currentUserId}
-                        message={message}
-                        setMessage={setMessage}
-                        handleSendMessage={handleSendMessage}
-                        sendButtonDisabled={sendButtonDisabled}
-                      />
-                    </div>
-                  )
-                }
+                {conversationUserId && (
+                  <div style={{ width: "100%" }}>
+                    <MessageSenderComponent
+                      conversationUserId={conversationUserId}
+                      conversationUserUsername={conversationUserUsername}
+                      currentUserId={currentUserId}
+                      message={message}
+                      setMessage={setMessage}
+                      handleSendMessage={handleSendMessage}
+                      sendButtonDisabled={sendButtonDisabled}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -286,14 +295,13 @@ function ConnectPage() {
 
 export default ConnectPage;
 
-
 const MessagePreviewsContainer = {
   display: "flex",
   flexDirection: "column",
   width: "100%",
   height: "100%",
   overflowY: "scroll",
-}
+};
 
 const ConversationComponentContainer = {
   display: "flex",
@@ -302,10 +310,9 @@ const ConversationComponentContainer = {
   overflowY: "scroll",
   height: `calc(100vh - 10rem)`,
   alignSelf: "flex-start",
-}
+};
 
 const SearchBarContainer = {
   backgroundColor: "rgb(240, 240, 240)",
-  height: "9vh"
-}
-
+  height: "9vh",
+};

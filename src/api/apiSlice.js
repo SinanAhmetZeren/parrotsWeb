@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { useNavigate } from "react-router-dom";
 const API_URL = "https://measured-wolf-grossly.ngrok-free.app";
 
 const baseQuery = fetchBaseQuery({
@@ -30,6 +31,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
       api,
       extraOptions
     );
+    console.log("Refresh result:", refreshResult);
     if (refreshResult.data) {
       localStorage.setItem("storedToken", refreshResult.data.token);
       localStorage.setItem(
@@ -40,6 +42,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     } else {
       localStorage.removeItem("storedToken");
       localStorage.removeItem("storedRefreshToken");
+      window.location.href = "/login";
     }
   }
   return result;

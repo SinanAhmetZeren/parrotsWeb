@@ -10,6 +10,8 @@ import { SocialRenderComponent } from "../components/SocialRenderComponent";
 import { useGetUserByIdQuery } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function ProfilePagePublic() {
   const { userId } = useParams();
@@ -31,6 +33,18 @@ function ProfilePagePublic() {
     isSuccess: isSuccessUser,
     refetch: refetchUserData,
   } = useGetUserByIdQuery(userId);
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorUser) {
+    return <SomethingWentWrong />;
+  }
 
   return isLoadingUser ? (
     <div style={spinnerContainer}>
@@ -65,20 +79,22 @@ function ProfilePagePublic() {
                 </div>
 
                 <div className="flex profilePage_ProfileImage">
-                  <div className="profilePage_ProfileImage_Img_Container">
-                    <div className="profilePage_ProfileImage_Img">
-                      <img
-                        src={userBaseUrl + userData?.profileImageUrl}
-                        alt="Uploaded preview"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          border: "2px solid transparent",
-                          overFlow: "hidden",
-                          borderRadius: "1rem",
-                        }}
-                      />
+                  <div>
+                    <div className="profilePage_ProfileImage_Img_Container">
+                      <div className="profilePage_ProfileImage_Img">
+                        <img
+                          src={userBaseUrl + userData?.profileImageUrl}
+                          alt="Uploaded preview"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            border: "2px solid transparent",
+                            overFlow: "hidden",
+                            borderRadius: "1rem",
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -20,6 +20,8 @@ import { UserTitleInputComponent } from "../components/UserTitleInputComponent";
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
 import { updateUserName } from "../slices/UserSlice";
 import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 /* TODO:
 when pressed update:
@@ -240,6 +242,18 @@ export function EditProfilePage() {
     await refetchUserData();
     setIsUpdatingProfile(false);
   };
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorUser) {
+    return <SomethingWentWrong />;
+  }
 
   return isLoadingUser ? (
     <LoadingProfilePage />

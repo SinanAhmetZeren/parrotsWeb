@@ -6,11 +6,16 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { BlueHashtagText } from "../components/BlueHashtagText";
 import { SocialRenderComponent } from "../components/SocialRenderComponent";
-import { useGetUserByIdQuery } from "../slices/UserSlice";
+import {
+  useGetUserByIdQuery,
+  useLazyGetUserByIdQuery,
+} from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -36,6 +41,7 @@ function ProfilePage() {
     navigate(`/newVoyage`);
   };
 
+  /*
   const {
     data: userData,
     isLoading: isLoadingUser,
@@ -54,13 +60,47 @@ function ProfilePage() {
       console.log("Cleanup: Unsubscribing or resetting data if necessary");
     };
   }, [refetchUserData, userId]);
+*/
+
+  const [
+    triggerGetUserById,
+    {
+      data: userData,
+      isLoading: isLoadingUser,
+      isError: isErrorUser,
+      error,
+      isSuccess: isSuccessUser,
+    },
+  ] = useLazyGetUserByIdQuery();
 
   useEffect(() => {
-    if (isSuccessUser) console.log("userData--------> ", userData);
-  }, [userData, isSuccessUser]);
+    const token = localStorage.getItem("storedToken");
+    if (userId && token) {
+      triggerGetUserById(userId);
+    }
+
+    return () => {
+      console.log("Cleanup: Unsubscribing or resetting data if necessary");
+      // Optionally clear userData-related local state or reset component state here
+    };
+  }, [userId, triggerGetUserById]);
+
+  // useEffect(() => {
+  //   if (isSuccessUser) console.log("userData--------> ", userData);
+  // }, [userData, isSuccessUser]);
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
 
   return isLoadingUser ? (
     <LoadingProfilePage />
+  ) : isErrorUser ? (
+    <SomethingWentWrong />
   ) : isSuccessUser ? (
     <div className="App">
       <header className="App-header">

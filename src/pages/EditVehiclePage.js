@@ -25,6 +25,8 @@ import {
 } from "../slices/VehicleSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { image } from "d3";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function EditVehiclePage() {
@@ -284,6 +286,16 @@ function EditVehiclePage() {
     }
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorVehicles) return <SomethingWentWrong />;
 
   return (
     <div className="App">

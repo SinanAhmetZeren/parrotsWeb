@@ -16,6 +16,8 @@ import {
   useGetFavoriteVoyageIdsByUserIdQuery,
   useGetFavoriteVehicleIdsByUserIdQuery,
   updateUserFavorites,
+  useLazyGetFavoriteVehicleIdsByUserIdQuery,
+  useLazyGetFavoriteVoyageIdsByUserIdQuery,
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -29,6 +31,8 @@ import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
@@ -72,10 +76,39 @@ function MainPage() {
       isSuccess: isSuccessVoyagesFiltered,
     },
   ] = useGetFilteredVoyagesMutation();
-  const { data: favoriteVoyagesData } =
-    useGetFavoriteVoyageIdsByUserIdQuery(userId);
-  const { data: favoriteVehiclesData } =
-    useGetFavoriteVehicleIdsByUserIdQuery(userId);
+
+  // const { data: favoriteVoyagesData } =
+  //   useGetFavoriteVoyageIdsByUserIdQuery(userId);
+
+  // const { data: favoriteVehiclesData } =
+  //   useGetFavoriteVehicleIdsByUserIdQuery(userId);
+
+  const [
+    getFavoriteVehicleIdsByUserId,
+    {
+      data: favoriteVehiclesData,
+      error: favoriteVehiclesError,
+      isError: isErrorFavoriteVehicles,
+    },
+  ] = useLazyGetFavoriteVehicleIdsByUserIdQuery();
+
+  const [
+    getFavoriteVoyageIdsByUserId,
+    {
+      data: favoriteVoyagesData,
+      error: favoriteVoyagesError,
+      isError: isErrorFavoriteVoyages,
+    },
+  ] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
+
+  useEffect(() => {
+    const token = localStorage.getItem("storedToken");
+    if (token) {
+      getFavoriteVehicleIdsByUserId(userId);
+      getFavoriteVoyageIdsByUserId(userId);
+    }
+  }, [userId, getFavoriteVehicleIdsByUserId, getFavoriteVoyageIdsByUserId]);
+
   const applyFilter = useCallback(async () => {
     const formattedStartDate = convertDateFormat(dates.startDate, "startDate");
     const formattedEndDate = convertDateFormat(dates.endDate, "endDate");
@@ -100,6 +133,7 @@ function MainPage() {
     selectedVehicle,
     getFilteredVoyages,
   ]);
+
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -320,6 +354,23 @@ function MainPage() {
       hasMapInitialized.current = true;
     }, [map, setInitialBounds]);
     return null;
+  }
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (
+    isErrorVoyages ||
+    isErrorVoyagesFiltered ||
+    isErrorFavoriteVehicles ||
+    isErrorFavoriteVoyages
+  ) {
+    return <SomethingWentWrong />;
   }
 
   return (

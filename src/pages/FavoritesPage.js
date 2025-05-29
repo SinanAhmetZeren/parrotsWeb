@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import "../assets/css/FavoritesPage.css"
+import "../assets/css/FavoritesPage.css";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -9,9 +9,11 @@ import { useGetFavoriteVoyagesByUserIdQuery } from "../slices/VoyageSlice";
 import { useGetFavoriteVehiclesByUserByIdQuery } from "../slices/VehicleSlice";
 import { FavoritesPageVoyagesComponent } from "../components/FavoritesPageVoyagesComponent";
 import { FavoritesPlaceHolderComponent } from "../components/FavoritesPlaceHolderComponent";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 export default function FavoritePage() {
-  const userId = localStorage.getItem("storedUserId")
+  const userId = localStorage.getItem("storedUserId");
   // console.log("userid", userId);
   const {
     data: FavoriteVoyagesData,
@@ -40,6 +42,18 @@ export default function FavoritePage() {
   //     console.log("FavoriteVehiclesData from api", FavoriteVehiclesData);
   // }, [FavoriteVehiclesData, FavoriteVoyagesData])
 
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isFavoriteVoyagesError || isFavoriteVehiclesError) {
+    return <SomethingWentWrong />;
+  }
+
   return (
     // (isFavoriteVehiclesLoading || isFavoriteVoyagesLoading) ? (
 
@@ -55,48 +69,58 @@ export default function FavoritePage() {
               <TopBarMenu />
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "row", height: "3rem" }}>
-            <span style={VehiclesVoyagesTitle}>Vehicles</span>
-            <span style={VehiclesVoyagesTitle}>Voyages</span>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              height: "3rem",
+              margin: "auto",
+              marginBottom: "1rem",
+              width: "90%",
+            }}
+          >
+            <div style={{ backgroundColor: "transparent", width: "50%" }}>
+              <span style={VehiclesVoyagesTitle}>Vehicles</span>
+            </div>
+            <div style={{ backgroundColor: "transparent", width: "50%" }}>
+              <span style={VehiclesVoyagesTitle}>Voyages</span>
+            </div>
           </div>
 
           <div className="flex favoritesPage_Bottom">
             <div className="flex favoritesPage_BottomLeft">
               <div className="flex favoritesPage_Vehicles">
                 {isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess ? (
-                  FavoriteVehiclesData?.length > 0 ?
-
-                    <FavoritesPageVehiclesComponent FavoriteVehiclesData={FavoriteVehiclesData} />
-                    :
-                    null
-                )
-                  : <FavoritesPlaceHolderComponent />
-                }
+                  FavoriteVehiclesData?.length > 0 ? (
+                    <FavoritesPageVehiclesComponent
+                      FavoriteVehiclesData={FavoriteVehiclesData}
+                    />
+                  ) : null
+                ) : (
+                  <FavoritesPlaceHolderComponent />
+                )}
               </div>
             </div>
             <div className="flex flex-col favoritesPage_BottomRight">
               <div className="flex favoritesPage_Voyages">
                 {isFavoriteVoyagesSuccess && isFavoriteVehiclesSuccess ? (
-                  FavoriteVoyagesData?.length > 0 ?
-                    <FavoritesPageVoyagesComponent FavoriteVoyages={FavoriteVoyagesData} />
-                    :
-                    null
-                )
-                  : <FavoritesPlaceHolderComponent />
-                }
+                  FavoriteVoyagesData?.length > 0 ? (
+                    <FavoritesPageVoyagesComponent
+                      FavoriteVoyages={FavoriteVoyagesData}
+                    />
+                  ) : null
+                ) : (
+                  <FavoritesPlaceHolderComponent />
+                )}
               </div>
             </div>
           </div>
         </div>
-      </header >
-    </div >
+      </header>
+    </div>
     // ) : null
   );
-
-
-
 }
-
 
 const spinnerContainer = {
   marginTop: "20%",
@@ -106,8 +130,5 @@ export const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
-  color: "white"
+  color: "white",
 };
-
-
-

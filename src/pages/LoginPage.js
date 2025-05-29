@@ -28,6 +28,8 @@ import {
   parrotTextDarkBlue,
 } from "../styles/colors";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -54,7 +56,8 @@ function LoginPage() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const dispatch = useDispatch();
-  const [loginUser, { isLoading, isSuccess }] = useLoginUserMutation();
+  const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
+    useLoginUserMutation();
   const [requestCode] = useRequestCodeMutation();
   const [resetPassword] = useResetPasswordMutation();
   const [
@@ -132,20 +135,26 @@ function LoginPage() {
         Email: username,
         Password: password,
       }).unwrap();
+
       if (!loginResponse?.token) {
         setIsLoggingIn(false);
         console.error("Login failed: No token received");
         return;
       }
 
+      // Store token and refresh token immediately
+      localStorage.setItem("storedToken", loginResponse.token);
+      localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
+
+      // Now fetch favorites — token will be sent with these calls
       const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
         loginResponse.userId
-      );
-      // console.log("lazy -> favoriteVehicles: ", favoriteVehicles.data);
+      ).unwrap();
       const favoriteVoyages = await getFavoriteVoyageIdsByUserId(
         loginResponse.userId
-      );
-      // console.log("lazy -> favoriteVoyages: ", favoriteVoyages.data);
+      ).unwrap();
+
+      setIsLoggingIn(false);
 
       dispatch(
         updateUserFavorites({
@@ -251,6 +260,16 @@ function LoginPage() {
       </div>
     );
   };
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isLoginError) return <SomethingWentWrong />;
 
   return (
     <div className="App">

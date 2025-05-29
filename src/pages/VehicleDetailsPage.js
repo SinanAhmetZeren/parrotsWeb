@@ -28,6 +28,8 @@ import {
 } from "../slices/UserSlice";
 import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
 import { parrotBlue, parrotRed } from "../styles/colors";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
@@ -114,6 +116,17 @@ function VehicleDetailsPage() {
       // console.log("VehicleData", VehicleData.user);
     }
   }, [VehicleData]);
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorVehicle) return <SomethingWentWrong />;
+
   return (
     // true ||
     isLoadingVehicle ? (

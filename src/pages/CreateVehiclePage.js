@@ -21,6 +21,8 @@ import {
   useConfirmVehicleMutation,
 } from "../slices/VehicleSlice";
 import { useNavigate } from "react-router-dom";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
 
 function CreateVehiclePage() {
   const [createVehicle] = useCreateVehicleMutation();
@@ -256,9 +258,17 @@ function CreateVehiclePage() {
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
 
-  // useEffect(() => {
-  //   console.log("data", data);
-  // }, [data])
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
 
   return (
     <div className="App">
