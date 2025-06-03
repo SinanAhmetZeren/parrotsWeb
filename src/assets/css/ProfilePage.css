@@ -297,7 +297,7 @@
   width: 60%;
   background-color: white;
   flex-direction: column;
-  padding: 0.5rem;
+  padding: 1rem;
   margin: 0.5rem;
   border-radius: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.2);
@@ -316,24 +316,20 @@
 }
 
 .profilePage_UserName {
-  width: 100%;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  color: #3c9dde;
 }
 
 .profilePage_Title {
-  width: 100%;
-  font-size: 1.45rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  color: #68b3e5;
 }
 
 .profilePage_Bio {
   flex-grow: 1;
   width: 100%;
-  font-size: 1.45rem;
-  padding: 1.5rem;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
 }
 
 .profilePage_CoverImage_Img {

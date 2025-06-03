@@ -6,7 +6,7 @@ export const UserNameInputComponent = ({ userName, setUserName }) => {
     <input
       className="font-bold text-base custom-input"
       type="text"
-      placeholder="Username"
+      placeholder="Enter username"
       style={inputStyleUserName}
       value={userName}
       onChange={(e) => setUserName(e.target.value)}
@@ -14,13 +14,14 @@ export const UserNameInputComponent = ({ userName, setUserName }) => {
   );
 };
 const inputStyleUserName = {
-  width: "50%",
+  width: "30rem",
   padding: ".3rem",
   borderRadius: "1.5rem",
-  textAlign: "center",
+  paddingLeft: "1rem",
+  textAlign: "left",
   cursor: "pointer",
   height: "3rem",
-  fontSize: "2rem",
+  fontSize: "1.5rem",
   color: parrotTextDarkBlue,
   backgroundColor: "#007bff21",
 };

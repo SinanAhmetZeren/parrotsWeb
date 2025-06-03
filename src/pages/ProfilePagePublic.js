@@ -12,6 +12,7 @@ import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesCom
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 function ProfilePagePublic() {
   const { userId } = useParams();
@@ -20,6 +21,10 @@ function ProfilePagePublic() {
 
   const handleSendMessageRequest = () => {
     navigate(`/connect/${userId}/${userName}`);
+  };
+
+  const handleGoToProfilePage = () => {
+    navigate(`/profile`);
   };
 
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -70,6 +75,14 @@ function ProfilePagePublic() {
                 >
                   <span>Send Message</span>
                 </div>
+
+                <div
+                  className="profilePage_gotoPublicProfileButton"
+                  onClick={() => handleGoToProfilePage()}
+                >
+                  <span>Profile</span>
+                </div>
+
                 <div className="flex profilePage_CoverImage">
                   <img
                     src={userBaseUrl + userData?.backgroundImageUrl}
@@ -102,12 +115,20 @@ function ProfilePagePublic() {
               <div className="flex profilePage_BioAndContactDetails">
                 <div className="flex profilePage_BioTitleUserName">
                   <div className="flex profilePage_UserName">
-                    <span className="profilePage_UserName">
+                    <span
+                      className="profilePage_UserName"
+                      style={{ color: parrotTextDarkBlue }}
+                    >
                       {userData.userName}
                     </span>
                   </div>
                   <div className="flex profilePage_Title">
-                    <span className="profilePage_Title">{userData.title}</span>
+                    <span
+                      className="profilePage_Title"
+                      style={{ color: parrotTextDarkBlue }}
+                    >
+                      {userData.title}
+                    </span>
                   </div>
                   <div className="flex profilePage_Bio">
                     <BlueHashtagText originalText={userData.bio} />

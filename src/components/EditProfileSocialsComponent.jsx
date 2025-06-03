@@ -209,7 +209,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
           gap: "0.5rem",
           color: parrotTextDarkBlue,
           cursor: "pointer",
-          fontSize: "0.8rem",
+          fontSize: "1rem",
           width: "95%",
           fontWeight: "400",
         }}

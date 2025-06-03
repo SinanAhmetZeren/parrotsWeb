@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -158,12 +159,21 @@ function ProfilePage() {
               </div>
               <div className="flex profilePage_BioAndContactDetails">
                 <div className="flex profilePage_BioTitleUserName">
-                  <div className="flex profilePage_UserName">
-                    <span className="profilePage_UserName">
+                  <div
+                    className="flex profilePage_UserName"
+                    style={{ justifyContent: "left" }}
+                  >
+                    <span
+                      className="profilePage_UserName"
+                      style={{ color: parrotTextDarkBlue }}
+                    >
                       {userData.userName}
                     </span>
                   </div>
-                  <div className="flex profilePage_Title">
+                  <div
+                    className="flex profilePage_Title"
+                    style={{ color: parrotTextDarkBlue }}
+                  >
                     <span className="profilePage_Title">{userData.title}</span>
                   </div>
                   <div className="flex profilePage_Bio">
@@ -361,7 +371,7 @@ const NoVoyagesVehiclesPlaceHolder = ({ type }) => {
       <span
         style={{
           color: "rgba(255, 255, 255, 0.8)",
-          fontSize: "1.6rem",
+          fontSize: "1.1rem",
           fontWeight: 800,
           textShadow: `
           2px 2px 4px rgba(0, 0, 0, 0.6),  

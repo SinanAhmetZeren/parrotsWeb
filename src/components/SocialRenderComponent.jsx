@@ -7,10 +7,19 @@ import tiktok from "../assets/images/tiktok_logo.png";
 import email from "../assets/images/email_logo.png";
 import phone from "../assets/images/phone_logo.jpeg";
 import { parrotTextDarkBlue } from "../styles/colors";
+import { useEffect, useState } from "react";
 
 <div style={{ backgroundColor: "red", height: "100%", width: "100%" }}></div>;
 export function SocialRenderComponent({ userData }) {
+  const [itemsWithValue, setItemsWithValue] = useState(0);
   let contactDataArray = [];
+
+  useEffect(() => {
+    const itemsWithValue = contactDataArray.filter(
+      (item) => item.value && item.value.trim() !== ""
+    );
+    setItemsWithValue(itemsWithValue.length);
+  }, []);
 
   // using DisplayEmail
   if (userData.displayEmail !== null && userData.emailVisible === true) {
@@ -105,9 +114,27 @@ export function SocialRenderComponent({ userData }) {
               </div>
             );
           }
+
           return null;
         })}
+
+        {Array.from({ length: Math.max(0, 5 - itemsWithValue) }).map(
+          (_, index) => (
+            <div style={placeholderSocialRow} key={`shadow-${index}`}>
+              <div>
+                <div
+                  style={{
+                    ...socialIcon,
+                    backgroundColor: "lightgray",
+                    opacity: 0.5,
+                  }}
+                />
+              </div>
+            </div>
+          )
+        )}
       </div>
+
       {contactDataArray.length === 0 && (
         <div style={placeHolderForContacts}></div>
       )}
@@ -163,4 +190,11 @@ const socialIconTextContainer = {
   alignItems: "center",
   width: "100%",
   marginLeft: "1rem",
+};
+
+const placeholderSocialRow = {
+  ...socialRow,
+  opacity: 0.3,
+  justifyContent: "start",
+  alignItems: "center",
 };

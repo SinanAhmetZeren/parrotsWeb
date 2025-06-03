@@ -6,7 +6,7 @@ export const UserTitleInputComponent = ({ userTitle, setUserTitle }) => {
     <input
       className="font-bold text-base custom-input"
       type="text"
-      placeholder="Title"
+      placeholder="Enter title"
       style={inputStyleTitle}
       value={userTitle}
       onChange={(e) => setUserTitle(e.target.value)}
@@ -14,14 +14,16 @@ export const UserTitleInputComponent = ({ userTitle, setUserTitle }) => {
   );
 };
 const inputStyleTitle = {
-  width: "85%",
+  width: "30rem",
   padding: ".3rem",
   borderRadius: "1.5rem",
-  textAlign: "center",
+  paddingLeft: "1rem",
+  textAlign: "left",
   cursor: "pointer",
   height: "3rem",
-  fontSize: "1.5rem",
+  fontSize: "1.3rem",
   color: parrotTextDarkBlue,
   backgroundColor: "#007bff21",
   marginTop: "0.2rem",
+  marginBottom: "0.2rem",
 };

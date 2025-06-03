@@ -439,6 +439,7 @@ export function EditProfilePage() {
                   </div>
                   <div className="flex profilePage_Bio">
                     <ReactQuill
+                      className="custom-quill"
                       value={userBio}
                       onChange={(value) => setUserBio(value)}
                       placeholder="Tell us about yourself..."
@@ -448,9 +449,9 @@ export function EditProfilePage() {
                       style={{
                         color: parrotTextDarkBlue,
                         fontWeight: "500",
-                        fontSize: "1.1rem",
+                        fontSize: "1.2rem",
                         borderRadius: "1.5rem",
-                        padding: "0.5rem",
+                        padding: "0rem",
                         backgroundColor: "#007bff21",
                         width: "100%",
                       }}
@@ -458,10 +459,19 @@ export function EditProfilePage() {
                     <style>
                       {`
                             .ql-container {
-                              border: none !important; /* Removes border around editor */
+                              border: none !important; 
                             }
                             .ql-editor {
-                              border: none !important; /* Removes inner border */
+                              border: none !important; 
+                              padding: 0.5rem !important;
+                              padding-left: 1rem !important;
+                              padding-top: 1rem !important;
+                            }
+                            .custom-quill .ql-editor.ql-blank::before {
+                              color: red; 
+                              font-size: 1rem; 
+                              font-style: italic;
+                              opacity: 0.6;
                             }
                           `}
                     </style>

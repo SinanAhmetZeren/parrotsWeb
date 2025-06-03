@@ -1,31 +1,97 @@
 .username-input::placeholder,
-.password-input::placeholder {
-  color: rgba(4, 4, 4, 0.2);
+.password-input::placeholder,
+.password-input-register::placeholder,
+.username-input-register::placeholder,
+.password-input-sendcode::placeholder,
+.username-input-sendcode::placeholder {
   font-size: 1.1rem;
   font-weight: 600;
-  padding-left: 1rem;
 }
 
-.username-input,
-.password-input {
+.username-input-login,
+.password-input-login {
   border-radius: 0.5rem;
   background-color: white;
   border: 1px solid rgba(4, 4, 4, 0.2);
-  /* width: 80%; */
-  width: 73%;
+  width: 100%;
   padding: 0.5rem;
   font-size: 1.2rem;
-
   font-weight: 700;
   border-radius: 1.5rem;
   padding-left: 1rem;
 }
 
-.password-wrapper,
-.username-wrapper {
+.username-input-sendcode,
+.password-input-sendcode {
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(4, 4, 4, 0.2);
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  padding-left: 1rem;
+}
+
+.username-input-register,
+.password-input-register {
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(4, 4, 4, 0.2);
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  padding-left: 1rem;
+}
+
+.username-input-resetPassword,
+.password-input-resetPassword {
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(4, 4, 4, 0.2);
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  padding-left: 1rem;
+}
+
+.password-wrapper-login,
+.username-wrapper-login {
+  color: blue;
+  width: 100%;
+  margin: auto;
+  border-radius: 0.5rem;
+}
+
+.username-wrapper-confirmationCode {
+  color: blue;
+  width: 100%;
+  margin: auto;
+  border-radius: 0.5rem;
+}
+
+.password-wrapper-register,
+.username-wrapper-register {
   color: blue;
   width: 100%;
   padding: 0.5rem;
+  padding-bottom: 0;
+  padding-top: 0;
+  border-radius: 0.5rem;
+}
+
+.password-wrapper-reset-password,
+.username-wrapper-reset-password {
+  color: blue;
+  width: 100%;
+  padding: 0.5rem;
+  padding-bottom: 0;
+  padding-top: 0;
   border-radius: 0.5rem;
 }
 
@@ -35,14 +101,43 @@
   cursor: pointer;
 }
 
-.forgot-password,
+.forgot-password {
+  color: grey;
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
 .signup {
   color: grey;
   font-size: 1rem;
   display: flex;
   justify-content: flex-end;
+  width: 100%;
+  margin: auto;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
+.signup-sendcode {
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
   width: 80%;
-  width: 73%;
+  margin: auto;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
+.signup-register {
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
   margin: auto;
   margin-bottom: 1rem;
   margin-top: 0.5rem;
@@ -53,7 +148,6 @@
 }
 
 .signupLinkSpan {
-  /* color: #656565; */
   padding-left: 0.5rem;
   cursor: pointer;
 }
@@ -61,7 +155,69 @@
 .login-button {
   background-color: rgb(24, 111, 241);
   border-radius: 1.5rem;
+  width: 100%;
+  margin: auto;
+  border: 2px solid #3c9dee42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.confirmationCode-button {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 100%;
+  margin: auto;
+  border: 2px solid #3c9dee42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.username-input-confirmationCode {
+  border-radius: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(4, 4, 4, 0.2);
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 1.5rem;
+  padding-left: 1rem;
+}
+
+.update-password-button {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 100%;
+  margin: auto;
+  margin-top: 1rem;
+  border: 2px solid #3c9dee42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.register-button {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
   width: 80%;
+  margin: auto;
+  border: 2px solid #3c9dee42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.login-button-sendcode {
+  background-color: rgb(24, 111, 241);
+  border-radius: 1.5rem;
+  width: 100%;
   margin: auto;
   border: 2px solid #3c9dee42;
   font-size: 1.3rem;
