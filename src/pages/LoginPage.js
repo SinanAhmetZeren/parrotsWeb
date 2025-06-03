@@ -30,6 +30,7 @@ import {
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { set } from "date-fns";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -54,6 +55,10 @@ function LoginPage() {
   const [showPasswordUpdate1, setShowPasswordUpdate1] = useState(false);
   const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isConfirmingUser, setIsConfirmingUser] = useState(false);
 
   const dispatch = useDispatch();
   const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
@@ -101,6 +106,7 @@ function LoginPage() {
     setShowPasswordUpdate2(!showPasswordUpdate2);
   };
   const handleConfirmCode = async () => {
+    setIsConfirmingUser(true);
     if (!confirmationCode) {
       console.error("Confirmation code is required.");
       return;
@@ -112,11 +118,10 @@ function LoginPage() {
       }).unwrap();
       setConfirmationCode("");
       setEmailRegister("");
-      console.log("confirmResponse:...", confirmResponse);
-      if (confirmResponse.token) {
-        setPageState("Login");
-        // await
 
+      console.log("confirmResponse:...", confirmResponse);
+      console.log("confirmResponse token:...", confirmResponse.token);
+      if (confirmResponse.token) {
         dispatch(
           updateAsLoggedIn({
             userId: confirmResponse.userId,
@@ -127,16 +132,24 @@ function LoginPage() {
           })
         );
       }
+      setIsConfirmingUser(false);
+      setConfirmationCode("");
+      navigate("/");
     } catch (err) {
       console.log("Error confirming user:", err.originalStatus === 400);
       alert(
         "Error confirming user.\nPlease check your confirmation code and try again."
       );
+      setIsConfirmingUser(false);
     }
   };
 
   const handleLogin = async () => {
-    if (!username || !password) return;
+    if (!username || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
     try {
       setIsLoggingIn(true);
       const loginResponse = await loginUser({
@@ -146,15 +159,15 @@ function LoginPage() {
 
       if (!loginResponse?.token) {
         setIsLoggingIn(false);
-        console.error("Login failed: No token received");
-        return;
+        alert("Login failed: Invalid credentials.");
+        return; // prevent redirect
       }
 
-      // Store token and refresh token immediately
+      // Save tokens
       localStorage.setItem("storedToken", loginResponse.token);
       localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
 
-      // Now fetch favorites — token will be sent with these calls
+      // Get user favorites
       const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
         loginResponse.userId
       ).unwrap();
@@ -162,8 +175,7 @@ function LoginPage() {
         loginResponse.userId
       ).unwrap();
 
-      setIsLoggingIn(false);
-
+      // Update Redux state
       dispatch(
         updateUserFavorites({
           favoriteVehicles: favoriteVehicles.data,
@@ -181,28 +193,38 @@ function LoginPage() {
         })
       );
 
+      // Reset input and navigate only on success
       setUsername("");
       setPassword("");
-      navigate("/");
+      navigate("/"); // ✅ Only happens after success
     } catch (err) {
+      setIsLoggingIn(false);
+      if (err.status === 401) {
+        alert("Incorrect email or password.");
+      } else {
+        alert("Login failed. Please try again.");
+      }
       console.error("Login error:", err);
     }
   };
 
   const handleRegister = async () => {
+    setIsRegistering(true);
     if (
       !usernameRegister ||
       !emailRegister ||
       !passwordRegister ||
       !passwordRegister2
     ) {
-      console.log("Registering user with details:", usernameRegister);
-      console.log("Registering user with details:", emailRegister);
-      console.log("Registering user with details:", passwordRegister);
-      console.log("Registering user with details:", passwordRegister2);
-      console.error("All fields are required for registration.");
+      alert("All fields are required for registration.");
       return;
     }
+
+    if (passwordRegister !== passwordRegister2) {
+      alert("Passwords do not match.");
+      return;
+    }
+
     try {
       const registerResponse = await registerUser({
         Email: emailRegister,
@@ -210,32 +232,49 @@ function LoginPage() {
         Password: passwordRegister,
       }).unwrap();
 
-      setUsernameRegister("");
-      setPasswordRegister("");
-      setPasswordRegister2("");
-
-      if (registerResponse.token) {
+      if (registerResponse?.token) {
+        setUsernameRegister("");
+        setPasswordRegister("");
+        setPasswordRegister2("");
         setPageState("Register2");
+        setIsRegistering(false);
+      } else {
+        alert("Registration failed: No token received.");
+        setIsRegistering(false);
       }
     } catch (err) {
-      console.log(err);
+      console.error("Registration error:", err);
+      setIsRegistering(false);
+
+      alert(
+        err?.data?.message ||
+          err?.error ||
+          "Registration failed. Please check your details or try again later."
+      );
     }
   };
 
   const handleSendResetCode = async () => {
     console.log("calling reset code with email:", emailForgotPassword);
+    setIsSendingCode(true);
     if (!emailForgotPassword) return;
-    requestCode(emailForgotPassword);
-    setPageState("ResetPassword");
+
+    try {
+      await requestCode(emailForgotPassword).unwrap(); // Await and unwrap to catch errors
+      setPageState("ResetPassword");
+      setIsSendingCode(false);
+    } catch (err) {
+      console.error("Failed to request reset code:", err);
+      alert(
+        "Failed to send reset code. Please check your email and try again."
+      );
+    }
   };
 
   const handleResetPassword = async () => {
-    console.log("six digit", sixDigitCode);
-    console.log("passwordUpdate1", passwordUpdate1);
-    console.log("passwordUpdate2", passwordUpdate2);
-
     if (!sixDigitCode || !passwordUpdate1 || !passwordUpdate2) return;
 
+    setIsUpdatingPassword(true);
     try {
       const resetPasswordResponse = await resetPassword({
         email: emailForgotPassword,
@@ -258,9 +297,13 @@ function LoginPage() {
           })
         );
       }
+      setIsUpdatingPassword(false);
+
       navigate("/");
     } catch (err) {
-      console.log(err);
+      console.log(err.status);
+      alert("Error resetting password. Please check your code and try again.");
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -298,7 +341,7 @@ function LoginPage() {
     return <SomethingWentWrong />;
   }
 
-  if (isLoginError) return <SomethingWentWrong />;
+  // if (isLoginError) return <SomethingWentWrong />;
 
   return (
     <div className="App">
@@ -534,7 +577,7 @@ function LoginPage() {
                       }}
                     >
                       {" "}
-                      Register
+                      {isRegistering ? <LoginSpinner /> : "Register"}
                     </div>
                   </div>
                   <div style={{ marginRight: "1rem" }}>
@@ -576,7 +619,7 @@ function LoginPage() {
                         }}
                       >
                         {" "}
-                        Confirm
+                        {isConfirmingUser ? <LoginSpinner /> : "Confirm"}
                       </div>
                     </div>
                     <div className="signup">
@@ -622,7 +665,7 @@ function LoginPage() {
                       }}
                       onClick={() => handleSendResetCode()}
                     >
-                      Send Code
+                      {isSendingCode ? <LoginSpinner /> : "Send Code"}
                     </div>
                   </div>
                   <div className="signup-sendcode">
@@ -728,7 +771,11 @@ function LoginPage() {
                       }}
                     >
                       {" "}
-                      Update Password
+                      {isUpdatingPassword ? (
+                        <LoginSpinner />
+                      ) : (
+                        "Update Password"
+                      )}
                     </div>
 
                     <div className="signup">
