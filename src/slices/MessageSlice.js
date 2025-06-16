@@ -25,5 +25,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetMessagesByUserIdQuery, useGetMessagesBetweenUsersQuery } =
-  extendedApiSlice;
+export const {
+  useGetMessagesByUserIdQuery,
+  useGetMessagesBetweenUsersQuery,
+  useLazyGetMessagesBetweenUsersQuery,
+} = extendedApiSlice;

@@ -33,7 +33,8 @@ const magnifierContainerStyle = {
 };
 
 const magnifierStyle = {
-  backgroundColor: "#f9f5f1",
+  // backgroundColor: "#f9f5f1",
+  backgroundColor: "white",
   borderRadius: "50%",
   padding: ".2rem",
   display: "flex",
@@ -42,7 +43,7 @@ const magnifierStyle = {
   color: "#3c9dde",
   height: "3rem",
   width: "3rem",
-  border: "2px solid #3c9dee42"
+  border: "2px solid #c0c0c070",
 };
 
 const searchUserContainer = {
@@ -51,7 +52,7 @@ const searchUserContainer = {
   height: "5rem",
   width: "100%",
   color: "black",
-}
+};
 
 const inputStyle = {
   width: "26rem",
@@ -60,15 +61,15 @@ const inputStyle = {
   paddingRight: "2rem",
   marginTop: "1rem",
   marginBottom: "1rem",
+  marginLeft: "1rem",
   borderRadius: "2rem",
-  backgroundColor: "#f9f5f1",
   fontSize: "1.3rem",
-  border: "2px solid #3c9dee42"
-}
+  border: "2px solid #c0c0c070",
+};
 
 const searchMainContainer = {
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  height: "93vh"
-}
+  height: "93vh",
+};

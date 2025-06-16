@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetMessagesBetweenUsersQuery,
   useGetMessagesByUserIdQuery,
+  useLazyGetMessagesBetweenUsersQuery,
 } from "../slices/MessageSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
@@ -38,6 +39,37 @@ function ConnectPage() {
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
+
+  const {
+    data: messagePreviewsData,
+    isLoading: isLoadingmessagePreviews,
+    isError: isErrorMessages,
+    error: errorMessages,
+    isSuccess: isSuccessmessagePreviews,
+    refetch: refetchMessagePreviews,
+  } = useGetMessagesByUserIdQuery(currentUserId);
+
+  /*
+  const {
+    data: conversationData,
+    isLoading: isLoadingConversation,
+    isError: isErrorConversation,
+    error,
+    isSuccess: isSuccessConversation,
+    refetch: refetchConversation,
+  } = useGetMessagesBetweenUsersQuery(users);
+  */
+
+  const [
+    triggerGetMessages,
+    {
+      data: conversationData,
+      isLoading: isLoadingConversation,
+      isError: isErrorConversation,
+      error,
+      isSuccess: isSuccessConversation,
+    },
+  ] = useLazyGetMessagesBetweenUsersQuery();
 
   useEffect(() => {
     if (paramConversationUserId && paramConversationUserUsername) {
@@ -92,6 +124,15 @@ function ConnectPage() {
     };
   }, [hubConnection, conversationUserId]);
 
+  const refreshMessages = React.useCallback(() => {
+    if (users?.currentUserId && users?.conversationUserId) {
+      triggerGetMessages({
+        currentUserId: users.currentUserId,
+        conversationUserId: users.conversationUserId,
+      });
+    }
+  }, [users, triggerGetMessages]);
+
   useEffect(() => {
     const startHubConnection = async () => {
       try {
@@ -108,7 +149,7 @@ function ConnectPage() {
     );
 
     hubConnection.on("ReceiveMessageRefetch", () => {
-      refetchConversation();
+      refreshMessages();
     });
 
     return () => {};
@@ -123,23 +164,16 @@ function ConnectPage() {
     console.log("state of the hub: ", hubConnection.state);
   };
 
-  const {
-    data: messagePreviewsData,
-    isLoading: isLoadingmessagePreviews,
-    isError: isErrorMessages,
-    error: errorMessages,
-    isSuccess: isSuccessmessagePreviews,
-    refetch: refetchMessagePreviews,
-  } = useGetMessagesByUserIdQuery(currentUserId);
+  useEffect(() => {
+    const { currentUserId, conversationUserId } = users;
 
-  const {
-    data: conversationData,
-    isLoading: isLoadingConversation,
-    isError: isErrorConversation,
-    error,
-    isSuccess: isSuccessConversation,
-    refetch: refetchConversation,
-  } = useGetMessagesBetweenUsersQuery(users);
+    console.log("conversationUserId: ", conversationUserId);
+    console.log("currentUserId: ", currentUserId);
+
+    if (currentUserId && conversationUserId) {
+      triggerGetMessages({ currentUserId, conversationUserId });
+    }
+  }, [users.currentUserId, users.conversationUserId]);
 
   useEffect(() => {
     if (conversationData) setMessagesToDisplay(conversationData.data);
@@ -147,9 +181,9 @@ function ConnectPage() {
 
   useEffect(() => {
     if (conversationUserId) {
-      refetchConversation();
+      refreshMessages();
     }
-  }, [conversationUserId, refetchConversation]);
+  }, [conversationUserId, refreshMessages]);
 
   const handleSendMessage = async () => {
     setSendButtonDisabled(true);

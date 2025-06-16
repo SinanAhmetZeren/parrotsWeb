@@ -1,9 +1,15 @@
 import "../assets/css/App.css";
 import * as React from "react";
 
-export function MessageSenderComponent({ conversationUserId, currentUserId, message, setMessage, handleSendMessage,
-  sendButtonDisabled, conversationUserUsername }) {
-
+export function MessageSenderComponent({
+  conversationUserId,
+  currentUserId,
+  message,
+  setMessage,
+  handleSendMessage,
+  sendButtonDisabled,
+  conversationUserUsername,
+}) {
   const handleInputChange = (e) => {
     setMessage(e.target.value);
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -17,10 +23,17 @@ export function MessageSenderComponent({ conversationUserId, currentUserId, mess
         style={messageInputStyle}
         onInput={handleInputChange}
       />
-      <button disabled={sendButtonDisabled} onClick={() => handleSendMessage()} style={{
-        ...sendButtonStyle,
-        backgroundColor: sendButtonDisabled ? "gray" : "#007bff",
-      }}> Send </button>
+      <button
+        disabled={sendButtonDisabled}
+        onClick={() => handleSendMessage()}
+        style={{
+          ...sendButtonStyle,
+          backgroundColor: sendButtonDisabled ? "gray" : "#007bff",
+        }}
+      >
+        {" "}
+        Send{" "}
+      </button>
     </div>
   );
 }
@@ -40,20 +53,16 @@ const messageInputStyle = {
   width: "100%",
   padding: "1rem",
   fontSize: "1.3rem",
-  // border: "1px solid #ccc",
   color: "black",
-  overflowY: "hidden", // Hide scrollbar initially
-  minHeight: "1rem", // Set minimum height
-  maxHeight: "10rem", // Optional: Limit maximum height (can be adjusted)
-  resize: "none", // Disables the resize handle
-
+  overflowY: "hidden",
+  minHeight: "1rem",
+  maxHeight: "10rem",
+  resize: "none",
   paddingLeft: "2rem",
   paddingRight: "2rem",
   marginRop: "1rem",
   borderRadius: "2rem",
-  backgroundColor: "rgb(249, 245, 241)",
-  border: "2px solid #3c9dee42"
-
+  border: "2px solid #c0c0c070",
 };
 
 const sendButtonStyle = {
@@ -67,7 +76,3 @@ const sendButtonStyle = {
   borderRadius: "2rem",
   cursor: "pointer",
 };
-
-
-
-

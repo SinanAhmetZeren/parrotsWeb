@@ -80,8 +80,6 @@
   }
 }
 
-
-
 .card-container {
   transform: scale(0.3) translateY(0%);
   opacity: 1;
@@ -173,7 +171,7 @@
 .connectPage_Bottom {
   height: calc(100% - 3rem);
   width: 100%;
-  background-color: #f6f6f6;
+  background-color: #f6f6f630;
 }
 
 .connectPage_Bottom_placeholder {
@@ -183,13 +181,12 @@
 
 .connectPage_BottomLeft {
   height: calc(100% - 1rem);
-  margin: .5rem;
+  margin: 0.5rem;
   width: 30%;
   background-color: white;
   display: flex;
   flex-direction: column;
 }
-
 
 .connectPage_BottomLeft_placeholder {
   height: calc(100%);
@@ -198,10 +195,9 @@
   flex-direction: column;
 }
 
-
 .connectPage_BottomRight {
   height: calc(100% - 1rem);
-  margin: .5rem;
+  margin: 0.5rem;
   width: calc(100% - 30% - 1rem);
   align-items: center;
   background-color: white;
@@ -209,11 +205,9 @@
   flex-direction: column;
 }
 
-
-
 .connectPage_BottomRight_placeHolder {
   height: calc(100% - 1rem);
-  margin: .5rem;
+  margin: 0.5rem;
   width: calc(100% - 30% - 1rem);
   align-items: center;
   display: flex;
