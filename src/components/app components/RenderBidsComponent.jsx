@@ -47,7 +47,7 @@ export const RenderBidsComponent = ({
       }
     };
     startHubConnection();
-    return () => { };
+    return () => {};
   }, [hubConnection]);
 
   const handleAcceptBid = ({ bidId, bidUserId }) => {

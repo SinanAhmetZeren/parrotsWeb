@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { useNavigate } from "react-router-dom";
-const API_URL = "https://measured-wolf-grossly.ngrok-free.app";
+const API_URL = "https://adapting-sheepdog-annually.ngrok-free.app";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,

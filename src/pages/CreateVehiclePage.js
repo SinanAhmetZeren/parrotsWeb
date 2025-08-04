@@ -266,9 +266,9 @@ function CreateVehiclePage() {
     return <SomethingWentWrong />;
   }
 
-  if (isError) {
-    return <SomethingWentWrong />;
-  }
+  // if (isError) {
+  //   return <SomethingWentWrong />;
+  // }
 
   return (
     <div className="App">
