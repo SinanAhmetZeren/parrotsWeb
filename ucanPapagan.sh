@@ -1,2 +1,2 @@
-ngrok http --adapting-sheepdog-annually.ngrok-free.app https://localhost:7151 
+ngrok http --domain=adapting-sheepdog-annually.ngrok-free.app https://localhost:7151 
 

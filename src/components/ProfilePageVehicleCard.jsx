@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
+import he from "he";
 
 export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles }) {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -38,10 +39,22 @@ export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles })
         {/* <div style={cardBriefStyle}>{vehicle?.description}</div> */}
         <div style={cardBriefStyle}>
           {vehicle?.description?.length > 280 ?
-            // `${vehicle?.description.substring(0, 280)}...` :
-            <div dangerouslySetInnerHTML={{ __html: vehicle?.description.substring(0, 200) + "..." }} /> :
-            // vehicle?.description}
-            <div dangerouslySetInnerHTML={{ __html: vehicle?.description }} />
+            <div dangerouslySetInnerHTML={{
+              __html: he.decode(
+                vehicle?.description
+                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                  .replace(/\s+/g, " ")     // normalize spaces
+                  .trim()
+              ).substring(0, 280) + "..."
+            }} /> :
+            <div dangerouslySetInnerHTML={{
+              __html: he.decode(
+                vehicle?.description
+                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                  .replace(/\s+/g, " ")     // normalize spaces
+                  .trim()
+              )
+            }} />
           }
         </div>
       </div>
