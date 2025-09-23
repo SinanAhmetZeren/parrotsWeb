@@ -45,7 +45,7 @@ export function VehiclePageImageSwiper({ vehicleData }) {
           {images.map((url, index) => (
             <SwiperSlide key={index} style={slideContainerStyle}>
               <img
-                src={baseUrl + url}
+                src={/*baseUrl + */url}
                 alt={`Slide ${index + 1}`}
                 style={{
                   margin: "auto",

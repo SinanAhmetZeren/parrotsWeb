@@ -4,7 +4,7 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+const userBaseUrl = `  `;
 
 export function MessagePreviewsComponent({
   messagesData,

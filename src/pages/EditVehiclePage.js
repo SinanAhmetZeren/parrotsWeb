@@ -24,7 +24,6 @@ import {
   usePatchVehicleMutation,
 } from "../slices/VehicleSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { image } from "d3";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -97,10 +96,10 @@ function EditVehiclePage() {
     );
     setAddedVehicleImages(VehicleData?.vehicleImages);
     setImagePreview(
-      `${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl
+      `` + VehicleData?.profileImageUrl
     );
     setImage1(
-      `${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl
+      `` + VehicleData?.profileImageUrl
     );
     setVehicleImage(VehicleData?.vehicleImage);
     setImagePreview2(VehicleData?.vehicleImage);
@@ -158,10 +157,10 @@ function EditVehiclePage() {
 
   const handleRevertImage = () => {
     setImage1(
-      `${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl
+      `` + VehicleData?.profileImageUrl
     );
     setImagePreview(
-      `${apiUrl}/Uploads/VehicleImages/` + VehicleData?.profileImageUrl
+      `` + VehicleData?.profileImageUrl
     );
   };
 
@@ -249,13 +248,13 @@ function EditVehiclePage() {
     () =>
       addedVehicleImages?.length < maxItems
         ? [
-            ...addedVehicleImages,
-            ...placeholders.slice(addedVehicleImages?.length),
-          ]
+          ...addedVehicleImages,
+          ...placeholders.slice(addedVehicleImages?.length),
+        ]
         : addedVehicleImages?.map((item) => ({
-            ...item,
-            key: item.addedvehicleImageId,
-          })),
+          ...item,
+          key: item.addedvehicleImageId,
+        })),
     [addedVehicleImages, maxItems, placeholders]
   );
 
@@ -531,8 +530,8 @@ function EditVehiclePage() {
                     isFormValid
                       ? handleUpdateButtonClick
                       : () => {
-                          console.log("Form is not valid");
-                        }
+                        console.log("Form is not valid");
+                      }
                   }
                 >
                   Update Details
@@ -682,7 +681,7 @@ function EditVehiclePage() {
                                 <>
                                   <img
                                     src={
-                                      `${apiUrl}/Uploads/VehicleImages/` +
+                                      `` +
                                       item.vehicleImagePath
                                     } // Replace with your actual image base URL
                                     alt={`Uploaded ${index + 1}`}
@@ -741,7 +740,7 @@ function EditVehiclePage() {
                                   <>
                                     <img
                                       src={
-                                        `${apiUrl}/Uploads/VehicleImages/` +
+                                        `` +
                                         item.vehicleImagePath
                                       } // Replace with your actual image base URL
                                       alt={`Uploaded ${index + 1}`}

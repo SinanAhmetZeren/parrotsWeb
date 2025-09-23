@@ -52,56 +52,7 @@ function VoyageDetailsPage() {
     refetch,
   } = useGetVoyageByIdQuery(voyageId);
 
-  /*
-  const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
-  const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
 
-  const handleAddVoyageToFavorites = () => {
-    addVoyageToFavorites({ userId, voyageId });
-    setIsFavorited(true);
-    dispatch(
-      addVoyageToUserFavorites({
-        favoriteVoyage: voyageId,
-      })
-    );
-  };
-
-  const handleDeleteVoyageFromFavorites = () => {
-    deleteVoyageFromFavorites({ userId, voyageId });
-    setIsFavorited(false);
-    dispatch(
-      removeVoyageFromUserFavorites({
-        favoriteVoyage: voyageId,
-      })
-    );
-  };
-
-  useEffect(() => {
-    console.log("voyage data ---> ", VoyageData);
-    
-        if (isSuccessVoyages && userFavoriteVoyages) {
-          if (userFavoriteVoyages.includes(VoyageData.id)) {
-            setIsFavorited(true);
-          }
-    
-          if (VoyageData.bids) {
-            setBids(VoyageData.bids);
-            let bids = VoyageData.bids;
-            setHasBidWithUserId(bids.some((bid) => bid.userId === userId));
-    
-          }
-        }
-          
-  }, [
-    // isSuccessVoyages, 
-    VoyageData,
-    isFavorited]);
-    */
-
-  // useEffect(() => {
-  //   if (latLngBoundsLiteral?.east)
-  //     console.log("latLngBoundsLiteral", latLngBoundsLiteral);
-  // }, [latLngBoundsLiteral])
 
   useEffect(() => {
     if (isSuccessVoyage && VoyageData?.waypoints?.length > 0) {

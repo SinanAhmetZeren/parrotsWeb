@@ -3,7 +3,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const voyageBaseUrl = `${apiUrl}/Uploads/VoyageImages/`;
+const voyageBaseUrl = ``;
 
 
 

@@ -5,7 +5,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
 
   const apiUrl = process.env.REACT_APP_API_URL;
-  const baseWaypointImageUrl = `${apiUrl}/Uploads/WaypointImages/`;
+  const baseWaypointImageUrl = ``;
 
   function onClick() {
     handlePanToLocation(

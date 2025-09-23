@@ -10,8 +10,8 @@ import { parrotTextDarkBlue } from "../styles/colors";
 
 export function VoyageDetailPageDetails({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
-  const baseVehicleImageUrl = `${apiUrl}/Uploads/VehicleImages/`;
+  const baseUserImageUrl = ``;
+  const baseVehicleImageUrl = ``;
   const [hoveredUser, setHoveredUser] = React.useState(false);
   const [hoveredVehicle, setHoveredVehicle] = React.useState(false);
 
@@ -64,14 +64,14 @@ export function VoyageDetailPageDetails({ voyageData }) {
             <span style={userAndVehicleText}>
               {(voyageData.vehicle.name === "Run" ||
                 voyageData.vehicle.name === "Walk") && (
-                <div style={runningStyle}>
-                  {voyageData.vehicle.name === "Run" ? (
-                    <FaRunning size={"2rem"} />
-                  ) : (
-                    <FaWalking size={"2rem"} />
-                  )}
-                </div>
-              )}
+                  <div style={runningStyle}>
+                    {voyageData.vehicle.name === "Run" ? (
+                      <FaRunning size={"2rem"} />
+                    ) : (
+                      <FaWalking size={"2rem"} />
+                    )}
+                  </div>
+                )}
             </span>
             {voyageData.vehicle.name !== "Run" &&
               voyageData.vehicle.name !== "Walk" && (

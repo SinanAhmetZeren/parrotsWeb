@@ -112,8 +112,8 @@ function VehicleDetailsPage() {
 
   useEffect(() => {
     if (VehicleData) {
-      console.log("VehicleData", VehicleData.user.id);
-      // console.log("VehicleData", VehicleData.user);
+      // console.log("VehicleData", VehicleData.user.id);
+      console.log("VehicleData", VehicleData.user);
     }
   }, [VehicleData]);
 
@@ -215,7 +215,7 @@ function VehicleDetailsPage() {
                       >
                         <img
                           src={
-                            baseUserImageUrl + VehicleData.user.profileImageUrl
+                            VehicleData.user.profileImageUrl
                           }
                           style={{
                             ...userImageStyle,

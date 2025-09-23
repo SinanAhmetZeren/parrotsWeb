@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
+const baseUserImageUrl = ``;
 
 export function VoyageDetailBids({
   userId,
@@ -284,7 +284,7 @@ function RenderBid({
           ) : (
             "Pending"
           )}
-          {}
+          { }
         </span>
         <span
           style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}

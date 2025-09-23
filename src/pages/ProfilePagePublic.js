@@ -17,7 +17,12 @@ import { parrotTextDarkBlue } from "../styles/colors";
 function ProfilePagePublic() {
   const { userId } = useParams();
   const { userName } = useParams();
+  const local_userId = localStorage.getItem("storedUserId");
+
   const navigate = useNavigate();
+
+  console.log("-> userId of public profile", userId);
+  console.log("-> local_userId of logged in user", local_userId);
 
   const handleSendMessageRequest = () => {
     navigate(`/connect/${userId}/${userName}`);
@@ -28,7 +33,7 @@ function ProfilePagePublic() {
   };
 
   const apiUrl = process.env.REACT_APP_API_URL;
-  const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+  const userBaseUrl = ``;
 
   const {
     data: userData,
@@ -76,12 +81,19 @@ function ProfilePagePublic() {
                   <span>Send Message</span>
                 </div>
 
-                <div
-                  className="profilePage_gotoPublicProfileButton"
-                  onClick={() => handleGoToProfilePage()}
-                >
-                  <span>Profile</span>
-                </div>
+                {
+                  local_userId === userId ?
+
+                    <div
+                      className="profilePage_gotoPublicProfileButton"
+                      onClick={() => handleGoToProfilePage()}
+                    >
+                      <span>Profile</span>
+                    </div>
+
+                    : null
+                }
+
 
                 <div className="flex profilePage_CoverImage">
                   <img

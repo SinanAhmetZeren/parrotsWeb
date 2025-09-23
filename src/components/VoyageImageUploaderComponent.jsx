@@ -40,7 +40,7 @@ export const VoyageImageUploaderComponent = ({
     try {
       const addedVoyageImageResponse = await addVoyageImage({
         voyageImage,
-        voyageId: "2216",
+        voyageId, //: "2216",
         // voyageId,
       });
       const addedvoyageImageId = addedVoyageImageResponse.data.imagePath;
@@ -179,13 +179,13 @@ export const VoyageImageUploaderComponent = ({
     () =>
       addedVoyageImages.length < maxItems
         ? [
-            ...addedVoyageImages,
-            ...placeholders.slice(addedVoyageImages.length),
-          ]
+          ...addedVoyageImages,
+          ...placeholders.slice(addedVoyageImages.length),
+        ]
         : addedVoyageImages.map((item) => ({
-            ...item,
-            key: item.addedvehicleImageId,
-          })),
+          ...item,
+          key: item.addedvehicleImageId,
+        })),
     [addedVoyageImages, maxItems, placeholders]
   );
 

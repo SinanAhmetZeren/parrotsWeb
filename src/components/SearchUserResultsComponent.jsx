@@ -6,7 +6,7 @@ import { CgProfile } from "react-icons/cg";
 import { TiMessages } from "react-icons/ti";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+const userBaseUrl = ``;
 
 
 export function SearchUserResultsComponent({ query, setQuery, userId,

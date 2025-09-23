@@ -4,7 +4,7 @@ import he from "he";
 
 export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles }) {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const vehicleBaseUrl = `${apiUrl}/Uploads/VehicleImages/`;
+  const vehicleBaseUrl = ``;
   const navigate = useNavigate();
   const handleCardClick = (vehicleId) => {
     navigate(`/vehicle-details/${vehicleId}`);

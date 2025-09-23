@@ -24,7 +24,7 @@ function ProfilePage() {
   const userId = local_userId !== null ? local_userId : state_userId;
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
-  const userBaseUrl = `${apiUrl}/Uploads/UserImages/`;
+  const userBaseUrl = ``;
 
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
@@ -216,7 +216,7 @@ function ProfilePage() {
 
                       <ProfilePageVehiclesComponent
                         userData={userData}
-                        // userFavoriteVehicles={state_favVehicles}
+                      // userFavoriteVehicles={state_favVehicles}
                       />
                     </>
                   ) : (
@@ -274,7 +274,7 @@ function ProfilePage() {
                       </div>
                       <ProfilePageVoyagesComponent
                         userData={userData}
-                        // userFavoriteVoyages={state_favVoyages}
+                      // userFavoriteVoyages={state_favVoyages}
                       />
                     </>
                   ) : (

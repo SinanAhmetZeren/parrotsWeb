@@ -12,7 +12,7 @@ import { Navigation, EffectCoverflow } from "swiper/modules";
 
 export function VoyageDetailPageImageSwiper({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const baseUrl = `${apiUrl}/Uploads/VoyageImages/`;
+  const baseUrl = ``;
 
   const images = [voyageData.profileImage, ...voyageData.voyageImages.map(image => image.voyageImagePath)
   ]

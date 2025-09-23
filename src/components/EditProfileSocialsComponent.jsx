@@ -109,9 +109,8 @@ export function EditProfileSocialsComponent({
                   display: "flex",
                   justifyContent: "flex-start",
                   marginTop: "0.5rem",
-
                   opacity: isHovered ? 1 : 0,
-                  maxHeight: isHovered ? "100px" : "0px",
+                  maxHeight: isHovered ? "120px" : "0px",
                   overflow: "hidden",
                   transition: "opacity 1s ease, max-height .5s ease",
                 }}
@@ -175,13 +174,13 @@ const socialIconTextContainer = {
 };
 
 const messageRow = {
-  backgroundColor: "white",
+  // backgroundColor: "white",
   display: "flex",
   width: "28rem",
-  boxShadow: `
-  0 2px 2px rgba(0, 0, 0, 0.31),
-  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
-`,
+  //   boxShadow: `
+  //   0 2px 2px rgba(0, 0, 0, 0.31),
+  //   inset 0 -4px 6px rgba(0, 0, 0, 0.31)
+  // `,
   // borderRadius: "2rem",
   margin: "auto",
   justifyContent: "center",
@@ -193,12 +192,13 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "6rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         gap: "1rem",
-        // borderRadius: "1.5rem",
+        borderRadius: "1rem",
+        backgroundColor: "white",
       }}
     >
       <label
@@ -216,12 +216,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
       >
         This email address will be publicly visible on your profile. It may
         differ from your login email and is optional to provide.
-        {/* <input
-          type="checkbox"
-          checked={!emailHidden}
-          onChange={() => setEmailHidden(!emailHidden)}
-          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
-        /> */}
+
       </label>
     </div>
   );

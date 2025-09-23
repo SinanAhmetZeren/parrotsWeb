@@ -30,8 +30,8 @@ function CreateVehiclePage() {
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
-  const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-  const userName = "Ahmet Zeren";
+  const userId = localStorage.getItem("storedUserId");
+  const userName = localStorage.getItem("storedUserName");
   const navigate = useNavigate();
 
   const [vehicleName, setVehicleName] = useState("");
@@ -145,11 +145,14 @@ function CreateVehiclePage() {
   };
 
   const handleCreateVehicle = async () => {
+    console.log("1.  Creating vehicle...  ");
     if (!image1) {
       return;
     }
     setIsRegisteringVehicle(true);
     try {
+      console.log("2.  Sending request...  ");
+
       const response = await createVehicle({
         vehicleImage: image1,
         name: vehicleName,
@@ -158,8 +161,9 @@ function CreateVehiclePage() {
         vehicleType: selectedVehicleType,
         capacity: vehicleCapacity,
       });
+      console.log("-->>> response: ", response);
       const createdVehicleId = response.data.data.id;
-
+      console.log("3. Vehicle created with ID:", createdVehicleId, "...");
       setVehicleId(createdVehicleId);
       setVehicleDescription("");
       setVehicleCapacity("");
@@ -172,7 +176,7 @@ function CreateVehiclePage() {
       setPageState("s2");
     } catch (error) {
       alert(
-        "Failed to create vehicle. Please check your connection and try again."
+        "-> Failed to create vehicle. Please check your connection and try again."
       );
       console.error("Error creating vehicle:", error);
     } finally {
@@ -218,13 +222,13 @@ function CreateVehiclePage() {
     () =>
       addedVehicleImages.length < maxItems
         ? [
-            ...addedVehicleImages,
-            ...placeholders.slice(addedVehicleImages.length),
-          ]
+          ...addedVehicleImages,
+          ...placeholders.slice(addedVehicleImages.length),
+        ]
         : addedVehicleImages.map((item) => ({
-            ...item,
-            key: item.addedvehicleImageId,
-          })),
+          ...item,
+          key: item.addedvehicleImageId,
+        })),
     [addedVehicleImages, maxItems, placeholders]
   );
 
@@ -490,10 +494,13 @@ function CreateVehiclePage() {
                   }}
                   onClick={
                     isFormValid
-                      ? handleCreateVehicle
+                      ? () => {
+                        console.log("--->> creating vehicle");
+                        handleCreateVehicle()
+                      }
                       : () => {
-                          console.log("Form is not valid");
-                        }
+                        console.log("Form is not valid");
+                      }
                   }
                 >
                   Register Vehicle
