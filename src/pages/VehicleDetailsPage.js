@@ -255,7 +255,14 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
                 </div>
+                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+
               </div>
+
               <div className="vehiclePage1_swiperContainer">
                 <VehiclePageImageSwiper vehicleData={VehicleData} />
               </div>
@@ -339,9 +346,9 @@ const deletingVehicleButton = {
 };
 
 const editVehicleButtonContainer = {
-  position: "absolute",
-  left: "50%",
-  transform: "translateX(-50%)",
+  // position: "absolute",
+  // left: "50%",
+  // transform: "translateX(50%)",
   bottom: "1rem",
   display: "flex",
   display: "grid",

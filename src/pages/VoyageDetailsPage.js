@@ -26,10 +26,13 @@ import {
 } from "../slices/VoyageSlice";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { IoHeartSharp } from "react-icons/io5";
+import { addVoyageToUserFavorites, removeVoyageFromUserFavorites } from "../slices/UserSlice";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
   const { voyageId } = useParams();
+  console.log("voyageId from params:", voyageId);
   const userId = localStorage.getItem("storedUserId");
   const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
   const [userBid, setUserBid] = useState("");
@@ -42,7 +45,19 @@ function VoyageDetailsPage() {
     east: null,
     west: null,
   });
-  const [isFavorited, setIsFavorited] = useState(false);
+
+  let favoriteVoyages;
+  try {
+    favoriteVoyages = JSON.parse(
+      localStorage.getItem("storedFavoriteVoyages")
+    );
+  } catch (err) {
+    console.log(err);
+  }
+  const isInFavorites = favoriteVoyages?.includes(Number(voyageId));
+
+  const [isFavorited, setIsFavorited] = useState(isInFavorites);
+
   const [opacity, setOpacity] = useState(1);
   const {
     data: VoyageData,
@@ -52,7 +67,30 @@ function VoyageDetailsPage() {
     refetch,
   } = useGetVoyageByIdQuery(voyageId);
 
+  const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
+  const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
 
+  const handleAddVoyageToFavorites = () => {
+    const voyageId_number = Number(voyageId);
+    addVoyageToFavorites({ userId, voyageId: voyageId_number });
+    setIsFavorited(true);
+    dispatch(
+      addVoyageToUserFavorites({
+        favoriteVoyage: voyageId_number,
+      })
+    );
+  };
+
+  const handleDeleteVoyageFromFavorites = () => {
+    const voyageId_number = Number(voyageId);
+    deleteVoyageFromFavorites({ userId, voyageId: voyageId_number });
+    setIsFavorited(false);
+    dispatch(
+      removeVoyageFromUserFavorites({
+        favoriteVoyage: voyageId_number,
+      })
+    );
+  };
 
   useEffect(() => {
     if (isSuccessVoyage && VoyageData?.waypoints?.length > 0) {
@@ -148,7 +186,31 @@ function VoyageDetailsPage() {
               <div className="flex voyageDetails_Images">
                 <VoyageDetailPageImageSwiper voyageData={VoyageData} />
               </div>
-              <div className="flex voyageDetails_Details">
+              <div className="flex voyageDetails_Details" style={{ position: "relative" }}>
+
+                {isFavorited ? (
+                  <div
+                    onClick={() => handleDeleteVoyageFromFavorites()}
+                    style={{
+                      ...heartIcon,
+                      border: "2px red solid",
+                    }}
+                  >
+                    <IoHeartSharp size="2.5rem" color="red" />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => handleAddVoyageToFavorites()}
+                    style={{
+                      ...heartIcon,
+                      border: "2px orange solid",
+                    }}
+                  >
+                    <IoHeartSharp size="2.5rem" color="orange" />
+                  </div>
+                )}
+
+
                 <VoyageDetailPageDetails voyageData={VoyageData} />
               </div>
               <div className="flex voyageDetails_Description">
@@ -183,8 +245,6 @@ function VoyageDetailsPage() {
                       style={{ borderRadius: "1rem", overflow: "hidden" }}
                       gestureHandling={"greedy"}
                       disableDefaultUI
-                      // zoom={latLngBoundsLiteral.east === latLngBoundsLiteral.west &&
-                      //   latLngBoundsLiteral.north === latLngBoundsLiteral.south ? 13 : undefined}  // Adjust zoom if single point
                       zoom={undefined}
                       onCameraChanged={() => setTargetLocation(null)}
                     >
@@ -236,4 +296,14 @@ export default VoyageDetailsPage;
 
 const spinnerContainer = {
   marginTop: "20%",
+};
+
+const heartIcon = {
+  position: "absolute",
+  backgroundColor: "white",
+  right: "-1rem",
+  top: "-.61rem",
+  borderRadius: "3rem",
+  padding: "0.5rem",
+  zIndex: 1000,
 };

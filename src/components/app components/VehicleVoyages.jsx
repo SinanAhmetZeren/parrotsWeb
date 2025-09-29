@@ -36,7 +36,7 @@ export default function VehicleVoyages({ voyages }) {
     });
   };
 
-  const VoyageBaseUrl = `${API_URL}/Uploads/VoyageImages/`;
+  const VoyageBaseUrl = ``;
 
   const renderVehicleVoyages = () => {
     return voyages.map((item) => {

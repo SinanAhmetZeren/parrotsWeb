@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const voyageBaseUrl = `${apiUrl}/Uploads/voyageimages/`;
+const voyageBaseUrl = ``;
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const navigate = useNavigate()

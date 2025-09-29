@@ -8,7 +8,7 @@ import { vw, vh } from "react-native-expo-viewport-units";
 import { API_URL } from "@env";
 
 export const VoyagesFlatlistMainpage = ({ voyages }) => {
-  const imageBaseUrl = `${API_URL}/Uploads/VoyageImages/`;
+  const imageBaseUrl = ``;
 
   return (
     <FlatList
@@ -22,7 +22,7 @@ export const VoyagesFlatlistMainpage = ({ voyages }) => {
 };
 
 const VoyageItem = ({ item, index }) => {
-  const imageBaseUrl = `${API_URL}/Uploads/VoyageImages/`;
+  const imageBaseUrl = ``;
 
   return (
     <View key={index} style={styles.singleBidContainer2}>

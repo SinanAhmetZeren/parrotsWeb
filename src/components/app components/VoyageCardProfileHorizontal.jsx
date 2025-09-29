@@ -31,7 +31,7 @@ export default function VoyageCardProfileHorizontal({
   longitude,
   focusMap,
 }) {
-  const cardImageUrl = `${API_URL}/Uploads/VoyageImages/${cardImage}`;
+  const cardImageUrl = ``;
   const formattedStartDate = require("date-fns").format(startdate, "MMM d, yy");
   const formattedEndDate = require("date-fns").format(enddate, "MMM d, yy");
   const navigation = useNavigation();
