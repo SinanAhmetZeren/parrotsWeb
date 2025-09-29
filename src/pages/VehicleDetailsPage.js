@@ -16,6 +16,7 @@ import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoHeartSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   useAddVehicleToFavoritesMutation,
   useDeleteVehicleFromFavoritesMutation,
@@ -30,6 +31,7 @@ import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPl
 import { parrotBlue, parrotRed } from "../styles/colors";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import VehicleVoyages from "../components/VehicleVoyages";
 
 function VehicleDetailsPage() {
   const { vehicleId } = useParams();
@@ -144,7 +146,17 @@ function VehicleDetailsPage() {
             <div className="vehiclePage1_vehicleContainer">
               <div
                 className="vehiclePage1_dataContainer"
-                style={{ position: "relative" }}
+
+                style={{
+                  position: "relative",
+                  height: "70vh",               // or "400px" or "80%" if parent has height
+                  overflowY: "scroll",
+                  overflowX: "hidden",
+                  msOverflowStyle: "none",  // IE, Edge
+                  scrollbarWidth: "none"    // Firefox
+                }}
+
+
               >
                 {isFavorited ? (
                   <div
@@ -255,11 +267,10 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-                <span>xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+                <div className="vehicleVoyagesContainer">
+                  <VehicleVoyages voyages={VehicleData.voyages} />  {/*  image name vacancy start date - end date */}
+                </div>
+
 
               </div>
 
@@ -346,18 +357,9 @@ const deletingVehicleButton = {
 };
 
 const editVehicleButtonContainer = {
-  // position: "absolute",
-  // left: "50%",
-  // transform: "translateX(50%)",
-  bottom: "1rem",
-  display: "flex",
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "1rem",
-  // backgroundColor: "pink",
-  width: "30rem",
+  margin: "auto",
 };
 
 const editVehicleButton = {
@@ -397,8 +399,8 @@ const deleteVehicleButton = {
 const heartIcon = {
   position: "absolute",
   backgroundColor: "white",
-  right: "-1rem",
-  top: "-1rem",
+  right: "0rem",
+  top: "0rem",
   borderRadius: "3rem",
   padding: "0.5rem",
 };

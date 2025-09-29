@@ -198,6 +198,16 @@
   border-radius: 1rem;
 }
 
+.vehicleVoyagesContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: #E7E7EC;
+  border-radius: 0.4rem;
+  padding: .8rem;
+  box-shadow: rgba(0, 0, 0, 0.14) 0px -3px 8px 0px inset;
+  width: 40rem;
+  margin-top: .1rem;
+}
 
 .vehiclePage1_detailsContainer {
   background-color: #E7E7EC;
