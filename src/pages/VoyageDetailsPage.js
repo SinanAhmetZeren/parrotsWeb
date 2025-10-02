@@ -87,6 +87,9 @@ function VoyageDetailsPage() {
 
   const handleAddVoyageToFavorites = () => {
     const voyageId_number = Number(voyageId);
+    console.log("voyageId ", voyageId);
+    console.log("voyageId_number", voyageId_number);
+
     addVoyageToFavorites({ userId, voyageId: voyageId_number });
     setIsFavorited(true);
     dispatch(

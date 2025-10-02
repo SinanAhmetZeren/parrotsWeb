@@ -48,6 +48,26 @@ export const AddWaypointsPage = ({
     const [confirmVoyage] = useConfirmVoyageMutation();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setInitialLatitude(position.coords.latitude);
+                    setInitialLongitude(position.coords.longitude);
+                },
+                (error) => {
+                    console.error("Error getting location", error);
+                    setInitialLatitude(37.7749); // fallback
+                    setInitialLongitude(-122.4194);
+                }
+            );
+        } else {
+            setInitialLatitude(37.7749); // fallback
+            setInitialLongitude(-122.4194);
+        }
+    }, []);
+
+
     const handleAddWaypoint = async () => {
         if (!waypointImage) {
             return;
@@ -63,6 +83,7 @@ export const AddWaypointsPage = ({
                 voyageId: voyageId,
                 order,
             });
+            console.log("add waypoint current order:", order);
 
             const waypointId = result.data.data
             setOrder(order + 1);

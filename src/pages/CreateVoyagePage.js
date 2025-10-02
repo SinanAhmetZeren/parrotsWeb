@@ -43,7 +43,8 @@ export default function CreateVoyagePage() {
   const [isAuction, setIsAuction] = useState(false);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(true);
-  const [lastBidDate, setLastBidDate] = useState("2025-04-30");
+  // const [lastBidDate, setLastBidDate] = useState("2025-04-30");
+  const [lastBidDate, setLastBidDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]);
   const [voyageId, setVoyageId] = useState("");
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
@@ -89,24 +90,6 @@ export default function CreateVoyagePage() {
     setVehiclesList(dropdownData);
   }, [usersVehiclesSuccess, usersVehiclesData, setVehiclesList]);
 
-  const addWaypointButton = {
-    backgroundColor: "#007bff",
-    bottom: "-0.5rem",
-    borderRadius: "2rem",
-    alignContent: "center",
-    justifyItems: "center",
-    cursor: "pointer",
-    transition: "transform 0.3s ease-in-out",
-    fontSize: "1.3rem",
-    fontWeight: "800",
-    width: "40%",
-    marginLeft: "50%",
-    transform: "translateX(-50%)", // Centers it horizontally
-    padding: "0.3rem",
-    paddingRight: "1rem",
-    paddingLeft: "1rem",
-    marginTop: "1rem",
-  };
 
   function convertDateFormat(inputDate) {
     const date = new Date(inputDate);
@@ -198,23 +181,7 @@ export default function CreateVoyagePage() {
     setIsCreatingVoyage(false);
   };
 
-  const handlePrintState = () => {
-    console.log("voyageImage:", voyageImage);
-    console.log("voyageBrief:", voyageBrief);
-    console.log("voyageDescription:", voyageDescription);
-    console.log("selectedVacancy:", selectedVacancy);
-    console.log("voyageName:", voyageName);
-    console.log("minPrice:", minPrice);
-    console.log("maxPrice:", maxPrice);
-    console.log("isAuction:", isAuction);
-    console.log("isFixedPrice:", isFixedPrice);
-    console.log("calendarOpen:", calendarOpen);
-    console.log("lastBidDate:", lastBidDate);
-    console.log("voyageId:", voyageId);
-    console.log("vehicleId:", vehicleId);
-    console.log("dates - start:", dates[0].startDate);
-    console.log("dates - end:", dates[0].startDate);
-  };
+
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();

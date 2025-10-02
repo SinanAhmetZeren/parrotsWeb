@@ -16,6 +16,7 @@ import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoHeartSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import DOMPurify from "dompurify";
 
 import {
   useAddVehicleToFavoritesMutation,
@@ -265,7 +266,7 @@ function VehicleDetailsPage() {
                       {/* <span> {VehicleData.description}</span> */}
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: VehicleData.description,
+                          __html: DOMPurify.sanitize(VehicleData.description),
                         }}
                       />
                     </div>

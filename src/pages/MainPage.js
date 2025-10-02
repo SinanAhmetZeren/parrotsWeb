@@ -141,7 +141,7 @@ function MainPage() {
   // get location from browser
   useEffect(() => {
     const getLocation = () => {
-      return;
+      // return;
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {

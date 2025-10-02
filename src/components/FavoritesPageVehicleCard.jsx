@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
+import DOMPurify from "dompurify";
 
 export function FavoritesPageVehicleCard({ vehicle, index }) {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -38,26 +39,41 @@ export function FavoritesPageVehicleCard({ vehicle, index }) {
         </div>
 
 
+
+
         <div style={cardBriefStyle}>
-          {vehicle?.description?.length > 280 ?
-            <div dangerouslySetInnerHTML={{
-              __html: he.decode(
-                vehicle?.description
-                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                  .replace(/\s+/g, " ")     // normalize spaces
-                  .trim()
-              ).substring(0, 280) + "..."
-            }} /> :
-            <div dangerouslySetInnerHTML={{
-              __html: he.decode(
-                vehicle?.description
-                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                  .replace(/\s+/g, " ")     // normalize spaces
-                  .trim()
-              )
-            }} />
-          }
+          {vehicle?.description?.length > 280 ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  he
+                    .decode(
+                      vehicle?.description
+                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                        .replace(/\s+/g, " ")     // normalize spaces
+                        .trim()
+                    )
+                    .substring(0, 280) + "..."
+                ),
+              }}
+            />
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  he
+                    .decode(
+                      vehicle?.description
+                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                        .replace(/\s+/g, " ")     // normalize spaces
+                        .trim()
+                    )
+                ),
+              }}
+            />
+          )}
         </div>
+
       </div>
     </div >
   );

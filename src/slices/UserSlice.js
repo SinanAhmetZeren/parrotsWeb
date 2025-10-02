@@ -124,7 +124,7 @@ const usersSlice = createSlice({
       }
       const updatedFavoriteVoyages = [
         ...currentFavoriteVoyages,
-        action.payload.favoriteVehicle,
+        action.payload.favoriteVoyage,
       ];
       localStorage.setItem(
         "storedFavoriteVoyages",

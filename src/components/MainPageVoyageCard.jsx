@@ -1,6 +1,6 @@
-import parrot1 from "../assets/images/sailboat.jpg";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
+import DOMPurify from "dompurify";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
@@ -45,7 +45,13 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
         </div>
 
         {/* BRIEF */}
-        <div style={cardBriefStyle}>{cardData.brief}</div>
+
+        <div
+          style={cardBriefStyle}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(cardData.brief)
+          }}
+        />
 
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>

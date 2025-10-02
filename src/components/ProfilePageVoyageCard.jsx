@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
+import DOMPurify from "dompurify";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
@@ -45,29 +46,44 @@ export function ProfilePageVoyageCard({ voyage, index }) {
           </span>
         </div>
         {/* BRIEF */}
-        {/* <div style={cardBriefStyle} dangerouslySetInnerHTML={{ __html: voyage?.brief }}></div> */}
+
 
 
         <div style={cardBriefStyle}>
-          {voyage?.description?.length > 280 ?
-            <div dangerouslySetInnerHTML={{
-              __html: he.decode(
-                voyage?.description
-                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                  .replace(/\s+/g, " ")     // normalize spaces
-                  .trim()
-              ).substring(0, 280) + "..."
-            }} /> :
-            <div dangerouslySetInnerHTML={{
-              __html: he.decode(
-                voyage?.description
-                  .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                  .replace(/\s+/g, " ")     // normalize spaces
-                  .trim()
-              )
-            }} />
-          }
+          {voyage?.description?.length > 280 ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  he
+                    .decode(
+                      voyage?.description
+                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                        .replace(/\s+/g, " ")     // normalize spaces
+                        .trim()
+                    )
+                    .substring(0, 280) + "..."
+                ),
+              }}
+            />
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  he
+                    .decode(
+                      voyage?.description
+                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                        .replace(/\s+/g, " ")     // normalize spaces
+                        .trim()
+                    )
+                ),
+              }}
+            />
+          )}
         </div>
+
+
+
       </div>
     </div>
   );

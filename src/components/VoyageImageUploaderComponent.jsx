@@ -1,10 +1,8 @@
 /* eslint-disable no-undef */
 import React, {
   useState,
-  useEffect,
   useCallback,
   useMemo,
-  useRef,
 } from "react";
 import "../assets/css/CreateVehicle.css";
 import "react-quill/dist/quill.snow.css"; // Import styles
@@ -14,7 +12,6 @@ import placeHolder from "../assets/images/placeholder.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-// import '../assets/css/VehicleImagesSwiper.css';
 import { FreeMode } from "swiper/modules";
 
 export const VoyageImageUploaderComponent = ({
@@ -193,10 +190,22 @@ export const VoyageImageUploaderComponent = ({
   const [imagePreview2, setImagePreview2] = useState(null);
   const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
 
+
   const handleImageChange2 = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+      const maxSizeMB = 5;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+      if (file.size > maxSizeBytes) {
+        alert(`File size must be ${maxSizeMB}MB or less.`);
+        if (fileInputRef2.current) {
+          fileInputRef2.current.value = "";
+        }
+        return;
+      }
+
       setVoyageImage(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview2(previewUrl);

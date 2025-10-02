@@ -5,6 +5,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { parrotTextDarkBlue } from "../styles/colors";
+import DOMPurify from "dompurify";
 
 export function VoyageDetailPageDescription({ voyageDescription }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -50,7 +51,7 @@ export function VoyageDetailPageDescription({ voyageDescription }) {
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}
-              dangerouslySetInnerHTML={{ __html: voyageDescription }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyageDescription) }}
             >
               {/* {voyageDescription} */}
             </span>
