@@ -24,10 +24,11 @@ import {
   useAddVoyageToFavoritesMutation,
   useDeleteVoyageFromFavoritesMutation,
 } from "../slices/VoyageSlice";
+import { updateUserFavoriteVoyages } from "../slices/UserSlice";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { IoHeartSharp } from "react-icons/io5";
-import { addVoyageToUserFavorites, removeVoyageFromUserFavorites } from "../slices/UserSlice";
+import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
@@ -55,8 +56,22 @@ function VoyageDetailsPage() {
     console.log(err);
   }
   const isInFavorites = favoriteVoyages?.includes(Number(voyageId));
-
   const [isFavorited, setIsFavorited] = useState(isInFavorites);
+  const { data: favoriteVoyagesData } =
+    useGetFavoriteVoyageIdsByUserIdQuery(userId);
+
+  useEffect(() => {
+    const updateFavoriteVoyages = () => {
+      dispatch(
+        updateUserFavoriteVoyages({
+          favoriteVoyages: favoriteVoyagesData,
+        })
+      );
+    };
+    updateFavoriteVoyages();
+  }, [favoriteVoyagesData, dispatch]);
+
+
 
   const [opacity, setOpacity] = useState(1);
   const {

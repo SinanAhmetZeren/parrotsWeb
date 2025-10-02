@@ -34,9 +34,10 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import VehicleVoyages from "../components/VehicleVoyages";
 
 function VehicleDetailsPage() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { vehicleId } = useParams();
   const userId = localStorage.getItem("storedUserId");
-  // const favoriteVehicles = JSON.parse(localStorage.getItem("storedFavoriteVehicles"))
   const [isDeleting, setIsDeleting] = useState(false);
   let favoriteVehicles;
   try {
@@ -46,6 +47,7 @@ function VehicleDetailsPage() {
   } catch (err) {
     console.log(err);
   }
+
   const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
   const { data: favoriteVehiclesData } =
     useGetFavoriteVehicleIdsByUserIdQuery(userId);
@@ -59,10 +61,8 @@ function VehicleDetailsPage() {
       );
     };
     updateFavoriteVehicles();
-  }, [favoriteVehiclesData]);
+  }, [favoriteVehiclesData, dispatch]);
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const handleGoToUser = ({ userId, userName }) => {
     navigate(`/profile-public/${userId}/${userName}`);
   };
@@ -70,6 +70,10 @@ function VehicleDetailsPage() {
   const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
   const [deleteVehicleFromFavorites] = useDeleteVehicleFromFavoritesMutation();
   const [deleteVehicle] = useDeleteVehicleMutation();
+
+
+
+
 
   const handleAddVehicleToFavorites = () => {
     const vehicleId_number = Number(vehicleId);
@@ -267,11 +271,11 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="vehicleVoyagesContainer">
-                  <VehicleVoyages voyages={VehicleData.voyages} />  {/*  image name vacancy start date - end date */}
-                </div>
-
-
+                {VehicleData.voyages?.length > 0 && (
+                  <div className="vehicleVoyagesContainer">
+                    <VehicleVoyages voyages={VehicleData.voyages} />
+                  </div>
+                )}
               </div>
 
               <div className="vehiclePage1_swiperContainer">

@@ -70,6 +70,7 @@ const usersSlice = createSlice({
       console.log("updateUserName action payload: ", action.payload);
       state.userName = action.payload.username;
     },
+    /*
     updateUserFavorites: (state, action) => {
       localStorage.setItem(
         "storedFavoriteVehicles",
@@ -80,11 +81,35 @@ const usersSlice = createSlice({
         JSON.stringify(action.payload.favoriteVoyages)
       );
     },
+    */
+    updateUserFavorites: (state, action) => {
+      const { favoriteVehicles, favoriteVoyages } = action.payload || {};
+      if (favoriteVehicles !== undefined) {
+        localStorage.setItem(
+          "storedFavoriteVehicles",
+          JSON.stringify(favoriteVehicles)
+        );
+      }
+
+      if (favoriteVoyages !== undefined) {
+        localStorage.setItem(
+          "storedFavoriteVoyages",
+          JSON.stringify(favoriteVoyages)
+        );
+      }
+    },
     updateUserFavoriteVehicles: (state, action) => {
       if (action.payload.userFavoriteVehicles)
         localStorage.setItem(
           "storedFavoriteVehicles",
           JSON.stringify(action.payload.favoriteVehicles)
+        );
+    },
+    updateUserFavoriteVoyages: (state, action) => {
+      if (action.payload.userFavoriteVoyages)
+        localStorage.setItem(
+          "storedFavoriteVoyages",
+          JSON.stringify(action.payload.favoriteVoyages)
         );
     },
     addVoyageToUserFavorites: (state, action) => {
@@ -174,6 +199,7 @@ export const {
   updateUserName,
   updateUserFavorites,
   updateUserFavoriteVehicles,
+  updateUserFavoriteVoyages,
   addVoyageToUserFavorites,
   removeVoyageFromUserFavorites,
   addVehicleToUserFavorites,
