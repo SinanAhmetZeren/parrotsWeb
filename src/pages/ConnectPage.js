@@ -47,18 +47,10 @@ function ConnectPage() {
     error: errorMessages,
     isSuccess: isSuccessmessagePreviews,
     refetch: refetchMessagePreviews,
-  } = useGetMessagesByUserIdQuery(currentUserId);
+  } = useGetMessagesByUserIdQuery(currentUserId,
+    { refetchOnMountOrArgChange: true }
+  );
 
-  /*
-  const {
-    data: conversationData,
-    isLoading: isLoadingConversation,
-    isError: isErrorConversation,
-    error,
-    isSuccess: isSuccessConversation,
-    refetch: refetchConversation,
-  } = useGetMessagesBetweenUsersQuery(users);
-  */
 
   const [
     triggerGetMessages,
@@ -145,14 +137,14 @@ function ConnectPage() {
     startHubConnection();
     hubConnection.on(
       "ReceiveMessage",
-      async (senderId, content, newTime, senderProfileUrl, senderUsername) => {}
+      async (senderId, content, newTime, senderProfileUrl, senderUsername) => { }
     );
 
     hubConnection.on("ReceiveMessageRefetch", () => {
       refreshMessages();
     });
 
-    return () => {};
+    return () => { };
   }, []);
 
   useEffect(() => {
@@ -223,6 +215,9 @@ function ConnectPage() {
       );
       console.log("Message sent successfully.");
       refetchMessagePreviews();
+
+
+
     } catch (error) {
       console.error("Failed to send message:", error);
       setMessagesToDisplay((prevMessages) => {
