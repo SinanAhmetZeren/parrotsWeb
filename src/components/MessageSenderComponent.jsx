@@ -22,6 +22,12 @@ export function MessageSenderComponent({
         placeholder={`Write a message to ${conversationUserUsername}`}
         style={messageInputStyle}
         onInput={handleInputChange}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault(); // prevent new line
+            handleSendMessage();
+          }
+        }}
       />
       <button
         disabled={sendButtonDisabled}

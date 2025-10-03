@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateAsLoggedOut } from "../slices/UserSlice";
 import { useState } from "react";
 import { parrotBlue, parrotGreen } from "../styles/colors";
+import { apiSlice } from "../api/apiSlice";
+import { store } from '../store/store';
 
 export function TopBarMenu() {
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
@@ -100,7 +102,11 @@ export function TopBarMenu() {
                       <button
                         onClick={() => {
                           dispatch(updateAsLoggedOut());
+                          dispatch(apiSlice.util.resetApiState());
                           navigate("/login");
+
+                          console.log(store.getState().api); // check RTK Query slice
+
                         }}
                         style={{ ...buttonStyle, ...Logout }}
                       >

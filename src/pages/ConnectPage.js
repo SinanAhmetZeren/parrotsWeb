@@ -9,7 +9,6 @@ import { ConnectPagePlaceHolder } from "../components/ConnectPagePlaceHolder";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  useGetMessagesBetweenUsersQuery,
   useGetMessagesByUserIdQuery,
   useLazyGetMessagesBetweenUsersQuery,
 } from "../slices/MessageSlice";
@@ -50,6 +49,30 @@ function ConnectPage() {
   } = useGetMessagesByUserIdQuery(currentUserId,
     { refetchOnMountOrArgChange: true }
   );
+
+
+  const [isPageReady, setIsPageReady] = useState(false);
+
+  useEffect(() => {
+    if (
+      !isLoadingmessagePreviews &&
+      !isErrorMessages &&
+      isSuccessmessagePreviews
+    ) {
+      setIsPageReady(true);
+    } else {
+      setIsPageReady(false);
+    }
+  }, [isLoadingmessagePreviews, isErrorMessages, isSuccessmessagePreviews]);
+
+  useEffect(() => {
+    console.log("------------------------------");
+    console.log("Message previews loading:", isLoadingmessagePreviews);
+    console.log("Message previews error:", isErrorMessages);
+    console.log("Message previews success:", isSuccessmessagePreviews);
+  }, [isLoadingmessagePreviews, isErrorMessages, isSuccessmessagePreviews]);
+
+
 
 
   const [
@@ -247,7 +270,7 @@ function ConnectPage() {
 
   return (
     // true ||
-    isLoadingmessagePreviews ? (
+    isLoadingmessagePreviews || !messagePreviewsData ? (
       <ConnectPagePlaceHolder />
     ) : (
       <div className="App">
