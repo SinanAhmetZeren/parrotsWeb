@@ -373,7 +373,7 @@ function CreateVehiclePage() {
                           {Object.keys(vehicles)
                             .filter(
                               (vehicle) =>
-                                vehicle !== "Walk" && vehicle !== "Run"
+                                vehicle !== "Walk" && vehicle !== "Run" && vehicle !== "Train"
                             )
                             .map((vehicle) => (
                               <option key={vehicle} value={vehicle}>
@@ -872,6 +872,7 @@ const vehicles = {
   Bicycle: "🚲",
   Tinyhouse: "🏠",
   Airplane: "✈️",
+  Train: "🚄",
 };
 
 const deleteImageIcon = {

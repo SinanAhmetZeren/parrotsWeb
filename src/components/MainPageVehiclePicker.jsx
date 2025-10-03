@@ -20,6 +20,7 @@ export const MainPageVehiclePicker = ({
     "Bicycle",
     "Tinyhouse",
     "Airplane",
+    "Train",
   ];
 
   const handleClickOutside = (event) => {

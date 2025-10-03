@@ -86,6 +86,7 @@ const vehicles = [
   "🚲", // Bicycle
   "🏠", // Tinyhouse
   "✈️", // Airplane
+  "🚄", // Train
 ];
 
 export default function VehicleIcon({ vehicleType }) {

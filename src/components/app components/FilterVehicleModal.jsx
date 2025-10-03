@@ -23,6 +23,7 @@ const FilterVehicleModal = ({
     "Bicycle",
     "TinyHouse",
     "Airplane",
+    "Train",
   ];
 
   const vehicleTypes = {
@@ -36,6 +37,7 @@ const FilterVehicleModal = ({
     Bicycle: 7,
     TinyHouse: 8,
     Airplane: 9,
+    Train: 10,
   };
 
   const handleSelect = (value) => {

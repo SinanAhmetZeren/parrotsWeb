@@ -134,6 +134,7 @@ const vehicles = [
   "🚲", // Bicycle
   "🏠", // Tinyhouse
   "✈️", // Airplane
+  "🚄", // Train
 ];
 
 function formatCustomDate(dateString) {

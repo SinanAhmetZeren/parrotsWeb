@@ -461,6 +461,7 @@ const VehicleTypes = [
   "Bicycle",
   "TinyHouse",
   "Airplane",
+  "Train",
 ];
 
 const DeleteVehicleSpinner = () => {

@@ -199,6 +199,7 @@ export default function VehicleIcon({ vehicleType }) {
     "🚲", // Bicycle
     "🏠", // Tinyhouse
     "✈️", // Airplane
+    "🚄", // Train
   ];
 
   const getVehicleEmoji = (typeIndex) => {

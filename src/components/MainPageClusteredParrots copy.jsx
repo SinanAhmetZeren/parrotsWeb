@@ -370,6 +370,7 @@ const vehicles = [
   "🚲", // Bicycle
   "🏠", // Tinyhouse
   "✈️", // Airplane
+  "🚄", // Train
 ];
 
 const buttonStyle = {

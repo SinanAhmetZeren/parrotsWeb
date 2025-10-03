@@ -86,6 +86,7 @@ const EditVehicleScreen = () => {
     Bicycle: "Bicycle",
     TinyHouse: "TinyHouse",
     Airplane: "Airplane",
+    Train: "Train",
   };
 
   useEffect(() => {

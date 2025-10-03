@@ -197,6 +197,7 @@ function VehicleIcon({ vehicleType }) {
     "🚲", // 7 -> Bicycle
     "🏠", // 8 -> Tinyhouse
     "✈️", // 9 -> Airplane
+    "🚄", // 10 -> Train
   ];
 
   const getVehicleEmoji = (type) => {
@@ -226,6 +227,7 @@ function VehicleIcon2({ vehicleType }) {
     Bicycle: "🚲",
     Tinyhouse: "🏠",
     Airplane: "✈️",
+    Train: "🚄",
   };
 
   const getVehicleEmoji = (type) => {
