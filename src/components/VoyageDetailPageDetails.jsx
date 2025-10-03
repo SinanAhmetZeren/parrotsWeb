@@ -5,7 +5,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
-import { FaWalking, FaRunning } from "react-icons/fa";
+import { FaWalking, FaRunning, FaTrain } from "react-icons/fa";
 import { parrotTextDarkBlue } from "../styles/colors";
 
 export function VoyageDetailPageDetails({ voyageData }) {
@@ -17,7 +17,9 @@ export function VoyageDetailPageDetails({ voyageData }) {
 
   const navigate = useNavigate();
   const handleGoToVehicle = (voyageData) =>
-    voyageData.vehicle.name === "Run" || voyageData.vehicle.name === "Walk"
+    voyageData.vehicle.name === "Run" ||
+      voyageData.vehicle.name === "Walk" ||
+      voyageData.vehicle.name === "Train"
       ? null
       : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
   const handleGoToUser = (user) => {
@@ -63,18 +65,23 @@ export function VoyageDetailPageDetails({ voyageData }) {
           <div style={userAndVehicleBox}>
             <span style={userAndVehicleText}>
               {(voyageData.vehicle.name === "Run" ||
-                voyageData.vehicle.name === "Walk") && (
+                voyageData.vehicle.name === "Walk" ||
+                voyageData.vehicle.name === "Train") && (
                   <div style={runningStyle}>
                     {voyageData.vehicle.name === "Run" ? (
                       <FaRunning size={"2rem"} />
-                    ) : (
+                    ) : voyageData.vehicle.name === "Walk" ? (
                       <FaWalking size={"2rem"} />
+                    ) : (
+                      <FaTrain size={"2rem"} />
                     )}
                   </div>
                 )}
             </span>
             {voyageData.vehicle.name !== "Run" &&
-              voyageData.vehicle.name !== "Walk" && (
+              voyageData.vehicle.name !== "Walk" &&
+              voyageData.vehicle.name !== "Train" &&
+              (
                 <img
                   src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
                   style={{

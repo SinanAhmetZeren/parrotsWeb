@@ -49,9 +49,16 @@ export default function CreateVoyagePage() {
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
   const [vehicleId, setVehicleId] = useState(3); //""
+
+  const walkDBId = 2; // hardcoded vehicle ids for Walk, Run and Train  
+  const runDBId = 3; // currently 2, 3 and 7 in Azure
+  const trainDBId = 7;
+
+
   const [vehiclesList, setVehiclesList] = useState([
-    { label: "Walk", value: 63 },
-    { label: "Run", value: 64 },
+    { label: "Walk", value: walkDBId },
+    { label: "Run", value: runDBId },
+    { label: "Train", value: trainDBId },
   ]);
   const [dates, setDates] = useState([
     {
@@ -78,8 +85,9 @@ export default function CreateVoyagePage() {
     const dropdownData =
       usersVehiclesSuccess &&
       [
-        { label: "Walk", value: 63 },
-        { label: "Run", value: 64 },
+        { label: "Walk", value: walkDBId },
+        { label: "Run", value: runDBId },
+        { label: "Train", value: trainDBId },
       ].concat(
         usersVehiclesData?.map((vehicle) => ({
           label: vehicle.name,
@@ -164,8 +172,9 @@ export default function CreateVoyagePage() {
       setIsCreatingVoyage(false);
       setVehicleId("");
       setVehiclesList([
-        { label: "Walk", value: 63 },
-        { label: "Run", value: 64 },
+        { label: "Walk", value: walkDBId },
+        { label: "Run", value: runDBId },
+        { label: "Train", value: trainDBId },
       ]);
       setDates([
         {
