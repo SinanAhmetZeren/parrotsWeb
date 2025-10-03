@@ -1,6 +1,7 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
+import { parrotDarkBlue, parrotGreen } from "../styles/colors";
 
 export const MainPageApplyClearButtons = ({
   applyFilter,

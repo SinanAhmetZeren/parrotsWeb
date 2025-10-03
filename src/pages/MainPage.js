@@ -475,7 +475,7 @@ const CardSwiperSpinner = () => {
   return (
     <div
       style={{
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(255, 255, 255, .05)",
         height: "100%",
         width: "92%",
         padding: "1vh",
@@ -505,7 +505,7 @@ const MapSpinner = () => {
   return (
     <div
       style={{
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
         height: "100%",
         width: "100%",
         borderRadius: "1.5rem",

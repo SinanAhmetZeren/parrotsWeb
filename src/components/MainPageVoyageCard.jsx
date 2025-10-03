@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -55,7 +55,8 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
 
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
-          <button onClick={() => handleCardClick(cardData.id)} style={{ ...buttonStyle, backgroundColor: "#007bff" }}>
+          <button onClick={() => handleCardClick(cardData.id)}
+            style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: parrotDarkBlue }}>
             Trip Details
           </button>
           <button
@@ -65,7 +66,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
                 cardData.waypoints[0].longitude
               )
             }
-            style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+            style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: parrotDarkBlue }}
           >
             See on Map
           </button>
@@ -188,7 +189,7 @@ const buttonContainerStyle = {
 
 const buttonStyle = {
   width: "35%", // Match the input width
-  padding: "0.3rem",
+  padding: "0.2rem",
   borderRadius: "1.5rem",
   textAlign: "center",
   color: "white",

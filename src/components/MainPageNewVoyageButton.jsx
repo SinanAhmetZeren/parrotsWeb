@@ -10,7 +10,7 @@ export const MainPageNewVoyageButton = () => {
     width: "40%",
     backgroundColor: "#007bff",
     padding: "0.6rem",
-    marginTop: "2rem",
+    marginTop: "3.5rem",
     borderRadius: "1.5rem",
     textAlign: "center",
     color: "white",
