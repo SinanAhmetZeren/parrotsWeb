@@ -499,7 +499,7 @@ export function EditProfilePage() {
               >
                 <div
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backgroundColor: "rgba(255, 255, 255, 0.08)",
                     borderRadius: "1.5rem",
                     height: "100%",
                     flexDirection: "column",

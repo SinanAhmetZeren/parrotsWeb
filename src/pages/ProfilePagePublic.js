@@ -13,6 +13,7 @@ import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesC
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { parrotTextDarkBlue } from "../styles/colors";
+import { LoadingProfilePage } from "../components/LoadingProfilePage";
 
 function ProfilePagePublic() {
   const { userId } = useParams();
@@ -57,9 +58,7 @@ function ProfilePagePublic() {
   }
 
   return isLoadingUser ? (
-    <div style={spinnerContainer}>
-      <div className="spinner"></div>
-    </div>
+    <LoadingProfilePage />
   ) : isSuccessUser ? (
     <div className="App">
       <header className="App-header">
@@ -190,7 +189,7 @@ function ProfilePagePublic() {
                     >
                       <div
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.2)",
+                          backgroundColor: "rgba(255, 255, 255, 0.05)",
                           borderRadius: "1.5rem",
                           height: "100%",
                           flexDirection: "column",

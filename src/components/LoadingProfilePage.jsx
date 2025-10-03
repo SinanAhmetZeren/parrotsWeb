@@ -18,7 +18,7 @@ export const LoadingProfilePage = () => {
                         <div className="flex profilePage_BottomLeft">
                             <div className="flex profilePage_CoverAndProfile">
                                 <div className="flex profilePage_CoverImage"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
                                 >
                                     <DefaultSpinner />
                                 </div>
@@ -26,13 +26,13 @@ export const LoadingProfilePage = () => {
                             <div className="flex profilePage_BioAndContactDetails"
                             >
                                 <div className="flex profilePage_BioTitleUserName"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", padding: "1rem" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem" }}
                                 >
                                     <DefaultSpinner />
 
                                 </div>
                                 <div className="flex profilePage_ContactDetails"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", padding: "1rem", borderRadius: "1.5rem" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem", borderRadius: "1.5rem" }}
                                 >
                                     <DefaultSpinner />
                                 </div>
@@ -50,7 +50,7 @@ export const LoadingProfilePage = () => {
                         >
                             <div
                                 style={{
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                                    backgroundColor: "rgba(255, 255, 255, 0.05)",
                                     borderRadius: "1.5rem",
                                     height: "100%",
                                     flexDirection: "column",

@@ -99,10 +99,10 @@ export function SocialRenderComponent({ userData }) {
                       key === "email"
                         ? `mailto:${value}`
                         : key === "phoneNumber"
-                        ? `tel:${value}`
-                        : key === "linkedin"
-                        ? `https://www.linkedin.com/in/${value}`
-                        : `https://${key}.com/${value}`
+                          ? `tel:${value}`
+                          : key === "linkedin"
+                            ? `https://www.linkedin.com/in/${value}`
+                            : `https://${key}.com/${value}`
                     }
                     target="_blank"
                     rel="noopener noreferrer"
@@ -168,8 +168,8 @@ const socialIconText = {
 const socialRow = {
   backgroundColor: "white",
   display: "flex",
-  margin: "5px",
-  width: "23rem",
+  marginBottom: "5px",
+  // width: "23rem",
   boxShadow: `
   0 2px 2px rgba(0, 0, 0, 0.31),
   inset 0 -4px 6px rgba(0, 0, 0, 0.31)
@@ -194,7 +194,7 @@ const socialIconTextContainer = {
 
 const placeholderSocialRow = {
   ...socialRow,
-  opacity: 0.3,
+  opacity: 0.1,
   justifyContent: "start",
   alignItems: "center",
 };

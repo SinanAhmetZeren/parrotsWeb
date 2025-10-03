@@ -11,6 +11,7 @@ import { FavoritesPageVoyagesComponent } from "../components/FavoritesPageVoyage
 import { FavoritesPlaceHolderComponent } from "../components/FavoritesPlaceHolderComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { EmptyFavoritesComponent } from "../components/EmptyFavoritesComponent";
 
 export default function FavoritePage() {
   const userId = localStorage.getItem("storedUserId");
@@ -55,11 +56,7 @@ export default function FavoritePage() {
   }
 
   return (
-    // (isFavoriteVehiclesLoading || isFavoriteVoyagesLoading) ? (
 
-    //   null
-
-    // ) : (isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess) ? (
     <div className="App">
       <header className="App-header">
         <div className="flex mainpage_Container">
@@ -95,7 +92,7 @@ export default function FavoritePage() {
                     <FavoritesPageVehiclesComponent
                       FavoriteVehiclesData={FavoriteVehiclesData}
                     />
-                  ) : null
+                  ) : <EmptyFavoritesComponent />
                 ) : (
                   <FavoritesPlaceHolderComponent />
                 )}
@@ -108,7 +105,7 @@ export default function FavoritePage() {
                     <FavoritesPageVoyagesComponent
                       FavoriteVoyages={FavoriteVoyagesData}
                     />
-                  ) : null
+                  ) : <EmptyFavoritesComponent />
                 ) : (
                   <FavoritesPlaceHolderComponent />
                 )}
@@ -122,9 +119,6 @@ export default function FavoritePage() {
   );
 }
 
-const spinnerContainer = {
-  marginTop: "20%",
-};
 
 export const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"

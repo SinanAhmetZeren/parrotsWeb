@@ -354,7 +354,7 @@ const NoVoyagesVehiclesPlaceHolder = ({ type }) => {
   return (
     <div
       style={{
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
         height: "100%",
         width: "92%",
         padding: "1vh",

@@ -198,7 +198,6 @@
 
 .favoritesPage_Vehicles {
   width: 100%;
-  /* background-color: lightgreen; */
   flex-direction: column;
   scrollbar-width: none;
 }
@@ -351,7 +350,7 @@
 }
 
 .favoritesPage_BottomLeft {
-  height: calc(100vh - 6rem);
+  height: calc(100vh - 7rem);
   width: 50%;
   flex-direction: column;
   overflow: scroll;
@@ -359,7 +358,7 @@
 }
 
 .favoritesPage_BottomRight {
-  height: calc(100vh - 6rem);
+  height: calc(100vh - 7rem);
   width: 50%;
   flex-direction: column;
   overflow: scroll;
