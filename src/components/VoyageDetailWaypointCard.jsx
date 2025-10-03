@@ -51,26 +51,16 @@ const voyageDetailCard = {
   overflow: "hidden",
   backgroundColor: "white",
   boxShadow: "rgba(0, 0, 0, 0.3) 0px 4px 6px, rgba(0, 0, 0, 0.2) 0px -8px 6px inset",
+  width: "40rem",
 };
 
 const imageContainer = {
-  // backgroundColor: "white",
   width: "50%",
   overflow: "hidden",
   padding: "0.2rem",
 };
 
-const voyageImage = {
-  height: "100%",
-  width: "100%",
-  objectFit: "cover",
-  display: "block",
-  borderRadius: "1.5rem",
-
-};
-
 const detailsContainer = {
-  // backgroundColor: "white",
   width: "50%",
   display: "flex",
   flexDirection: "column",
@@ -79,12 +69,18 @@ const detailsContainer = {
   boxSizing: "border-box",
 };
 
+const voyageImage = {
+  height: "100%",
+  width: "100%",
+  objectFit: "cover",
+  display: "block",
+  borderRadius: "1.5rem",
+};
+
 const heading = {
-  // backgroundColor: "white",
   height: "2rem",
   color: "#2ac898",
   color: "rgb(0, 119, 234)",
-
   fontWeight: "600",
 };
 
@@ -101,7 +97,6 @@ const waypointBrief = {
   margin: "auto",
   marginTop: "0.6rem",
   textAlign: "justify",
-  // fontWeight: "500",
 };
 
 const seeOnMap = {

@@ -214,7 +214,7 @@ function VoyageDetailsPage() {
                       border: "2px red solid",
                     }}
                   >
-                    <IoHeartSharp size="2.5rem" color="red" />
+                    <IoHeartSharp size="1.5rem" color="red" />
                   </div>
                 ) : (
                   <div
@@ -224,7 +224,7 @@ function VoyageDetailsPage() {
                       border: "2px orange solid",
                     }}
                   >
-                    <IoHeartSharp size="2.5rem" color="orange" />
+                    <IoHeartSharp size="1.5rem" color="orange" />
                   </div>
                 )}
 

@@ -12,6 +12,8 @@ import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
+import DOMPurify from "dompurify";
+
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
@@ -188,7 +190,14 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                   </span>
                 </div>
 
-                <div style={cardBriefStyle}>{cardData.brief}</div>
+
+
+                <div style={cardBriefStyle}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(cardData.brief),
+                  }}
+                />
+
                 <div
                   style={{
                     position: "absolute",

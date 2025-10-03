@@ -49,6 +49,7 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
                 alt={`Slide ${index + 1}`}
                 style={{
                   width: "95%",
+                  width: "50rem",
                   margin: "auto",
                   height: "100%",
                   objectFit: "cover",
