@@ -109,14 +109,7 @@ function ProfilePagePublic() {
                         <img
                           src={userBaseUrl + userData?.profileImageUrl}
                           alt="Uploaded preview"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            border: "2px solid transparent",
-                            overFlow: "hidden",
-                            borderRadius: "1rem",
-                          }}
+                          style={profileImg}
                         />
                       </div>
                     </div>
@@ -209,9 +202,14 @@ function ProfilePagePublic() {
 
 export default ProfilePagePublic;
 
-const spinnerContainer = {
-  marginTop: "20%",
-};
+const profileImg = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  border: "2px solid transparent",
+  overFlow: "hidden",
+  borderRadius: "1rem",
+}
 
 const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"

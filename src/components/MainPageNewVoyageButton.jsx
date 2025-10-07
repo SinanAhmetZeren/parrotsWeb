@@ -2,6 +2,7 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
 import { useNavigate } from "react-router-dom";
+import { parrotButtonDarkBlue, parrotDarkBlue } from "../styles/colors";
 
 export const MainPageNewVoyageButton = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export const MainPageNewVoyageButton = () => {
         onClick={() => {
           navigate("/NewVoyage");
         }}
-        style={buttonStyle}
+        style={{ ...buttonStyle, backgroundColor: "#005187", backgroundColor: parrotDarkBlue }}
       >
         New Voyage
       </button>

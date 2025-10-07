@@ -354,7 +354,7 @@
 .profilePage_ProfileImage_Img_Container {
   height: 17rem;
   width: 17rem;
-  background-color: #cad8ec;
+  background-color: #cad8ec77;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -374,10 +374,7 @@
   right: 0.5rem;
   bottom: 0.5rem;
   border-radius: 1rem;
-
   background-color: white;
-  /* background-color: #007bff; */
-  /* color: white; */
   color: #007bff;
   padding: 0.2rem;
   padding-right: 0.8rem;
@@ -443,10 +440,7 @@
   right: 0.5rem;
   bottom: 3rem;
   border-radius: 1rem;
-
   background-color: white;
-  /* background-color: #007bff; */
-  /* color: white; */
   color: #007bff;
   padding: 0.2rem;
   padding-right: 0.8rem;

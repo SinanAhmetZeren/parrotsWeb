@@ -1,7 +1,7 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
-import { parrotDarkBlue, parrotGreen } from "../styles/colors";
+import { parrotButtonGreen, parrotDarkBlue, parrotGreen } from "../styles/colors";
 
 export const MainPageApplyClearButtons = ({
   applyFilter,
@@ -64,7 +64,7 @@ export const MainPageApplyClearButtons = ({
             console.log("clear");
             clearFilters();
           }}
-          style={{ ...buttonStyle, backgroundColor: "green" }}
+          style={{ ...buttonStyle, backgroundColor: "green", backgroundColor: parrotButtonGreen, color: "white" }}
         >
           Clear
         </button>
@@ -81,7 +81,7 @@ export const MainPageApplyClearButtons = ({
           onClick={() => {
             applyFilter();
           }}
-          style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+          style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: parrotDarkBlue, color: "white" }}
         >
           Apply
         </button>

@@ -1,6 +1,7 @@
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
+import { parrotDarkBlue } from "../styles/colors";
 
 export const MainPageRefreshButton = ({ applyFilter }) => {
   const buttonStyle = {
@@ -37,13 +38,13 @@ export const MainPageRefreshButton = ({ applyFilter }) => {
       }}
     >
       <div
-  
+
       >
         <button
           onClick={() => {
             applyFilter();
           }}
-          style={{ ...buttonStyle, backgroundColor: "#007bff" }}
+          style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: "#003366AA", color: "white", boxShadow: "none" }}
         >
           Refresh Map
         </button>

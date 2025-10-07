@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
+import { color } from "d3";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
@@ -29,17 +30,17 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
               marginBottom: "0.2rem",
             }}
           >
-            <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
+            <span style={{ ...voyageDetailSpan, marginRight: "0.5rem", }}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
-              {cardData.vehicle.name}
+              {" "}{cardData.vehicle.name}
             </span>
             <span style={voyageDetailSpan}>
               👨‍👨‍👦‍👦
-              {cardData.vacancy}
+              {" "}{cardData.vacancy}
             </span>
           </div>
           <span style={voyageDetailSpan}>
-            📅From {formatCustomDate(cardData.startDate)} to To{" "}
+            📅 {formatCustomDate(cardData.startDate)} - {" "}
             {formatCustomDate(cardData.endDate)}
           </span>
         </div>
@@ -56,7 +57,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
           <button onClick={() => handleCardClick(cardData.id)}
-            style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: parrotDarkBlue }}>
+            style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotDarkBlue, boxShadow: "none" }}>
             Trip Details
           </button>
           <button
@@ -66,8 +67,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
                 cardData.waypoints[0].longitude
               )
             }
-            style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: parrotDarkBlue }}
-          >
+            style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotDarkBlue, boxShadow: "none" }}>
             See on Map
           </button>
         </div>
@@ -206,12 +206,12 @@ const buttonStyle = {
   MozOsxFontSmoothing: "grayscale",
 };
 
+
 function formatCustomDate(dateString) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
     year: "2-digit",
-  })
-    .format(new Date(dateString))
-    .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
+  }).format(new Date(dateString));
 }
+

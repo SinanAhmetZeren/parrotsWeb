@@ -468,9 +468,9 @@ export function EditProfilePage() {
                               padding-top: 1rem !important;
                             }
                             .custom-quill .ql-editor.ql-blank::before {
-                              color: red; 
+                              // color: red; 
                               font-size: 1rem; 
-                              font-style: italic;
+                              font-style: normal;
                               opacity: 0.6;
                             }
                           `}

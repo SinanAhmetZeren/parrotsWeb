@@ -16,7 +16,8 @@ import { useSelector } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotButtonDarkBlue, parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
+import TermsOfUseComponent from "../components/TermsOfUseComponent";
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -25,6 +26,7 @@ function ProfilePage() {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.id}/${userData.userName}`);
@@ -41,27 +43,6 @@ function ProfilePage() {
   const gotoNewVoyage = () => {
     navigate(`/newVoyage`);
   };
-
-  /*
-  const {
-    data: userData,
-    isLoading: isLoadingUser,
-    isError: isErrorUser,
-    error,
-    isSuccess: isSuccessUser,
-    refetch: refetchUserData,
-  } = useGetUserByIdQuery(userId);
-
-  useEffect(() => {
-    if (userId) {
-      refetchUserData(); // Force refetch of user data when the page is visited
-    }
-    return () => {
-      // Cleanup to prevent stale data
-      console.log("Cleanup: Unsubscribing or resetting data if necessary");
-    };
-  }, [refetchUserData, userId]);
-*/
 
   const [
     triggerGetUserById,
@@ -115,19 +96,25 @@ function ProfilePage() {
 
           <div className="flex profilePage_Bottom">
             <div className="flex profilePage_BottomLeft">
-              <div className="flex profilePage_CoverAndProfile">
-                <div
-                  className="profilePage_SendMessage"
-                  onClick={() => handleGoToPublicPage()}
-                >
-                  <span>Public Profile</span>
+              <div style={buttonsAndImagesContainer}>
+                <div style={buttonsContainer}>
+                  <TermsOfUseComponent />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <div onClick={() => handleGoToPublicPage()} style={navigationButton}>
+                      <span>Public Profile</span>
+                    </div>
+                    <div onClick={() => handleGoToEditProfilePage()} style={navigationButton}>
+                      <span>Edit Profile</span>
+                    </div>
+                  </div>
                 </div>
-                <div
-                  className="profilePage_gotoPublicProfileButton"
-                  onClick={() => handleGoToEditProfilePage()}
-                >
-                  <span>Edit Profile</span>
-                </div>
+
 
                 <div className="flex profilePage_CoverImage">
                   <img
@@ -143,14 +130,7 @@ function ProfilePage() {
                         <img
                           src={userBaseUrl + userData?.profileImageUrl}
                           alt="Uploaded preview"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            border: "2px solid transparent",
-                            overFlow: "hidden",
-                            borderRadius: "1rem",
-                          }}
+                          style={profileImg}
                         />
                       </div>
                     </div>
@@ -193,16 +173,7 @@ function ProfilePage() {
                 {isSuccessUser ? (
                   userData?.usersVehicles.length > 0 ? (
                     <>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "70%",
-                          margin: "auto",
-                          marginBottom: ".5rem",
-                          marginTop: ".5rem",
-                        }}
-                      >
+                      <div style={titlesContainer}>
                         <span style={VehiclesVoyagesTitle}>Vehicles</span>
                         <span
                           onClick={() => {
@@ -221,16 +192,7 @@ function ProfilePage() {
                     </>
                   ) : (
                     <>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "70%",
-                          margin: "auto",
-                          marginBottom: ".5rem",
-                          marginTop: ".5rem",
-                        }}
-                      >
+                      <div style={titlesContainer}>
                         <span style={VehiclesVoyagesTitle}>Vehicles</span>
                         <span
                           onClick={() => {
@@ -252,16 +214,7 @@ function ProfilePage() {
                 {isSuccessUser ? (
                   userData?.usersVoyages.length > 0 ? (
                     <>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "70%",
-                          margin: "auto",
-                          marginBottom: ".5rem",
-                          marginTop: ".5rem",
-                        }}
-                      >
+                      <div style={titlesContainer}>
                         <span style={VehiclesVoyagesTitle}>Voyages</span>
                         <span
                           onClick={() => {
@@ -279,16 +232,7 @@ function ProfilePage() {
                     </>
                   ) : (
                     <>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "70%",
-                          margin: "auto",
-                          marginBottom: ".5rem",
-                          marginTop: ".5rem",
-                        }}
-                      >
+                      <div style={titlesContainer}>
                         <span style={VehiclesVoyagesTitle}>Voyages</span>
                         <span
                           onClick={() => {
@@ -316,9 +260,70 @@ function ProfilePage() {
 
 export default ProfilePage;
 
-const spinnerContainer = {
-  marginTop: "20%",
+
+const buttonsContainer = {
+  position: "absolute",
+  top: "0",
+  left: "0",
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-between", // pushes left vs right sections apart
+  alignItems: "center",
+  padding: "0.5rem",
+  backgroundColor: "rgba(255, 255, 255, 0.54321) ",
+  boxSizing: "border-box",
+  borderTopLeftRadius: "1rem",
+  borderTopRightRadius: "1rem",
+}
+
+const buttonsAndImagesContainer = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-end",
+  justifyContent: "flex-end",
+  height: "60%",
+  width: "100%",
+  position: "relative",
 };
+
+
+const navigationButton = {
+  borderRadius: "1.5rem",
+  backgroundColor: "white",
+  color: "#007bff",
+  padding: "0.2rem 0.8rem",
+  textAlign: "center",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1.1rem",
+  border: "none",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+};
+
+
+
+
+const profileImg = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  border: "2px solid transparent",
+  overFlow: "hidden",
+  borderRadius: "1rem",
+}
+
+const titlesContainer = {
+  display: "flex",
+  flexDirection: "row",
+  width: "70%",
+  margin: "auto",
+  marginBottom: ".5rem",
+  marginTop: ".5rem",
+  alignItems: "center",
+}
 
 const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"
@@ -328,16 +333,14 @@ const VehiclesVoyagesTitle = {
 };
 
 const NewVehicle = {
-  width: "70%", // Added quotes around "100%"
-  height: "80%",
-  fontSize: "1.6rem", // Changed to camelCase
-  fontWeight: 800, // Correct format for font-weight
+  width: "60%", // Added quotes around "100%"
+  height: "65%",
+  fontSize: "1.2rem", // Changed to camelCase
+  fontWeight: "bold", // Correct format for font-weight
   color: "white",
   borderRadius: "1.5rem",
-  paddingRight: ".1rem",
-  paddingLeft: ".1rem",
-  marginTop: "0.3rem",
   backgroundColor: "#007bff",
+  backgroundColor: parrotDarkBlue,
   cursor: "pointer",
   border: "none",
   boxShadow:
@@ -361,7 +364,6 @@ const NoVoyagesVehiclesPlaceHolder = ({ type }) => {
         borderRadius: "1.5rem",
         position: "relative",
         margin: "auto",
-        // marginTop: "1rem",
         display: "flex", // Use flexbox
         justifyContent: "center", // Center horizontally
         alignItems: "center", // Center vertically
