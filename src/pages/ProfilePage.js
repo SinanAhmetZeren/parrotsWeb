@@ -270,7 +270,7 @@ const buttonsContainer = {
   justifyContent: "space-between", // pushes left vs right sections apart
   alignItems: "center",
   padding: "0.5rem",
-  backgroundColor: "rgba(255, 255, 255, 0.54321) ",
+  // backgroundColor: "rgba(255, 255, 255, 0.54321) ",
   boxSizing: "border-box",
   borderTopLeftRadius: "1rem",
   borderTopRightRadius: "1rem",

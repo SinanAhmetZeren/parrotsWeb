@@ -13,8 +13,6 @@ import {
 } from "../slices/VoyageSlice";
 
 import {
-  useGetFavoriteVoyageIdsByUserIdQuery,
-  useGetFavoriteVehicleIdsByUserIdQuery,
   updateUserFavorites,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
@@ -77,11 +75,6 @@ function MainPage() {
     },
   ] = useGetFilteredVoyagesMutation();
 
-  // const { data: favoriteVoyagesData } =
-  //   useGetFavoriteVoyageIdsByUserIdQuery(userId);
-
-  // const { data: favoriteVehiclesData } =
-  //   useGetFavoriteVehicleIdsByUserIdQuery(userId);
 
   const [
     getFavoriteVehicleIdsByUserId,
@@ -138,56 +131,6 @@ function MainPage() {
     setTargetLocation({ lat, lng });
   };
 
-  // get location from browser
-  useEffect(() => {
-    const getLocation = () => {
-      // return;
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const currentLocation = position.coords;
-            const sapancaLocation = {
-              latitude: 40.6940695769,
-              longitude: 30.212527026,
-            }; // sapanca
-            const istanbulLocation = {
-              latitude: 40.9979256608,
-              longitude: 29.03526596,
-            }; // istanbul
-            const amsterdamLocation = {
-              latitude: 52.37231161925,
-              longitude: 4.9015447608601,
-            }; // amsterdam
-
-            const locations = [
-              currentLocation, //0
-              sapancaLocation, //1
-              istanbulLocation, //2
-              amsterdamLocation, //3
-            ];
-
-            const selectedLocation = locations[0];
-
-            const latitude = selectedLocation.latitude;
-            const longitude = selectedLocation.longitude;
-
-            setInitialLatitude(latitude);
-            setInitialLongitude(longitude);
-            setLocationError(null);
-            handlePanToLocation(latitude, longitude);
-          },
-          (error) => {
-            console.error(error.message);
-            setLocationError("Unable to retrieve your location.");
-            setTimeout(getLocation, 5000);
-          }
-        );
-      } else {
-        setLocationError("Geolocation is not supported by your browser.");
-      }
-    };
-    getLocation();
-  }, []);
 
   // get location from browser
   useEffect(() => {
@@ -195,16 +138,7 @@ function MainPage() {
       latitude: 40.6940695769,
       longitude: 30.212527026,
     };
-    const istanbulLocation = {
-      latitude: 40.9979256608,
-      longitude: 29.03526596,
-    };
-    const amsterdamLocation = {
-      latitude: 52.37231161925,
-      longitude: 4.9015447608601,
-    };
-
-    const selectedLocation = 0; // 0 = current location
+    const selectedLocation = 0;
 
     if (selectedLocation === 0) {
       if (navigator.geolocation) {
@@ -242,9 +176,6 @@ function MainPage() {
     } else {
       let location;
       if (selectedLocation === 1) location = sapancaLocation;
-      if (selectedLocation === 2) location = istanbulLocation;
-      if (selectedLocation === 3) location = amsterdamLocation;
-
       const { latitude, longitude } = location;
       setInitialLatitude(latitude);
       setInitialLongitude(longitude);
@@ -277,14 +208,24 @@ function MainPage() {
   }, [getVoyagesByLocation, initialBounds]);
 
   // renders markers
+
   useEffect(() => {
+    // console.log("useEffect triggered: isSuccessVoyages =", isSuccessVoyages);
+    // console.log("initialVoyages:", initialVoyages);
     if (isSuccessVoyages) {
       markersRef.current = [];
-
+      // console.log("Cleared markersRef.current");
+      console.log("initial voyages: ", initialVoyages);
       const newMarkers = initialVoyages
         .map((voyage, index) => {
           const waypoint = voyage.waypoints?.[0];
-          if (!waypoint) return null;
+          if (!waypoint) {
+            // console.log(`Voyage at index ${index} has no waypoints, skipping`);
+            return null;
+          }
+
+          // console.log(`Creating marker for voyage index ${index} at`, waypoint);
+          console.log("hello");
 
           return (
             <MarkerWithInfoWindow
@@ -295,29 +236,36 @@ function MainPage() {
                 lng: waypoint.longitude,
               }}
               voyage={voyage}
-              onClick={() =>
+              onClick={() => {
                 handlePanToLocation(
                   voyage.waypoints[0].latitude,
                   voyage.waypoints[0].longitude
-                )
-              }
+                );
+              }}
             />
           );
         })
         .filter(Boolean);
 
+      // console.log("newMarkers:", newMarkers);
+
       if (!markerClustererRef.current) {
+        // console.log("Initializing new MarkerClusterer");
         markerClustererRef.current = new MarkerClusterer({
           // map: mapRef.current,
           markers: newMarkers,
         });
       } else {
+        // console.log("Updating existing MarkerClusterer");
         markerClustererRef.current.clearMarkers();
         markerClustererRef.current.addMarkers(newMarkers);
       }
+
       markersRef.current = newMarkers;
+      // console.log("markersRef.current updated:", markersRef.current);
     }
   }, [initialVoyages, isSuccessVoyages]);
+
 
   // update favorite vehicles and voyages in local storage with api data
   useEffect(() => {

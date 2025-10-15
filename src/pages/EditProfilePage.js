@@ -271,19 +271,28 @@ export function EditProfilePage() {
           <div className="flex profilePage_Bottom">
             <div className="flex profilePage_BottomLeft">
               <div className="flex profilePage_CoverAndProfile">
-                <div
-                  className="editProfilePage_gotoPublicProfileButton"
-                  onClick={() => handleGoToPublicProfilePage()}
-                >
-                  <span>Public Profile</span>
+
+                <div style={buttonsContainer}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <div onClick={() => handleGoToProfilePage()} style={navigationButton}>
+                      <span>Profile</span>
+                    </div>
+
+
+                    {local_userId === userId &&
+                      <div onClick={() => handleGoToPublicProfilePage()} style={navigationButton}>
+                        <span>Public Profile</span>
+                      </div>
+                    }
+                  </div>
                 </div>
 
-                <div
-                  className="editProfilePage_gotoProfileButton"
-                  onClick={() => handleGoToProfilePage()}
-                >
-                  <span>Profile</span>
-                </div>
 
                 <div className="flex profilePage_CoverImage">
                   <input
@@ -644,4 +653,36 @@ const UpdateChangesButton = {
     "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
   padding: "0.2rem",
   width: "20rem",
+};
+
+
+const buttonsContainer = {
+  position: "absolute",
+  top: "0",
+  left: "0",
+  width: "100%",
+  display: "flex",
+  justifyContent: "flex-end", // single child aligned right
+  alignItems: "center",
+  padding: "0.5rem",
+  // backgroundColor: "rgba(255, 255, 255, 0.54321) ",
+  boxSizing: "border-box",
+  borderTopLeftRadius: "1rem",
+  borderTopRightRadius: "1rem",
+}
+
+const navigationButton = {
+  borderRadius: "1.5rem",
+  backgroundColor: "white",
+  color: "#007bff",
+  padding: "0.2rem 0.8rem",
+  textAlign: "center",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1.1rem",
+  border: "none",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
 };

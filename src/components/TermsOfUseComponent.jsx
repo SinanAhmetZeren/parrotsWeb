@@ -171,8 +171,9 @@ const TermsOfUseComponent = () => {
                                     alignItems: "start",
                                     columnGap: "1rem",
                                     rowGap: "0.4rem",
-                                    backgroundColor: " rgba(240, 240, 255, 0.5)",
-                                    width: "85%",
+                                    backgroundColor: "rgb(246, 246, 246)",
+                                    border: "2px solid rgb(222, 222, 222)",
+                                    width: "100%",
                                     margin: "auto",
                                     marginBottom: "2rem",
                                     paddingLeft: "2rem",
@@ -180,7 +181,8 @@ const TermsOfUseComponent = () => {
                                     paddingBottom: "1rem",
                                     paddingTop: "1rem",
                                     borderRadius: "0.5rem",
-                                    border: `2px solid rgb(240, 240, 255`,
+
+
 
                                 }}
                             >

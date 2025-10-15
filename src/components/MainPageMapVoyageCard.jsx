@@ -1,6 +1,7 @@
 import parrot1 from "../assets/images/sailboat.jpg";
 
 export function MainPageMapVoyageCard({ cardData }) {
+  console.log("hello from map voyage card: ", cardData);
   return (
     <div className="" style={cardContainerStyle}>
       <div className="" style={cardImageStyle}>

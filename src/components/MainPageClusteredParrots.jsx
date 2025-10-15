@@ -530,12 +530,28 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           </div>
         );
 
+        /*
         const iw = new window.google.maps.InfoWindow({ content: containerDiv });
+
         marker.addListener("click", () => {
           if (infoWindow) infoWindow.close();
           iw.open({ anchor: marker, map });
           setInfoWindow(iw);
         });
+*/
+
+        const iw = new window.google.maps.InfoWindow({
+          content: "Test Popup",
+        });
+
+
+        marker.addListener("click", () => {
+          if (infoWindow) infoWindow.close();
+          iw.setPosition(marker.position); // use .position directly
+          iw.open(map);
+          setInfoWindow(iw);
+        });
+
 
         return marker;
       })

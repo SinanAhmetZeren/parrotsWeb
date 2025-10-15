@@ -22,10 +22,11 @@ import {
 export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
   const [markerRef, marker] = useAdvancedMarkerRef();
   const [infoWindowShown, setInfoWindowShown] = useState(false);
-  const handleMarkerClick = useCallback(
-    () => setInfoWindowShown((isShown) => !isShown),
-    []
-  );
+  const handleMarkerClick = useCallback(() => {
+    console.log("hello from marker click"); // log first
+    setInfoWindowShown((isShown) => !isShown); // toggle the state
+  }, []);
+
 
   const handleClose = useCallback(() => setInfoWindowShown(false), []);
 
@@ -55,13 +56,16 @@ export const MarkerWithInfoWindow = ({ position, voyage, index }) => {
           height={60}
         />
       </AdvancedMarker>
-      {infoWindowShown && (
-        <InfoWindow anchor={marker} onClose={handleClose} disableAutoPan={true}>
-          <div className="info-window-custom">
-            <MainPageMapVoyageCard cardData={voyage} />
-          </div>
-        </InfoWindow>
-      )}
+      {
+        infoWindowShown
+
+        && (
+          <InfoWindow anchor={marker} onClose={() => handleClose()} disableAutoPan={true}>
+            <div className="info-window-custom">
+              <MainPageMapVoyageCard cardData={voyage} />
+            </div>
+          </InfoWindow>
+        )}
     </>
   );
 };

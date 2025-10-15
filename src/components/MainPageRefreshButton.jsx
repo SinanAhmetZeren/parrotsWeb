@@ -44,7 +44,7 @@ export const MainPageRefreshButton = ({ applyFilter }) => {
           onClick={() => {
             applyFilter();
           }}
-          style={{ ...buttonStyle, backgroundColor: "#007bff", backgroundColor: "#003366AA", color: "white", boxShadow: "none" }}
+          style={{ ...buttonStyle, backgroundColor: "#00336688", color: "white", boxShadow: "none" }}
         >
           Refresh Map
         </button>
