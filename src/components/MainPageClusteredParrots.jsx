@@ -12,12 +12,13 @@ import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
+import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard";
 
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
 
-export const ClusteredVoyageMarkers2 = ({ voyages }) => {
+export const ClusteredVoyageMarkers = ({ voyages }) => {
   const navigate = useNavigate()
   const [markers, setMarkers] = useState({});
   const [infoWindow, setInfoWindow] = useState(null); // Track the current InfoWindow
@@ -389,8 +390,8 @@ const buttonStyle = {
 
 
 
-
-export const ClusteredVoyageMarkers = ({ voyages }) => {
+/*
+export const ClusteredVoyageMarkers3 = ({ voyages }) => {
   const navigate = useNavigate();
   const [infoWindow, setInfoWindow] = useState(null);
   const map = useMap();
@@ -530,7 +531,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           </div>
         );
 
-        /*
+        // *
         const iw = new window.google.maps.InfoWindow({ content: containerDiv });
 
         marker.addListener("click", () => {
@@ -538,10 +539,11 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           iw.open({ anchor: marker, map });
           setInfoWindow(iw);
         });
-*/
+ //
 
         const iw = new window.google.maps.InfoWindow({
           content: "Test Popup",
+
         });
 
 
@@ -575,3 +577,4 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
 
   return null;
 };
+*/

@@ -138,7 +138,7 @@ function MainPage() {
       latitude: 40.6940695769,
       longitude: 30.212527026,
     };
-    const selectedLocation = 0;
+    const selectedLocation = 1;
 
     if (selectedLocation === 0) {
       if (navigator.geolocation) {
