@@ -15,6 +15,9 @@ export function MessageSenderComponent({
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
+  console.log("--> message: ", message);
+  console.log("--> sendbuttondisabled: ", sendButtonDisabled);
+
   return (
     <div style={inputContainerStyle}>
       <textarea
@@ -30,11 +33,11 @@ export function MessageSenderComponent({
         }}
       />
       <button
-        disabled={sendButtonDisabled}
+        disabled={sendButtonDisabled || message.trim() === ""}
         onClick={() => handleSendMessage()}
         style={{
           ...sendButtonStyle,
-          backgroundColor: sendButtonDisabled ? "gray" : "#007bff",
+          backgroundColor: sendButtonDisabled || message.trim() === "" ? "gray" : "#007bff",
         }}
       >
         {" "}

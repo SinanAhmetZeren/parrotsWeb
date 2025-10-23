@@ -29,7 +29,7 @@ function ProfilePage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleGoToPublicPage = () => {
-    navigate(`/profile-public/${userData.id}/${userData.userName}`);
+    navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
   };
 
   const handleGoToEditProfilePage = () => {

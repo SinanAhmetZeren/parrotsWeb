@@ -50,9 +50,9 @@ export default function CreateVoyagePage() {
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
   const [vehicleId, setVehicleId] = useState(3); //""
 
-  const walkDBId = 2; // hardcoded vehicle ids for Walk, Run and Train  
-  const runDBId = 3; // currently 2, 3 and 7 in Azure
-  const trainDBId = 7;
+  const walkDBId = process.env.REACT_APP_GOOGLE_WALK_ID;
+  const runDBId = process.env.REACT_APP_GOOGLE_RUN_ID;
+  const trainDBId = process.env.REACT_APP_GOOGLE_TRAIN_ID;
 
 
   const [vehiclesList, setVehiclesList] = useState([

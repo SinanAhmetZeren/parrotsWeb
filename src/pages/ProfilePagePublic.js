@@ -7,7 +7,7 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { BlueHashtagText } from "../components/BlueHashtagText";
 import { SocialRenderComponent } from "../components/SocialRenderComponent";
-import { useGetUserByIdQuery } from "../slices/UserSlice";
+import { useGetUserByIdQuery, useGetUserByPublicIdQuery } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
@@ -43,7 +43,8 @@ function ProfilePagePublic() {
     error,
     isSuccess: isSuccessUser,
     refetch: refetchUserData,
-  } = useGetUserByIdQuery(userId);
+    // } = useGetUserByIdQuery(userId);
+  } = useGetUserByPublicIdQuery(userId);
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();

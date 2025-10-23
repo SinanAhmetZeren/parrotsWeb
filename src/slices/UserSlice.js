@@ -286,6 +286,18 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+    getUserByPublicId: builder.query({
+      query: (userId) => {
+        if (userId) {
+          return `/api/User/getUserByPublicId/${userId}`;
+        } else {
+          return undefined;
+        }
+      },
+      transformResponse: (responseData) => responseData.data,
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
     /*
     updateProfileImage2: builder.mutation({
       query: (data) => {
@@ -406,6 +418,7 @@ export const {
   useGoogleLoginInternalMutation,
   useResetPasswordMutation,
   useGetUserByIdQuery,
+  useGetUserByPublicIdQuery,
   useLazyGetUserByIdQuery,
   useUpdateProfileImageMutation,
   useUpdateBackgroundImageMutation,

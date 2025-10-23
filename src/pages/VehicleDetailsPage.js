@@ -118,11 +118,12 @@ function VehicleDetailsPage() {
   } = useGetVehicleByIdQuery(vehicleId);
 
   useEffect(() => {
-    if (VehicleData) {
+    if (isSuccessVehicle) {
       // console.log("VehicleData", VehicleData.user.id);
-      console.log("VehicleData", VehicleData.user);
+      console.log("--> VehicleData -->", VehicleData);
+
     }
-  }, [VehicleData]);
+  }, [VehicleData, isSuccessVehicle]);
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
@@ -138,7 +139,7 @@ function VehicleDetailsPage() {
     // true ||
     isLoadingVehicle ? (
       <VehicleDetailPlaceHolderComponent />
-    ) : isSuccessVehicle ? (
+    ) : isSuccessVehicle && VehicleData ? (
       <div className="App">
         <header className="App-header">
           <div className="flex mainpage_Container">
@@ -151,7 +152,6 @@ function VehicleDetailsPage() {
             <div className="vehiclePage1_vehicleContainer">
               <div
                 className="vehiclePage1_dataContainer"
-
                 style={{
                   position: "relative",
                   height: "70vh",               // or "400px" or "80%" if parent has height
@@ -160,8 +160,6 @@ function VehicleDetailsPage() {
                   msOverflowStyle: "none",  // IE, Edge
                   scrollbarWidth: "none"    // Firefox
                 }}
-
-
               >
                 {isFavorited ? (
                   <div

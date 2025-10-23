@@ -20,7 +20,6 @@ import { HubConnectionBuilder } from "@microsoft/signalr";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { use } from "react";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
@@ -219,6 +218,7 @@ function ConnectPage() {
 
 
   const hubConnection = useMemo(() => {
+    console.log("--> Creating Hub Connection for userId:", currentUserId);
     return new HubConnectionBuilder()
       .withUrl(`${API_URL}/chathub/11?userId=${currentUserId}`, {
         withCredentials: false, // fine for cross-origin if your API allows
@@ -365,7 +365,9 @@ function ConnectPage() {
   return (
     // true ||
     // isLoadingmessagePreviews || !messagePreviewsData ? 
-    isLoadingmessagePreviews || messagePreviewsData === undefined || messagePreviewsData === null ?
+    isLoadingmessagePreviews || messagePreviewsData === undefined
+      //|| messagePreviewsData === null 
+      ?
       (
         <ConnectPagePlaceHolder />
       ) : (
