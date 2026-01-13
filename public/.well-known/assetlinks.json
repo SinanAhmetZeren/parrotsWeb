@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.zenforest.parrots",
+            "sha256_cert_fingerprints": [
+                "73:21:F3:17:D5:48:14:2E:EA:70:9C:35:AE:9B:32:90:F7:E5:85:93:13:07:C2:9D:FA:23:60:F5:5A:EC:5A:A4"
+            ]
+        }
+    }
+]

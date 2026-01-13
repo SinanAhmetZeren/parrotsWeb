@@ -50,9 +50,9 @@ export default function CreateVoyagePage() {
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
   const [vehicleId, setVehicleId] = useState(3); //""
 
-  const walkDBId = process.env.REACT_APP_GOOGLE_WALK_ID;
-  const runDBId = process.env.REACT_APP_GOOGLE_RUN_ID;
-  const trainDBId = process.env.REACT_APP_GOOGLE_TRAIN_ID;
+  const walkDBId = process.env.REACT_APP_WALK_ID;
+  const runDBId = process.env.REACT_APP_RUN_ID;
+  const trainDBId = process.env.REACT_APP_TRAIN_ID;
 
 
   const [vehiclesList, setVehiclesList] = useState([

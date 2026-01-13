@@ -1,0 +1,22 @@
+{
+    "applinks": {
+        "details": [
+            {
+                "appIDs": [
+                    "YOUR_TEAM_ID_HERE.com.zenforest.parrots"
+                ],
+                "components": [
+                    {
+                        "/": "/profile-public/*"
+                    },
+                    {
+                        "/": "/voyage-details/*"
+                    },
+                    {
+                        "/": "/vehicle-details/*"
+                    }
+                ]
+            }
+        ]
+    }
+}

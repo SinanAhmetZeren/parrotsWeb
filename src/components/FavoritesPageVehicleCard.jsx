@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueSemiTransparent, parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
 import DOMPurify from "dompurify";
 
 export function FavoritesPageVehicleCard({ vehicle, index }) {
-  const apiUrl = process.env.REACT_APP_API_URL;
   const vehicleBaseUrl = ``;
   const navigate = useNavigate();
   const handleCardClick = (vehicleId) => {
@@ -96,7 +95,7 @@ const vehicleCapacityStyle = {
 const vehicleNameStyle_Text = {
   fontSize: "1.3rem",
   fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
+  color: parrotBlue,
   borderRadius: "1rem",
   padding: "0.1rem",
   paddingLeft: "1rem",
@@ -104,14 +103,14 @@ const vehicleNameStyle_Text = {
 };
 
 const vehicleTypeStyle_Text = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
+  backgroundColor: parrotBlueSemiTransparent,
   borderRadius: "1rem",
   padding: "0.1rem",
   paddingLeft: ".5rem",
   paddingRight: ".5rem",
   fontSize: "1rem",
   fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
+  color: parrotBlue,
 };
 
 const vehicleCapacityStyle_Text = {
@@ -121,13 +120,12 @@ const vehicleCapacityStyle_Text = {
   paddingRight: ".5rem",
   fontSize: "1rem",
   fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
+  color: parrotBlue,
 };
 
 const cardContainerStyle = {
   display: "flex",
   flexDirection: "row",
-  // border: "1px solid #ddd",
   borderRadius: "2rem",
   overflow: "hidden",
   width: "40rem",
@@ -212,29 +210,3 @@ function VehicleIcon({ vehicleType }) {
   );
 }
 
-
-
-
-function VehicleIcon2({ vehicleType }) {
-  const vehicles = {
-    Boat: "⛵",
-    Car: "🚗",
-    Caravan: "🏕️",
-    Bus: "🚌",
-    Walk: "🚶",
-    Run: "🏃",
-    Motorcycle: "🏍️",
-    Bicycle: "🚲",
-    Tinyhouse: "🏠",
-    Airplane: "✈️",
-    Train: "🚄",
-  };
-
-  const getVehicleEmoji = (type) => {
-    return vehicles[type] || "❓";
-  };
-
-  return (
-    <span style={{ textAlign: "center", fontSize: "1.5rem" }}>{getVehicleEmoji(vehicleType)}</span>
-  );
-}
