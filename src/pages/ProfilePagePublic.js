@@ -16,7 +16,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 
 function ProfilePagePublic() {
-  const { userId } = useParams();
+  const { userId } = useParams() // public userId from url
   const { userName } = useParams();
   const local_userId = localStorage.getItem("storedUserId");
 
