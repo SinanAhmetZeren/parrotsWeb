@@ -33,7 +33,7 @@ export default function CreateVoyagePage() {
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(1);
+  const [pageState, setPageState] = useState(3);
   const [voyageBrief, setVoyageBrief] = useState("333");
   const [voyageDescription, setVoyageDescription] = useState("333");
   const [selectedVacancy, setSelectedVacancy] = useState(3); // empty
@@ -45,7 +45,7 @@ export default function CreateVoyagePage() {
   const [calendarOpen, setCalendarOpen] = useState(true);
   // const [lastBidDate, setLastBidDate] = useState("2025-04-30");
   const [lastBidDate, setLastBidDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]);
-  const [voyageId, setVoyageId] = useState("");
+  const [voyageId, setVoyageId] = useState(15); // ""
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
   const [vehicleId, setVehicleId] = useState(3); //""

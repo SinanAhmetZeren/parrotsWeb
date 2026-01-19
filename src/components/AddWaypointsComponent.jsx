@@ -13,7 +13,8 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import { useAddWaypointMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
+import parrotsLogo from "../assets/images/ParrotsLogo.png";
+import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
 import 'swiper/css';
 import 'swiper/css/pagination';
 // import './styles.css';
@@ -21,6 +22,7 @@ import { Pagination } from 'swiper/modules';
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
+import { DefaultSpinner } from "./DefaultSpinner";
 
 const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
 
@@ -43,7 +45,9 @@ export const AddWaypointsPage = ({
     const [targetLocation, setTargetLocation] = useState({});
     const [isUploadingWaypointImage, setIsUploadingWaypointImage] =
         useState(false);
+    const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
     const [addWaypoint] = useAddWaypointMutation();
+    const [addWaypointNoImage] = useAddWaypointNoImageMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
     const [confirmVoyage] = useConfirmVoyageMutation();
     const navigate = useNavigate();
@@ -69,12 +73,17 @@ export const AddWaypointsPage = ({
 
 
     const handleAddWaypoint = async () => {
+        console.log("hi");
+        setIsAddingWaypoint(true)
         if (!waypointImage) {
-            return;
+            // return;
+            console.log("no image");
         }
         setIsUploadingWaypointImage(true);
+        const hasImage = waypointImage instanceof File;
+
         try {
-            const result = await addWaypoint({
+            const result = hasImage ? await addWaypoint({
                 waypointImage,
                 latitude: waypointLatitude,
                 longitude: waypointLongitude,
@@ -82,7 +91,15 @@ export const AddWaypointsPage = ({
                 description: waypointBrief,
                 voyageId: voyageId,
                 order,
-            });
+            }) : await addWaypointNoImage({
+                latitude: waypointLatitude,
+                longitude: waypointLongitude,
+                title: waypointTitle,
+                description: waypointBrief,
+                voyageId: voyageId,
+                order,
+            })
+
             console.log("add waypoint current order:", order);
 
             const waypointId = result.data.data
@@ -113,6 +130,7 @@ export const AddWaypointsPage = ({
             console.error("Error uploading image", error);
         }
         setIsUploadingWaypointImage(false);
+        setIsAddingWaypoint(false);
     };
 
     const handleDeleteWaypoint = async (waypointId) => {
@@ -204,44 +222,57 @@ export const AddWaypointsPage = ({
                             </div>
                         </div>
 
-                        <div
-                            style={{
-                                ...addWaypointButton,
-                                opacity:
-                                    (
+                        {isAddingWaypoint ?
+                            <div style={addWaypointButton}>
+                                <div style={spinnerContainer}>
+                                    <div className="spinner"
+                                        style={spinnerInner}>
+                                    </div>
+                                </div>
+                                <text style={{ opacity: 0 }}> A</text>
+                            </div>
+
+                            :
+                            <div
+                                style={{
+                                    ...addWaypointButton,
+                                    opacity:
+                                        (
+                                            !(waypointTitle &&
+                                                waypointLatitude &&
+                                                waypointLongitude &&
+                                                //waypointImage &&
+                                                waypointBrief //&&
+                                                //imagePreview
+                                            )
+                                        )
+                                            ? 0.5 : 1,
+                                    pointerEvents:
                                         !(waypointTitle &&
                                             waypointLatitude &&
                                             waypointLongitude &&
-                                            waypointImage &&
-                                            waypointBrief &&
-                                            imagePreview)
-                                    )
-                                        ? 0.5 : 1,
-                                pointerEvents:
-
-                                    !(waypointTitle &&
+                                            //waypointImage &&
+                                            waypointBrief //&&
+                                            //imagePreview
+                                        )
+                                            ? 'none' : 'auto'
+                                }}
+                                onClick={() => {
+                                    if ((waypointTitle &&
                                         waypointLatitude &&
                                         waypointLongitude &&
-                                        waypointImage &&
-                                        waypointBrief &&
-                                        imagePreview)
-
-                                        ? 'none' : 'auto'
-                            }}
-                            onClick={() => {
-                                if ((waypointTitle &&
-                                    waypointLatitude &&
-                                    waypointLongitude &&
-                                    waypointImage &&
-                                    waypointBrief &&
-                                    imagePreview)) {
-                                    handleAddWaypoint();
-                                }
-                            }}
-                        >
-                            Add Waypoint
-                        </div>
-
+                                        //waypointImage &&
+                                        waypointBrief //&&
+                                        //imagePreview
+                                    )) {
+                                        console.log("----> clicked");
+                                        handleAddWaypoint();
+                                    }
+                                }}
+                            >
+                                Add Waypoint
+                            </div>
+                        }
                     </div>
                     <div style={{
                         height: "19rem",
@@ -563,7 +594,14 @@ const WaypointComponent = (
             borderRadius: "1.5rem",
             overflow: "hidden"
         }}>
-            <img src={URL.createObjectURL(profileImage)} alt="Uploaded preview"
+            <img src={
+                // URL.createObjectURL(profileImage)
+
+                profileImage instanceof File
+                    ? URL.createObjectURL(profileImage)
+                    : parrotsLogo // fallback (voyage image URL)
+
+            } alt="Uploaded preview"
                 style={{ height: "100%", width: "15rem", objectFit: "cover" }} />
             <div style={{
                 backgroundColor: "rgba(155,255,255,0)",
@@ -715,6 +753,23 @@ const WaypointImageUploaderContainerBox = {
     flexDirection: "row",
 }
 
+
+const spinnerContainer = {
+    height: "100%",
+    width: "100%",
+    borderRadius: "1.5rem",
+    position: "relative"
+}
+
+
+const spinnerInner = {
+    position: "absolute",
+    left: "40%",
+    height: "2rem",
+    width: "2rem",
+    border: "6px solid rgba(173, 216, 230,.5)",
+    borderTop: "6px solid #1e90ff",
+}
 const addWaypointButton = {
     backgroundColor: "#007bff",
     bottom: "-0.5rem",
@@ -726,6 +781,24 @@ const addWaypointButton = {
     fontSize: "1.3rem",
     fontWeight: "800",
     width: "40%",
+    marginLeft: "50%",
+    transform: "translateX(-50%)",
+    padding: "0.3rem",
+    paddingRight: "1rem",
+    paddingLeft: "1rem",
+}
+const addingWaypointButton = {
+    backgroundColor: "#007bff",
+    bottom: "-0.5rem",
+    borderRadius: "2rem",
+    alignContent: "center",
+    justifyItems: "center",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    fontSize: "1.3rem",
+    fontWeight: "800",
+    width: "40%",
+    height: "3rem",
     marginLeft: "50%",
     transform: "translateX(-50%)",
     padding: "0.3rem",
