@@ -7,6 +7,10 @@ import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
 import { FaWalking, FaRunning, FaTrain } from "react-icons/fa";
 import { parrotTextDarkBlue } from "../styles/colors";
+import trainImage from "../assets/images/train.jpeg";
+import walkImage from "../assets/images/walk1.jpeg";
+import runImage from "../assets/images/run1.jpeg";
+
 
 export function VoyageDetailPageDetails({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -24,8 +28,17 @@ export function VoyageDetailPageDetails({ voyageData }) {
       : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
   const handleGoToUser = (user) => {
     console.log("go to user: ", user.userName);
-    navigate(`/profile-public/${user.id}/${user.userName}`);
+    navigate(`/profile-public/${user.publicId}/${user.userName}`);
   };
+
+  const specialVehicles = {
+    Run: runImage,
+    Walk: walkImage,
+    Train: trainImage,
+  };
+
+  const specialImage = specialVehicles[voyageData.vehicle.name];
+
   return (
     <div style={cardContainerStyle} className="flex row">
       <div style={userVehicleInfoRow}>
@@ -62,7 +75,8 @@ export function VoyageDetailPageDetails({ voyageData }) {
           onClick={() => handleGoToVehicle(voyageData)}
         >
           <span style={{ alignSelf: "center" }}>On</span>
-          <div style={userAndVehicleBox}>
+
+          {/* <div style={userAndVehicleBox}>
             <span style={userAndVehicleText}>
               {(voyageData.vehicle.name === "Run" ||
                 voyageData.vehicle.name === "Walk" ||
@@ -94,7 +108,40 @@ export function VoyageDetailPageDetails({ voyageData }) {
                 />
               )}
             <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
+          </div> */}
+
+
+
+          <div style={userAndVehicleBox}>
+            <span style={userAndVehicleText}>
+              {specialImage && (
+                <img
+                  src={specialImage}
+                  // style={runningStyle}
+                  style={userImage}
+                  alt={voyageData.vehicle.name}
+                />
+              )}
+            </span>
+
+            {!specialImage && (
+              <img
+                src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
+                style={{
+                  ...userImage,
+                  ...(hoveredVehicle ? userprofileimgHover : {}),
+                }}
+                onMouseEnter={() => setHoveredVehicle(true)}
+                onMouseLeave={() => setHoveredVehicle(false)}
+                alt="vehicle"
+              />
+            )}
+
+            <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
+
+
+
         </div>
         <div className={"flex"} style={dataRowItem}>
           <span style={{ alignSelf: "center" }}>Vacancy: </span>

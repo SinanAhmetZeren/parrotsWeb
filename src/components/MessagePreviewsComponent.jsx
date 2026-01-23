@@ -38,6 +38,8 @@ export function MessagePreviewsComponent({
       const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
       const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
       const otherUserProfile = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
+      const otherUserPublicId = message.receiverId === userId ? message.senderPublicId : message.receiverPublicId;
+
 
       const dateObj = new Date(message.dateTime);
       const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
@@ -58,7 +60,7 @@ export function MessagePreviewsComponent({
           title={message.text} onClick={() => setUserDetails()}>
           <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
             console.log("going to other user: ", otherUserUserId);
-            handleGoToUser(otherUserUserId, otherUserUsername)
+            handleGoToUser(otherUserUserId, otherUserUsername, otherUserPublicId)
           }
           }>
             <img

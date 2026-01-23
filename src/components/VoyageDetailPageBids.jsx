@@ -44,6 +44,8 @@ export function VoyageDetailBids({
   // Synchronize bidsData with voyageData.bids
   useEffect(() => {
     setBidsData(voyageData.bids);
+    console.log("------> voyageData bids: ");
+    console.log(voyageData.bids);
   }, [voyageData.bids]);
 
   const makeRefetch = useCallback(() => {
@@ -208,6 +210,7 @@ function BidsList({
         handleAcceptBid={handleAcceptBid}
         bidId={bid.id}
         bidUserId={bid.userId}
+        bidUserPublicId={bid.userPublicId}
         loadingBidId={loadingBidId}
         handleDeleteBid={handleDeleteBid}
       />
@@ -226,13 +229,15 @@ function RenderBid({
   handleAcceptBid,
   bidId,
   bidUserId,
+  bidUserPublicId,
   loadingBidId,
   handleDeleteBid,
 }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
-    navigate(`/profile-public/${bidUserId}/${username}`);
+    // navigate(`/profile-public/${bidUserId}/${username}`);
+    navigate(`/profile-public/${bidUserPublicId}/${username}`);
   };
   return (
     <div className={"flex"} style={dataRowItem}>

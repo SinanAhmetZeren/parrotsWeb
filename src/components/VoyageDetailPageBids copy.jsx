@@ -147,8 +147,6 @@ export function VoyageDetailBids({ voyageData, ownVoyage, userBid, currentUserId
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, loadingBidId }) {
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
-
-
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
     navigate(`/profile-public/${bidUserId}/${username}`);

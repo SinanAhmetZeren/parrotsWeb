@@ -246,7 +246,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
-    getVoyagesByLocation: builder.mutation({
+    // getVoyagesByLocation: builder.mutation({
+    getVoyagesByLocation: builder.query({
       query: (data) => {
         const { lat1, lat2, lon1, lon2 } = data;
         return `/api/Voyage/GetVoyagesByCoords/${lat1}/${lat2}/${lon1}/${lon2}`;
@@ -255,7 +256,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         return responseData.data;
       },
     }),
-    getFilteredVoyages: builder.mutation({
+    getFilteredVoyages: builder.query({
       query: (data) => {
         const {
           latitude,
@@ -356,8 +357,10 @@ export const {
   useChangeBidMutation,
   useAcceptBidMutation,
   useDeleteBidMutation,
-  useGetVoyagesByLocationMutation,
-  useGetFilteredVoyagesMutation,
+  useGetVoyagesByLocationQuery,
+  useLazyGetVoyagesByLocationQuery,
+  useGetFilteredVoyagesQuery,
+  useLazyGetFilteredVoyagesQuery,
   useGetFavoriteVoyagesByUserIdQuery,
   useAddVoyageToFavoritesMutation,
   useDeleteVoyageFromFavoritesMutation,

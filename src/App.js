@@ -44,7 +44,7 @@ function App() {
             <Route path="/newVehicle" element={<CreateVehiclePage />} />
             <Route path="/newVoyage" element={<CreateVoyagePage />} />
             <Route
-              path="/profile-public/:userId/:userName"
+              path="/profile-public/:userId/:userName" // using publicId for userId
               element={<ProfilePagePublic />}
             />
             <Route

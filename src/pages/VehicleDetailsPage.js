@@ -64,8 +64,8 @@ function VehicleDetailsPage() {
     updateFavoriteVehicles();
   }, [favoriteVehiclesData, dispatch]);
 
-  const handleGoToUser = ({ userId, userName }) => {
-    navigate(`/profile-public/${userId}/${userName}`);
+  const handleGoToUser = ({ userId, userName, userPublicId }) => {
+    navigate(`/profile-public/${userPublicId}/${userName}`);
   };
   const [isFavorited, setIsFavorited] = useState(isInFavorites);
   const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
@@ -219,6 +219,7 @@ function VehicleDetailsPage() {
                         handleGoToUser({
                           userId: VehicleData.user.id,
                           userName: VehicleData.user.userName,
+                          userPublicId: VehicleData.user.publicId,
                         })
                       }
                     >
@@ -245,6 +246,7 @@ function VehicleDetailsPage() {
                             handleGoToUser({
                               userId: VehicleData.user.id,
                               userName: VehicleData.user.userName,
+                              userPublicId: VehicleData.user.publicId,
                             })
                           }
                         />

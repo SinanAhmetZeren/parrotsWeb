@@ -67,7 +67,7 @@ export function EditProfilePage() {
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
   const handleGoToPublicProfilePage = () => {
-    navigate(`/profile-public/${userData.id}/${userData.userName}`);
+    navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
   };
   const handleGoToProfilePage = () => {
     navigate(`/profile`);

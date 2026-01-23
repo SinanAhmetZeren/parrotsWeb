@@ -28,8 +28,8 @@ function ConnectPage() {
     useParams();
   const currentUserId = localStorage.getItem("storedUserId");
   const navigate = useNavigate();
-  const handleGoToUser = (userId, userName) => {
-    navigate(`/profile-public/${userId}/${userName}`);
+  const handleGoToUser = (userId, userName, userPublicId) => {
+    navigate(`/profile-public/${userPublicId}/${userName}`);
   };
   const [query, setQuery] = useState("");
   const [conversationUserId, setConversationUserId] = useState("");

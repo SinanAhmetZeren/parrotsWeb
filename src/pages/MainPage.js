@@ -8,8 +8,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { MainPageCardSwiper } from "../components/MainPageCardSwiper";
 import {
-  useGetVoyagesByLocationMutation,
-  useGetFilteredVoyagesMutation,
+  useLazyGetVoyagesByLocationQuery,
+  useLazyGetFilteredVoyagesQuery
 } from "../slices/VoyageSlice";
 
 import {
@@ -65,7 +65,7 @@ function MainPage() {
       isLoading: isLoadingVoyages,
       isSuccess: isSuccessVoyages,
     },
-  ] = useGetVoyagesByLocationMutation();
+  ] = useLazyGetVoyagesByLocationQuery();
   const [
     getFilteredVoyages,
     {
@@ -73,7 +73,7 @@ function MainPage() {
       isLoading: isLoadingVoyagesFiltered,
       isSuccess: isSuccessVoyagesFiltered,
     },
-  ] = useGetFilteredVoyagesMutation();
+  ] = useLazyGetFilteredVoyagesQuery();
 
 
   const [
@@ -197,6 +197,7 @@ function MainPage() {
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
+        // console.log("get voyages by location:", lat1, lon1, lat2, lon2);
         setInitialVoyages(voyages?.data || []);
       } catch (error) {
         console.error("Error fetching voyages:", error);
