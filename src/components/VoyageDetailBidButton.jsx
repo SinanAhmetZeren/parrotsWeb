@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
-import { parrotDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue } from "../styles/colors";
 import {
   useSendBidMutation,
   useChangeBidMutation,
@@ -135,14 +135,14 @@ export const VoyageDetailBidButton = ({
         ) : ownVoyage ? null : !userBid ? (
           <button
             onClick={openNewBidModal}
-            style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue }}
           >
             Enter Your Bid
           </button>
         ) : (
           <button
             onClick={openChangeBidModal}
-            style={{ ...buttonStyle, backgroundColor: "rgb(0, 123, 255)" }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue }}
           >
             Change Bid
           </button>

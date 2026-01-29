@@ -17,6 +17,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IoHeartSharp } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import DOMPurify from "dompurify";
+import Modal from "react-modal";
 
 import {
   useAddVehicleToFavoritesMutation,
@@ -29,7 +30,7 @@ import {
   updateUserFavoriteVehicles,
 } from "../slices/UserSlice";
 import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
-import { parrotBlue, parrotRed } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue, parrotRed } from "../styles/colors";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import VehicleVoyages from "../components/VehicleVoyages";
@@ -40,6 +41,9 @@ function VehicleDetailsPage() {
   const { vehicleId } = useParams();
   const userId = localStorage.getItem("storedUserId");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(0);
+
   let favoriteVehicles;
   try {
     favoriteVehicles = JSON.parse(
@@ -106,8 +110,6 @@ function VehicleDetailsPage() {
     setIsDeleting(false);
   };
 
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const baseUserImageUrl = `${apiUrl}/Uploads/UserImages/`;
   const [hoveredUserImg, setHoveredUserImg] = useState(false);
   const {
     data: VehicleData,
@@ -121,6 +123,9 @@ function VehicleDetailsPage() {
       refetchOnReconnect: true,
     });
 
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  }
 
   useEffect(() => {
     if (isSuccessVehicle) {
@@ -300,7 +305,8 @@ function VehicleDetailsPage() {
                 </div>
                 <div
                   onClick={() => {
-                    handleDeleteVehicle();
+                    // handleDeleteVehicle();
+                    setIsDeleteModalOpen(true);
                   }}
                 >
                   {isDeleting ? (
@@ -343,6 +349,44 @@ function VehicleDetailsPage() {
                 </div>
               </div>
             ) : null}
+
+            <Modal
+              isOpen={isDeleteModalOpen}
+              onRequestClose={closeDeleteModal}
+              style={modalStyle}
+            >
+              <div style={titleWrapperStyle}>
+                <span className="text-xl font-bold" style={titleTextStyle}>
+                  Really delete vehicle and all its voyages?
+                </span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
+                {/* Buttons */}
+                <button
+                  onClick={() => closeDeleteModal()}
+                  style={{
+                    ...buttonStyle,
+                    ...actionButtonStyle,
+                    backgroundColor: "grey",
+
+                  }}
+                >
+                  No Thanks
+                </button>
+                <button
+                  onClick={() => handleDeleteVehicle()}
+                  style={{
+                    ...buttonStyle,
+                    ...actionButtonStyle,
+                    backgroundColor: "rgba(220, 53, 69,1)",
+                  }}
+                >
+                  Delete Vehicle
+                </button>
+              </div>
+            </Modal>
+
           </div>
         </header>
       </div>
@@ -493,4 +537,57 @@ const DeleteVehicleSpinner = () => {
       ></div>
     </div>
   );
+};
+
+const actionButtonStyle = {
+  width: "45%",
+};
+
+const buttonStyle = {
+  padding: "0.5rem",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+  // marginBottom: "1rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
+  color: "white",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1rem",
+  border: "none",
+  boxShadow: `
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+    `,
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  right: 0,
+};
+
+const modalStyle = {
+  content: {
+    top: "50%",
+    left: "35%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    padding: "2rem",
+    borderRadius: "1rem",
+    zIndex: 1050,
+    backgroundColor: "#f8f9fa",
+  },
+};
+
+const titleWrapperStyle = {
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: "1.5rem",
+};
+
+const titleTextStyle = {
+  color: "#163A5F",
+  color: "darkred",
+  fontWeight: "900",
 };
