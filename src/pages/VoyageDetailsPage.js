@@ -58,7 +58,11 @@ function VoyageDetailsPage() {
   const isInFavorites = favoriteVoyages?.includes(Number(voyageId));
   const [isFavorited, setIsFavorited] = useState(isInFavorites);
   const { data: favoriteVoyagesData } =
-    useGetFavoriteVoyageIdsByUserIdQuery(userId);
+    useGetFavoriteVoyageIdsByUserIdQuery(userId, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
+
 
   useEffect(() => {
     const updateFavoriteVoyages = () => {
@@ -80,7 +84,10 @@ function VoyageDetailsPage() {
     isLoading: isLoadingVoyage,
     isError: isErrorVoyage,
     refetch,
-  } = useGetVoyageByIdQuery(voyageId);
+  } = useGetVoyageByIdQuery(voyageId, {
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
 
   const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
   const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
@@ -116,6 +123,7 @@ function VoyageDetailsPage() {
       let tempMinLat = Infinity;
       let tempMaxLng = -Infinity;
       let tempMinLng = Infinity;
+
 
       VoyageData.waypoints.forEach((waypoint) => {
         const { latitude, longitude } = waypoint;
@@ -300,6 +308,7 @@ function VoyageDetailsPage() {
                   waypoints={VoyageData.waypoints}
                   handlePanToLocation={handlePanToLocation}
                   opacity={opacity}
+                  voyageImage={VoyageData.profileImage}
                 />
               </div>
             </div>

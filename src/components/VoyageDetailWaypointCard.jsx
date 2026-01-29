@@ -2,7 +2,7 @@ import "../assets/css/App.css";
 import * as React from "react";
 import { parrotTextDarkBlue } from "../styles/colors";
 
-export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
+export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation, voyageImage }) {
 
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseWaypointImageUrl = ``;
@@ -14,13 +14,20 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation }) {
     )
   }
 
+  console.log("->", waypoint);
   return (
     <div style={voyageDetailCard}>
       <div style={imageContainer}>
         <img
-          src={baseWaypointImageUrl + waypoint.profileImage}
+          src={waypoint.profileImage || voyageImage}
           alt={`Slide ${+1}`}
-          style={voyageImage}
+          // style={voyageImageStyle}
+
+          style={{
+            ...voyageImageStyle,
+            opacity: !waypoint.profileImage ? 0.5 : 1,
+          }}
+
         />
       </div>
       <div style={detailsContainer}>
@@ -69,7 +76,7 @@ const detailsContainer = {
   boxSizing: "border-box",
 };
 
-const voyageImage = {
+const voyageImageStyle = {
   height: "100%",
   width: "100%",
   objectFit: "cover",

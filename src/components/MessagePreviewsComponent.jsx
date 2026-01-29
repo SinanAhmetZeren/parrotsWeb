@@ -2,6 +2,7 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useParams } from "react-router-dom";
+import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2 } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const userBaseUrl = `  `;
@@ -83,10 +84,10 @@ export function MessagePreviewsComponent({
           </div>
           <div style={timestampContainer}>
             <div>
-              <span style={messageTimeStyle}>{time}</span>
+              <span style={{ ...messageTimeStyle, color: parrotBlueDarkTransparent2 }}>{time}</span>
             </div>
             <div>
-              <span style={messageTimeStyle}>{date}</span>
+              <span style={{ ...messageTimeStyle, color: parrotBlueDarkTransparent }}>{date}</span>
             </div>
           </div>
         </div>)

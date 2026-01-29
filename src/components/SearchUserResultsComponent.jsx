@@ -92,7 +92,9 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
             setHoveredUserImgID2(user.id)
           }}
           onMouseLeave={() => setHoveredUserImgID2("")}
-          onClick={() => handleGoToUser(user.id, user.userName)}>
+          onClick={() => //handleGoToUser(user.id, user.userName)
+            handleGoToUser(user.userId, user.userName, user.publicId)
+          }>
           <CgProfile />
         </div>
       </div>

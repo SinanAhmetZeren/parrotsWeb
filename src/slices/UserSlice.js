@@ -230,6 +230,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: userData,
       }),
     }),
+    /*
     confirmUser2: builder.mutation({
       query: (confirmData) => ({
         url: "/api/account/confirmCode",
@@ -237,6 +238,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: confirmData,
       }),
     }),
+    */
     confirmUser: builder.mutation({
       query: (confirmData) => {
         console.log("confirmData:--->", confirmData);

@@ -60,6 +60,7 @@ export function EditProfilePage() {
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [youtubeProfile, setYoutubeProfile] = useState("");
   const [emailHidden, setEmailHidden] = useState();
+  const [honeyPotValue, setHoneyPotValue] = useState("");
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
@@ -231,6 +232,12 @@ export function EditProfilePage() {
   };
 
   const handleUpdateChanges = async () => {
+
+    if (honeyPotValue) {
+      console.warn("Bot detected – update blocked");
+      return;
+    }
+
     setIsUpdatingProfile(true);
     if (backGroundImage) {
       await handleUploadBackgroundImage();
@@ -554,25 +561,21 @@ export function EditProfilePage() {
                       transform: "translateX(-50%)",
                     }}
                   >
-                    {isUpdatingProfile ? (
-                      <span
-                        onClick={() => {
-                          handleUpdateChanges();
-                        }}
-                        style={UpdateChangesButton}
-                      >
-                        <UpdateProfileSpinner />
-                      </span>
-                    ) : (
-                      <span
-                        onClick={() => {
-                          handleUpdateChanges();
-                        }}
-                        style={UpdateChangesButton}
-                      >
-                        Update Changes
-                      </span>
-                    )}
+                    <input
+                      type="text"
+                      value={honeyPotValue}
+                      onChange={(e) => setHoneyPotValue(e.target.value)}
+                      style={{ display: "none" }}
+                      autoComplete="off"
+                    />
+                    <span
+                      onClick={() => handleUpdateChanges()}
+                      style={UpdateChangesButton}
+                    >
+                      {isUpdatingProfile ? <UpdateProfileSpinner /> : "Update Changes"}
+                    </span>
+
+
                   </div>
                 </div>
               </div>

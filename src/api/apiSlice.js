@@ -5,24 +5,46 @@ const API_URL = "https://adapting-sheepdog-annually.ngrok-free.app";
 // const API_URL = "https://parrots-api-backend.azurewebsites.net";
 // const API_URL = "https://api.parrotsvoyages.com";
 
+const generateDeviceId = () => {
+  const s4 = () =>
+    Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
 
+  return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+};
 
+const getDeviceId = () => {
+  let id = localStorage.getItem("deviceId");
+  if (!id) {
+    id = generateDeviceId();
+    localStorage.setItem("deviceId", id);
+  }
+  return id;
+};
 
-
-
-
+const deviceId = getDeviceId();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
-  prepareHeaders: async (headers) => {
+  prepareHeaders: (headers) => {
     headers.set("ngrok-skip-browser-warning", "1");
-    const token = await localStorage.getItem("storedToken");
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = crypto.randomUUID();
+      localStorage.setItem("deviceId", deviceId);
+    }
+    headers.set("X-Device-Id", deviceId);
+
+    const token = localStorage.getItem("storedToken");
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+
     return headers;
   },
 });
+
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);

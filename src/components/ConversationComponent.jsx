@@ -1,6 +1,7 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useEffect, useRef } from "react";
+import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotBlueTransparent, parrotDarkBlue } from "../styles/colors";
 
 export function ConversationComponent({ currentUserId, messagesToDisplay
 }) {
@@ -33,12 +34,12 @@ export function ConversationComponent({ currentUserId, messagesToDisplay
             </div>
             <div style={dateAndTimeContainerStyle}>
               <div>
-                <span>
+                <span style={{ color: parrotBlueDarkTransparent2 }}>
                   {time}
                 </span>
               </div>
               <div>
-                <span>
+                <span style={{ color: parrotBlueDarkTransparent }}>
                   {date}
                 </span>
               </div>

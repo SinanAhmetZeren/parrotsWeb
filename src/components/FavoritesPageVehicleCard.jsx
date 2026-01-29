@@ -135,7 +135,7 @@ const cardContainerStyle = {
   margin: "auto",
   marginBottom: ".5rem",
   boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
+  0 4px 6px rgba(0, 0, 0, 0.1),
   inset 0 -8px 6px rgba(0, 0, 0, 0.1)
 `,
   cursor: "pointer",
@@ -161,9 +161,11 @@ const cardContentStyle = {
   width: "24rem",
   flexDirection: "column",
   boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.4),
-  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
+  0 4px 6px rgba(0, 0, 0, 0.1),
+  inset 0 -6px 6px rgba(0, 0, 0, 0.1)
 `,
+  overflow: "hidden",
+
 };
 
 const cardBriefStyle = {

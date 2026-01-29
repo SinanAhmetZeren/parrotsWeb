@@ -6,7 +6,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 
-export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity }) {
+export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity, voyageImage }) {
 
   return (
     <div style={{ opacity: opacity }}>
@@ -34,7 +34,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
 
             }}
           >
-            <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} />
+            <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} voyageImage={voyageImage} />
           </SwiperSlide>
         ))}
       </Swiper>

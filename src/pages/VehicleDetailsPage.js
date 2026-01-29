@@ -15,7 +15,7 @@ import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoHeartSharp } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import DOMPurify from "dompurify";
 
 import {
@@ -115,7 +115,12 @@ function VehicleDetailsPage() {
     isLoading: isLoadingVehicle,
     isError: isErrorVehicle,
     refetch,
-  } = useGetVehicleByIdQuery(vehicleId);
+  } = //useGetVehicleByIdQuery(vehicleId);
+    useGetVehicleByIdQuery(vehicleId, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
+
 
   useEffect(() => {
     if (isSuccessVehicle) {

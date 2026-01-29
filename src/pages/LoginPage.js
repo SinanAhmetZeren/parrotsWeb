@@ -1,11 +1,8 @@
 /* eslint-disable no-undef */
 import "../assets/css/App.css";
 import "../assets/css/LoginPage.css";
-
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"; // optional helper library
+import { useState } from "react";
 import { useGoogleLoginInternalMutation as googleLoginMutation } from "../slices/UserSlice";
-
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import {
@@ -18,19 +15,21 @@ import {
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
   updateUserFavorites,
 } from "../slices/UserSlice";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import {
-  parrotBlue,
-  parrotDarkBlue,
   parrotTextDarkBlue,
 } from "../styles/colors";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { set } from "date-fns";
+import welcomeImage from "../assets/images/WelcomeWeb.png";
+import almostThereImage from "../assets/images/AlmostWeb.png";
+import checkYourEmailImage from "../assets/images/CheckWeb.png";
+import letsGetStartedImage from "../assets/images/LetsWeb.png";
+import resetPasswordImage from "../assets/images/ResetWeb.png";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -248,8 +247,8 @@ function LoginPage() {
 
       alert(
         err?.data?.message ||
-          err?.error ||
-          "Registration failed. Please check your details or try again later."
+        err?.error ||
+        "Registration failed. Please check your details or try again later."
       );
     }
   };
@@ -358,13 +357,17 @@ function LoginPage() {
               <>
                 <div style={mainContainer}>
                   <div style={wrapper}>
+                    <img src={welcomeImage} alt="Welcome to Parrots"
+                      style={{ width: "100%", height: "5rem" }}
+                    />
                     <div
                       style={{
                         width: "73%",
                         margin: "auto",
                       }}
                     >
-                      <div style={welcomeStyle}> Welcome To Parrots!</div>
+                      {/* <div style={welcomeStyle}> Welcome To Parrots!</div> */}
+
                       <div className="username-wrapper-login">
                         <input
                           type="text"
@@ -470,7 +473,10 @@ function LoginPage() {
             ) : pageState === "Register1" ? (
               <div style={mainContainer}>
                 <div style={wrapper}>
-                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
+                  <img src={letsGetStartedImage} alt="Lets get started"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
                   <div
                     style={{
                       width: "80%",
@@ -569,9 +575,9 @@ function LoginPage() {
                       style={{
                         opacity:
                           usernameRegister &&
-                          emailRegister &&
-                          passwordRegister &&
-                          passwordRegister2
+                            emailRegister &&
+                            passwordRegister &&
+                            passwordRegister2
                             ? 1
                             : 0.5,
                       }}
@@ -598,6 +604,11 @@ function LoginPage() {
             ) : pageState === "Register2" ? (
               <div style={mainContainer}>
                 <div style={wrapper}>
+
+                  <img src={almostThereImage} alt="Almost there"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
                   <div style={{ width: "80%", margin: "auto" }}>
                     <div style={welcomeStyle}> Welcome To Parrots! </div>
                     <div className="username-wrapper-confirmationCode">
@@ -642,7 +653,14 @@ function LoginPage() {
             ) : pageState === "ForgotPassword" ? (
               <div style={mainContainer}>
                 <div style={wrapper}>
-                  <div style={welcomeStyle}> Welcome To Parrots! </div>
+
+
+                  <img src={resetPasswordImage} alt="Reset password"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
+
+                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
                   <div style={{ width: "80%", margin: "auto" }}>
                     <div
                       className="username-wrapper"
@@ -684,6 +702,13 @@ function LoginPage() {
             ) : pageState === "ResetPassword" ? (
               <div style={mainContainer}>
                 <div style={wrapper}>
+
+
+                  <img src={checkYourEmailImage} alt="check your email"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
+
                   <div style={{ width: "80%", margin: "auto" }}>
                     <div style={welcomeStyle}> Welcome To Parrots! </div>
                     <div className="password-wrapper-reset-pasword">
@@ -813,10 +838,12 @@ const wrapper = {
   paddingTop: "2rem",
   paddingBottom: "3rem",
   borderRadius: "1.5rem",
+  backgroundColor: "orange"
 };
 
 const mainContainer = {
   backgroundColor: "rgba(255, 255, 255, .3)",
+  backgroundColor: "red",
   width: "40%",
   margin: "auto",
   borderRadius: "2rem",

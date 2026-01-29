@@ -68,6 +68,7 @@ function EditVehiclePage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUpdatingVehicle, setIsUpdatingVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [honeyPotValue, setHoneyPotValue] = useState("");
 
   const isFormValid = useMemo(() => {
     return (
@@ -219,6 +220,12 @@ function EditVehiclePage() {
 
   // xxxxx
   const handleUpdateButtonClick = async () => {
+
+    if (honeyPotValue) {
+      console.warn("Bot detected – update blocked");
+      return;
+    }
+
     setIsUpdatingVehicle(true);
     const patchDoc = [
       { op: "replace", path: "/name", value: vehicleName },
@@ -507,36 +514,36 @@ function EditVehiclePage() {
                 </div>
               </div>
 
-              {isUpdatingVehicle ? (
-                <div
-                  className="createVehicleButton"
-                  style={{
-                    ...registerVehicleButton,
-                    ...(isFormValid
-                      ? {}
-                      : { backgroundColor: "#007bff", cursor: "not-allowed" }),
-                  }}
-                >
-                  <RegisterSpinner />
-                </div>
-              ) : (
-                <div
-                  className="createVehicleButton"
-                  style={{
-                    ...registerVehicleButton,
-                    ...(isFormValid ? {} : { opacity: "0.7" }),
-                  }}
-                  onClick={
-                    isFormValid
-                      ? handleUpdateButtonClick
-                      : () => {
-                        console.log("Form is not valid");
-                      }
+
+              <input
+                type="text"
+                value={honeyPotValue}
+                onChange={(e) => setHoneyPotValue(e.target.value)}
+                style={{ display: "none" }}
+                autoComplete="off"
+              />
+
+              <div
+                className="createVehicleButton"
+                style={{
+                  ...registerVehicleButton,
+                  ...(isUpdatingVehicle
+                    ? { backgroundColor: "#007bff", cursor: "not-allowed" }
+                    : !isFormValid
+                      ? { opacity: "0.7" }
+                      : {}),
+                }}
+                onClick={() => {
+                  if (isUpdatingVehicle) return;
+                  if (isFormValid) {
+                    handleUpdateButtonClick();
+                  } else {
+                    console.log("Form is not valid");
                   }
-                >
-                  Update Details
-                </div>
-              )}
+                }}
+              >
+                {isUpdatingVehicle ? <RegisterSpinner /> : "Update Details"}
+              </div>
             </>
           )}
           {pageState === "s2" && (
