@@ -34,7 +34,9 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
-  const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
+  // const myApiKey2 = "AIzaSyAsqIXNMISkZ0prGc2iTLbiQk0QBtgq0";
+  const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  console.log("===>>", process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -116,6 +118,8 @@ function MainPage() {
       formattedEndDate: formattedEndDate,
     };
     const filteredVoyages = await getFilteredVoyages(data);
+    console.log("---> filtered: ");
+    console.log(filteredVoyages.data);
     setInitialVoyages(filteredVoyages.data || []);
     console.log("bounds: ", bounds);
   }, [
@@ -209,24 +213,16 @@ function MainPage() {
   }, [getVoyagesByLocation, initialBounds]);
 
   // renders markers
-
   useEffect(() => {
-    // console.log("useEffect triggered: isSuccessVoyages =", isSuccessVoyages);
-    // console.log("initialVoyages:", initialVoyages);
     if (isSuccessVoyages) {
       markersRef.current = [];
-      // console.log("Cleared markersRef.current");
       console.log("initial voyages: ", initialVoyages);
       const newMarkers = initialVoyages
         .map((voyage, index) => {
           const waypoint = voyage.waypoints?.[0];
           if (!waypoint) {
-            // console.log(`Voyage at index ${index} has no waypoints, skipping`);
             return null;
           }
-
-          // console.log(`Creating marker for voyage index ${index} at`, waypoint);
-          console.log("hello");
 
           return (
             <MarkerWithInfoWindow
@@ -247,8 +243,6 @@ function MainPage() {
           );
         })
         .filter(Boolean);
-
-      // console.log("newMarkers:", newMarkers);
 
       if (!markerClustererRef.current) {
         // console.log("Initializing new MarkerClusterer");
