@@ -365,10 +365,68 @@ const TermsOfUseComponent = () => {
 
                             <div style={transparentWrapper}>
                                 <div id="privacy" style={styles.sectionTitle}>11. Privacy Policy</div>
+
                                 <div style={styles.paragraph}>
-                                    Parrots collects and processes user data as described in its Privacy Policy. Users should review the Privacy Policy to understand how their information is handled.
+                                    Parrots respects your privacy and is committed to protecting your personal data. This section explains how information is collected, used, stored, and protected when you use the platform.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>a. Information We Collect</div>
+                                <div style={styles.paragraph}>
+                                    Parrots may collect information that users voluntarily provide, including profile details, images, vehicle and voyage information, messages, and contact details. Users choose what information to share.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots does not verify the accuracy of user-provided information.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>b. Automatically Collected Data</div>
+                                <div style={styles.paragraph}>
+                                    Limited technical data may be collected automatically, such as device type, app version, error logs, and IP address, for security and service improvement purposes only.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>c. How We Use Data</div>
+                                <div style={styles.paragraph}>
+                                    Personal data is used solely to operate and maintain the platform, enable user interaction, display content, ensure security, and respond to support requests.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots does not sell user data and does not use personal data for advertising or profiling.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>d. Legal Basis</div>
+                                <div style={styles.paragraph}>
+                                    Data is processed based on user consent, contractual necessity, legitimate interests (such as platform security), and legal obligations under UK GDPR.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>e. Data Sharing</div>
+                                <div style={styles.paragraph}>
+                                    Parrots does not share personal data with third parties for marketing purposes. Information is visible to other users only where users choose to make it public (e.g., profiles, listings, messages).
+                                </div>
+
+                                <div style={styles.sectionTitle2}>f. User Communications</div>
+                                <div style={styles.paragraph}>
+                                    Messages between users are private. Parrots does not actively monitor, verify, or endorse user communications.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>g. Data Retention</div>
+                                <div style={styles.paragraph}>
+                                    Personal data is retained only as long as necessary to operate the service or comply with legal requirements. Users may request deletion of their account and associated data.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>h. User Rights</div>
+                                <div style={styles.paragraph}>
+                                    Users have the right to access, correct, delete, or restrict processing of their personal data, and to withdraw consent at any time, in accordance with UK GDPR.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>i. Children’s Privacy</div>
+                                <div style={styles.paragraph}>
+                                    Parrots is not intended for users under the age of 18 and does not knowingly collect data from minors.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>j. Changes to Privacy Policy</div>
+                                <div style={styles.paragraph}>
+                                    Parrots may update this Privacy Policy from time to time. Continued use of the platform constitutes acceptance of the updated policy.
                                 </div>
                             </div>
+
 
                             <div style={transparentWrapper}>
 
