@@ -319,12 +319,37 @@ const TermsOfUseComponent = () => {
                                 </div>
                             </div>
 
+
                             <div style={transparentWrapper}>
-                                <div id="prohibited" style={styles.sectionTitle}>6. Prohibited Activities</div>
+                                <div id="prohibited" style={styles.sectionTitle}>
+                                    6. Prohibited Activities
+                                </div>
+
                                 <div style={styles.paragraph}>
-                                    Users must not post illegal, harmful, or offensive content; harass or threaten others; manipulate, mislead, or defraud other users; or violate intellectual property rights.
+                                    Users must not post illegal, harmful, or offensive content; harass or
+                                    threaten others; manipulate, mislead, or defraud other users; or violate
+                                    intellectual property rights.
+                                </div>
+
+                                <div style={styles.sectionTitle2}>
+                                    Content Moderation and Removal
+                                </div>
+
+                                <div style={styles.paragraph}>
+                                    Parrots reserves the right, but not the obligation, to review, restrict, or
+                                    remove any voyage, vehicle listing, or related content at its sole
+                                    discretion. This may include content that appears to be fake, misleading,
+                                    fraudulent, outdated, inactive for an extended period, or otherwise
+                                    inconsistent with the purpose of the platform or these Terms.
+                                </div>
+
+                                <div style={styles.paragraph}>
+                                    Removal of content does not imply wrongdoing by the user, and Parrots is not
+                                    required to provide prior notice, explanation, or justification.
                                 </div>
                             </div>
+
+
 
                             <div style={transparentWrapper}>
                                 <div id="ip" style={styles.sectionTitle}>7. Intellectual Property</div>
