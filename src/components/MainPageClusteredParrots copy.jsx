@@ -362,7 +362,7 @@ export default function VehicleIcon({ vehicleType }) {
 const vehicles = [
   "⛵", // Boat
   "🚗", // Car
-  "🏕️", // Caravan
+  "🚐", // Caravan
   "🚌", // Bus
   "🚶", // Walk
   "🏃", // Run

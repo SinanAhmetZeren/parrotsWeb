@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import "../assets/css/CreateVehicle.css"
 import "react-quill/dist/quill.snow.css";
 import { IoRemoveCircleOutline } from "react-icons/io5";
-import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
+// import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png"
+import uploadImage from "../assets/images/ParrotsLogoPlus.png"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import parrotMarker1 from "../assets/images/parrotMarker1.png";

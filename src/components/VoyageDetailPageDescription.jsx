@@ -126,7 +126,7 @@ const descriptionTextStyle = {
 const vehicles = [
   "⛵", // Boat
   "🚗", // Car
-  "🏕️", // Caravan
+  "🚐", // Caravan
   "🚌", // Bus
   "🚶", // Walk
   "🏃", // Run

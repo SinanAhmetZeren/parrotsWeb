@@ -279,7 +279,8 @@ const CreateVoyageMapComponent = ({
                 <Image source={{ uri: imageUri }} style={styles.profileImage} />
               ) : (
                 <Image
-                  source={require("../assets/ParrotsWhiteBgPlus.png")}
+                  // source={require("../assets/ParrotsWhiteBgPlus.png")}
+                  source={require("../assets/ParrotsLogoPlus.png")}
                   style={styles.profileImage}
                 />
               )}

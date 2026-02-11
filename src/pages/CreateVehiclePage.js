@@ -6,7 +6,8 @@ import "../assets/css/CreateVehicle.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline } from "react-icons/io5";
-import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
+// import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
+import uploadImage from "../assets/images/ParrotsLogoPlus.png";
 import placeHolder from "../assets/images/placeholder.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -864,7 +865,7 @@ const uploadedImagesContainer = {
 const vehicles = {
   Boat: "⛵",
   Car: "🚗",
-  Caravan: "🏕️",
+  Caravan: "🚐",
   Bus: "🚌",
   Walk: "🚶",
   Run: "🏃",

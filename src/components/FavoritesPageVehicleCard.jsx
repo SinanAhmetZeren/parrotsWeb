@@ -189,7 +189,7 @@ function VehicleIcon({ vehicleType }) {
   const vehicles = [
     "⛵", // 0 -> Boat
     "🚗", // 1 -> Car
-    "🏕️", // 2 -> Caravan
+    "🚐", // 2 -> Caravan
     "🚌", // 3 -> Bus
     "🚶", // 4 -> Walk
     "🏃", // 5 -> Run

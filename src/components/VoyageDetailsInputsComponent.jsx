@@ -37,32 +37,35 @@ export const VoyageDetailsInputsComponent = ({
     transform: "scale(0.92)",
   };
 
+  const semiWhiteStyle = {
+    backgroundColor: "rgba(255,255,255,0.7)",
+    marginTop: ".75rem",
+  }
+
+
   return (
     <div style={voyageDetails}>
-      <div
-        style={{
-          backgroundColor: "rgba(255,255,255,0.7)",
-        }}
-      >
+      <div style={{ ...semiWhiteStyle, marginTop: "2.5rem" }}>
         <CreateVoyageVacancyPicker
           selectedVacancy={selectedVacancy}
           setSelectedVacancy={setSelectedVacancy}
         />
       </div>
-      <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+      <div style={semiWhiteStyle}>
         <CreateVoyageVehicleSelector
           vehicleId={vehicleId}
           setVehicleId={setVehicleId}
           vehiclesList={vehiclesList}
         />
       </div>
-      <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+      <div style={semiWhiteStyle}>
+
         <CreateVoyagePageNameInput
           voyageName={voyageName}
           setVoyageName={setVoyageName}
         />
       </div>
-      <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+      <div style={semiWhiteStyle}>
         <CreateVoyagePriceInput
           minPrice={minPrice}
           setMinPrice={setMinPrice}
@@ -72,7 +75,7 @@ export const VoyageDetailsInputsComponent = ({
           isFixedPrice={isFixedPrice}
         />
       </div>
-      <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+      <div style={semiWhiteStyle}>
         <CreateVoyagePriceInput
           minPrice={minPrice}
           setMinPrice={setMinPrice}
@@ -82,12 +85,17 @@ export const VoyageDetailsInputsComponent = ({
           isFixedPrice={isFixedPrice}
         />
       </div>
-      <div style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
+
+      {/* 
+            <div style={semiWhiteStyle}>
+
         <CreateVoyageLastBidDateInput
           lastBidDate={lastBidDate}
           setLastBidDate={setLastBidDate}
         />
-      </div>
+      </div> */}
+
+
       <div
         style={{
           backgroundColor: "rgba(255,255,255,0.7)",
@@ -493,8 +501,8 @@ const CreateVoyagePriceInput = ({
                   ? ""
                   : maxPrice
                 : minPrice === null
-                ? ""
-                : minPrice
+                  ? ""
+                  : minPrice
             }
             style={inputStyle}
             onChange={(e) => {

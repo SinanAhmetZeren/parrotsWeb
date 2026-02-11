@@ -52,7 +52,7 @@ export function MainPageMapVoyageCard({ cardData }) {
 const vehicles = [
   "⛵", // Boat
   "🚗", // Car
-  "🏕️", // Caravan
+  "🚐", // Caravan
   "🚌", // Bus
   "🚶", // Walk
   "🏃", // Run

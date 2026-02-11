@@ -33,7 +33,7 @@ export default function CreateVoyagePage() {
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(3);
+  const [pageState, setPageState] = useState(1);
   const [voyageBrief, setVoyageBrief] = useState("333");
   const [voyageDescription, setVoyageDescription] = useState("333");
   const [selectedVacancy, setSelectedVacancy] = useState(3); // empty
@@ -134,7 +134,9 @@ export default function CreateVoyagePage() {
       const formattedEndDate = endDate
         ? convertDateFormat(endDate)
         : convertDateFormat(startDate);
-      const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
+      // const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
+      const formattedLastBidDate = formattedStartDate;
+
       const response = await createVoyage({
         voyageImage,
         name: voyageName,
@@ -275,6 +277,7 @@ export default function CreateVoyagePage() {
                             setDates={setDates}
                             calendarOpen={calendarOpen}
                             setCalendarOpen={setCalendarOpen}
+
                           />
                         </div>
                       </div>
