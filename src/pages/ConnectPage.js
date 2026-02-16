@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import "../assets/css/advancedmarker.css";
 import "../assets/css/ConnectPage.css";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -99,113 +99,6 @@ function ConnectPage() {
   }, [isPageReady, isLoadingmessagePreviews, isErrorMessages, isSuccessmessagePreviews]);
 
 
-  //  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  /*
-  const hubConnection = useMemo(() => {
-    return new HubConnectionBuilder()
-      .withUrl(`${API_URL}/chathub/11?userId=${currentUserId}`, {
-        withCredentials: false, // TODO: is this correct?
-      })
-      .build();
-  }, [currentUserId]);
-
-  useEffect(() => {
-    console.log("hubconnect: ", hubConnection);
-
-    const startHubConnection = async () => {
-      try {
-        if (hubConnection.state === "Disconnected") {
-          await hubConnection.start();
-          console.log("SignalR connection started successfully.");
-        }
-      } catch (error) {
-        console.error("Failed to start SignalR connection:", error.message);
-      }
-    };
-
-    hubConnection.onclose(() => {
-      console.log("SignalR connection closed.");
-    });
-
-    hubConnection.onreconnecting(() => {
-      console.log("SignalR connection reconnecting...");
-    });
-
-    hubConnection.onreconnected(() => {
-      console.log("SignalR connection reconnected.");
-    });
-
-    if (conversationUserId) {
-      startHubConnection();
-    }
-
-    return () => {
-      hubConnection.stop();
-    };
-  }, [hubConnection, conversationUserId]);
-
-  const refreshMessages = React.useCallback(() => {
-    if (users?.currentUserId && users?.conversationUserId) {
-      triggerGetMessages({
-        currentUserId: users.currentUserId,
-        conversationUserId: users.conversationUserId,
-      });
-    }
-  }, [users, triggerGetMessages]);
-
-  useEffect(() => {
-    const startHubConnection = async () => {
-      try {
-        await hubConnection.start();
-        console.log("SignalR connection  started successfully.");
-      } catch (error) {
-        console.error("Failed to start SignalR connection:", error);
-      }
-    };
-    startHubConnection();
-    hubConnection.on(
-      "ReceiveMessage",
-      async (senderId, content, newTime, senderProfileUrl, senderUsername) => { }
-    );
-
-    hubConnection.on("ReceiveMessageRefetch", () => {
-      refreshMessages();
-    });
-
-    return () => { };
-  }, []);
-
-  useEffect(() => {
-    setUsers({ currentUserId, conversationUserId });
-    // console.log("--->> conversationUserId: ", conversationUserId);
-  }, [conversationUserId]);
-
-  const stateOfTheHub = () => {
-    console.log("state of the hub: ", hubConnection.state);
-  };
-
-  useEffect(() => {
-    const { currentUserId, conversationUserId } = users;
-
-    console.log("conversationUserId: ", conversationUserId);
-    console.log("currentUserId: ", currentUserId);
-
-    if (currentUserId && conversationUserId) {
-      triggerGetMessages({ currentUserId, conversationUserId });
-    }
-  }, [users.currentUserId, users.conversationUserId]);
-
-  useEffect(() => {
-    if (conversationData) setMessagesToDisplay(conversationData.data);
-  }, [conversationData]);
-
-  useEffect(() => {
-    if (conversationUserId) {
-      refreshMessages();
-    }
-  }, [conversationUserId, refreshMessages]);
-
-*/
 
   const refreshMessages = useCallback(() => {
     if (users?.currentUserId && users?.conversationUserId) {
@@ -232,6 +125,11 @@ function ConnectPage() {
     setUsers({ currentUserId, conversationUserId });
   }, [currentUserId, conversationUserId]);
 
+
+
+
+  const chatReadyRef = useRef(false);
+
   // Manage SignalR connection & listeners
   useEffect(() => {
     if (!conversationUserId) return;
@@ -239,18 +137,42 @@ function ConnectPage() {
     const startHubConnection = async () => {
       try {
         if (hubConnection.state === "Disconnected") {
+          chatReadyRef.current = false; // reset ready state
           await hubConnection.start();
           console.log("SignalR connection started successfully.");
+
+          // Wait for ParrotsChatHubInitialized
+          if (!chatReadyRef.current) {
+            console.log("Waiting for ParrotsChatHubInitialized...");
+            await new Promise((resolve) => {
+              const interval = setInterval(() => {
+                if (chatReadyRef.current) {
+                  clearInterval(interval);
+                  resolve(true);
+                }
+              }, 100);
+            });
+          }
         }
       } catch (error) {
         console.error("Failed to start SignalR connection:", error.message);
+        chatReadyRef.current = false;
       }
     };
 
+    // Listen for ParrotsChatHubInitialized
+    hubConnection.on("ParrotsChatHubInitialized", () => {
+      chatReadyRef.current = true;
+      console.log("✅ ParrotsChatHubInitialized received");
+    });
+
+    // Standard SignalR events
     hubConnection.onclose(() => console.log("SignalR connection closed."));
     hubConnection.onreconnecting(() => console.log("SignalR reconnecting..."));
     hubConnection.onreconnected(() => console.log("SignalR reconnected."));
+
     hubConnection.on("ReceiveMessage", (senderId, content, newTime, senderProfileUrl, senderUsername) => {
+      // handle received message
     });
 
     hubConnection.on("ReceiveMessageRefetch", () => refreshMessages());
@@ -258,9 +180,11 @@ function ConnectPage() {
     startHubConnection();
 
     return () => {
+      hubConnection.off("ParrotsChatHubInitialized");
       hubConnection.stop();
     };
   }, [hubConnection, conversationUserId, refreshMessages]);
+
 
   // Refresh messages when users IDs change
   useEffect(() => {
@@ -283,16 +207,6 @@ function ConnectPage() {
       refreshMessages();
     }
   }, [conversationUserId, refreshMessages]);
-
-  // Optional helper
-  const stateOfTheHub = () => {
-    console.log("Hub state:", hubConnection.state);
-  };
-
-
-
-
-  //  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
   const handleSendMessage = async () => {
     setSendButtonDisabled(true);
@@ -321,30 +235,40 @@ function ConnectPage() {
     setMessage("");
 
     try {
+      // Start hub if disconnected
       if (hubConnection.state === "Disconnected") {
         await hubConnection.start();
+        if (!chatReadyRef.current) {
+          console.log("Waiting for ParrotsChatHubInitialized...");
+          await new Promise((resolve) => {
+            const interval = setInterval(() => {
+              if (chatReadyRef.current) {
+                clearInterval(interval);
+                resolve(true);
+              }
+            }, 100); // check every 100ms
+          });
+        }
       }
+
+      // Send the message via SignalR
       await hubConnection.invoke(
         "SendMessage",
         currentUserId,
         conversationUserId,
         message
       );
+
       console.log("Message sent successfully.");
       refetchMessagePreviews();
 
-
-
     } catch (error) {
       console.error("Failed to send message:", error);
-      setMessagesToDisplay((prevMessages) => {
-        return prevMessages.filter(
-          (msg) => msg.dateTime !== sentMessage.dateTime
-        );
-      });
-      alert(
-        "Failed to send message. Please check your connection and try again."
+      // Rollback optimistic UI
+      setMessagesToDisplay((prevMessages) =>
+        prevMessages.filter((msg) => msg.dateTime !== sentMessage.dateTime)
       );
+      alert("Failed to send message. Please check your connection and try again.");
     }
 
     setSendButtonDisabled(false);

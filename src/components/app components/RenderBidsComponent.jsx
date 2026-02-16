@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   View,
   Image,
@@ -37,27 +37,112 @@ export const RenderBidsComponent = ({
       .build();
   }, [currentUserId]);
 
+  /*
+    useEffect(() => {
+      const startHubConnection = async () => {
+        try {
+          await hubConnection.start();
+          console.log("->SignalR connection  started successfully.");
+        } catch (error) {
+          console.error("Failed to start SignalR connection:", error);
+        }
+      };
+      startHubConnection();
+      return () => { };
+    }, [hubConnection]);
+  
+    const handleAcceptBid = ({ bidId, bidUserId }) => {
+      const text = `Hi there! 👋 Welcome on board to "${voyageName}" 🎉`;
+  
+      hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+  
+      acceptBid(bidId);
+      refetch();
+    };
+  */
+
+
+
+
+  const chatReadyRef = useRef(false);
+
+  // 🟢 Start SignalR connection & track ready state
   useEffect(() => {
     const startHubConnection = async () => {
       try {
-        await hubConnection.start();
-        console.log("->SignalR connection  started successfully.");
+        if (hubConnection.state === "Disconnected") {
+          chatReadyRef.current = false; // reset ready state
+          await hubConnection.start();
+          console.log("-> SignalR connection started successfully.");
+
+          // Wait for ParrotsChatHubInitialized
+          if (!chatReadyRef.current) {
+            console.log("Waiting for ParrotsChatHubInitialized...");
+            await new Promise((resolve) => {
+              const interval = setInterval(() => {
+                if (chatReadyRef.current) {
+                  clearInterval(interval);
+                  resolve(true);
+                }
+              }, 100);
+            });
+          }
+        }
       } catch (error) {
         console.error("Failed to start SignalR connection:", error);
+        chatReadyRef.current = false;
       }
     };
+
+    // Listen for ParrotsChatHubInitialized
+    hubConnection.on("ParrotsChatHubInitialized", () => {
+      chatReadyRef.current = true;
+      console.log("✅ ParrotsChatHubInitialized received");
+    });
+
     startHubConnection();
-    return () => {};
+
+    return () => {
+      hubConnection.off("ParrotsChatHubInitialized");
+      // optionally stop hub if needed
+      // hubConnection.stop();
+    };
   }, [hubConnection]);
 
-  const handleAcceptBid = ({ bidId, bidUserId }) => {
+  // 🟢 handleAcceptBid
+  const handleAcceptBid = async ({ bidId, bidUserId }) => {
     const text = `Hi there! 👋 Welcome on board to "${voyageName}" 🎉`;
 
-    hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+    try {
+      // Start hub if disconnected and wait for ready
+      if (hubConnection.state === "Disconnected") {
+        await hubConnection.start();
 
-    acceptBid(bidId);
-    refetch();
+        if (!chatReadyRef.current) {
+          console.log("Waiting for ParrotsChatHubInitialized...");
+          await new Promise((resolve) => {
+            const interval = setInterval(() => {
+              if (chatReadyRef.current) {
+                clearInterval(interval);
+                resolve(true);
+              }
+            }, 100);
+          });
+        }
+      }
+
+      // Send the message
+      await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
+
+      // Accept bid and refetch
+      await acceptBid(bidId).unwrap();
+      refetch();
+    } catch (error) {
+      console.error("Error accepting bid:", error);
+    }
   };
+
+
 
   return (
     <View>

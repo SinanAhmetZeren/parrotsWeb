@@ -15,7 +15,7 @@ import {
   useAcceptBidMutation,
   useDeleteBidMutation,
 } from "../slices/VoyageSlice";
-import { HubConnectionBuilder } from "@microsoft/signalr";
+import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
@@ -44,24 +44,12 @@ export function VoyageDetailBids({
   // Synchronize bidsData with voyageData.bids
   useEffect(() => {
     setBidsData(voyageData.bids);
-    console.log("------> voyageData bids: ");
-    console.log(voyageData.bids);
   }, [voyageData.bids]);
 
   const makeRefetch = useCallback(() => {
     refetch();
   }, [refetch]);
-  const startTheHub = async () => {
-    if (hubConnection.state === "Disconnected") {
-      await hubConnection.start();
-      console.log("state of the hub: ", hubConnection.state);
-    } else {
-      console.log("state of the hub is already: ", hubConnection.state);
-    }
-  };
-  const stateOfTheHub = () => {
-    console.log("state of the hub: ", hubConnection.state);
-  };
+
 
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId); // Set loading state
@@ -71,6 +59,20 @@ export function VoyageDetailBids({
     try {
       if (hubConnection.state === "Disconnected") {
         await hubConnection.start();
+
+        if (!chatReadyRef.current) {
+          console.log("Waiting for ParrotsChatHubInitialized...");
+          // simple polling until ready
+          await new Promise((resolve) => {
+            const interval = setInterval(() => {
+              if (chatReadyRef.current) {
+                clearInterval(interval);
+                resolve(true);
+              }
+            }, 100); // check every 100ms
+          });
+        }
+
       }
       await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
       await acceptBid(bidId).unwrap(); // Ensure the mutation completes
@@ -89,6 +91,10 @@ export function VoyageDetailBids({
     }
   };
 
+
+
+
+
   const handleDeleteBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId);
     const text = `Hi there! 👋 Your bid was deleted by ${username}`;
@@ -96,6 +102,20 @@ export function VoyageDetailBids({
     try {
       if (hubConnection.state === "Disconnected") {
         await hubConnection.start();
+
+        if (!chatReadyRef.current) {
+          console.log("Waiting for ParrotsChatHubInitialized...");
+          await new Promise((resolve) => {
+            const interval = setInterval(() => {
+              if (chatReadyRef.current) {
+                clearInterval(interval);
+                resolve(true);
+              }
+            }, 100); // check every 100ms
+          });
+        }
+
+
       }
       await hubConnection.invoke("SendMessage", currentUserId, bidUserId, text);
 
@@ -117,26 +137,36 @@ export function VoyageDetailBids({
       .build();
   }, [currentUserId]);
 
-  useEffect(() => {
-    console.log("hubconnect: ", hubConnection);
 
+  const chatReadyRef = React.useRef(false);
+  useEffect(() => {
     const startHubConnection = async () => {
       try {
-        if (hubConnection.state === "Disconnected") {
+        if (hubConnection.state === HubConnectionState.Disconnected) {
+          chatReadyRef.current = false; // important: reset ready state
           await hubConnection.start();
           console.log("SignalR connection started successfully.");
         }
       } catch (error) {
         console.error("Failed to start SignalR connection:", error.message);
+        chatReadyRef.current = false; // reset on failure
       }
     };
 
+    // ✅ Track hub ready state
+    hubConnection.on("ParrotsChatHubInitialized", () => {
+      chatReadyRef.current = true; // hub is fully ready
+      console.log("✅ ParrotsChatHubInitialized received, chat ready");
+    });
+
     hubConnection.onclose(() => {
       console.log("SignalR connection closed.");
+      chatReadyRef.current = false; // hub not ready
     });
 
     hubConnection.onreconnecting(() => {
       console.log("SignalR connection reconnecting...");
+      chatReadyRef.current = false; // hub temporarily not ready
     });
 
     hubConnection.onreconnected(() => {
@@ -146,10 +176,14 @@ export function VoyageDetailBids({
     if (isSuccessVoyage) {
       startHubConnection();
     }
+
     return () => {
+      hubConnection.off("ParrotsChatHubInitialized");
       hubConnection.stop();
     };
   }, [hubConnection, isSuccessVoyage]);
+
+
 
   return (
     <div style={cardContainerStyle} className="flex row">
