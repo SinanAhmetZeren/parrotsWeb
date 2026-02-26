@@ -37,8 +37,8 @@ export default function VehicleVoyages({ voyages }) {
                     <div style={styles.nameAndVacancy}>
 
                         <span style={styles.voyageName}>{item.name}</span>
-                        <span style={styles.voyageVacancy}>{item.vacancy} <FaUsers size={16} /></span>
-                        <span style={styles.voyageDates}>{formattedStartDate} to {formattedEndDate}</span>
+                        <span style={styles.voyageVacancy}>{item.vacancy}<FaUsers size={12} /></span>
+                        <span style={styles.voyageDates}>{formattedStartDate} - {formattedEndDate}</span>
 
                     </div>
                 </div>
@@ -71,6 +71,7 @@ const styles = {
         alignItems: "center",
         justifyContent: "flex-start",
         // backgroundColor: "lightgreen",
+        gap: "0.4rem",
     },
     voyageDates: {
         whiteSpace: "nowrap",

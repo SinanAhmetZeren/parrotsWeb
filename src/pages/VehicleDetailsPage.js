@@ -270,7 +270,7 @@ function VehicleDetailsPage() {
                 <div className="vehiclePage1_descriptionContainer">
                   <div className="vehiclePage1_descriptionContainer_inner">
                     <div className="vehiclePage1_descriptionContainer_descriptionTitle">
-                      <span>Description</span>
+                      <span style={{ fontWeight: "bold" }}>Description</span>
                     </div>
                     <div className="vehiclePage1_descriptionContainer_descriptionContent">
                       {/* <span> {VehicleData.description}</span> */}
@@ -279,6 +279,7 @@ function VehicleDetailsPage() {
                           __html: DOMPurify.sanitize(VehicleData.description),
                         }}
                       />
+
                     </div>
                   </div>
                 </div>

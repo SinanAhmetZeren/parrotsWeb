@@ -312,12 +312,99 @@ const TermsOfUseComponent = () => {
                                 </div>
                             </div>
 
-                            <div style={transparentWrapper}>
+
+                            {/* <div style={transparentWrapper}>
                                 <div id="communication" style={styles.sectionTitle}>5. Communication Between Users</div>
                                 <div style={styles.paragraph}>
                                     Users can communicate with each other through messaging features. All communication is the responsibility of the users. Parrots does not monitor or endorse messages. Messages may be false, misleading, or inappropriate.
+
+                                    ### 5. Communication Between Users
+
+                                    Parrots allows users to communicate with each other through in-app messaging features.
+
+                                    #### Message Notifications, Badge, and Read Status
+
+                                    Our app includes an in-app notification badge designed to inform users about new messages. This badge appears only within the app interface and is not a device-level or operating system notification.
+
+                                    We process message status information (read/unread) to operate messaging features and notification badges.
+
+                                    The in-app notification badge may appear in the following situations:
+
+                                    • When the app is launched, if there are unread messages.
+                                    • When a new message is received while using screens other than the Messages screen.
+                                    • When the Messages screen is opened, messages may be automatically marked as read and the badge cleared.
+
+                                    The badge is provided for informational purposes only and may not always reflect exact real-time status.
+
+
+                                </div>
+                            </div> */}
+
+
+
+
+                            <div style={transparentWrapper}>
+                                <div id="communication" style={styles.sectionTitle}>5. Communication Between Users</div>
+                                <div style={styles.paragraph}>
+                                    Parrots allows users to communicate with each other through web-based messaging features.
+                                    Messages may be false, misleading, or inappropriate, and Parrots does not monitor, control, or endorse user communications. Users are solely responsible for the content of their messages.
+                                    <div style={sectionContainer}>
+                                        <div>
+                                            <div style={styles.sectionTitle2}><strong>Message Notifications, Badge, and Read Status (mobile app)</strong></div>
+                                            <div style={styles.paragraph}>
+                                                Our app includes an in-app notification badge designed to inform users about new messages. This badge appears only within the app interface and is not a device-level or operating system notification.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                We process message status information (read/unread) to operate messaging features and notification badges.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                The in-app notification badge may appear in the following situations:
+                                            </div>
+                                            <div style={{ ...styles.paragraph, textIndent: "2rem" }}>
+                                                • When the app is launched, if there are unread messages.
+                                            </div>
+                                            <div style={{ ...styles.paragraph, textIndent: "2rem" }}>
+                                                • When a new message is received while using screens other than the Messages screen.
+                                            </div>
+                                            <div style={{ ...styles.paragraph, textIndent: "2rem" }}>
+                                                • When the Messages screen is opened, messages may be automatically marked as read and the badge cleared.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                The badge is provided for informational purposes only and may not always reflect exact real-time status. Users are solely responsible for monitoring and reviewing their messages. Parrots does not guarantee that the badge will accurately reflect message status at all times and shall not be held responsible or liable for missed messages, unread messages, delayed badge updates, or any consequences arising from a user’s failure to review their messages.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style={sectionContainer}>
+                                        <div>
+                                            <div style={styles.sectionTitle2}>
+                                                <strong>Messages Sent After Bid Acceptance</strong>
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                When a user accepts a bid, a message will be sent through the platform’s
+                                                messaging system to the creator of the bid on behalf of the accepting user.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                This message is a direct result of the accepting user’s action and is intended
+                                                to allow users to communicate regarding the relevant voyage or listing.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                This is not a marketing message or notification, but a functional communication necessary
+                                                for the operation of the service.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                By accepting or placing a bid, users acknowledge and agree that such messages are a core feature of the platform and consent to receiving and sending these communications.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                Parrots does not monitor, verify, or guarantee the content, accuracy, or outcome of these communications. Users are solely responsible for their interactions and any arrangements made.
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </div>
+
 
 
                             <div style={transparentWrapper}>
