@@ -15,8 +15,8 @@ export function MessageSenderComponent({
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
-  console.log("--> message: ", message);
-  console.log("--> sendbuttondisabled: ", sendButtonDisabled);
+  // console.log("--> message: ", message);
+  // console.log("--> sendbuttondisabled: ", sendButtonDisabled);
 
   return (
     <div style={inputContainerStyle}>

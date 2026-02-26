@@ -1,5 +1,4 @@
 import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
-import { AppState } from "react-native";
 const API_URL = process.env.REACT_APP_API_URL;
 
 let hubConnection = null;
@@ -50,12 +49,16 @@ export const initHubConnection = async (userId, apiUrl) => {
     // 4. Create new connection if none exists
     if (!hubConnection) {
         hubConnection = new HubConnectionBuilder()
-            .withUrl(`${apiUrl}/chathub/11?userId=${userId}`)
+            .withUrl(`${apiUrl}/chathub/11?userId=${userId}`, {
+                withCredentials: false, // fine for cross-origin if your API allows
+            })
             .withAutomaticReconnect()
             .build();
 
         setupInternalListeners();
     }
+
+
 
     // 5. Start Connection
     if (canStart(hubConnection.state)) {
@@ -147,13 +150,12 @@ export const unregister_ReceiveMessageRefetch = (handler) => {
 
 export const register_ReceiveUnreadNotification = (handler) => {
     if (!hubConnection) return;
-
+    console.log("unread message arrives");
     hubConnection.on("ReceiveUnreadNotification", handler);
 };
 
 export const unregister_ReceiveUnreadNotification = (handler) => {
     if (!hubConnection) return;
-
     hubConnection.off("ReceiveUnreadNotification", handler);
 };
 

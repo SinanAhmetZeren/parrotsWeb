@@ -2,32 +2,10 @@ import "../assets/css/App.css";
 import * as React from "react";
 import { useEffect, useRef } from "react";
 import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotBlueTransparent, parrotDarkBlue } from "../styles/colors";
-import { use } from "react";
-import { invokeHub, isHubReady } from "../signalr/signalRHub";
 
-export function ConversationComponent({ currentUserId, messagesToDisplay, conversationUserId
+export function ConversationComponent({ currentUserId, messagesToDisplay
 }) {
   const messagesEndRef = useRef(null);
-
-  // Notify server when entering/leaving conversation
-  useEffect(() => {
-    if (!conversationUserId || !currentUserId) return;
-
-    // Enter conversation
-    if (isHubReady()) {
-      invokeHub("EnterConversationPage", currentUserId, conversationUserId);
-      console.log("--> entered conversation page:---", conversationUserId.slice(0, 5));
-    }
-
-    // Cleanup function: leave conversation
-    return () => {
-      if (isHubReady()) {
-        invokeHub("LeaveConversationPage", currentUserId);
-        console.log("--> left conversation page:---", conversationUserId.slice(0, 5));
-      }
-    };
-  }, [conversationUserId, currentUserId]);
-
 
   useEffect(() => {
     if (messagesEndRef.current) {

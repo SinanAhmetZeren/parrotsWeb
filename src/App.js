@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import "./assets/css/App.css";
 import "./assets/css/advancedmarker.css";
-import React from "react";
+import React, { useEffect } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -25,9 +25,57 @@ import CreateVoyagePage from "./pages/CreateVoyagePage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import EditVehiclePage from "./pages/EditVehiclePage";
 import { useSelector } from "react-redux";
+import { initHubConnection, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
+import { setUnreadMessages } from "./slices/UserSlice";
+const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
   var isLoggedIn = useSelector((state) => state.users.isLoggedIn);
+  const currentUserId = useSelector((state) => state.users.userId);
+
+
+  useEffect(() => {
+    if (isLoggedIn && currentUserId) {
+      // Initialize the SignalR hub once for the app
+      initHubConnection(currentUserId, API_URL);
+    }
+  }, [isLoggedIn, currentUserId]);
+
+
+  useEffect(() => {
+    let unreadHandlerTrue;
+    const InitHub = async () => {
+      try {
+        // Start SignalR
+        await initHubConnection(currentUserId, API_URL);
+        // Initial unread check
+        try {
+          const hasUnread = await invokeHub(
+            "CheckUnreadMessages",
+            currentUserId
+          );
+          dispatch(setUnreadMessages(hasUnread));
+        } catch { }
+        finally {
+          setIsInitialLoading(false);
+        }
+        // Listen for unread   event only
+        unreadHandlerTrue = () => {
+          dispatch(setUnreadMessages(true)); // ReceiveUnreadNotification
+        };
+        register_ReceiveUnreadNotification(unreadHandlerTrue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    InitHub();
+    return () => {
+      unregister_ReceiveUnreadNotification(unreadHandlerTrue);
+      // stopHubConnection();
+    };
+  }, []);
+
+
 
   return (
     <Router>

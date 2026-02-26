@@ -9,28 +9,18 @@ import { ConnectPagePlaceHolder } from "../components/ConnectPagePlaceHolder";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  useGetMessagePreviewsbyUserIdQuery,
+  useGetMessagesByUserIdQuery,
   useLazyGetMessagesBetweenUsersQuery,
 } from "../slices/MessageSlice";
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-
-import {
-  isHubReady,
-  invokeHub,
-  register_ReceiveMessage,
-  unregister_ReceiveMessage,
-  register_ReceiveMessageRefetch,
-  unregister_ReceiveMessageRefetch,
-} from "../signalr/signalRHub"; // your centralized hub module
-
-
-//const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
   const { conversationUserId: paramConversationUserId } = useParams();
@@ -56,7 +46,7 @@ function ConnectPage() {
     error: errorMessages,
     isSuccess: isSuccessmessagePreviews,
     refetch: refetchMessagePreviews,
-  } = useGetMessagePreviewsbyUserIdQuery(currentUserId,
+  } = useGetMessagesByUserIdQuery(currentUserId,
     { refetchOnMountOrArgChange: true }
   );
 
@@ -97,60 +87,50 @@ function ConnectPage() {
   }, [paramConversationUserId, paramConversationUserUsername]);
 
 
-  useEffect(() => {
-    if (!currentUserId) return;
+  /*  useEffect(() => {
+      console.log("isPageReady: ", isPageReady);
+      console.log("isLoadingmessagePreviews: ", isLoadingmessagePreviews);
+      console.log("isErrorMessages: ", isErrorMessages);
+      console.log("isSuccessmessagePreviews: ", isSuccessmessagePreviews);
+      console.log("messagePreviewsData: ", messagePreviewsData);
+      console.log("conversationUserId: ", conversationUserId);
+      console.log("conversationUserUsername: ", conversationUserUsername);
+      console.log("currentUserId: ", currentUserId);
+    }, [isPageReady, isLoadingmessagePreviews, isErrorMessages, isSuccessmessagePreviews]);*/
 
-    // Enter conversation
-    if (isHubReady()) {
-      invokeHub("EnterMessagesScreen", currentUserId);
-      console.log("--> entered messages page");
-    }
-
-    // Cleanup function: leave conversation
-    return () => {
-      if (isHubReady()) {
-        invokeHub("LeaveMessagesScreen", currentUserId);
-        console.log("--> left messages page ");
-      }
-    };
-  }, [currentUserId]);
 
 
   const refreshMessages = useCallback(() => {
     if (users?.currentUserId && users?.conversationUserId) {
-      console.log(".... refreshing messages ....");
       triggerGetMessages({
         currentUserId: users.currentUserId,
         conversationUserId: users.conversationUserId,
       });
-      refetchMessagePreviews();
-
     }
-  }, [users, triggerGetMessages, refetchMessagePreviews]);
+  }, [users, triggerGetMessages]);
 
 
-
-  /*
-   const hubConnection = useMemo(() => {
-     console.log("--> Creating Hub Connection for userId:", currentUserId);
-     return new HubConnectionBuilder()
-       .withUrl(`${API_URL}/chathub/11?userId=${currentUserId}`, {
-         withCredentials: false, // fine for cross-origin if your API allows
-       })
-       .withAutomaticReconnect() // optional but recommended
-       .build();
-   }, [currentUserId]);
-  */
-
+  const hubConnection = useMemo(() => {
+    console.log("--> Creating Hub Connection for userId:", currentUserId);
+    return new HubConnectionBuilder()
+      .withUrl(`${API_URL}/chathub/11?userId=${currentUserId}`, {
+        withCredentials: false, // fine for cross-origin if your API allows
+      })
+      .withAutomaticReconnect() // optional but recommended
+      .build();
+  }, [currentUserId]);
 
   // Update users state whenever IDs change
   useEffect(() => {
     setUsers({ currentUserId, conversationUserId });
   }, [currentUserId, conversationUserId]);
 
+
+
+
   const chatReadyRef = useRef(false);
 
-  /*/ Manage SignalR connection & listeners
+  // Manage SignalR connection & listeners
   useEffect(() => {
     if (!conversationUserId) return;
 
@@ -204,80 +184,19 @@ function ConnectPage() {
       hubConnection.stop();
     };
   }, [hubConnection, conversationUserId, refreshMessages]);
-*/
-
-  /*
-    const handleSendMessage = async () => {
-      setSendButtonDisabled(true);
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
-      const day = String(currentDate.getDate()).padStart(2, "0");
-      const hours = String(currentDate.getHours()).padStart(2, "0");
-      const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-      const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-      const milliseconds = String(currentDate.getMilliseconds()).padStart(3, "0");
-      const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-  
-      const sentMessage = {
-        dateTime: formattedDateTime,
-        receiverId: conversationUserId,
-        senderId: currentUserId,
-        text: message,
-      };
-  
-      // Optimistic UI Update
-      setMessagesToDisplay((prevMessages) => {
-        return [...(prevMessages ?? []), sentMessage];
-      });
-  
-      setMessage("");
-  
-      try {
-        // Start hub if disconnected
-        if (hubConnection.state === "Disconnected") {
-          await hubConnection.start();
-          if (!chatReadyRef.current) {
-            console.log("Waiting for ParrotsChatHubInitialized...");
-            await new Promise((resolve) => {
-              const interval = setInterval(() => {
-                if (chatReadyRef.current) {
-                  clearInterval(interval);
-                  resolve(true);
-                }
-              }, 100); // check every 100ms
-            });
-          }
-        }
-        // Send the message via SignalR
-        await hubConnection.invoke(
-          "SendMessage",
-          currentUserId,
-          conversationUserId,
-          message
-        );
-        console.log("Message sent successfully.");
-        refetchMessagePreviews();
-      } catch (error) {
-        console.error("Failed to send message:", error);
-        // Rollback optimistic UI
-        setMessagesToDisplay((prevMessages) =>
-          prevMessages.filter((msg) => msg.dateTime !== sentMessage.dateTime)
-        );
-        alert("Failed to send message. Please check your connection and try again.");
-      }
-      setSendButtonDisabled(false);
-    };
-  */
 
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
-
     setSendButtonDisabled(true);
-
-    const now = new Date();
-    const formattedDateTime = now.toISOString();
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+    const milliseconds = String(currentDate.getMilliseconds()).padStart(3, "0");
+    const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 
     const sentMessage = {
       dateTime: formattedDateTime,
@@ -287,50 +206,49 @@ function ConnectPage() {
     };
 
     // Optimistic UI Update
-    setMessagesToDisplay((prev) => [...(prev ?? []), sentMessage]);
+    setMessagesToDisplay((prevMessages) => {
+      return [...(prevMessages ?? []), sentMessage];
+    });
+
     setMessage("");
 
     try {
-      if (!isHubReady()) {
-        console.warn("Hub not ready. Message may fail to send.");
+      // Start hub if disconnected
+      if (hubConnection.state === "Disconnected") {
+        await hubConnection.start();
+        if (!chatReadyRef.current) {
+          console.log("Waiting for ParrotsChatHubInitialized...");
+          await new Promise((resolve) => {
+            const interval = setInterval(() => {
+              if (chatReadyRef.current) {
+                clearInterval(interval);
+                resolve(true);
+              }
+            }, 100); // check every 100ms
+          });
+        }
       }
-
-      // Send message via centralized invoke
-      await invokeHub("SendMessage", currentUserId, conversationUserId, message);
-
-
-      // Optionally refresh previews or other UI
-      refetchMessagePreviews();
-    } catch (err) {
-      console.error("Failed to send message:", err);
-
-      // Rollback optimistic UI
-      setMessagesToDisplay((prev) =>
-        prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
+      // Send the message via SignalR
+      await hubConnection.invoke(
+        "SendMessage",
+        currentUserId,
+        conversationUserId,
+        message
       );
-      alert("Failed to send message. Check connection and try again.");
+      console.log("Message sent successfully.");
+      refetchMessagePreviews();
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // Rollback optimistic UI
+      setMessagesToDisplay((prevMessages) =>
+        prevMessages.filter((msg) => msg.dateTime !== sentMessage.dateTime)
+      );
+      alert("Failed to send message. Please check your connection and try again.");
     }
-
     setSendButtonDisabled(false);
   };
 
-  useEffect(() => {
-    if (!conversationUserId) return;
 
-    const handleIncomingMessage = (data) => {
-      setMessagesToDisplay((prev) => [...(prev ?? []), data]);
-    };
-
-    const handleRefetch = () => refreshMessages();
-
-    register_ReceiveMessage(handleIncomingMessage);
-    register_ReceiveMessageRefetch(handleRefetch);
-
-    return () => {
-      unregister_ReceiveMessage(handleIncomingMessage);
-      unregister_ReceiveMessageRefetch(handleRefetch);
-    };
-  }, [conversationUserId, refreshMessages]);
 
 
   // Refresh messages when users IDs change
@@ -424,7 +342,6 @@ function ConnectPage() {
                       conversationData={conversationData}
                       messagesToDisplay={messagesToDisplay}
                       currentUserId={currentUserId}
-                      conversationUserId={conversationUserId}
                     />
                   </div>
 

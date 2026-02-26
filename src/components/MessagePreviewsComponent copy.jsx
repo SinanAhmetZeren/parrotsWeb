@@ -4,7 +4,7 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2 } from "../styles/colors";
 
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const userBaseUrl = `  `;
 
 export function MessagePreviewsComponent({

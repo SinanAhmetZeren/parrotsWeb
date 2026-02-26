@@ -14,6 +14,7 @@ const usersSlice = createSlice({
     userProfileImage: localStorage.getItem("storedProfileImageUrl"),
     userFavoriteVoyages: [0],
     userFavoriteVehicles: [0],
+    unreadMessages: false,
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -24,6 +25,8 @@ const usersSlice = createSlice({
         state.refreshToken = action.payload.refreshToken;
         state.userName = action.payload.userName;
         state.userProfileImage = action.payload.profileImageUrl;
+        state.unreadMessages = action.payload.unreadMessages;
+
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
         localStorage.setItem("storedUserId", action.payload.userId);
@@ -44,6 +47,8 @@ const usersSlice = createSlice({
         state.refreshToken = "";
         state.userName = "";
         state.userProfileImage = "";
+        state.unreadMessages = false;
+
         localStorage.removeItem("storedToken");
         localStorage.removeItem("storedRefreshToken");
         localStorage.removeItem("storedUserId");
@@ -188,6 +193,14 @@ const usersSlice = createSlice({
         JSON.stringify(updatedFavoriteVehicles)
       );
     },
+
+    setUnreadMessages: (state, action) => {
+      state.unreadMessages = action.payload;
+    },
+    markMessagesRead: (state) => {
+      state.unreadMessages = false;
+    },
+
   },
 });
 
@@ -204,6 +217,8 @@ export const {
   removeVoyageFromUserFavorites,
   addVehicleToUserFavorites,
   removeVehicleFromUserFavorites,
+  setUnreadMessages,
+  markMessagesRead
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

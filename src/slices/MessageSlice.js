@@ -8,7 +8,7 @@ const initialState = messagesAdapter.getInitialState();
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getMessagesByUserId: builder.query({
+    getMessagePreviewsbyUserId: builder.query({
       query: (userId) => `/api/Message/getMessageByuserId/${userId}`,
       transformResponse: (responseData) => {
         return responseData.data;
@@ -26,7 +26,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useGetMessagesByUserIdQuery,
+  useGetMessagePreviewsbyUserIdQuery,
   useGetMessagesBetweenUsersQuery,
   useLazyGetMessagesBetweenUsersQuery,
 } = extendedApiSlice;
