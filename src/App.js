@@ -24,15 +24,16 @@ import CreateVehiclePage from "./pages/CreateVehiclePage";
 import CreateVoyagePage from "./pages/CreateVoyagePage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import EditVehiclePage from "./pages/EditVehiclePage";
-import { useSelector } from "react-redux";
-import { initHubConnection, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
-import { setUnreadMessages } from "./slices/UserSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { initHubConnection, invokeHub, isHubReady, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
+import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
   var isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const currentUserId = useSelector((state) => state.users.userId);
-
+  const unreadMessages = useSelector((state) => state.users.unreadMessages);
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (isLoggedIn && currentUserId) {
@@ -44,21 +45,29 @@ function App() {
 
   useEffect(() => {
     let unreadHandlerTrue;
+    console.log("unread message useEffect");
     const InitHub = async () => {
       try {
         // Start SignalR
         await initHubConnection(currentUserId, API_URL);
         // Initial unread check
         try {
-          const hasUnread = await invokeHub(
-            "CheckUnreadMessages",
-            currentUserId
-          );
-          dispatch(setUnreadMessages(hasUnread));
-        } catch { }
-        finally {
-          setIsInitialLoading(false);
+          console.log("-> checking unread ");
+
+          // Wait until hub is marked ready
+          while (!isHubReady()) {
+            await new Promise((res) => setTimeout(res, 50));
+          }
+          console.log("Hub is:", isHubReady() ? "ready" : "not ready");
+          const hasUnread = await invokeHub("CheckUnreadMessages", currentUserId);
+          console.log("checked unread -> ", hasUnread);
+          dispatch(markMessagesRead());
+        } catch (err) {
+          console.error("invokeHub CheckUnreadMessages failed:", err);
+
+
         }
+
         // Listen for unread   event only
         unreadHandlerTrue = () => {
           dispatch(setUnreadMessages(true)); // ReceiveUnreadNotification
@@ -73,9 +82,13 @@ function App() {
       unregister_ReceiveUnreadNotification(unreadHandlerTrue);
       // stopHubConnection();
     };
-  }, []);
+  }, [currentUserId]);
 
 
+
+  useEffect(() => {
+    console.log("unread", unreadMessages);
+  }, [unreadMessages]);
 
   return (
     <Router>

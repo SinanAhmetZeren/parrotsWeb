@@ -26,6 +26,7 @@ document.addEventListener("visibilitychange", async () => {
 });
 
 
+
 export const initHubConnection = async (userId, apiUrl) => {
     if (!userId || !apiUrl) return null;
 
@@ -57,8 +58,6 @@ export const initHubConnection = async (userId, apiUrl) => {
 
         setupInternalListeners();
     }
-
-
 
     // 5. Start Connection
     if (canStart(hubConnection.state)) {
@@ -150,7 +149,6 @@ export const unregister_ReceiveMessageRefetch = (handler) => {
 
 export const register_ReceiveUnreadNotification = (handler) => {
     if (!hubConnection) return;
-    console.log("unread message arrives");
     hubConnection.on("ReceiveUnreadNotification", handler);
 };
 

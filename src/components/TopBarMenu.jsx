@@ -9,6 +9,8 @@ import { store } from '../store/store';
 
 export function TopBarMenu() {
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
+  const unreadMessages = useSelector((state) => state.users.unreadMessages);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -57,7 +59,31 @@ export function TopBarMenu() {
                 : `${inactiveStyle} ${commonStyle}`
             }
           >
-            Connect
+            {/* Connect */}
+
+
+            <div className="flex items-center relative">
+              Connect
+              {unreadMessages && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+
+
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="16"
+                    width="16"
+                    fill="white"
+                    viewBox="0 0 24 24"
+                    style={{ marginLeft: 0, padding: 2 }}
+                  >
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                  </svg>
+
+                </span>
+              )}
+            </div>
+
           </NavLink>
 
           <>

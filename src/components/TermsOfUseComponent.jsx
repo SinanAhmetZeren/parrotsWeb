@@ -313,33 +313,6 @@ const TermsOfUseComponent = () => {
                             </div>
 
 
-                            {/* <div style={transparentWrapper}>
-                                <div id="communication" style={styles.sectionTitle}>5. Communication Between Users</div>
-                                <div style={styles.paragraph}>
-                                    Users can communicate with each other through messaging features. All communication is the responsibility of the users. Parrots does not monitor or endorse messages. Messages may be false, misleading, or inappropriate.
-
-                                    ### 5. Communication Between Users
-
-                                    Parrots allows users to communicate with each other through in-app messaging features.
-
-                                    #### Message Notifications, Badge, and Read Status
-
-                                    Our app includes an in-app notification badge designed to inform users about new messages. This badge appears only within the app interface and is not a device-level or operating system notification.
-
-                                    We process message status information (read/unread) to operate messaging features and notification badges.
-
-                                    The in-app notification badge may appear in the following situations:
-
-                                    • When the app is launched, if there are unread messages.
-                                    • When a new message is received while using screens other than the Messages screen.
-                                    • When the Messages screen is opened, messages may be automatically marked as read and the badge cleared.
-
-                                    The badge is provided for informational purposes only and may not always reflect exact real-time status.
-
-
-                                </div>
-                            </div> */}
-
 
 
 
@@ -400,12 +373,22 @@ const TermsOfUseComponent = () => {
                                             </div>
                                         </div>
                                     </div>
-
-
+                                    <div style={sectionContainer}>
+                                        <div>
+                                            <div style={styles.sectionTitle2}>
+                                                <strong>Message Delivery and Refresh Limitations</strong>
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                While the App strives to provide real-time message updates, message
+                                                delivery and automatic refresh may not always occur immediately, particularly
+                                                if the App has been idle, the device is in sleep mode, or network conditions are poor.
+                                                Users are responsible for ensuring that they have an active
+                                                connection and that the App is open to receive the latest messages.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-
 
                             <div style={transparentWrapper}>
                                 <div id="prohibited" style={styles.sectionTitle}>
