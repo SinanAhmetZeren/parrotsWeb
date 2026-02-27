@@ -57,6 +57,7 @@ export const AddWaypointsPage = ({
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    console.log("hi there: " + position.coords.latitude + " " + position.coords.longitude);
                     setInitialLatitude(position.coords.latitude);
                     setInitialLongitude(position.coords.longitude);
                 },
@@ -313,49 +314,58 @@ export const AddWaypointsPage = ({
                 <div style={mapContainerBox}>
                     <div style={mapContainer}>
                         <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                            {!initialLatitude && <div className="cardSwiperSpinner"></div>}
-                            <Map
-                                mapId="mainpageMap"
-                                defaultZoom={10}
-                                defaultCenter={{
-                                    lat: initialLatitude || 37.7749,
-                                    lng: initialLongitude || -122.4194,
-                                }}
-                                gestureHandling="greedy"
-                                disableDefaultUI
-                                onClick={(event) => {
-                                    const lat = event.detail.latLng.lat;
-                                    const lng = event.detail.latLng.lng;
-                                    console.log("Clicked at:", lat, lng);
-                                    setWaypointLatitude(lat);
-                                    setWaypointLongitude(lng);
-                                }}
-                            >
-                                {waypointLatitude !== null && waypointLongitude !== null && (
-                                    <Marker
-                                        position={{ lat: waypointLatitude, lng: waypointLongitude }}
-                                        icon={{
-                                            url:
-                                                // index 
-                                                6 % 6 === 0
-                                                    ? parrotMarker1
-                                                    : index % 6 === 1
-                                                        ? parrotMarker2
-                                                        : index % 6 === 2
-                                                            ? parrotMarker3
-                                                            : index % 6 === 3
-                                                                ? parrotMarker4
-                                                                : index % 6 === 4
-                                                                    ? parrotMarker5
-                                                                    : parrotMarker6,
-                                            scaledSize: { width: 50, height: 60 },
-                                        }}
-                                    />
-                                )}
+                            {/* {!initialLatitude && <div className="cardSwiperSpinner"></div>} */}
 
-                                <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
-                                <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
-                            </Map>
+                            {/* Check if we have coordinates before showing the map */}
+                            {!initialLatitude || !initialLongitude ? (
+                                <div className="cardSwiperSpinner">
+                                    <p>Locating you...</p>
+                                </div>
+                            ) : (
+
+                                <Map
+                                    mapId="mainpageMap"
+                                    defaultZoom={10}
+                                    defaultCenter={{
+                                        lat: initialLatitude, //|| 37.7749,
+                                        lng: initialLongitude //|| -122.4194,
+                                    }}
+                                    gestureHandling="greedy"
+                                    disableDefaultUI
+                                    onClick={(event) => {
+                                        const lat = event.detail.latLng.lat;
+                                        const lng = event.detail.latLng.lng;
+                                        console.log("Clicked at:", lat, lng);
+                                        setWaypointLatitude(lat);
+                                        setWaypointLongitude(lng);
+                                    }}
+                                >
+                                    {waypointLatitude !== null && waypointLongitude !== null && (
+                                        <Marker
+                                            position={{ lat: waypointLatitude, lng: waypointLongitude }}
+                                            icon={{
+                                                url:
+                                                    // index 
+                                                    6 % 6 === 0
+                                                        ? parrotMarker1
+                                                        : index % 6 === 1
+                                                            ? parrotMarker2
+                                                            : index % 6 === 2
+                                                                ? parrotMarker3
+                                                                : index % 6 === 3
+                                                                    ? parrotMarker4
+                                                                    : index % 6 === 4
+                                                                        ? parrotMarker5
+                                                                        : parrotMarker6,
+                                                scaledSize: { width: 50, height: 60 },
+                                            }}
+                                        />
+                                    )}
+
+                                    <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
+                                    <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
+                                </Map>)}
+
                         </APIProvider>
 
                     </div>

@@ -51,8 +51,10 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           formattedLastBidDate,
           minPrice,
           maxPrice,
+          currency,
           isAuction,
           isFixedPrice,
+          isPublicOnMap,
           userId,
           vehicleId,
         } = data;
@@ -72,6 +74,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
           MaxPrice: maxPrice,
           Auction: isAuction.toString(),
           FixedPrice: isFixedPrice.toString(),
+          PublicOnMap: isPublicOnMap.toString(),
+          Currency: currency,
           UserId: userId,
           VehicleId: vehicleId,
         });

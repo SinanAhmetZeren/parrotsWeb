@@ -28,6 +28,8 @@ import { updateUserFavoriteVoyages } from "../slices/UserSlice";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { IoHeartSharp } from "react-icons/io5";
+import { MdPublic } from "react-icons/md";
+
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
 
 function VoyageDetailsPage() {
@@ -46,6 +48,7 @@ function VoyageDetailsPage() {
     east: null,
     west: null,
   });
+  const [isPublicOnMap, setIsPublicOnMap] = useState(false);
 
   let favoriteVoyages;
   try {
@@ -171,6 +174,9 @@ function VoyageDetailsPage() {
       setUserBidAccepted(
         VoyageData.bids.find((bid) => bid.userId === userId)?.accepted ?? false
       );
+      setIsPublicOnMap(VoyageData.publicOnMap);
+      console.log("----", VoyageData);
+
       console.log(
         "user bid: -->",
         VoyageData.bids.find((bid) => bid.userId === userId)
@@ -221,6 +227,7 @@ function VoyageDetailsPage() {
                       ...heartIcon,
                       border: "2px red solid",
                     }}
+                    title="Remove from favorites"
                   >
                     <IoHeartSharp size="1.5rem" color="red" />
                   </div>
@@ -231,8 +238,33 @@ function VoyageDetailsPage() {
                       ...heartIcon,
                       border: "2px orange solid",
                     }}
+                    title="Add to favorites"
+
                   >
                     <IoHeartSharp size="1.5rem" color="orange" />
+                  </div>
+                )}
+
+                {isPublicOnMap ? (
+                  <div
+                    style={{
+                      ...publicIcon,
+                      border: "2px red solid",
+                    }}
+                    title="Is public on map, visible to everyone on their Home page"
+                  >
+                    <MdPublic size="1.5rem" color="red" />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      ...publicIcon,
+                      border: "2px orange solid",
+                    }}
+                    title=" Is not public on map, not visible to everyone on their Home page"
+
+                  >
+                    <MdPublic size="1.5rem" color="orange" />
                   </div>
                 )}
 
@@ -329,6 +361,16 @@ const heartIcon = {
   position: "absolute",
   backgroundColor: "white",
   right: "-1rem",
+  top: "-.61rem",
+  borderRadius: "3rem",
+  padding: "0.5rem",
+  zIndex: 1000,
+};
+
+const publicIcon = {
+  position: "absolute",
+  backgroundColor: "white",
+  right: "3rem",
   top: "-.61rem",
   borderRadius: "3rem",
   padding: "0.5rem",

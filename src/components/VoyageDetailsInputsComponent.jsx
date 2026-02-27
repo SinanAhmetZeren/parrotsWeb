@@ -26,8 +26,12 @@ export const VoyageDetailsInputsComponent = ({
   setLastBidDate,
   isAuction,
   isFixedPrice,
+  isPublicOnMap,
   setIsAuction,
   setIsFixedPrice,
+  setIsPublicOnMap,
+  currency,
+  setCurrency
 }) => {
   const voyageDetails = {
     backgroundColor: "rgba(255,255,255,1)",
@@ -39,7 +43,7 @@ export const VoyageDetailsInputsComponent = ({
 
   const semiWhiteStyle = {
     backgroundColor: "rgba(255,255,255,0.7)",
-    marginTop: ".75rem",
+    marginTop: ".5rem",
   }
 
 
@@ -85,6 +89,12 @@ export const VoyageDetailsInputsComponent = ({
           isFixedPrice={isFixedPrice}
         />
       </div>
+      <div style={semiWhiteStyle}>
+        <CreateVoyageCurrencySelector
+          currency={currency}
+          setCurrency={setCurrency}
+        />
+      </div>
 
       {/* 
             <div style={semiWhiteStyle}>
@@ -105,8 +115,10 @@ export const VoyageDetailsInputsComponent = ({
         <IsAuctionAndFixedPrice
           isAuction={isAuction}
           isFixedPrice={isFixedPrice}
+          isPublicOnMap={isPublicOnMap}
           setIsAuction={setIsAuction}
           setIsFixedPrice={setIsFixedPrice}
+          setIsPublicOnMap={setIsPublicOnMap}
         />
       </div>
     </div>
@@ -117,7 +129,7 @@ const CreateVoyagePageNameInput = ({ voyageName, setVoyageName }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
       }}
     >
       <div
@@ -159,7 +171,6 @@ const CreateVoyageVehicleSelector = ({
   setVehicleId,
   vehiclesList,
 }) => {
-  console.log("vehiclesList", vehiclesList);
 
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false); // State to toggle the dropdown visibility
@@ -179,7 +190,7 @@ const CreateVoyageVehicleSelector = ({
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
       }}
     >
       <div
@@ -273,6 +284,111 @@ const CreateVoyageVehicleSelector = ({
   );
 };
 
+
+
+const CreateVoyageCurrencySelector = ({ currency, setCurrency }) => {
+  const [open, setOpen] = useState(false); // Dropdown open state
+  const dropdownRef = useRef(null);
+
+  const currencies = ["€", "$", "£"]; // The options
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div style={{ height: "3.5rem" }}>
+      <div style={{ margin: ".3rem" }}>
+        <div
+          onClick={() => setOpen(!open)}
+          style={{
+            display: "flex",
+            cursor: "pointer",
+            position: "relative",
+            marginTop: "0rem",
+          }}
+        >
+          <span className="text-lg font-bold" style={labelStyle}>
+            Currency&nbsp;
+          </span>
+          <style>{placeHolderStyle}</style>
+          <input
+            className="font-bold text-base custom-input"
+            type="text"
+            readOnly
+            value={currency || ""}
+            placeholder="Select Currency"
+            style={inputStyle}
+          />
+
+          {open && (
+            <div
+              ref={dropdownRef}
+              style={{
+                position: "absolute",
+                zIndex: 1000,
+                background: "#fff",
+                border: "1px solid #ccc",
+                borderRadius: "1.5rem",
+                marginTop: "2.5rem",
+                width: "70%",
+                right: "0rem",
+                maxHeight: "20vh",
+                overflowY: "auto",
+                boxShadow: `
+                  0 4px 6px rgba(0, 0, 0, 0.3),
+                  inset 0 -4px 6px rgba(0, 0, 0, 0.1)
+                `,
+              }}
+            >
+
+
+              <style>
+                {`
+              .custom-dropdown::-webkit-scrollbar {
+                display: none; 
+              }
+            `}
+              </style>
+              {currencies.map((curr, index) => (
+                <div
+                  className="font-bold text-xl"
+                  key={index}
+                  onClick={() => {
+                    setCurrency(curr);
+                    setOpen(false);
+                  }}
+                  style={{
+                    padding: ".5rem 1rem",
+                    cursor: "pointer",
+                    color: "black",
+                    borderBottom:
+                      index !== currencies.length - 1 ? "1px solid #eee" : "none",
+                  }}
+                >
+                  {curr}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+
 const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const hoverTimeoutRef = useRef(null);
@@ -289,7 +405,7 @@ const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
       }}
     >
       <div
@@ -364,7 +480,7 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
       }}
     >
       <div
@@ -470,7 +586,7 @@ const CreateVoyagePriceInput = ({
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
       }}
     >
       <div
@@ -541,11 +657,13 @@ const IsAuctionAndFixedPrice = ({
   setIsAuction,
   isFixedPrice,
   setIsFixedPrice,
+  isPublicOnMap,
+  setIsPublicOnMap
 }) => {
   return (
     <div
       style={{
-        height: "4rem",
+        height: "3.5rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -590,6 +708,28 @@ const IsAuctionAndFixedPrice = ({
           style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
         />
       </label>
+
+
+      <label
+        className="text-lg font-bold"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          color: "black",
+          cursor: "pointer",
+        }}
+        title="Will be visible on the Homepage map"
+      >
+        Public On Map
+        <input
+          type="checkbox"
+          checked={isPublicOnMap}
+          onChange={() => setIsPublicOnMap(!isPublicOnMap)}
+          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
+        />
+      </label>
+
     </div>
   );
 };

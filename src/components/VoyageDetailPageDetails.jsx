@@ -174,7 +174,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
           <span style={{}}>Price: </span>
           <div style={infoBox}>
             <span style={infoText}>
-              {voyageData.minPrice}-{voyageData.maxPrice}
+              {voyageData.currency} {voyageData.minPrice}-{voyageData.maxPrice}
             </span>
           </div>
         </div>

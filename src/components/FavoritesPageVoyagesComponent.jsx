@@ -1,9 +1,12 @@
-import { ProfilePageVoyageCard } from './ProfilePageVoyageCard';
+import { FavoritesPageVoyagesCard } from './FavoritesPageVoyageCard';
 
 export function FavoritesPageVoyagesComponent({ FavoriteVoyages }) {
   return (FavoriteVoyages.map((voyage, index) => {
     return (
-      <ProfilePageVoyageCard key={index} index={index} voyage={voyage} />
+      <div key={index} style={{ position: "relative" }}>
+        <FavoritesPageVoyagesCard index={index} voyage={voyage} />
+      </div>
+
     )
   }))
 }

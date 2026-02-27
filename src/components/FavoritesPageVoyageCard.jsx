@@ -9,7 +9,7 @@ const voyageBaseUrl = ``;
 
 
 
-export function ProfilePageVoyageCard({ voyage, index }) {
+export function FavoritesPageVoyagesCard({ voyage, index }) {
   const navigate = useNavigate();
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
@@ -20,7 +20,7 @@ export function ProfilePageVoyageCard({ voyage, index }) {
   const publicIconPublic = {
     position: "absolute",
     backgroundColor: "white",
-    right: "1.5rem",
+    right: "4.5rem",
     top: "0.5rem",
     borderRadius: "3rem",
     padding: "0.2rem",

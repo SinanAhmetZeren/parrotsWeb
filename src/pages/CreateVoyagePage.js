@@ -27,6 +27,7 @@ import { useLocation } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 
+
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userId = localStorage.getItem("storedUserId");
@@ -40,8 +41,10 @@ export default function CreateVoyagePage() {
   const [voyageName, setVoyageName] = useState("xyz");
   const [minPrice, setMinPrice] = useState(5); // null
   const [maxPrice, setMaxPrice] = useState(5);
+  const [currency, setCurrency] = useState("");
   const [isAuction, setIsAuction] = useState(false);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
+  const [isPublicOnMap, setIsPublicOnMap] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(true);
   // const [lastBidDate, setLastBidDate] = useState("2025-04-30");
   const [lastBidDate, setLastBidDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]);
@@ -148,8 +151,10 @@ export default function CreateVoyagePage() {
         formattedLastBidDate,
         minPrice,
         maxPrice,
+        currency,
         isAuction,
         isFixedPrice,
+        isPublicOnMap,
         userId,
         vehicleId,
       });
@@ -169,6 +174,7 @@ export default function CreateVoyagePage() {
       setMaxPrice(null);
       setIsAuction(true);
       setIsFixedPrice(true);
+      setIsPublicOnMap(true);
       setCalendarOpen(true);
       setLastBidDate(null);
       setIsCreatingVoyage(false);
@@ -263,6 +269,10 @@ export default function CreateVoyagePage() {
                           isFixedPrice={isFixedPrice}
                           setIsAuction={setIsAuction}
                           setIsFixedPrice={setIsFixedPrice}
+                          isPublicOnMap={isPublicOnMap}
+                          setIsPublicOnMap={setIsPublicOnMap}
+                          currency={currency}
+                          setCurrency={setCurrency}
                         />
                       </div>
                       <div
@@ -310,6 +320,7 @@ export default function CreateVoyagePage() {
                         minPrice &&
                         maxPrice &&
                         lastBidDate &&
+                        currency &&
                         // isAuction !== "" &&
                         // isFixedPrice !== "" &&
                         dates[0]?.startDate
