@@ -62,7 +62,7 @@ function ProfilePage() {
     }
 
     return () => {
-      console.log("Cleanup: Unsubscribing or resetting data if necessary");
+      // console.log("Cleanup: Unsubscribing or resetting data if necessary");
       // Optionally clear userData-related local state or reset component state here
     };
   }, [userId, triggerGetUserById]);

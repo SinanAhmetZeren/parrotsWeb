@@ -178,12 +178,10 @@ function MainPage() {
     const getInitialVoyagesAfterLocation = async () => {
       if (!initialBounds) return;
       const { lat, lng } = initialBounds;
-      const lat1 = (lat.southWest + lat.northEast) / 2 - 0.1; //lat.southWest;
-      const lat2 = (lat.southWest + lat.northEast) / 2 + 0.1;//lat.northEast;
-      const lon1 = (lng.southWest + lng.northEast) / 2 - 0.17; //lng.southWest;
-      const lon2 = (lng.southWest + lng.northEast) / 2 + 0.17; //lng.northEast;
-
-
+      const lat1 = lat.southWest;
+      const lat2 = lat.northEast;
+      const lon1 = lng.southWest;
+      const lon2 = lng.northEast;
 
       try {
         setIsLoading(true);
@@ -270,6 +268,8 @@ function MainPage() {
       const northEast = onLoadBounds.getNorthEast();
       const southWest = onLoadBounds.getSouthWest();
 
+      console.log("ne:", northEast.lat(), northEast.lng());
+      console.log("sw:", southWest.lat(), southWest.lng());
 
       setInitialBounds({
         lat: {
@@ -300,8 +300,7 @@ function MainPage() {
         if (!bounds) return;
         const northEast = bounds.getNorthEast();
         const southWest = bounds.getSouthWest();
-        console.log("Correct bounds lat:", northEast.lat(), southWest.lat());
-        console.log("Correct bounds lng:", northEast.lng(), southWest.lng());
+        console.log("Correct bounds:", northEast.lat(), southWest.lat());
 
         setInitialBounds({
           lat: {
@@ -412,6 +411,7 @@ function MainPage() {
                           setInitialBounds={setInitialBounds}
                         />
                         <MainPageMapPanComponent
+                          initialBounds={initialBounds}
                           setBounds={setBounds}
                           targetLat={targetLocation?.lat}
                           targetLng={targetLocation?.lng}

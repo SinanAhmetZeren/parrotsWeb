@@ -33,6 +33,7 @@ function App() {
   var isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const currentUserId = useSelector((state) => state.users.userId);
   const unreadMessages = useSelector((state) => state.users.unreadMessages);
+  const userName = useSelector((state) => state.users.userName);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -42,6 +43,11 @@ function App() {
     }
   }, [isLoggedIn, currentUserId]);
 
+  useEffect(() => {
+    if (userName) {
+      document.title = `${userName} @ Parrots App`;
+    }
+  }, [userName]);
 
   useEffect(() => {
     let unreadHandlerTrue;
