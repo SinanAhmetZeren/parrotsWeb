@@ -6,10 +6,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
 import { FaWalking, FaRunning, FaTrain } from "react-icons/fa";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 import trainImage from "../assets/images/train.jpeg";
 import walkImage from "../assets/images/walk1.jpeg";
 import runImage from "../assets/images/run1.jpeg";
+import { IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
 
 
 export function VoyageDetailPageDetails({ voyageData }) {
@@ -40,28 +41,32 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const specialImage = specialVehicles[voyageData.vehicle.name];
 
   return (
+    /*
+    host, vehicle, vacancy, stars, ends, max price, min price, auction
+    */
+
     <div style={cardContainerStyle} className="flex row">
-      <div style={userVehicleInfoRow}>
-        <span style={voyageName}>{voyageData.name}</span>
-      </div>
-      <div style={userVehicleInfoRow}>
-        <div
-          className={"flex"}
-          style={{ ...dataRowItem, cursor: "pointer" }}
-          onClick={() => handleGoToUser(voyageData.user)}
-        >
-          <span style={{ alignSelf: "center" }}>Hosted by</span>
-          <div style={userAndVehicleBox}>
+
+
+      <div style={detailRow}> {/* host div  */}
+        <div>
+          <span style={detailName}>Host: </span>
+        </div>
+        <div style={{ ...detailInfo, cursor: "pointer" }}
+          onClick={() => handleGoToUser(voyageData.user)}>
+          <div
+            style={userAndVehicleBox}
+            onMouseEnter={() => setHoveredUser(true)}
+            onMouseLeave={() => setHoveredUser(false)}
+          >
             <img
               src={baseUserImageUrl + voyageData.user.profileImageUrl}
               style={{
                 ...userImage,
                 ...(hoveredUser === true ? userprofileimgHover : {}),
               }}
-              onMouseEnter={() => {
-                setHoveredUser(true);
-              }}
-              onMouseLeave={() => setHoveredUser(false)}
+              // onMouseEnter={() => setHoveredUser(true)}
+              // onMouseLeave={() => setHoveredUser(false)}
               alt=" "
             />
             <span style={{ ...userAndVehicleText }}>
@@ -69,60 +74,26 @@ export function VoyageDetailPageDetails({ voyageData }) {
             </span>
           </div>
         </div>
-        <div
-          className={"flex"}
-          style={{ ...dataRowItem, cursor: "pointer" }}
+      </div>
+
+
+      <div style={detailRow}>  {/* vehicle div */}
+        <div>
+          <span style={detailName}>Vehicle: </span>
+        </div>
+        <div style={{ ...detailInfo, cursor: "pointer" }}
           onClick={() => handleGoToVehicle(voyageData)}
         >
-          <span style={{ alignSelf: "center" }}>On</span>
+          <div style={userAndVehicleBox}
+            onMouseEnter={() => setHoveredVehicle(true)}
+            onMouseLeave={() => setHoveredVehicle(false)}
 
-          {/* <div style={userAndVehicleBox}>
-            <span style={userAndVehicleText}>
-              {(voyageData.vehicle.name === "Run" ||
-                voyageData.vehicle.name === "Walk" ||
-                voyageData.vehicle.name === "Train") && (
-                  <div style={runningStyle}>
-                    {voyageData.vehicle.name === "Run" ? (
-                      <FaRunning size={"2rem"} />
-                    ) : voyageData.vehicle.name === "Walk" ? (
-                      <FaWalking size={"2rem"} />
-                    ) : (
-                      <FaTrain size={"2rem"} />
-                    )}
-                  </div>
-                )}
-            </span>
-            {voyageData.vehicle.name !== "Run" &&
-              voyageData.vehicle.name !== "Walk" &&
-              voyageData.vehicle.name !== "Train" &&
-              (
-                <img
-                  src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
-                  style={{
-                    ...userImage,
-                    ...(hoveredVehicle ? userprofileimgHover : {}),
-                  }}
-                  onMouseEnter={() => setHoveredVehicle(true)}
-                  onMouseLeave={() => setHoveredVehicle(false)}
-                  alt="vehicle"
-                />
-              )}
-            <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
-          </div> */}
-
-
-
-          <div style={userAndVehicleBox}>
-            <span style={userAndVehicleText}>
-              {specialImage && (
-                <img
-                  src={specialImage}
-                  // style={runningStyle}
-                  style={userImage}
-                  alt={voyageData.vehicle.name}
-                />
-              )}
-            </span>
+          >
+            {specialImage && (
+              <span style={userAndVehicleText}>
+                <img src={specialImage} style={userImage} alt={voyageData.vehicle.name} />
+              </span>
+            )}
 
             {!specialImage && (
               <img
@@ -131,66 +102,174 @@ export function VoyageDetailPageDetails({ voyageData }) {
                   ...userImage,
                   ...(hoveredVehicle ? userprofileimgHover : {}),
                 }}
-                onMouseEnter={() => setHoveredVehicle(true)}
-                onMouseLeave={() => setHoveredVehicle(false)}
+                // onMouseEnter={() => setHoveredVehicle(true)}
+                // onMouseLeave={() => setHoveredVehicle(false)}
                 alt="vehicle"
               />
             )}
-
             <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
           </div>
 
-
-
         </div>
-        <div className={"flex"} style={dataRowItem}>
-          <span style={{ alignSelf: "center" }}>Vacancy: </span>
-          <div style={infoBox}>
-            <span style={infoText}>{voyageData.vacancy}</span>
+      </div>
+
+
+      <div style={detailRow}>
+        <div>
+          <span style={detailName}>Vacancy: </span>
+        </div>
+        <div style={detailInfo}>
+          <span>{voyageData.vacancy}</span>
+        </div>
+      </div>
+
+      <div style={detailRowDivided}>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Starts:
+          </div>
+          <div style={detailRowDividedChildInfo}>
+            {formatCustomDate(voyageData.startDate)}
+          </div>
+        </div>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Ends:
+          </div>
+          <div style={detailRowDividedChildInfo}>
+            {formatCustomDate(voyageData.endDate)}
           </div>
         </div>
       </div>
-      <div style={{ ...userVehicleInfoRow, marginBottom: ".5rem" }}>
-        <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Dates: </span>
-          <div style={infoBox}>
-            {/* <span style={infoText}>Nov 12, 30 - Nov 12, 30</span> */}
-            <span style={infoText}>
-              {formatCustomDate(voyageData.startDate)} -{" "}
-              {formatCustomDate(voyageData.endDate)}
-            </span>
+
+      <div style={detailRowDivided}>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Min Price:
+          </div>
+          <div style={detailRowDividedChildInfo}>
+            {voyageData.currency} {voyageData.minPrice}
           </div>
         </div>
-        <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Last Bid: </span>
-          <div style={infoBox}>
-            <span style={infoText}>
-              {" "}
-              {formatCustomDate(voyageData.lastBidDate)}
-            </span>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Max Price:
           </div>
-        </div>
-        <div className={"flex"} style={dataRowItem}>
-          <span style={{}}>Price: </span>
-          <div style={infoBox}>
-            <span style={infoText}>
-              {voyageData.currency} {voyageData.minPrice}-{voyageData.maxPrice}
-            </span>
-          </div>
-        </div>
-        <div className={"flex"} style={dataRowItem}>
-          <div style={infoBox}>
-            {voyageData.auction ? <span style={infoText}>Auction</span> : null}
+          <div style={detailRowDividedChildInfo}>
+            {voyageData.currency} {voyageData.maxPrice}
           </div>
         </div>
       </div>
+
+
+      <div style={detailRowDivided}>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Auction
+          </div>
+          <div style={detailRowDividedChildInfo}>
+            {voyageData.auction ?
+              <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
+              :
+              <IoCloseCircleOutline color={parrotGreen} size={20} />
+            }
+          </div>
+        </div>
+        <div style={detailRowDividedChild}>
+          <div style={detailRowDividedChildName}>
+            Fixed Price:
+          </div>
+          <div style={detailRowDividedChildInfo}>
+            {voyageData.auction ?
+              <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
+              :
+              <IoCloseCircleOutline color={parrotGreen} size={20} />
+
+            }
+          </div>
+        </div>
+      </div>
+
     </div>
+
   );
 }
 
+const detailName = {
+  color: parrotTextDarkBlue,
+  fontWeight: "800",
+  fontSize: "1rem",
+  // backgroundColor: "yellow",
+  width: "100%",
+  display: "flex",
+};
+
+const detailRowDividedChild = {
+  color: parrotTextDarkBlue,
+  fontWeight: "800",
+  fontSize: "1rem",
+  // backgroundColor: "green",
+  width: "100%",
+  display: "flex",
+};
+
+const detailInfo = {
+  color: parrotTextDarkBlue,
+  fontWeight: "400",
+  fontSize: "1rem",
+  // backgroundColor: "orange",
+  width: "100%",
+  display: "flex",
+};
+
+const detailRowDividedChildName = {
+  color: parrotTextDarkBlue,
+  fontWeight: "800",
+  fontSize: "1rem",
+  // backgroundColor: "pink",
+  width: "100%",
+  display: "flex",
+  // backgroundColor: "rgba(0, 119, 234,0.1)",
+
+}
+
+const detailRowDividedChildInfo = {
+  color: parrotTextDarkBlue,
+  fontWeight: "400",
+  fontSize: "1rem",
+  // backgroundColor: "orange",
+  width: "100%",
+  display: "flex",
+  // backgroundColor: "rgba(0, 119, 234,0.048)",
+
+}
+
+const detailRow = {
+  height: "2rem",
+  width: "94%",
+  margin: "auto",
+  borderRadius: "0.3rem",
+  // marginBottom: "0.5rem",
+  display: "grid",
+  gridTemplateColumns: "1fr 3fr",
+  alignItems: "center",
+};
+
+const detailRowDivided = {
+  height: "2rem",
+  width: "94%",
+  margin: "auto",
+  borderRadius: "0.3rem",
+  // marginBottom: "0.5rem",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  alignItems: "center",
+  gap: ".5rem"
+};
+
 const userImage = {
-  height: "3rem",
-  width: "3rem",
+  height: "2rem",
+  width: "2rem",
   borderRadius: "3rem",
   transition: "transform 0.3s ease-in-out", // Smooth transition
 };
@@ -199,11 +278,6 @@ const userprofileimgHover = {
   transform: "scale(1.2)", // Enlarge on hover
 };
 
-const voyageName = {
-  color: "rgba(0, 119, 234,1)",
-  fontWeight: "800",
-  fontSize: "1.5rem",
-};
 
 const cardContainerStyle = {
   display: "flex", // Flex for horizontal layout
@@ -224,20 +298,7 @@ const cardContainerStyle = {
   paddingBottom: "2rem",
 };
 
-const userVehicleInfoRow = {
-  display: "flex",
-  flexDirection: "row",
-  margin: "0.2rem",
-  justifyContent: "center",
-  marginTop: "0.5rem",
-};
 
-const dataRowItem = {
-  marginTop: ".3rem",
-  marginRight: "0.8rem",
-  marginLeft: "0.8rem",
-  fontWeight: "400",
-};
 
 const userAndVehicleBox = {
   display: "flex",
@@ -247,23 +308,14 @@ const userAndVehicleBox = {
   borderRadius: "4rem",
   marginLeft: "0.5rem",
   height: "2rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+
 };
 
-const infoBox = {
-  backgroundColor: "rgba(0, 119, 234,0.06)",
-  borderRadius: "4rem",
-  marginLeft: "0.5rem",
-  alignSelf: "center",
-};
 
 const userAndVehicleText = {
   paddingLeft: "1rem",
   paddingRight: "1rem",
-};
-
-const infoText = {
-  paddingLeft: ".5rem",
-  paddingRight: ".5rem",
 };
 
 const vehicles = [
@@ -303,13 +355,6 @@ export default function VehicleIcon({ vehicleType }) {
   );
 }
 
-const runningStyle = {
-  color: "rgba(0, 119, 234,.7)",
-  fontWeight: "bold",
-  fontSize: "1.5rem",
-  marginRight: "0.5rem",
-  borderRadius: "2rem",
-  padding: "0.5rem",
-  backgroundColor: "white",
-  boxShadow: "inset 0 0 5px rgba(0, 119, 234,.66)",
-};
+
+
+

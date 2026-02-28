@@ -100,6 +100,7 @@ const messagesContainerStyle = {
   display: "grid",
   gap: "10px",
   width: "100%",
+  // backgroundColor: "red"
 };
 
 const containerStyle = {

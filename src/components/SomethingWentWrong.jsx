@@ -1,5 +1,6 @@
 import React from "react";
-import parrotsLogo from "../assets/images/parrots-logo-mini.png";
+import parrotsLogo2 from "../assets/images/parrots-logo-mini.png";
+import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import {
   parrotBlueSemiTransparent,
   parrotTextDarkBlue,
@@ -63,11 +64,11 @@ const styles = {
     backgroundColor: "#f9f9f9",
   },
   imageWrapper: {
-    width: "160px",
-    height: "160px",
+    width: "25rem",
+    height: "25rem",
     borderRadius: "50%",
     overflow: "hidden",
-    border: "10px solid " + parrotBlueSemiTransparent,
+    // border: "10px solid " + parrotBlueSemiTransparent,
     marginBottom: "20px",
   },
   image: {

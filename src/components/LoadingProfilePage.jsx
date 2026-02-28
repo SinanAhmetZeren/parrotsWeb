@@ -42,7 +42,7 @@ export const LoadingProfilePage = () => {
                             style={{
                                 backgroundColor: "rgba(0, 0, 0, .3)",
                                 padding: ".5rem",
-                                borderRadius: "1.5rem",
+                                // borderRadius: "1.5rem",
                                 height: "100%",
                                 width: "40%",
                                 flexDirection: "column",

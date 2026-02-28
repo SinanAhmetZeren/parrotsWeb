@@ -31,6 +31,7 @@ import { convertDateFormat } from "../components/ConvertDateFormat";
 import { MainPageRefreshButton } from "../components/MainPageRefreshButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { MapTypeButton } from "../components/MapTypeButton";
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
@@ -56,6 +57,8 @@ function MainPage() {
   const [selectedVehicle, setSelectedVehicle] = useState();
   const [bounds, setBounds] = useState(null);
   const [initialBounds, setInitialBounds] = useState(null);
+  const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
+
   const hasMapInitialized = useRef(false);
 
   const dispatch = useDispatch();
@@ -407,7 +410,14 @@ function MainPage() {
                         gestureHandling={"greedy"}
                         disableDefaultUI
                         onCameraChanged={() => setTargetLocation(null)}
+                        mapTypeControl={false} // Hide the big bulky Google button
+                        mapTypeId={mapTypeId} // <--- CRITICAL: Add this line to link the state to the map
                       >
+
+
+                        <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
+
+
                         <MapInitialBoundsComponent
                           setInitialBounds={setInitialBounds}
                         />

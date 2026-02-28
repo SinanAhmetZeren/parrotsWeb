@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { parrotBlue, parrotBlueDarkTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotBlueSemiTransparent, parrotBlueTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
 import DOMPurify from "dompurify";
 import { MdPublic } from "react-icons/md";
@@ -19,7 +19,8 @@ export function FavoritesPageVoyagesCard({ voyage, index }) {
 
   const publicIconPublic = {
     position: "absolute",
-    backgroundColor: "white",
+    // backgroundColor: "white",
+    backgroundColor: parrotBlueTransparent,
     right: "4.5rem",
     top: "0.5rem",
     borderRadius: "3rem",

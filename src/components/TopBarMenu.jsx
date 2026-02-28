@@ -66,9 +66,6 @@ export function TopBarMenu() {
               Connect
               {unreadMessages && (
                 <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-
-
-
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="16"

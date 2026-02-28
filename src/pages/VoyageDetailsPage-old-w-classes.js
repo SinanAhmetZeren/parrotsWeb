@@ -34,7 +34,6 @@ import seafromsky from '../assets/images/seafromsky.jpg';
 
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotGreen, parrotLightBlue } from "../styles/colors";
-import { MapTypeButton } from "../components/MapTypeButton";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
@@ -53,7 +52,7 @@ function VoyageDetailsPage() {
     west: null,
   });
   const [isPublicOnMap, setIsPublicOnMap] = useState(false);
-  const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
+
   let favoriteVoyages;
   try {
     favoriteVoyages = JSON.parse(
@@ -219,10 +218,43 @@ function VoyageDetailsPage() {
           </div>
 
           <div style={{ ...mainPageBottomRowStyle }} className="flex">
-            <div style={voyageDetailsBottomLeftStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
+            <div style={voyageDetailsBottomLeftStyle}
+
+              className="flex voyageDetailsBottomLeft custom-scrollbar"
+
+            >
+              <div style={voyageDetailsImagesStyle} className="flex">
+                <VoyageDetailPageImageSwiper voyageData={VoyageData} />
+              </div>
+
               <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
+                {isFavorited ? (
+                  <div onClick={() => handleDeleteVoyageFromFavorites()} style={heartIconRed} title="Remove from favorites">
+                    <IoHeartSharp size="1.5rem" color="red" />
+                  </div>
+                ) : (
+                  <div onClick={() => handleAddVoyageToFavorites()} style={heartIconOrange} title="Add to favorites">
+                    <IoHeartSharp size="1.5rem" color="orange" />
+                  </div>
+                )}
+
+                {!isPublicOnMap ? (
+                  <div style={publicIconStyle(parrotDarkBlue, "parrotBlueDarkTransparent")} title="Is public on map, visible to everyone on their Home page">
+                    <MdPublic size="1.5rem" color={parrotDarkBlue} />
+                  </div>
+                ) : (
+                  <div style={publicIconStyle(parrotBlueDarkTransparent2, "white")} title="Is not public on map, not visible to everyone on their Home page">
+                    <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
+                  </div>
+                )}
+
                 <VoyageDetailPageDetails voyageData={VoyageData} />
               </div>
+
+              <div style={voyageDetailsDescriptionStyle} className="flex">
+                <VoyageDetailPageDescription voyageDescription={VoyageData.description} />
+              </div>
+
               <div style={voyageDetailsBidsStyle} className="flex">
                 <VoyageDetailBids
                   userId={userId}
@@ -239,27 +271,6 @@ function VoyageDetailsPage() {
               </div>
             </div>
 
-            <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
-              <div style={voyageDetailsImagesStyle} className="flex">
-                <VoyageDetailPageImageSwiper voyageData={VoyageData} />
-              </div>
-
-              <div style={{ ...voyageDetailsDetailsStyle2, position: "relative" }} className="flex">
-                <PublicAndHeartIcons
-                  isFavorited={isFavorited}
-                  handleAddVoyageToFavorites={handleAddVoyageToFavorites}
-                  handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
-                  isPublicOnMap={isPublicOnMap}
-                  parrotDarkBlue={parrotDarkBlue}
-                  parrotBlueDarkTransparent={parrotBlueDarkTransparent}
-                  parrotBlueDarkTransparent2={parrotBlueDarkTransparent2}
-                />
-              </div>
-              <div style={voyageDetailsDescriptionStyle} className="flex">
-                <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
-              </div>
-            </div>
-
             <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
               <div style={voyageDetailsMapContainerStyle} className="flex">
                 <APIProvider apiKey={myApiKey} libraries={["marker"]}>
@@ -273,12 +284,7 @@ function VoyageDetailsPage() {
                       disableDefaultUI
                       zoom={undefined}
                       onCameraChanged={() => setTargetLocation(null)}
-                      mapTypeControl={false} // Hide the big bulky Google button
-                      mapTypeId={mapTypeId} // <--- CRITICAL: Add this line to link the state to the map
                     >
-
-
-                      <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
                       <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
                       {VoyageData.waypoints.map((waypoint, index) => (
@@ -498,22 +504,8 @@ export const mainPageBottomRowStyle = {
 };
 
 export const voyageDetailsBottomRightStyle = {
-  height: "calc(100vh - 4rem)",
-  width: "40%",
-};
-
-export const voyageDetailsBottomMiddleStyle = {
-  height: "calc(100vh - 4rem)",
-  width: "30%",
-  flexDirection: "column",
-  overflowY: "auto",
-};
-
-export const voyageDetailsBottomLeftStyle = {
-  height: "calc(100vh - 4rem)",
-  width: "30%",
-  flexDirection: "column",
-  overflowY: "auto",
+  height: "calc(100vh - 3rem)",
+  width: "50%",
 };
 
 export const voyageDetailsMapContainerStyle = {
@@ -528,11 +520,15 @@ export const voyageDetailsWaypointsContainerStyle = {
   height: "auto",
 };
 
+export const voyageDetailsBottomLeftStyle = {
+  height: "calc(100vh - 3rem)",
+  width: "50%",
+  flexDirection: "column",
+  overflowY: "auto",
 
+};
 
-
-
-export const voyageDetailsDetailsStyle2 = {
+export const voyageDetailsDetailsStyle = {
   width: "calc(100% - 2rem)",
   marginLeft: "1rem",
   marginRight: "1rem",
@@ -541,7 +537,6 @@ export const voyageDetailsDetailsStyle2 = {
 
 export const voyageDetailsDescriptionStyle = {
   width: "calc(100% - 2rem)",
-  height: "50vh",
   marginLeft: "1rem",
   marginRight: "1rem",
   padding: "0.3rem",
@@ -551,61 +546,13 @@ export const voyageDetailsDescriptionStyle = {
 export const voyageDetailsImagesStyle = {
   alignItems: "center",
   justifyContent: "center",
-  width: "calc(100% - 2rem)",
-  margin: "auto"
 };
 
 export const voyageDetailsBidsStyle = {
-  // flex: "0 0 45vh",
-  // width: "calc(100% - 2rem)",
-  // height: "65vh",
+  flex: "0 0 45vh",
+  width: "calc(100% - 2rem)",
   margin: "1rem",
   marginTop: 0,
   padding: "0.3rem",
   paddingTop: 0,
-  // backgroundColor: "red"
-};
-
-export const voyageDetailsDetailsStyle = {
-  width: "calc(100% - 2rem)",
-  marginLeft: "1rem",
-  marginRight: "1rem",
-  padding: "0.3rem",
-  height: "35vh",
-
-};
-
-
-export const PublicAndHeartIcons = ({
-  isFavorited,
-  handleAddVoyageToFavorites,
-  handleDeleteVoyageFromFavorites,
-  isPublicOnMap,
-  parrotDarkBlue,
-  parrotBlueDarkTransparent,
-  parrotBlueDarkTransparent2,
-}) => {
-  return (
-    <>
-      {isFavorited ? (
-        <div onClick={() => handleDeleteVoyageFromFavorites()} style={heartIconRed} title="Remove from favorites">
-          <IoHeartSharp size="1.5rem" color="red" />
-        </div>
-      ) : (
-        <div onClick={() => handleAddVoyageToFavorites()} style={heartIconOrange} title="Add to favorites">
-          <IoHeartSharp size="1.5rem" color="orange" />
-        </div>
-      )}
-
-      {!isPublicOnMap ? (
-        <div style={publicIconStyle(parrotDarkBlue, "parrotBlueDarkTransparent")} title="Is public on map, visible to everyone on their Home page">
-          <MdPublic size="1.5rem" color={parrotDarkBlue} />
-        </div>
-      ) : (
-        <div style={publicIconStyle(parrotBlueDarkTransparent2, "white")} title="Is not public on map, not visible to everyone on their Home page">
-          <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
-        </div>
-      )}
-    </>
-  );
 };

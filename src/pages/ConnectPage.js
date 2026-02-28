@@ -30,6 +30,8 @@ import {
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch } from "react-redux";
 import { setUnreadMessages } from "../slices/UserSlice";
+import parrotsLogo from "../assets/images/ParrotsLogo.png";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 
 //const API_URL = process.env.REACT_APP_API_URL;
@@ -299,6 +301,20 @@ function ConnectPage() {
                 </div>
                 <div className="flex connectPage_BottomRight">
                   <div style={ConversationComponentContainer}>
+
+                    {!conversationUserId &&
+                      <div style={imageWrapperWrapper}>
+                        <div style={imageWrapper}>
+
+                          <img
+                            src={parrotsLogo}
+                            alt="logo"
+                            style={image}
+                          />
+                        </div>
+                      </div>
+                    }
+
                     <ConversationComponent
                       conversationData={conversationData}
                       messagesToDisplay={messagesToDisplay}
@@ -352,3 +368,33 @@ const SearchBarContainer = {
   backgroundColor: "rgb(240, 240, 240)",
   height: "9vh",
 };
+
+const imageWrapper = {
+  width: "100%",
+  height: "100%",
+  alignSelf: "center",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const imageWrapperWrapper = {
+  width: "100%",
+  height: "100%",
+}
+
+const image = {
+  width: "20rem",
+  height: "20rem",
+  margin: "auto",
+  alignSelf: "center",
+  margintop: "15rem",
+
+
+}
+
+const subText = {
+  fontSize: "24px",
+  color: parrotTextDarkBlue,
+  marginBottom: "20px",
+}

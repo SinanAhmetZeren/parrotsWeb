@@ -59,7 +59,6 @@ function App() {
         // Initial unread check
         try {
           console.log("-> checking unread ");
-
           // Wait until hub is marked ready
           while (!isHubReady()) {
             await new Promise((res) => setTimeout(res, 50));
@@ -67,13 +66,11 @@ function App() {
           console.log("Hub is:", isHubReady() ? "ready" : "not ready");
           const hasUnread = await invokeHub("CheckUnreadMessages", currentUserId);
           console.log("checked unread -> ", hasUnread);
-          dispatch(markMessagesRead());
+          if (hasUnread)
+            dispatch(setUnreadMessages(true));
         } catch (err) {
           console.error("invokeHub CheckUnreadMessages failed:", err);
-
-
         }
-
         // Listen for unread   event only
         unreadHandlerTrue = () => {
           dispatch(setUnreadMessages(true)); // ReceiveUnreadNotification

@@ -18,7 +18,7 @@ import {
 import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlueSemiTransparent, parrotBlueTransparent, parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const baseUserImageUrl = ``;
@@ -186,15 +186,18 @@ export function VoyageDetailBids({
 
 
   return (
-    <div style={cardContainerStyle} className="flex row">
-      <div style={userVehicleInfoRow}>
+    <div style={cardContainerStyle} className=" ">
+      {/* <div style={userVehicleInfoRow}>
         <span style={voyageName}>Current Bids</span>
-      </div>
+      </div> */}
       <div
         style={{
           overflow: "auto",
           minHeight: "35vh",
           scrollbarColor: "#1e90ff50",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+
         }}
       >
         <div className="BidsList">
@@ -273,22 +276,35 @@ function RenderBid({
     // navigate(`/profile-public/${bidUserId}/${username}`);
     navigate(`/profile-public/${bidUserPublicId}/${username}`);
   };
+
+
   return (
-    <div className={"flex"} style={dataRowItem}>
-      <div style={userAndVehicleBox}>
-        <img
-          src={userImage}
-          style={{
-            ...userImageStyle,
-            ...(hoveredUserImgID === bidUserId ? userImageStyleHover : {}),
-          }}
-          onMouseEnter={() => {
-            setHoveredUserImgID(bidUserId);
-          }}
-          onMouseLeave={() => setHoveredUserImgID("")}
-          alt="User"
-          onClick={() => handleGoToUser(bidUserId, username)}
-        />
+
+    <div style={{
+      ...dataRowItem,
+      height: ownVoyage ? "4.5rem" : "4rem"
+    }}>
+      <div style={leftItem}>
+        <div style={imgWrapper}>
+          <img
+            src={userImage}
+            style={{
+              ...userImageStyle,
+              ...(hoveredUserImgID === bidUserId ? userImageStyleHover : {}),
+            }}
+            onMouseEnter={() => {
+              setHoveredUserImgID(bidUserId);
+            }}
+            onMouseLeave={() => setHoveredUserImgID("")}
+            alt="User"
+            onClick={() => handleGoToUser(bidUserId, username)}
+          />
+        </div>
+      </div>
+      <div style={{
+        ...middleTopItem,
+        gridRow: ownVoyage ? "1" : "1 / span 2"
+      }}>
         <span style={userNameStyle} title={username}>
           {username}
         </span>
@@ -300,8 +316,12 @@ function RenderBid({
           )}
           {personCount}
         </span>
-        <span style={bidMessage}>{ownVoyage ? message || " " : " "}</span>
         <span style={bidAmount}>€{price}</span>
+      </div>
+      <div style={middleBottomItem}>
+        {ownVoyage ? <span style={bidMessage} title={message}>{message}</span> : " "}
+      </div>
+      <div style={rightItem}>
         <span
           onClick={() =>
             ownVoyage &&
@@ -315,30 +335,25 @@ function RenderBid({
           }}
         >
           {loadingBidId === bidId && !accepted ? (
-            <AcceptBidSpinner />
-          ) : accepted ? (
-            "Accepted"
-          ) : ownVoyage ? (
-            "Accept"
-          ) : (
-            "Pending"
-          )}
+            <AcceptBidSpinner />) : accepted ? ("Accepted") : ownVoyage ? ("Accept") : ("Pending")}
           { }
         </span>
         <span
-          style={{ marginLeft: "0.5rem", marginRight: "0.5rem" }}
           onClick={() => handleDeleteBid({ bidId, bidUserId })}
+          style={{ marginLeft: "0.5rem", marginRight: "0.5rem", cursor: ownVoyage && accepted ? "" : "pointer" }}
         >
           {ownVoyage &&
             (accepted ? (
-              <IoCheckmarkCircleOutline color={parrotGreen} />
+              <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
             ) : (
-              <IoCloseCircleOutline color="orangered" />
+              <IoCloseCircleOutline color="orangered" size={20} />
             ))}
         </span>
+
       </div>
-    </div>
-  );
+    </div>);
+
+
 }
 
 const AcceptBidSpinner = () => {
@@ -367,6 +382,18 @@ const AcceptBidSpinner = () => {
   );
 };
 
+
+
+const messageButton = {
+  backgroundColor: "rgba(0, 119, 234,0.05)",
+  borderRadius: "1rem",
+  fontSize: "0.8rem",
+  color: "#0077EA",
+  fontWeight: "500",
+  cursor: "pointer",
+  width: "100%",
+};
+
 const userImageStyleHover = {
   transform: "scale(1.2)",
 };
@@ -379,68 +406,101 @@ const userImageStyle = {
   cursor: "pointer",
 };
 
-const voyageName = {
-  color: "#2ac898",
-  color: "rgba(0, 119, 234,1)",
-
-  fontWeight: "800",
-  fontSize: "1.5rem",
-};
-
-const userVehicleInfoRow = {
-  display: "flex",
-  flexDirection: "row",
-  margin: "0.2rem",
-  marginLeft: "1.3rem",
+const imgWrapper = {
+  // height: "3rem",
+  // width: "7rem",
+  transition: "transform 0.3s ease-in-out",
+  cursor: "pointer",
+  // backgroundColor: "lightblue"
 };
 
 const cardContainerStyle = {
   display: "flex",
   flexDirection: "column",
-  border: "1px solid #ddd",
+  // border: "1px solid #ddd",
   borderRadius: "1rem",
   width: "100%",
-  backgroundColor: "#fff",
+  // backgroundColor: "#fff",
   margin: "0rem",
-  boxShadow: `
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 -8px 6px rgba(0, 0, 0, 0.2)
-  `,
   color: parrotTextDarkBlue,
-  padding: "1rem",
+  // padding: "1rem",
   fontSize: "1.15rem",
-  maxHeight: "50vh",
+  maxHeight: "55vh",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
+  // backgroundColor: "yellow"
 };
+
 
 const dataRowItem = {
-  marginTop: ".3rem",
-  backgroundColor: "rgba(0, 119, 234,0.05)",
+  display: "grid",
+  gridTemplateRows: "1fr 1fr",
+  gridTemplateColumns: "1.5fr 6fr 3fr",
+  gap: "0.2rem", // space between grid items
+  marginTop: "0.3rem",
   borderRadius: "1rem",
+  padding: "0.5rem", // optional padding inside the grid
+  height: "5rem",
+  width: "25rem",
+  backgroundColor: "white",
+  width: "100%",
+  boxShadow: "rgba(0, 0, 0, 0.3) 0px 4px 6px, rgba(0, 0, 0, 0.2) 0px -8px 6px inset",
+
 };
 
-const userAndVehicleBox = {
+const leftItem = {
+  gridRow: "1 / span 2",
+  gridColumn: "1",
   display: "flex",
-  flexDirection: "row",
+  justifyContent: "center",
   alignItems: "center",
-  borderRadius: "4rem",
-  marginLeft: "0.5rem",
+  // backgroundColor: "orange"
+};
+
+const middleTopItem = {
+  // gridRow: "1",
+  gridColumn: "2",
+  justifyContent: "center",
+  alignItems: "center",
+  // backgroundColor: "lightgreen",
+  display: "grid",
+  // gridTemplateColumns: "4fr 1fr 1fr", // 4 : 1 : 1 ratio
+  gridTemplateColumns: "minmax(0,1fr) 5rem 5rem"
+};
+
+const middleBottomItem = {
+  gridRow: "2",
+  gridColumn: "2",
+  display: "flex",
+  justifyContent: "center",
+  // alignItems: "center",
+  // backgroundColor: "lightyellow",
   width: "100%",
-  justifyContent: "space-between",
+};
+
+const rightItem = {
+  gridRow: "1 / span 2",
+  gridColumn: "3",
+  justifyContent: "center",
+  alignItems: "center",
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr",
+
+
 };
 
 const userNameStyle = {
-  width: "20%",
+  width: "100%",
   whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  // overflow: "hidden",
+  // textOverflow: "ellipsis",
   fontWeight: "500",
   paddingLeft: "0.2rem",
+  // backgroundColor: "yellow"
 };
 
 const personCountStyle = {
-  width: "10%",
+  width: "100%",
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -448,39 +508,54 @@ const personCountStyle = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: "700",
+  // backgroundColor: "cyan"
 };
 
 const bidMessage = {
-  wordWrap: "break-word",
-  marginLeft: "1rem",
-  width: "50%",
+  whiteSpace: "nowrap",        // prevent wrapping to a new line
+  overflow: "hidden",          // hide overflow
+  textOverflow: "ellipsis",    // show "..." if text is too long
+  // display: "flex",             // keep it as flex to align vertically
+  alignItems: "center",        // center vertically
+  backgroundColor: parrotBlueTransparent,
+  borderRadius: "1rem",
+  padding: "0.2rem",
+  paddingLeft: "0.5rem",
+  width: "15rem",
+  fontSize: "0.8rem",
+  color: "#0077EA",
+  fontWeight: "500",
+  cursor: "pointer",
 };
 
 const bidAmount = {
   alignSelf: "center",
   color: "#2ac898",
-
   fontWeight: "700",
-  flexShrink: 0,
-  width: "10%",
+  // flexShrink: 0,
+  width: "100%",
+  // backgroundColor: "orange"
 };
 
 const acceptBidStyle = {
   fontWeight: "bold",
   color: "#0077EA",
   fontSize: "0.9rem",
-  width: "12%",
+  // width: "12%",
   backgroundColor: "rgba(0, 119, 234,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
   marginRight: "0.5rem",
+  paddingLeft: "0.3rem",
+  paddingRight: "0.3rem",
+  // backgroundColor: "pink"
 };
 
 const acceptedBidStyle = {
   fontWeight: "bold",
   color: "#2ac898",
   fontSize: "0.9rem",
-  width: "12%",
+  // width: "12%",
   backgroundColor: "rgba(42,200,152,0.1)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
