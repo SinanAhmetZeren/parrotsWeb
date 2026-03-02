@@ -51,6 +51,7 @@ export function TopBarMenu() {
           >
             Favorites
           </NavLink>
+
           <NavLink
             to="/connect"
             className={({ isActive }) =>

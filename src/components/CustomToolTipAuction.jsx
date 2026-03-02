@@ -1,7 +1,7 @@
 import { parrotTextDarkBlue } from "../styles/colors";
 
 
-export function CustomToolTip({ isHovered, message }) {
+export function CustomToolTipAuction({ isHovered, message }) {
     return (
         isHovered && (
             <div
@@ -9,7 +9,7 @@ export function CustomToolTip({ isHovered, message }) {
                     position: "absolute",
                     bottom: "120%",
                     left: "100%",
-                    transform: "translateX(-100%)",
+                    transform: "translateX(-40%)",
                     backgroundColor: "white",
                     color: parrotTextDarkBlue,
                     padding: "6px 10px",

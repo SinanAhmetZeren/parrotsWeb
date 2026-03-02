@@ -32,6 +32,7 @@ import { MainPageRefreshButton } from "../components/MainPageRefreshButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { MapTypeButton } from "../components/MapTypeButton";
+import { MainPageRefreshButtonNew } from "../components/MainPageRefreshButtonNew";
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
@@ -381,6 +382,10 @@ function MainPage() {
                 )}
               </div>
               <MainPageNewVoyageButton />
+
+
+
+
             </div>
 
             {isLoading ? (
@@ -416,7 +421,7 @@ function MainPage() {
 
 
                         <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
-
+                        <MainPageRefreshButtonNew applyFilter={applyFilter} />
 
                         <MapInitialBoundsComponent
                           setInitialBounds={setInitialBounds}
@@ -435,9 +440,10 @@ function MainPage() {
                 </div>
               </div>
             )}
-            <div style={{ position: "absolute", right: 0, bottom: 0 }}>
+            {/* <div style={{ position: "absolute", right: 0, bottom: 0 }}> */}
+            {/* <div style={{ position: "absolute", left: 0, top: 0 }}>
               <MainPageRefreshButton applyFilter={applyFilter} />
-            </div>
+            </div> */}
           </div>
         </div>
       </header>

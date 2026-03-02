@@ -13,3 +13,5 @@ export const parrotGreyTransparent = "rgb(246, 246, 246)";
 export const parrotRed = "#CB0404";
 export const parrotPlaceholderGrey = "#a3b4c5";
 export const parrotLightBlue = "#3c9dde";
+export const parrotPistachioGreen = "#9Bd35A"
+export const parrotBananaLeafGreen = "#689F38";

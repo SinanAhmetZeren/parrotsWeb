@@ -1,5 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import { useState } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -11,15 +12,20 @@ import trainImage from "../assets/images/train.jpeg";
 import walkImage from "../assets/images/walk1.jpeg";
 import runImage from "../assets/images/run1.jpeg";
 import { IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
+import { CustomToolTip } from "./CustomToolTip";
+import { CustomToolTipAuction } from "./CustomToolTipAuction";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 
 export function VoyageDetailPageDetails({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = ``;
   const baseVehicleImageUrl = ``;
-  const [hoveredUser, setHoveredUser] = React.useState(false);
-  const [hoveredVehicle, setHoveredVehicle] = React.useState(false);
+  const [hoveredUser, setHoveredUser] = useState(false);
+  const [hoveredVehicle, setHoveredVehicle] = useState(false);
+  const [hoveredAuction, setHoveredAuction] = useState(false);
 
+  const auctionToolTipMessage = "The host will select the most suitable bids"
   const navigate = useNavigate();
   const handleGoToVehicle = (voyageData) =>
     voyageData.vehicle.name === "Run" ||
@@ -163,12 +169,18 @@ export function VoyageDetailPageDetails({ voyageData }) {
         </div>
       </div>
 
-
       <div style={detailRowDivided}>
         <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Auction:
+          <div
+            style={{ ...detailRowDividedChildName, position: "relative" }}
+            onMouseEnter={() => setHoveredAuction(true)}
+            onMouseLeave={() => setHoveredAuction(false)}
+          >
+            Auction <IoMdInformationCircleOutline size={12} />:
+
+            <CustomToolTipAuction isHovered={hoveredAuction} message={auctionToolTipMessage} />
           </div>
+
           <div style={detailRowDividedChildInfo}>
             {voyageData.auction ?
               <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
