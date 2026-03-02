@@ -18,6 +18,7 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { parrotButtonDarkBlue, parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
+import parrotCoin from "../assets/images/parrotcoin.png"
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -27,6 +28,7 @@ function ProfilePage() {
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
   const [isOpen, setIsOpen] = useState(false);
+  const [isParrotCoinHovered, setIsParrotCoinHovered] = useState(false);
 
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
@@ -42,6 +44,10 @@ function ProfilePage() {
 
   const gotoNewVoyage = () => {
     navigate(`/newVoyage`);
+  };
+
+  const handleGoToParrotCoinPage = () => {
+    navigate(`/parrotCoinPage`);
   };
 
   const [
@@ -136,6 +142,25 @@ function ProfilePage() {
                     </div>
                   </div>
                 </div>
+
+                <div style={parrotCoinContainer}
+                  onClick={() => handleGoToParrotCoinPage()}
+                >
+                  <img
+                    src={parrotCoin}
+                    alt="Uploaded preview"
+                    style={{
+                      ...parrotCoinImg,
+                      transform: isParrotCoinHovered ? "scale(1.3)" : "scale(1)",
+                      transition: "transform 0.3s ease-in-out",
+                      display: "block",
+                    }}
+                    onMouseEnter={() => setIsParrotCoinHovered(true)}
+                    onMouseLeave={() => setIsParrotCoinHovered(false)}
+
+                  />
+                </div>
+
               </div>
               <div className="flex profilePage_BioAndContactDetails">
                 <div className="flex profilePage_BioTitleUserName">
@@ -260,6 +285,23 @@ function ProfilePage() {
 
 export default ProfilePage;
 
+
+const parrotCoinImg = {
+  position: "absolute",
+  top: "0.1rem"
+}
+
+const parrotCoinContainer = {
+  position: "absolute",
+  height: "5rem",
+  width: "5rem",
+  borderRadius: "5rem",
+  right: 0,
+  marginRight: "1rem",
+  marginBottom: "1rem",
+  backgroundColor: "#cad8ecaa",
+  cursor: "pointer"
+}
 
 const buttonsContainer = {
   position: "absolute",

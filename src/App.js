@@ -27,6 +27,7 @@ import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection, invokeHub, isHubReady, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
 import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
+import { ParrotCoinPage } from "./pages/ParrotCoinPage";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -104,6 +105,7 @@ function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/parrotcoinpage" element={<ParrotCoinPage />} />
             <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/newVehicle" element={<CreateVehiclePage />} />
             <Route path="/newVoyage" element={<CreateVoyagePage />} />
