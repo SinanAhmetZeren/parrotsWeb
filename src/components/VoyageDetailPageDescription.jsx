@@ -38,7 +38,7 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
   return (
     <div style={cardContainerStyle} className="flex row">
       <div style={userVehicleInfoRow}>
-        <span style={voyageName}>{voyageName.name}</span>
+        <span style={voyageNameStyle}>{voyageName.name}</span>
       </div>
       <div style={{ position: "relative" }}>
         <div className={"flex"} style={dataRowItem}>
@@ -111,11 +111,10 @@ const cardContainerStyle = {
 
 };
 
-const voyageName = {
-  color: "#2ac898",
-  color: "rgba(0, 119, 234,1)",
-  fontWeight: "800",
+const voyageNameStyle = {
+  fontWeight: "900",
   fontSize: "1.5rem",
+  fontStyle: "italic"
 };
 
 const userVehicleInfoRow = {
@@ -149,6 +148,7 @@ const descriptionTextStyle = {
   lineHeight: "1.3rem",
   margin: "auto",
   marginTop: "0.6rem",
+  color: "darkred"
 };
 
 const vehicles = [

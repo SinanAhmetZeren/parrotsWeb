@@ -33,8 +33,9 @@ import seafromsky from '../assets/images/seafromsky.jpg';
 
 
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
-import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotGreen, parrotLightBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotGreen, parrotLightBlue, parrotTextDarkBlue } from "../styles/colors";
 import { MapTypeButton } from "../components/MapTypeButton";
+import { CustomToolTip } from "../components/CustomToolTip";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
@@ -54,6 +55,9 @@ function VoyageDetailsPage() {
   });
   const [isPublicOnMap, setIsPublicOnMap] = useState(false);
   const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
+  const [isLegacyView, setIsLegacyView] = useState(true)
+
+
   let favoriteVoyages;
   try {
     favoriteVoyages = JSON.parse(
@@ -206,7 +210,7 @@ function VoyageDetailsPage() {
     <div style={spinnerContainer}>
       <div className="spinner"></div>
     </div>
-  ) : isSuccessVoyage ? (
+  ) : isSuccessVoyage ? isLegacyView ? (
 
     <div style={appStyle}>
       <header style={appHeaderStyle}>
@@ -324,8 +328,130 @@ function VoyageDetailsPage() {
 
       </header>
     </div>
+  ) : (
+    <div style={appStyle}>
+      <header style={appHeaderStyle}>
+        <div style={mainPageContainerStyle} className="flex">
+          <div style={mainPageTopRowStyle} className="flex">
+            <TopLeftComponent />
+            <div style={mainPageTopRightStyle} className="flex">
+              <TopBarMenu />
+            </div>
+          </div>
 
+          <div style={{ ...mainPageBottomRowStyle }} className="flex">
+            <div style={voyageDetailsBottomLeftStyle}
 
+              className="flex voyageDetailsBottomLeft custom-scrollbar"
+
+            >
+              <div style={voyageDetailsImagesStyle} className="flex">
+                <VoyageDetailPageImageSwiper voyageData={VoyageData} />
+              </div>
+
+              <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
+                {isFavorited ? (
+                  <div onClick={() => handleDeleteVoyageFromFavorites()} style={heartIconRed} title="In Favorites">
+                    <IoHeartSharp size="1.5rem" color="red" />
+                  </div>
+                ) : (
+                  <div onClick={() => handleAddVoyageToFavorites()} style={heartIconOrange} title="Not In Favorites">
+                    <IoHeartSharp size="1.5rem" color="orange" />
+                  </div>
+                )}
+
+                {!isPublicOnMap ? (
+                  <div style={publicIconStyle(parrotDarkBlue, "parrotBlueDarkTransparent")} title="Is public on map, visible to everyone on their Home page">
+                    <MdPublic size="1.5rem" color={parrotDarkBlue} />
+                  </div>
+                ) : (
+                  <div style={publicIconStyle(parrotBlueDarkTransparent2, "white")} title="Is not public on map, not visible to everyone on their Home page">
+                    <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
+                  </div>
+                )}
+
+                <VoyageDetailPageDetails voyageData={VoyageData} />
+              </div>
+
+              <div style={voyageDetailsDescriptionStyle} className="flex">
+                <VoyageDetailPageDescription voyageDescription={VoyageData.description} />
+              </div>
+
+              <div style={voyageDetailsBidsStyle} className="flex">
+                <VoyageDetailBids
+                  userId={userId}
+                  voyageId={voyageId}
+                  voyageData={VoyageData}
+                  ownVoyage={userId === VoyageData.userId}
+                  userBid={userBid}
+                  userBidAccepted={userBidAccepted}
+                  currentUserId={userId}
+                  isSuccessVoyage={isSuccessVoyage}
+                  refetch={refetch}
+                  setOpacity={setOpacity}
+                />
+              </div>
+            </div>
+
+            <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
+              <div style={voyageDetailsMapContainerStyle} className="flex">
+                <APIProvider apiKey={myApiKey} libraries={["marker"]}>
+                  {latLngBoundsLiteral?.east ? (
+                    <Map
+                      ref={mapRef}
+                      mapId={"mainpageMap"}
+                      defaultBounds={latLngBoundsLiteral}
+                      style={{ borderRadius: "1rem", overflow: "hidden" }}
+                      gestureHandling={"greedy"}
+                      disableDefaultUI
+                      zoom={undefined}
+                      onCameraChanged={() => setTargetLocation(null)}
+                    >
+                      <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
+                      <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
+                      {VoyageData.waypoints.map((waypoint, index) => (
+                        <VoyageDetailMarkerWithInfoWindow
+                          key={`$${waypoint.id}`}
+                          index={index}
+                          waypointTitle={waypoint.title}
+                          position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
+                          onClick={() => handlePanToLocation(waypoint.latitude, waypoint.longitude)}
+                        />
+                      ))}
+                    </Map>
+                  ) : null}
+                </APIProvider>
+              </div>
+
+              <div style={voyageDetailsWaypointsContainerStyle}>
+                <VoyageDetailWaypointSwiper
+                  waypoints={VoyageData.waypoints}
+                  handlePanToLocation={handlePanToLocation}
+                  opacity={opacity}
+                  voyageImage={VoyageData.profileImage}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          {`
+                        .custom-scrollbar::-webkit-scrollbar {
+                            background-color: #091b46;
+                            background-color: transparent;
+                            width: 10px;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-thumb {
+                            background-color: #1a3a8a;
+                            background-color: transparent;
+                            border-radius: 10px;
+                        }
+                    `}
+        </style>
+
+      </header>
+    </div>
   ) : null;
 }
 
@@ -585,27 +711,48 @@ export const PublicAndHeartIcons = ({
   parrotBlueDarkTransparent,
   parrotBlueDarkTransparent2,
 }) => {
+  const [isHoveredHeart, setIsHoveredHeart] = useState(false)
+  const [isHoveredPublicOnMap, setIsHoveredPublicOnMap] = useState(false)
   return (
     <>
       {isFavorited ? (
-        <div onClick={() => handleDeleteVoyageFromFavorites()} style={heartIconRed} title="Remove from favorites">
+        <div
+          onClick={() => handleDeleteVoyageFromFavorites()}
+          onMouseEnter={() => setIsHoveredHeart(true)}
+          onMouseLeave={() => setIsHoveredHeart(false)}
+          style={{ ...heartIconRed, cursor: "pointer" }} >
           <IoHeartSharp size="1.5rem" color="red" />
+          <CustomToolTip isHovered={isHoveredHeart} message={"In Favorites"} />
         </div>
       ) : (
-        <div onClick={() => handleAddVoyageToFavorites()} style={heartIconOrange} title="Add to favorites">
+        <div
+          onClick={() => handleAddVoyageToFavorites()}
+          onMouseEnter={() => setIsHoveredHeart(true)}
+          onMouseLeave={() => setIsHoveredHeart(false)}
+          style={{ ...heartIconOrange, cursor: "pointer" }} >
           <IoHeartSharp size="1.5rem" color="orange" />
+          <CustomToolTip isHovered={isHoveredHeart} message={"Add to Favorites"} />
         </div>
       )}
 
-      {!isPublicOnMap ? (
-        <div style={publicIconStyle(parrotDarkBlue, "parrotBlueDarkTransparent")} title="Is public on map, visible to everyone on their Home page">
+      {isPublicOnMap ? (
+        <div
+          onMouseEnter={() => setIsHoveredPublicOnMap(true)}
+          onMouseLeave={() => setIsHoveredPublicOnMap(false)}
+          style={publicIconStyle(parrotDarkBlue, "white")} >
           <MdPublic size="1.5rem" color={parrotDarkBlue} />
+          <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Visible on Map"} />
         </div>
       ) : (
-        <div style={publicIconStyle(parrotBlueDarkTransparent2, "white")} title="Is not public on map, not visible to everyone on their Home page">
+        <div
+          onMouseEnter={() => setIsHoveredPublicOnMap(true)}
+          onMouseLeave={() => setIsHoveredPublicOnMap(false)}
+          style={publicIconStyle(parrotBlueDarkTransparent2, "parrotBlueDarkTransparent")} >
           <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
+          <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Not Visible Globally"} />
         </div>
       )}
     </>
   );
 };
+

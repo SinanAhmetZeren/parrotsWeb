@@ -6,7 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
 import { FaWalking, FaRunning, FaTrain } from "react-icons/fa";
-import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 import trainImage from "../assets/images/train.jpeg";
 import walkImage from "../assets/images/walk1.jpeg";
 import runImage from "../assets/images/run1.jpeg";
@@ -67,9 +67,9 @@ export function VoyageDetailPageDetails({ voyageData }) {
               }}
               // onMouseEnter={() => setHoveredUser(true)}
               // onMouseLeave={() => setHoveredUser(false)}
-              alt=" "
+              alt="profile"
             />
-            <span style={{ ...userAndVehicleText }}>
+            <span style={userAndVehicleText}>
               {voyageData.user.userName}
             </span>
           </div>
@@ -90,7 +90,9 @@ export function VoyageDetailPageDetails({ voyageData }) {
 
           >
             {specialImage && (
-              <span style={userAndVehicleText}>
+              <span
+              // style={userAndVehicleText}
+              >
                 <img src={specialImage} style={userImage} alt={voyageData.vehicle.name} />
               </span>
             )}
@@ -165,7 +167,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
       <div style={detailRowDivided}>
         <div style={detailRowDividedChild}>
           <div style={detailRowDividedChildName}>
-            Auction
+            Auction:
           </div>
           <div style={detailRowDividedChildInfo}>
             {voyageData.auction ?
@@ -197,16 +199,17 @@ export function VoyageDetailPageDetails({ voyageData }) {
 
 const detailName = {
   color: parrotTextDarkBlue,
-  fontWeight: "800",
+  fontWeight: "900",
   fontSize: "1rem",
   // backgroundColor: "yellow",
   width: "100%",
   display: "flex",
+
 };
 
 const detailRowDividedChild = {
   color: parrotTextDarkBlue,
-  fontWeight: "800",
+  fontWeight: "900",
   fontSize: "1rem",
   // backgroundColor: "green",
   width: "100%",
@@ -214,12 +217,12 @@ const detailRowDividedChild = {
 };
 
 const detailInfo = {
-  color: parrotTextDarkBlue,
-  fontWeight: "400",
-  fontSize: "1rem",
   // backgroundColor: "orange",
+  fontSize: "1rem",
   width: "100%",
   display: "flex",
+  color: parrotBlue,
+  fontWeight: "800",
 };
 
 const detailRowDividedChildName = {
@@ -234,13 +237,12 @@ const detailRowDividedChildName = {
 }
 
 const detailRowDividedChildInfo = {
-  color: parrotTextDarkBlue,
-  fontWeight: "400",
   fontSize: "1rem",
-  // backgroundColor: "orange",
   width: "100%",
   display: "flex",
   // backgroundColor: "rgba(0, 119, 234,0.048)",
+  color: parrotBlue,
+  fontWeight: "800",
 
 }
 
@@ -306,7 +308,7 @@ const userAndVehicleBox = {
   alignItems: "center",
   backgroundColor: "rgba(0, 119, 234,0.06)",
   borderRadius: "4rem",
-  marginLeft: "0.5rem",
+  // marginLeft: "0.5rem",
   height: "2rem",
   transition: "transform 0.3s ease-in-out", // Smooth transition
 
@@ -332,7 +334,7 @@ const vehicles = [
   "🚄", // Train
 ];
 
-function formatCustomDate(dateString) {
+function formatCustomDate2(dateString) {
   return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
@@ -340,6 +342,17 @@ function formatCustomDate(dateString) {
   })
     .format(new Date(dateString))
     .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
+}
+
+function formatCustomDate(dateString) {
+  const date = new Date(dateString);
+
+  const options = { month: "short" }; // "Jan", "Feb", ...
+  const month = new Intl.DateTimeFormat("en-US", options).format(date);
+  const day = String(date.getDate()).padStart(2, "0"); // "01", "25"
+  const year = String(date.getFullYear()).slice(-2); // last 2 digits
+
+  return `${month} ${day}, ${year}`;
 }
 
 export default function VehicleIcon({ vehicleType }) {

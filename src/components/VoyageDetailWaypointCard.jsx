@@ -1,6 +1,8 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { parrotTextDarkBlue } from "../styles/colors";
+import DOMPurify from "dompurify";
+import he from "he";
 
 export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation, voyageImage }) {
 
@@ -35,12 +37,21 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation, voyage
           {waypoint.title}
         </div>
         <div style={waypointBrief}>
-          <div style={scrollableDescription}>
-            {waypoint.description}
-          </div>
+          <div style={scrollableDescription}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(
+                he
+                  .decode(
+                    waypoint?.description
+                      .replace(/<[^>]+>/g, " ") // strip all HTML tags
+                      .replace(/\s+/g, " ")     // normalize spaces
+                      .trim()
+                  )
+              ),
+            }}
+          />
         </div>
         <div style={seeOnMap} onClick={onClick}>
-
           See on map
         </div>
       </div>
@@ -103,7 +114,7 @@ const waypointBrief = {
   width: "88%",
   margin: "auto",
   marginTop: "0.6rem",
-  textAlign: "justify",
+  textAlign: "left",
 };
 
 const seeOnMap = {

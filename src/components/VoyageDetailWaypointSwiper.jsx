@@ -9,7 +9,7 @@ import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
 export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity, voyageImage }) {
 
   return (
-    <div style={{ opacity: opacity }}>
+    <div style={{ opacity: opacity, overflow: "hidden" }}>
       <Swiper
         slidesPerView={1.65}
         spaceBetween={5}
@@ -18,8 +18,10 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
           clickable: true,
         }}
         style={{
-          width: "100%",
+          // width: "100%",
+          width: "100vh",
           height: "35vh",
+          left: "-10vh"
         }}
       >
         {waypoints.map((waypoint, index) => (

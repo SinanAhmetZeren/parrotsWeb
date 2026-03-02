@@ -19,6 +19,8 @@ import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { parrotBlueSemiTransparent, parrotBlueTransparent, parrotGreen, parrotTextDarkBlue } from "../styles/colors";
+import { CustomToolTip } from "./CustomToolTip";
+import { CustomToolTipBidMessage } from "./CustomToolTipBidMessage";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const baseUserImageUrl = ``;
@@ -193,7 +195,7 @@ export function VoyageDetailBids({
       <div
         style={{
           overflow: "auto",
-          minHeight: "35vh",
+          minHeight: "50vh",
           scrollbarColor: "#1e90ff50",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -232,6 +234,46 @@ function BidsList({
   handleDeleteBid,
   loadingBidId,
 }) {
+
+  if (bidsData.length === 0 && false) {
+
+    return (
+      <div
+        style={{
+          // backgroundColor: "rgba(255, 255, 255, 0.05)",
+          height: "100%",
+          width: "92%",
+          padding: "1vh",
+          borderRadius: "1.5rem",
+          position: "relative",
+          margin: "auto",
+          marginTop: "15rem",
+          display: "flex", // Use flexbox
+          justifyContent: "center", // Center horizontally
+          alignItems: "center", // Center vertically
+          textAlign: "center", // Ensure text alignment
+        }}
+      >
+        <span
+          style={{
+            color: "rgba(255, 255, 255, 0.8)",
+            fontSize: "1.1rem",
+            fontWeight: 800,
+            textShadow: `
+          2px 2px 4px rgba(0, 0, 0, 0.6),  
+          -2px -2px 4px rgba(255, 255, 255, 0.2)
+        `,
+            filter: "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4))",
+          }}
+        >
+          No Bids Yet
+        </span>
+      </div>
+    )
+  }
+
+
+
   return bidsData.map((bid, i) => {
     const bidId = `bid-${i}`; // Unique bid identifier
     return (
@@ -271,6 +313,8 @@ function RenderBid({
   handleDeleteBid,
 }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
+  const [isHoveredBid, setIsHoveredBid] = React.useState(false)
+
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
     // navigate(`/profile-public/${bidUserId}/${username}`);
@@ -282,7 +326,8 @@ function RenderBid({
 
     <div style={{
       ...dataRowItem,
-      height: ownVoyage ? "4.5rem" : "4rem"
+      height: ownVoyage ? "4.5rem" : "4rem",
+      position: "relative"
     }}>
       <div style={leftItem}>
         <div style={imgWrapper}>
@@ -318,8 +363,12 @@ function RenderBid({
         </span>
         <span style={bidAmount}>€{price}</span>
       </div>
-      <div style={middleBottomItem}>
+      <div style={middleBottomItem}
+        onMouseEnter={() => setIsHoveredBid(true)}
+        onMouseLeave={() => setIsHoveredBid(false)}
+      >
         {ownVoyage ? <span style={bidMessage} title={message}>{message}</span> : " "}
+        {ownVoyage && <CustomToolTipBidMessage isHovered={isHoveredBid} message={message} />}
       </div>
       <div style={rightItem}>
         <span
@@ -469,6 +518,7 @@ const middleTopItem = {
 };
 
 const middleBottomItem = {
+  // position: "relative",
   gridRow: "2",
   gridColumn: "2",
   display: "flex",

@@ -62,6 +62,25 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
             </SwiperSlide>
           ))}
         </Swiper>
+
+        <style>
+          {`
+        .swiper-button-prev::after,
+        .swiper-button-next::after {
+          font-size: 20px;
+          font-weight: 900;
+          color: gold
+        }
+
+        .swiper-button-prev,
+        .swiper-button-next {
+          width: 10px;
+          height: 30px;
+        }
+        
+      `}
+        </style>
+
       </div>
     </div>
   );

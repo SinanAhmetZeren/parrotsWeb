@@ -520,6 +520,18 @@ const TermsOfUseComponent = () => {
                                 <div style={styles.paragraph}>
                                     Parrots may update this Privacy Policy from time to time. Continued use of the platform constitutes acceptance of the updated policy.
                                 </div>
+
+
+                                <div style={styles.sectionTitle2}>k. Local Device Storage</div>
+                                <div style={styles.paragraph}>
+
+
+                                    Parrots may store certain information locally on your device,
+                                    such as login credentials, preferences, and app settings, to maintain your session and improve functionality.
+                                    This data is not shared with third parties and can be cleared by you at any time.
+
+                                </div>
+
                             </div>
 
 
