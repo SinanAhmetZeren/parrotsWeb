@@ -264,6 +264,16 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    confirmUser: builder.mutation({
+      query: (confirmData) => {
+        console.log("confirmData:--->", confirmData);
+        return {
+          url: "/api/account/confirmCode",
+          method: "POST",
+          body: confirmData,
+        };
+      },
+    }),
     requestCode: builder.mutation({
       query: (email) => ({
         url: `/api/account/sendCode/${email}`,
@@ -393,6 +403,30 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    depositCoins: builder.mutation({
+      query: ({ userId, coins, usdAmount, paymentProviderId }) => ({
+        url: `/api/User/DepositCoins`,
+        method: "POST",
+        body: {
+          userId,
+          coins,
+          usdAmount,
+          paymentProviderId
+        },
+      }),
+    }),
+    getParrotCoinBalance: builder.query({
+      query: (userId) => {
+        if (userId) {
+          return `/api/User/parrotCoinBalance/${userId}`;
+        } else {
+          return "";
+        }
+      },
+      transformResponse: (responseData) => responseData.data,
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
     getFavoriteVoyageIdsByUserId: builder.query({
       query: (userId) => {
         if (userId) {
@@ -440,4 +474,7 @@ export const {
   useUpdateProfileImageMutation,
   useUpdateBackgroundImageMutation,
   usePatchUserMutation,
+  useDepositCoinsMutation,
+  useGetParrotCoinBalanceQuery,
+  useLazyGetParrotCoinBalanceQuery
 } = extendedApiSlice;

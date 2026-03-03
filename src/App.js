@@ -28,6 +28,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection, invokeHub, isHubReady, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
 import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
 import { ParrotCoinPage } from "./pages/ParrotCoinPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -134,6 +136,8 @@ function App() {
           </>
         )}
       </Routes>
+      <ToastContainer position="top-center" style={{ marginTop: "6rem" }} />
+
     </Router>
   );
 }

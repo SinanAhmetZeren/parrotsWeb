@@ -12,7 +12,6 @@ import {
   useGetVehiclesByUserByIdQuery,
 } from "../slices/VehicleSlice";
 import { CreateVoyageDatePicker } from "../components/CreateVoyageDatePicker";
-
 import {
   useAddVoyageImageMutation,
   useCheckAndDeleteVoyageMutation,
@@ -23,10 +22,9 @@ import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderC
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
 import { VoyageDetailsInputsComponent } from "../components/VoyageDetailsInputsComponent";
 import { AddWaypointsPage } from "../components/AddWaypointsComponent";
-import { useLocation } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
-
+import { toast } from "react-toastify";
 
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
@@ -158,6 +156,29 @@ export default function CreateVoyagePage() {
         userId,
         vehicleId,
       });
+
+      if (!response.data.success) {
+
+        console.log("response: ", response.data.message);
+
+        toast(
+          ({ closeToast }) => (
+            <div className="flex items-center justify-between ">
+              <div>
+                <strong className="text-xl">Not enough ParrotCoins</strong>
+                <p className="text-lg  ">
+                  You need more coins to create this voyage.
+                </p>
+
+              </div>
+            </div>
+          ),
+          { autoClose: 6000 }
+        );
+
+        setIsCreatingVoyage(false);
+        return;
+      }
 
       const createdVoyageId = response.data.data.id;
       setVoyageId(createdVoyageId);
