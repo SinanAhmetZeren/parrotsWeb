@@ -1,4 +1,5 @@
 export const parrotDarkBlue = "#003366";
+export const parrotDarkerBlue = "#011a32";
 export const parrotTextDarkBlue = "#00008B";
 export const parrotButtonDarkBlue = "#005187";
 export const parrotBlue = "rgb(10, 119, 234)";
