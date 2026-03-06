@@ -136,7 +136,7 @@ const searchMainContainer = {
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  height: "93vh"
+  height: "93vh",
 }
 
 const searchResultsContainer = {

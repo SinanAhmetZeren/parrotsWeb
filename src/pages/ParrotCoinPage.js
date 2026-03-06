@@ -8,8 +8,12 @@ import { useSelector } from "react-redux";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import parrotcoin from "../assets/images/parrotcoin.png";
-import { useDepositCoinsMutation, useLazyGetParrotCoinBalanceQuery } from "../slices/UserSlice";
-import { parrotDarkBlue, parrotDarkerBlue } from "../styles/colors";
+import {
+  useDepositCoinsMutation, useGetUsersByUsernameQuery, useLazyGetParrotCoinBalanceQuery,
+  useLazyGetUsersByUsernameQuery, useSendParrotCoinsMutation
+} from "../slices/UserSlice";
+import { parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
+import { IoSearch } from "react-icons/io5";
 
 export function ParrotCoinPage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -17,43 +21,50 @@ export function ParrotCoinPage() {
   const userId = local_userId !== null ? local_userId : state_userId;
   const navigate = useNavigate();
   const [depositCoins] = useDepositCoinsMutation();
+  const [sendParrotCoins] = useSendParrotCoinsMutation();
   const [getParrotCoinBalance] = useLazyGetParrotCoinBalanceQuery();
-
-  const initial = 0;
-  const [currentBalance, setCurrentBalance] = useState(initial);
+  const [getUsersByUsername] = useLazyGetUsersByUsernameQuery();
+  const [currentBalance, setCurrentBalance] = useState(0);
   const [purchases, setPurchases] = useState([]);
   const [selectedAmounts, setSelectedAmounts] = useState([]); // basket array
   const [totalPayment, setTotalPayment] = useState(0); // basket array
-  const [newBalance, setNewBalance] = useState(initial);
+  const [newBalance, setNewBalance] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isProcessingSend, setIsProcessingSend] = useState(false)
   const [hovered, setHovered] = useState(null);
+  const [hoveredSearch, setHoveredSearch] = useState(null);
+  const [amount, setAmount] = useState(0);
+  const [recipient, setRecipient] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
-
+  const handleAmountChange = (e) => {
+    const rawValue = e.target.value.replace(/\D/g, "");
+    if (rawValue.length > 6) return;
+    setAmount(rawValue === "" ? 0 : parseInt(rawValue, 10));
+  };
+  // Calculate this variable every time the component renders
+  const displayValue = amount === 0 ? "" : amount.toLocaleString();
   const purchaseOptions = [
     { coins: 100, priceUSD: 3.00 },     // 1000 coins = $0.10
     { coins: 1000, priceUSD: 30.0 },       // 10k coins = $1
     { coins: 10000, priceUSD: 300.0 },     // 100k coins = $10
   ];
-
   const handleAddToBasket = (amount) => {
     setSelectedAmounts((prev) => [...prev, amount.coins]);
     setTotalPayment((prev) => Math.round((prev + amount.priceUSD) * 100) / 100);
     setNewBalance((prev) => prev + amount.coins);
   };
-
   const handleClearBasket = () => {
     setSelectedAmounts([]);
     setTotalPayment(0);
     setNewBalance(currentBalance); // reset new balance to current
   };
-
   const handleConfirmPurchase = async () => {
     if (selectedAmounts.length === 0 || isProcessing) return;
-
     setIsProcessing(true);
-
     const totalCoins = selectedAmounts.reduce((acc, val) => acc + val, 0);
-
     try {
       // 1. Deposit coins and wait for completion
       await depositCoins({
@@ -62,7 +73,6 @@ export function ParrotCoinPage() {
         usdAmount: totalPayment,
         paymentProviderId: "parrotsVirtual"
       }).unwrap();
-
       // 2. Refetch the latest balance & purchases from server
       const response = await getParrotCoinBalance(userId).unwrap();
 
@@ -86,6 +96,65 @@ export function ParrotCoinPage() {
     }
   };
 
+  const handleSendAmount = async () => {
+
+    console.log("1. sending parrot coins.");
+    // 1. Validate
+    if (!recipient || amount <= 0 || isProcessingSend || !selectedUserId) return;
+    setIsProcessingSend(true);
+    try {
+      // 2. Send coins to the recipient
+      await sendParrotCoins({
+        userId: userId,
+        receiverId: selectedUserId,
+        coins: amount,
+      }).unwrap();
+
+      console.log("sending parrot coins: ", userId, "->", selectedUserId, "->", amount);
+
+      // 3. Refetch sender's balance
+      const response = await getParrotCoinBalance(userId).unwrap();
+      setCurrentBalance(response.balance);
+      setPurchases(response.purchases);
+      setNewBalance(response.balance);
+
+      // 4. Clear input
+      setAmount(0);
+      setRecipient("");
+      setSelectedUserId(null);
+
+      console.log(`Sent ${amount} coins to ${recipient}`);
+    } catch (err) {
+      console.error("Error sending coins:", err);
+    } finally {
+      setIsProcessingSend(false);
+    }
+  };
+
+
+  const handleSearch = async () => {
+    if (recipient.length < 3) return;
+    const users = await getUsersByUsername(recipient, { skip: recipient.length < 3 })
+    console.log("--->", users.data);
+    setSearchResults(users.data)
+    setShowResults(true); // force popup open
+  }
+
+  useEffect(() => {
+    console.log("searchResult: ", searchResults);
+    console.log("recipient: ", recipient);
+    console.log("selectedUserId: ", selectedUserId);
+  }, [searchResults, recipient, selectedUserId])
+
+
+
+  const handleSelectUser = (user) => {
+    setRecipient(user.userName);   // populate input
+    setSelectedUserId(user.id); // store id
+    setShowResults(false);          // close popup
+  };
+
+
   useEffect(() => {
     if (userId) {
       const fetchBalance = async () => {
@@ -104,6 +173,8 @@ export function ParrotCoinPage() {
   }, [userId, getParrotCoinBalance]);
 
 
+
+
   const { isError: isHealthCheckError } = useHealthCheckQuery();
   if (isHealthCheckError) return <SomethingWentWrong />;
 
@@ -112,36 +183,39 @@ export function ParrotCoinPage() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="flex mainpage_Container">
+        <div className="flex mainpage_Container" style={{ backgroundColor: "rgba(1, 1, 88, 0.87)" }}>
           <div className="flex mainpage_TopRow">
             <TopLeftComponent />
             <div className="flex mainpage_TopRight">
               <TopBarMenu />
             </div>
           </div>
-
-
+          {/* EXPLANATION OF PARROT COINS */}
           <div style={wrapperWrapper3}>
             <div>
-              <span style={accountBalanceTitle}>Account Balance  </span>
+              <span style={accountBalanceTitle}>ParrotCoins  </span>
             </div>
-            <div>
+            <div style={{ marginTop: "1rem" }}>
               <span style={{}}>
-                Featuring your voyage on the main map costs Parrot Coins
+                Featuring your voyage on the main map costs ParrotCoins
                 <div style={{ ...coinContainer2, display: "inline-grid", marginLeft: "4px" }}>
                   <img src={parrotcoin} alt="Parrot Coin" style={coinImg2} />
                 </div>.
                 {"\u00A0\u00A0"}This is a one-time deduction based on the number of days between your
                 posting date and the start of your voyage—at which point it is no longer visible on the map.
-                {"\u00A0\u00A0"}For example, a voyage starting in 10 days will cost 10 Parrot Coins.
+                {"\u00A0\u00A0"}For example, a voyage starting in 10 days will cost 10 ParrotCoins.
               </span>
             </div>
           </div>
-
+          {/* BALANCE, PURCHASE AND BUTTONS */}
           <div style={accountDataWrapper}>
-            <div style={wrapperWrapper2}>
+            <div>
+              <span style={accountBalanceTitle}>Account and Purchase   </span>
+            </div>
+            <div style={{ ...wrapperWrapper2, marginTop: "1rem" }}>
+
               <div style={wrapper2}>
-                {/* Current Balance */}
+                {/* 1ST ROW: Current Balance */}
                 <div style={box1}>
                   <span style={textStyle}>Current Balance</span>
                 </div>
@@ -157,21 +231,18 @@ export function ParrotCoinPage() {
             </div>
             <div style={wrapperWrapper}>
               <div style={wrapper}>
-                {/* Get Parrot Coins */}
+                {/* 1ST ROW: Get Parrot Coins & AMOUNT BUTTONS */}
                 <div style={box3}>
-                  <span style={textStyle}>Get Parrot Coins</span>
+                  <span style={textStyle}>Get ParrotCoins</span>
                 </div>
                 {purchaseOptions.map((amt, index) => (
                   <div
                     key={index}
-
                     style={boxClickable(index, hovered === index)}
                     onMouseEnter={() => setHovered(index)}
                     onMouseLeave={() => setHovered(null)}
-                    // style={boxClickable(index)}
                     onClick={() => handleAddToBasket(amt)}
                   >
-
                     <span style={textStylePrice}>${amt.priceUSD.toFixed(2)}  </span>
                     <span style={textStyle}>{amt.coins.toLocaleString()}</span>
                     <div style={coinContainer}>
@@ -184,12 +255,11 @@ export function ParrotCoinPage() {
             </div>
             <div style={wrapperWrapper2}>
               <div style={wrapper2}>
-                {/* Basket Row */}
+                {/* BASKET Row */}
                 <div style={boxBasketLeft}>
                   <span style={textStyle}>
                     Basket Total:
                   </span>
-
                 </div>
                 <div style={boxBasketRight}>
                   <span style={textStylePrice}>${totalPayment}  </span>
@@ -209,7 +279,7 @@ export function ParrotCoinPage() {
             <div style={wrapperWrapper}>
               <div style={wrapper}>
 
-                {/* New Balance */}
+                {/* New Balance AFTER PURCHASE AND CONFIRM BUTTON */}
                 <div style={box7}>
                   <span style={textStyle}>New Balance</span>
                 </div>
@@ -219,29 +289,22 @@ export function ParrotCoinPage() {
                     <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
                   </div>
                 </div>
-
-
                 <div style={{ ...boxConfirm, gridColumn: "3" }}>
                   <button
                     style={selectedAmounts.length === 0 || isProcessing ? clearButtonDisabled : clearButton} // or create a new style for "clear"
                     disabled={selectedAmounts.length === 0 || isProcessing}
-                    onClick={handleClearBasket}
-                  >
+                    onClick={handleClearBasket}>
                     Clear Basket
                   </button>
                 </div>
-
-                {/* Confirm Purchase Button */}
                 <div style={boxConfirm}>
                   <button
                     style={
                       basketTotal === 0 || isProcessing
                         ? confirmButtonDisabled
-                        : confirmButton
-                    }
+                        : confirmButton}
                     disabled={basketTotal === 0 || isProcessing}
-                    onClick={() => handleConfirmPurchase()}
-                  >
+                    onClick={() => handleConfirmPurchase()}>
                     <div style={{ width: "100%", textAlign: "center", position: "relative" }}>
                       {isProcessing ? (
                         <>
@@ -258,12 +321,145 @@ export function ParrotCoinPage() {
                     </div>
                   </button>
                 </div>
+              </div>
+            </div>
 
+            <div style={wrapperWrapper}>
+              <div style={wrapper}>
+                {/* FIRST DIV: "SEND" TEXT */}
+                <div style={boxSend}>
+                  <span style={textStyle}>Send ParrotCoins</span>
+                </div>
+
+                {/* SECOND DIV: RECIPIENT INPUT (TEXT) */}
+                <div style={{ ...boxSend, gridColumn: "2", justifyContent: "flex-end", position: "relative" }}>
+                  <input
+                    type="text"
+                    placeholder="send to"
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                    className="send-input"
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "white",
+                      textAlign: "right",
+                      outline: "none",
+                      width: "100%",
+                      fontWeight: "800"
+                    }}
+                  />
+
+                  <style>
+                    {`
+              .send-input::placeholder {
+                color: rgba(160,160,200,0.2); 
+                opacity: 1;
+                font-size: 1.5rem;
+                font-weight: 800;
+              }
+            `}
+                  </style>
+                  <div style={magnifierContainerStyle} onClick={() => handleSearch()}>
+                    <IoSearch style={magnifierStyle} /> {/* search */}
+                  </div>
+
+
+                  {showResults && (
+                    <div style={{
+                      position: "absolute",
+                      bottom: "0%",
+                      right: "0rem",
+                      background: "#0b1e2d",
+                      border: "1px solid gold",
+                      borderRadius: "1rem",
+                      width: "20rem",
+                      zIndex: 10,
+                      transform: "translateX(100%)"
+                    }}>
+                      {searchResults.map((user, index) => (
+                        <div
+                          key={user.id}
+                          onClick={() => handleSelectUser(user)}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "8px",
+                            cursor: "pointer",
+                            background: index === hoveredSearch ? "linear-gradient(-90deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, .050) 50%)" : null
+                          }}
+                          onMouseEnter={() => { setHoveredSearch(index); }}
+                          onMouseLeave={() => { setHoveredSearch(null); }}
+                        >
+                          <img
+                            src={user.profileImageUrl}
+                            alt="recipient profile"
+                            style={{ width: "3rem", height: "3rem", borderRadius: "50%", marginRight: 8 }}
+                          />
+                          <span>{user.userName}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                </div>
+
+
+
+                {/* THIRD DIV: AMOUNT INPUT (NUMBER ONLY) */}
+                <div style={{ ...boxSend, gridColumn: "3", justifyContent: "flex-end" }}>
+                  <input
+                    type="text"
+                    placeholder="0"
+                    value={displayValue}
+                    onChange={handleAmountChange}
+                    style={{
+                      ...amountStyle,
+                      background: "transparent",
+                      border: "none",
+                      width: "10rem",
+                      textAlign: "right",
+                      color: (currentBalance !== newBalance) ? "yellow" : "white"
+                    }}
+                    className="send-input"
+
+                  />
+                  <div style={coinContainer}>
+                    <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+                  </div>
+                </div>
+
+
+                {/* FOURTH DIV: "SEND" TEXT */}
+                <div style={{ ...boxSend, gridColumn: "4", justifyContent: "center" }}>
+                  <button
+                    style={
+                      amount === 0 || recipient === "" || isProcessingSend
+                        ? sendButtonDisabled
+                        : sendButton}
+                    disabled={amount === 0 || isProcessingSend}
+                    onClick={() => handleSendAmount()}>
+                    <div style={{ width: "100%", textAlign: "center", position: "relative" }}>
+                      {isProcessingSend ? (
+                        <>
+                          {/* Spinner centered in button */}
+                          <div style={spinnerContainer}>
+                            <div className="spinner" style={spinnerInner}></div>
+                          </div>
+                          {/* Invisible text to maintain button size */}
+                          <span style={{ opacity: 0 }}>Send ParrotCoins</span>
+                        </>
+                      ) : (
+                        "Send ParrotCoins"
+                      )}
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-
+          {/* TRANSACTION HISTORY */}
           <div style={wrapperWrapper3}>
 
             {/* New Section: Purchase History */}
@@ -313,13 +509,6 @@ export function ParrotCoinPage() {
               </div>
             </div>
           </div>
-
-
-
-
-
-
-
         </div>
       </header >
     </div >
@@ -377,6 +566,8 @@ const accountDataWrapper = {
   margin: "auto",
   marginTop: 0,
   border: "1px solid gold",
+  borderColor: parrotGreen,
+
   padding: "1rem",
   borderRadius: "1rem",
 }
@@ -399,6 +590,7 @@ const wrapperWrapper2 = {
 const wrapperWrapper3 = {
   ...wrapperWrapper,
   border: "1px solid gold",
+  borderColor: parrotGreen,
   marginTop: "1rem",
   width: "80vw",
   padding: "1rem",
@@ -467,6 +659,7 @@ const box3 = { ...boxBase, gridRow: "1", gridColumn: "1" };
 const boxBasketLeft = { ...boxBase, gridRow: "1", gridColumn: "1", };
 const boxBasketRight = { ...boxBase, gridRow: "1", gridColumn: "2", justifyContent: "flex-end" };
 const box7 = { ...boxBase, gridRow: "1", gridColumn: "1" };
+const boxSend = { ...boxBase, gridRow: "1", gridColumn: "1" };
 const box8 = { ...boxBase, gridRow: "1", gridColumn: "2", justifyContent: "flex-end" };
 const boxConfirm = { ...boxBase, gridRow: " 1", gridColumn: "4", justifyContent: "center" };
 
@@ -512,18 +705,7 @@ const coinImg2 = {
   height: "100%",
 };
 
-const confirmButtonDisabled = {
-  padding: "0.4rem 2rem",
-  fontSize: "1rem",
-  fontWeight: 800,
-  borderRadius: "8px",
-  border: "none",
-  cursor: "pointer",
-  backgroundColor: "#ffcc0055",
-  // color: "#0f2a4755",
-  color: "rgba(255,255,255,0.3)",
-  display: "flex"
-};
+
 
 const confirmButton = {
   padding: "0.4rem 2rem",
@@ -535,19 +717,37 @@ const confirmButton = {
   backgroundColor: "#ffcc00",
   color: "#0f2a47",
   display: "flex",
-  // flexDirection: "column", // stack top/bottom
-  // alignItems: "center",    // center horizontally
-  // justifyContent: "center" // center vertically
 };
 
+const confirmButtonDisabled = {
+  ...confirmButton,
+  backgroundColor: "#ffcc0055",
+  color: "rgba(255,255,255,0.3)",
+};
 
+const sendButton = {
+  padding: "0.4rem 2rem",
+  fontSize: "1rem",
+  fontWeight: 800,
+  borderRadius: "8px",
+  border: "none",
+  cursor: "pointer",
+  backgroundColor: parrotGreen,
+  color: "#0f2a47",
+  display: "flex",
+};
+
+const sendButtonDisabled = {
+  ...sendButton,
+  backgroundColor: "rgb(42, 200, 152,0.3)",
+  color: "rgba(255,255,255,0.3)",
+};
 
 const accountBalanceTitle = {
   width: "100%", // Added quotes around "100%"
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
   color: "white",
-  // marginTop: "2rem"
 };
 
 const accountBalanceExplanation = {
@@ -609,4 +809,26 @@ const historyRow = {
 
 const historyCell = {
   fontWeight: "600"
+};
+
+
+const magnifierContainerStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginLeft: ".5rem",
+};
+
+const magnifierStyle = {
+  // backgroundColor: "#f9f5f1",
+  backgroundColor: "white",
+  borderRadius: "50%",
+  padding: ".2rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: "#3c9dde",
+  height: "2rem",
+  width: "2rem",
+  border: "2px solid #c0c0c070",
 };

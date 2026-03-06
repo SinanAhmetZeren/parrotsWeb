@@ -415,6 +415,17 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    sendParrotCoins: builder.mutation({
+      query: ({ userId, coins, receiverId }) => ({
+        url: `/api/User/sendParrotCoins`,
+        method: "POST",
+        body: {
+          userId,
+          coins,
+          receiverId
+        },
+      }),
+    }),
     getParrotCoinBalance: builder.query({
       query: (userId) => {
         if (userId) {
@@ -456,6 +467,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 });
 export const {
   useGetUsersByUsernameQuery,
+  useLazyGetUsersByUsernameQuery,
   //
   useGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
@@ -475,6 +487,7 @@ export const {
   useUpdateBackgroundImageMutation,
   usePatchUserMutation,
   useDepositCoinsMutation,
+  useSendParrotCoinsMutation,
   useGetParrotCoinBalanceQuery,
   useLazyGetParrotCoinBalanceQuery
 } = extendedApiSlice;
