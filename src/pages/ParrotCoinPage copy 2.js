@@ -9,10 +9,10 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import parrotcoin from "../assets/images/parrotcoin.png";
 import {
-  usePurchaseCoinsMutation, useLazyGetParrotCoinBalanceQuery,
+  useDepositCoinsMutation, usePurchaseCoinsMutation, useLazyGetParrotCoinBalanceQuery,
   useLazyGetUsersByUsernameQuery, useSendParrotCoinsMutation
 } from "../slices/UserSlice";
-import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
+import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
 import { IoSearch } from "react-icons/io5";
 
 export function ParrotCoinPage() {
@@ -39,7 +39,7 @@ export function ParrotCoinPage() {
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [displayState, setDisplayState] = useState("purchases")
+  const [displayState, setDisplayState] = useState("Purchases")
 
   const handleAmountChange = (e) => {
     const rawValue = e.target.value.replace(/\D/g, "");
@@ -265,9 +265,7 @@ export function ParrotCoinPage() {
                   </span>
                 </div>
                 <div style={boxBasketRight}>
-                  <span style={{ ...textStylePrice, color: "red", textDecoration: 'line-through' }}
-                    title="it's discounted at the moment"
-                  >${totalPayment}  </span>
+                  <span style={textStylePrice}>${totalPayment}  </span>
                   {(
                     <>
                       <span style={textStyle}>
@@ -472,24 +470,23 @@ export function ParrotCoinPage() {
             <div style={selectorElement}>
               <span
                 onClick={() => setDisplayState("purchases")}
-
-                style={{
-                  ...(displayState === "purchases" ? selectedTitle : unselectedTitle),
-                  marginRight: "0.5rem",
-                }}
-
-                className={displayState === "purchases" ? "selected" : "unselected"}>
+                style={displayState === "purchases" ? selectedTitle : unselectedTitle}
+                className={displayState === "purchases" ? "selected" : "unselected"}
+              >
                 Purchase History
               </span>
+
               <span
                 onClick={() => setDisplayState("transactions")}
-                style={{ ...(displayState === "transactions" ? selectedTitle : unselectedTitle), marginLeft: "0.5rem" }}
+                style={displayState === "transactions" ? selectedTitle : unselectedTitle}
                 className={displayState === "transactions" ? "selected" : "unselected"}
               >
                 Transactions History
               </span>
-              <style>
-                {`
+            </div>
+
+            <style>
+              {`
                 .selected {
                   cursor: default;
                 }
@@ -502,111 +499,101 @@ export function ParrotCoinPage() {
                   //background-color: rgba(160,160,200,.1); 
                     background-color: ${parrotBlueSemiTransparent};
                 }
-              `
-                }
-              </style>
-            </div>
-
-            {displayState === "purchases" ?
-              <div style={historyWrapper} >
-                {/* Header Row */}
-                <div style={historyHeader}>
-                  <span style={{ ...historyCell, justifyContent: "flex-end" }}>Amount</span>
-                  <span style={historyCell}>USD Paid</span>
-                  <span style={historyCell}>Date</span>
-                  <span style={historyCell}>Status</span>
-                </div>
-
-                {/* Scrollable Data Rows */}
-                <div style={scrollContainer} className={"custom-scrollbar"} >
-                  {purchases.length > 0 ? (
-                    purchases.map((p, index) => (
-                      <div key={index} style={historyRow}>
-
-                        <span style={{ ...historyCell, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.5rem", marginRight: "5rem" }}>
-                          {p.coinsAmount.toLocaleString()}
-                          <div style={coinContainerHistory}>
-                            <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
-                          </div>
-                        </span>
-
-                        <span style={{ ...historyCell, color: "#ffcc00" }}>
-                          ${p.usdAmount.toFixed(2)}
-                        </span>
-                        <span style={historyCell}>
-                          {new Date(p.createdAt).toLocaleDateString()}
-                        </span>
-                        <span style={{
-                          ...historyCell,
-                          color: p.status === "completed" ? "#44ff44" : "#ffcc00",
-                        }}>
-                          {p.status.toUpperCase()}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ ...historyRow, justifyContent: 'center', opacity: 0.5 }}>
-                      No purchases yet.
-                    </div>
-                  )}
-                </div>
-              </div>
-              :
-              <div style={historyWrapper} >
-                {/* Header Row */}
-                <div style={historyHeader2}>
-                  <span style={historyCell}>Amount</span>
-                  <span style={historyCell}>Description</span>
-                  <span style={historyCell}>Date</span>
-                </div>
-
-                {/* Scrollable Data Rows */}
-                <div style={scrollContainer} className={"custom-scrollbar"}>
-                  {transactions.length > 0 ? (
-                    transactions.map((t, index) => (
-                      <div key={index} style={historyRow2}>
-
-                        <span style={{
-                          ...historyCell,
-                          display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.5rem", marginRight: "5rem"
-                        }}>
-                          {t.coinsAmount.toLocaleString()}
-                          <div style={coinContainerHistory}>
-                            <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
-                          </div>
-                        </span>
-
-                        <span style={{ ...historyCell, color: "#ffcc00", gridColumn: "2 / 3" }}>
-                          {t.description}
-                        </span>
-                        <span style={historyCell}>
-                          {new Date(t.createdAt).toLocaleDateString()}
-                        </span>
-
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ ...historyRow2, justifyContent: 'center', opacity: 0.5 }}>
-                      No transactions yet.
-                    </div>
-                  )}
-                </div>
-              </div>
-            }
-            <style>
-              {`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        background-color: transparent //#2581d8;
-                        width: 15px;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background-color: ${parrotBlueDarkTransparent};
-                        border-radius: 10px;
-                    }
-                `}
+              `}
             </style>
 
+            <div style={historyWrapper}>
+              {/* Header Row */}
+              <div style={historyHeader}>
+                <span style={historyCell}>Amount</span>
+                <span style={historyCell}>USD Paid</span>
+                <span style={historyCell}>Date</span>
+                <span style={historyCell}>Status</span>
+              </div>
+
+              {/* Scrollable Data Rows */}
+              <div style={scrollContainer}>
+                {purchases.length > 0 ? (
+                  purchases.map((p, index) => (
+                    <div key={index} style={historyRow}>
+
+                      <span style={{ ...historyCell, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                        <div style={coinContainerHistory}>
+                          <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+                        </div>
+                        {p.coinsAmount.toLocaleString()}
+                      </span>
+
+                      <span style={{ ...historyCell, color: "#ffcc00" }}>
+                        ${p.usdAmount.toFixed(2)}
+                      </span>
+                      <span style={historyCell}>
+                        {new Date(p.createdAt).toLocaleDateString()}
+                      </span>
+                      <span style={{
+                        ...historyCell,
+                        color: p.status === "completed" ? "#44ff44" : "#ffcc00",
+                      }}>
+                        {p.status.toUpperCase()}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ ...historyRow, justifyContent: 'center', opacity: 0.5 }}>
+                    No purchases yet.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
+
+          {/* TRANSACTION HISTORY */}
+          <div style={wrapperWrapper3}>
+            {/* New Section: Purchase History */}
+            <span style={accountBalanceTitle}>Transactions History</span>
+            <div style={historyWrapper}>
+              {/* Header Row */}
+              <div style={historyHeader2}>
+                <span style={historyCell}>Amount</span>
+                <span style={historyCell}>Description</span>
+                <span style={historyCell}>Date</span>
+              </div>
+
+              {/* Scrollable Data Rows */}
+              <div style={scrollContainer}>
+                {transactions.length > 0 ? (
+                  transactions.map((t, index) => (
+                    <div key={index} style={historyRow2}>
+
+                      <span style={{
+                        ...historyCell,
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem"
+                      }}>
+                        <div style={coinContainerHistory}>
+                          <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+                        </div>
+                        {t.coinsAmount.toLocaleString()}
+                      </span>
+
+                      <span style={{ ...historyCell, color: "#ffcc00", gridColumn: "2 / 3" }}>
+                        {t.description}
+                      </span>
+                      <span style={historyCell}>
+                        {new Date(t.createdAt).toLocaleDateString()}
+                      </span>
+
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ ...historyRow2, justifyContent: 'center', opacity: 0.5 }}>
+                    No transactions yet.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
         </div>
       </header >
     </div >
@@ -853,7 +840,6 @@ const selectorElement = {
   fontSize: "2rem", // Changed to camelCase
   fontWeight: 800, // Correct format for font-weight
   color: "white",
-
 }
 
 const selectedTitle = {
@@ -883,8 +869,7 @@ const historyWrapper = {
   borderRadius: "2rem",
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
-  height: "30rem"
+  gap: "0.5rem"
 };
 
 const historyHeader = {
