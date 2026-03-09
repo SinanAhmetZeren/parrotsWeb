@@ -12,10 +12,8 @@ import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
-import { MainPageMapVoyageCard } from "./MainPageMapVoyageCard";
 
 
-const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
 
 export const ClusteredVoyageMarkers = ({ voyages }) => {
