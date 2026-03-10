@@ -116,13 +116,30 @@ export function VoyageEditor() {
     return <SomethingWentWrong />;
   }
 
+  const defaultVoyage = {
+    name: "",
+    brief: "",
+    description: "",
+    vacancy: 0,
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
+    lastBidDate: new Date().toISOString(),
+    minPrice: 0,
+    maxPrice: 0,
+    currency: "",
+    fixedPrice: false,
+    auction: false,
+    publicOnMap: false,
+    confirmed: false,
+    isDeleted: false,
+    vehicle: { name: "", id: null },
+  };
+
+  const currentVoyage = voyage || defaultVoyage;
 
 
   return (
     (
-
-
-
       <div style={{
         padding: "20px", fontFamily: "Arial", fontSize: "1.2rem",
         width: "80%", backgroundColor: parrotDarkBlue,
@@ -169,7 +186,7 @@ export function VoyageEditor() {
             </div>
           </div>
         </div>
-        {voyage && (
+        {currentVoyage && (
           <div>
             {/* Name */}
             <div style={rowStyle}>
@@ -177,7 +194,7 @@ export function VoyageEditor() {
               <div style={inputWrapper}>
                 <input
                   type="text"
-                  value={voyage.name}
+                  value={currentVoyage.name}
                   onChange={(e) => handleChange("name", e.target.value)}
                   style={inputStyle}
                 />
@@ -189,7 +206,7 @@ export function VoyageEditor() {
               <div style={labelStyle}>Brief</div>
               <div style={inputWrapper}>
                 <textarea
-                  value={voyage.brief}
+                  value={currentVoyage.brief}
                   onChange={(e) => handleChange("brief", e.target.value)}
                   style={inputStyle}
                 />
@@ -201,7 +218,7 @@ export function VoyageEditor() {
               <div style={labelStyle}>Description</div>
               <div style={inputWrapper}>
                 <textarea
-                  value={voyage.description}
+                  value={currentVoyage.description}
                   onChange={(e) => handleChange("description", e.target.value)}
                   style={inputStyle}
                 />
@@ -214,110 +231,56 @@ export function VoyageEditor() {
               <div style={inputWrapper}>
                 <input
                   type="number"
-                  value={voyage.vacancy}
+                  value={currentVoyage.vacancy}
                   onChange={(e) => handleChange("vacancy", e.target.value)}
                   style={inputStyle}
                 />
               </div>
             </div>
 
-            <div style={{
-              display: "flex", gap: "10px",
-              paddingBottom: "1.1rem", width: "90%", margin: "auto"
-            }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>Start Date</div>
-                <div style={inputWrapper}>
-                  <input
-                    type="datetime-local"
-                    value={new Date(voyage.startDate).toISOString().slice(0, 16)}
-                    onChange={(e) => handleChange("startDate", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
+            {/* Dates */}
+            <div style={{ display: "flex", gap: "10px", paddingBottom: "1.1rem", width: "90%", margin: "auto" }}>
+              {["startDate", "endDate", "lastBidDate"].map((field) => (
+                <div key={field} style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
+                  <div style={labelStyle}>{field === "lastBidDate" ? "Last Bid" : field === "startDate" ? "Start Date" : "End Date"}</div>
+                  <div style={inputWrapper}>
+                    <input
+                      type="datetime-local"
+                      value={new Date(currentVoyage[field]).toISOString().slice(0, 16)}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      style={{ width: "100%", paddingLeft: "1rem" }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>End Date</div>
-                <div style={inputWrapper}>
-                  <input
-                    type="datetime-local"
-                    value={new Date(voyage.endDate).toISOString().slice(0, 16)}
-                    onChange={(e) => handleChange("endDate", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>Last Bid  </div>
-                <div style={inputWrapper}>
-                  <input
-                    type="datetime-local"
-                    value={new Date(voyage.lastBidDate).toISOString().slice(0, 16)}
-                    onChange={(e) => handleChange("lastBidDate", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
-                </div>
-              </div>
+              ))}
             </div>
 
-
-
-            <div style={{
-              display: "flex", color: "darkblue",
-              gap: "10px", paddingBottom: "1.1rem", width: "90%", margin: "auto"
-            }}>
-              {/* Min Price */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>Min Price</div>
-                <div style={inputWrapper}>
-                  <input
-                    type="number"
-                    value={voyage.minPrice}
-                    onChange={(e) => handleChange("minPrice", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
+            {/* Prices */}
+            <div style={{ display: "flex", color: "darkblue", gap: "10px", paddingBottom: "1.1rem", width: "90%", margin: "auto" }}>
+              {["minPrice", "maxPrice", "currency"].map((field) => (
+                <div key={field} style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
+                  <div style={labelStyle}>{field === "minPrice" ? "Min Price" : field === "maxPrice" ? "Max Price" : "Currency"}</div>
+                  <div style={inputWrapper}>
+                    <input
+                      type={field.includes("Price") ? "number" : "text"}
+                      value={currentVoyage[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      style={{ width: "100%", paddingLeft: "1rem" }}
+                    />
+                  </div>
                 </div>
-              </div>
-
-              {/* Max Price */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>Max Price</div>
-                <div style={inputWrapper}>
-                  <input
-                    type="number"
-                    value={voyage.maxPrice}
-                    onChange={(e) => handleChange("maxPrice", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
-                </div>
-              </div>
-
-              {/* Currency */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
-                <div style={labelStyle}>Currency</div>
-                <div style={inputWrapper}>
-                  <input
-                    value={voyage.currency}
-                    onChange={(e) => handleChange("currency", e.target.value)}
-                    style={{ width: "100%", paddingLeft: "1rem" }}
-                  />
-                </div>
-              </div>
+              ))}
             </div>
-
 
             {/* Boolean Fields */}
-            <div style={{
-              display: "flex", gap: "10px",
-              margin: "auto", marginBottom: "20px", justifyContent: "space-between", width: "90%",
-            }}>
+            <div style={{ display: "flex", gap: "10px", margin: "auto", marginBottom: "20px", justifyContent: "space-between", width: "90%" }}>
               {["fixedPrice", "auction", "publicOnMap", "confirmed", "isDeleted"].map((field) => (
                 <button
                   key={field}
-                  onClick={() => setVoyage({ ...voyage, [field]: !voyage[field] })}
+                  onClick={() => setVoyage({ ...voyage, [field]: !currentVoyage[field] })}
                   style={{
                     padding: "8px 12px",
-                    backgroundColor: voyage[field] ? "green" : "red",
+                    backgroundColor: currentVoyage[field] ? "green" : "red",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",
@@ -325,43 +288,38 @@ export function VoyageEditor() {
                     width: "18rem",
                   }}
                 >
-                  {field}: {voyage[field] ? "true" : "false"}
+                  {field}: {currentVoyage[field] ? "true" : "false"}
                 </button>
               ))}
             </div>
 
-
+            {/* Vehicle */}
             <div style={{ display: "flex", gap: "10px", width: "90%", margin: "auto", marginBottom: "20px" }}>
-              {/* Vehicle Name */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
                 <div style={labelStyle}>Vehicle Name</div>
                 <div style={inputWrapper}>
                   <input
-                    value={voyage.vehicle?.name || ""}
+                    value={currentVoyage.vehicle?.name || ""}
                     style={{ width: "100%", color: parrotPlaceholderGrey }}
                     onChange={(e) => console.log(e)}
-
-
                   />
                 </div>
               </div>
-
-              {/* Vehicle Id */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", flex: 1 }}>
                 <div style={labelStyle}>Vehicle Id</div>
                 <div style={inputWrapper}>
                   <input
                     type="number"
-                    value={voyage.vehicle?.id || ""}
+                    value={currentVoyage.vehicle?.id || ""}
                     onChange={(e) => console.log(e)}
                     style={{ width: "100%", color: parrotPlaceholderGrey }}
                   />
                 </div>
               </div>
             </div>
-
-
           </div>
+
+
         )}
       </div>
 
@@ -382,19 +340,19 @@ const rowStyle = {
 const labelStyle = {
   backgroundColor: parrotBlue,
   color: "white",
-  padding: "8px"
+  // padding: "8px"
 };
 
 const inputWrapper = {
   backgroundColor: parrotDarkBlue,
   color: "darkblue",
-  padding: "8px"
+  // padding: "8px"
 };
 
 const inputWrapper1 = {
   backgroundColor: parrotBlue,
   color: "white",
-  padding: "8px",
+  // padding: "8px",
 
 };
 

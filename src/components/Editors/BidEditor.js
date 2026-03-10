@@ -7,7 +7,7 @@ import { TopLeftComponent } from "../TopLeftComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchVoyageMutation } from "../../slices/VoyageSlice";
+import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchBidMutation, usePatchVoyageMutation } from "../../slices/VoyageSlice";
 import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
 
 
@@ -22,7 +22,7 @@ export function BidEditor() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [patchVoyage] = usePatchVoyageMutation();
+  const [patchBid] = usePatchBidMutation();
 
   const [
     triggerGetBidsByUserId,
@@ -66,11 +66,7 @@ export function BidEditor() {
     );
   };
 
-  const saveBid = (bidId) => {
-    const bidToSave = bids.find((b) => b.id === bidId);
-    console.log("Saving bid", bidToSave);
-    // call your API to patch bid here
-  };
+
 
   const handleFetchBidsByVoyageId = async () => {
     if (!voyageId) return;
@@ -102,6 +98,51 @@ export function BidEditor() {
     }
   };
 
+
+  const saveBid = (bidId) => {
+    const bidToSave = bids.find((b) => b.id === bidId);
+    console.log("Saving bid id:", bidToSave.id);
+    // call your API to patch bid here
+  };
+
+  const handlePatchBid = async (bidId) => {
+    if (!bidId) return;
+    console.log("patch bid id: ", bidId);
+    const bid = bids.find((b) => b.id === bidId);
+
+    setSaving(true);
+
+    const patchDoc = [
+      { op: "replace", path: "/personCount", value: bid.personCount },
+      { op: "replace", path: "/message", value: bid.message },
+      { op: "replace", path: "/offerPrice", value: bid.offerPrice },
+      { op: "replace", path: "/accepted", value: bid.accepted },
+      // Add more fields here if your Bid model has others, e.g. currency, date, etc.
+    ];
+
+    // Filter out undefined/null values if desired
+    const filteredPatchDoc = patchDoc.filter(
+      (item) => item.value !== undefined && (item.value !== null || Array.isArray(item.value))
+    );
+
+    console.log("filtered patch doc for bid: ", filteredPatchDoc);
+
+    try {
+      const response = await patchBid({ patchDoc: filteredPatchDoc, bidId: bid.id });
+      console.log("patch bid response: ", response);
+
+      if (response.data.success) {
+        console.log("Bid updated successfully");
+        // Optionally refresh bid list or state here
+      } else {
+        alert("Failed to update bid. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error patching bid:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
@@ -140,20 +181,7 @@ export function BidEditor() {
                   {loading ? "Loading..." : "Fetch Bids by Voyage Id"}
                 </button>
               </div>
-              {/* <div style={{ ...inputWrapper1, backgroundColor: "blue", marginLeft: "1rem" }}>
-                <button
-                  onClick={handlePatchVoyage}
-                  disabled={!voyage || saving}
-                  style={{
-                    padding: "8px 16px",
-                    width: "15rem",
-                    opacity: !voyage ? 0.5 : 1,
-                    cursor: !voyage ? "not-allowed" : "pointer"
-                  }}
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-              </div> */}
+
             </div>
           </div>
           <div style={rowStyle}>
@@ -422,7 +450,7 @@ export function BidEditor() {
                   {/* Save Button */}
                   <div style={{ flex: "0 0 60px" }}>
                     <button
-                      onClick={() => saveBid(bid.id)}
+                      onClick={() => handlePatchBid(bid.id)}
                       style={{ width: "100%", backgroundColor: "#0d47a1", border: "none", borderRadius: "4px", color: "white", cursor: "pointer", padding: "2px 0" }}
                     >
                       Save

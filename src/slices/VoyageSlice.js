@@ -180,6 +180,15 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    patchBid: builder.mutation({
+      query: ({ bidId, patchDoc }) => {
+        return {
+          url: `/api/Bid/PatchBid/${bidId}`,
+          method: "PATCH",
+          body: patchDoc,
+        };
+      },
+    }),
     acceptBid: builder.mutation({
       query: (bidId) => ({
         url: `/api/Bid/acceptbid?bidId=${bidId}`,
@@ -398,6 +407,7 @@ export const {
   useLazyGetVoyageByIdAdminQuery,
   useSendBidMutation,
   useChangeBidMutation,
+  usePatchBidMutation,
   useAcceptBidMutation,
   useDeleteBidMutation,
   useGetVoyagesByLocationQuery,

@@ -303,6 +303,18 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+    getSingleUserByUserName: builder.query({
+      query: (userName) => {
+        if (userName) {
+          return `/api/User/singleUserByUsername/${userName}`;
+        } else {
+          return undefined;
+        }
+      },
+      transformResponse: (responseData) => responseData.data,
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
     getUserByPublicId: builder.query({
       query: (userId) => {
         if (userId) {
@@ -458,6 +470,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetUsersByUsernameQuery,
   useLazyGetUsersByUsernameQuery,
+  useGetSingleUserByUserNameQuery,
+  useLazyGetSingleUserByUserNameQuery,
   //
   useGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
