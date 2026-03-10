@@ -8,9 +8,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
 import { useLazyGetVoyageByIdAdminQuery } from "../../slices/VoyageSlice";
-import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
+import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotPlaceholderGrey, parrotRed, parrotTextDarkBlue } from "../../styles/colors";
 import { useSelector } from "react-redux";
-import { useLazyGetSingleUserByUserNameQuery, useLazyGetUserByIdQuery, usePatchUserMutation } from "../../slices/UserSlice";
+import { useLazyGetSingleUserByUserNameQuery, useLazyGetUserByIdQuery, usePatchUserAdminMutation, usePatchUserMutation } from "../../slices/UserSlice";
 
 
 export function UserEditor() {
@@ -42,7 +42,7 @@ export function UserEditor() {
   const [searchingByUsername, setSearchingByUsername] = useState(false)
   const [searchingByUserId, setSearchingByUserId] = useState(false)
 
-  const [patchUser] = usePatchUserMutation();
+  const [patchUser] = usePatchUserAdminMutation();
 
   const [
     triggerGetUserById,
@@ -140,6 +140,7 @@ export function UserEditor() {
 
     const result = await triggerGetUserById(searchUserId);
     if (result?.data) {
+      setSearchUserName(result.data.userName)
       populateUserFields(result.data); // populate immediately
     }
     setSearchingByUserId(false);
@@ -154,16 +155,22 @@ export function UserEditor() {
 
     const result = await triggerGetUserByUserName(searchUserName);
     if (result?.data) {
+      console.log("result:", result.data.id);
+      setSearchUserId(result.data.id)
       populateUserFields(result.data); // populate immediately
     }
     setSearchingByUsername(false);
   };
 
-
   const handlePatchUser = async () => {
+
+    if (honeyPotValue) {
+      console.warn("Bot detected – update blocked");
+      return;
+    }
+    setIsUpdatingProfile(true)
     const patchDoc = [
       { op: "replace", path: "/userName", value: userName },
-      // { op: "replace", path: "/email", value: email },
       { op: "replace", path: "/displayEmail", value: displayEmail },
       { op: "replace", path: "/phonenumber", value: phoneNumber },
       { op: "replace", path: "/facebook", value: facebookProfile },
@@ -177,7 +184,7 @@ export function UserEditor() {
       { op: "replace", path: "/emailVisible", value: !emailHidden },
     ];
     try {
-      const response = await patchUser({ patchDoc, userId });
+      const response = await patchUser({ userId: searchUserId, patchDoc });
       console.log("patch user response: ", response);
       console.log("patch user response success: ", response.data.success);
       if (response.data.success) {
@@ -189,29 +196,10 @@ export function UserEditor() {
     } catch (error) {
       console.error("Error uploading image", error);
     }
+    finally {
+      setIsUpdatingProfile(false)
+    }
   };
-
-
-
-  const handleUpdateChanges = async () => {
-
-    if (honeyPotValue) {
-      console.warn("Bot detected – update blocked");
-      return;
-    }
-
-    setIsUpdatingProfile(true);
-    if (backGroundImage) {
-      await handleUploadBackgroundImage();
-    }
-    if (profileImage) {
-      await handleUploadProfileImage();
-    }
-    await handlePatchUser();
-    await refetchUserData();
-    setIsUpdatingProfile(false);
-  };
-
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
@@ -236,7 +224,7 @@ export function UserEditor() {
         alignItems: "center"
       }}>
         <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "16rem" }}>
-          Search Username
+          Enter Username
         </div>
         <input
           type="text"
@@ -266,7 +254,13 @@ export function UserEditor() {
         </button>
       </div>
 
-
+      <input
+        type="text"
+        value={honeyPotValue}
+        onChange={(e) => setHoneyPotValue(e.target.value)}
+        style={{ display: "none" }}
+        autoComplete="off"
+      />
 
       <div style={{
         display: "grid",
@@ -276,7 +270,7 @@ export function UserEditor() {
         alignItems: "center"
       }}>
         <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "16rem" }}>
-          Search User Id</div>
+          Enter User Id</div>
         <input
           type="text"
           placeholder="Search user id"
@@ -309,15 +303,7 @@ export function UserEditor() {
       {/* Row 1 */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
 
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Username</div>
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", color: "darkblue" }}
-          />
-        </div>
+
 
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Title</div>
@@ -447,7 +433,7 @@ export function UserEditor() {
             onClick={handlePatchUser}
             disabled={isUpdatingProfile}
             style={{
-              backgroundColor: parrotDarkBlue,
+              backgroundColor: parrotBlue,
               color: "white",
               border: "none",
               borderRadius: "4px",

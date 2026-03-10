@@ -9,7 +9,6 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { useLazyGetVoyageByIdAdminQuery } from "../slices/VoyageSlice";
 import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../styles/colors";
-import { usePatchVoyageMutation } from "../slices/VoyageSlice";
 import { VoyageEditor } from "../components/Editors/VoyageEditor";
 import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
@@ -24,7 +23,6 @@ function AdminPage() {
   const [voyage, setVoyage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [patchVoyage] = usePatchVoyageMutation();
   const [adminView, setAdminView] = useState("voyageEditor");
 
 

@@ -398,8 +398,19 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     patchUser: builder.mutation({
       query: ({ userId, patchDoc }) => {
+        console.log(userId);
         return {
           url: `/api/User/PatchUser/${userId}`,
+          method: "PATCH",
+          body: patchDoc,
+        };
+      },
+    }),
+    patchUserAdmin: builder.mutation({
+      query: ({ userId, patchDoc }) => {
+        console.log(userId);
+        return {
+          url: `/api/User/PatchUserAdmin/${userId}`,
           method: "PATCH",
           body: patchDoc,
         };
@@ -490,6 +501,7 @@ export const {
   useUpdateProfileImageMutation,
   useUpdateBackgroundImageMutation,
   usePatchUserMutation,
+  usePatchUserAdminMutation,
   usePurchaseCoinsMutation,
   useSendParrotCoinsMutation,
   useGetParrotCoinBalanceQuery,

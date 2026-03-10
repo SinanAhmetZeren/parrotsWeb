@@ -7,7 +7,7 @@ import { TopLeftComponent } from "../TopLeftComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchBidMutation, usePatchVoyageMutation } from "../../slices/VoyageSlice";
+import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchBidMutation, usePatchVoyageAdminMutation } from "../../slices/VoyageSlice";
 import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
 
 
@@ -19,6 +19,7 @@ export function BidEditor() {
   const [bidUserId, setBidUserId] = useState("");
   const [voyage, setVoyage] = useState(null);
   const [bids, setBids] = useState([]);
+  const [honeyPotValue, setHoneyPotValue] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -99,18 +100,21 @@ export function BidEditor() {
   };
 
 
-  const saveBid = (bidId) => {
-    const bidToSave = bids.find((b) => b.id === bidId);
-    console.log("Saving bid id:", bidToSave.id);
-    // call your API to patch bid here
-  };
+
 
   const handlePatchBid = async (bidId) => {
+
+
+    if (honeyPotValue) {
+      console.warn("Bot detected – update blocked");
+      return;
+    }
+
     if (!bidId) return;
     console.log("patch bid id: ", bidId);
     const bid = bids.find((b) => b.id === bidId);
 
-    setSaving(true);
+    setSaving(bidId);
 
     const patchDoc = [
       { op: "replace", path: "/personCount", value: bid.personCount },
@@ -140,7 +144,7 @@ export function BidEditor() {
     } catch (error) {
       console.error("Error patching bid:", error);
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
@@ -164,6 +168,8 @@ export function BidEditor() {
         width: "80%", backgroundColor: parrotDarkBlue,
         margin: "auto", marginTop: "2rem"
       }}>
+
+
         <h3 style={{ marginBottom: "2rem" }}>Bid Editor</h3>
         <div style={{ marginBottom: "20px" }}>
           <div style={rowStyle}>
@@ -203,7 +209,13 @@ export function BidEditor() {
             </div>
           </div>
         </div>
-
+        <input
+          type="text"
+          value={honeyPotValue}
+          onChange={(e) => setHoneyPotValue(e.target.value)}
+          style={{ display: "none" }}
+          autoComplete="off"
+        />
 
         <div style={{ padding: "20px", width: "95%", margin: "auto", fontFamily: "Arial" }}>
           <h3 style={{ marginBottom: "1rem", color: "#0d47a1" }}>Bids</h3>
@@ -453,7 +465,7 @@ export function BidEditor() {
                       onClick={() => handlePatchBid(bid.id)}
                       style={{ width: "100%", backgroundColor: "#0d47a1", border: "none", borderRadius: "4px", color: "white", cursor: "pointer", padding: "2px 0" }}
                     >
-                      Save
+                      {saving === bid.id ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </div>

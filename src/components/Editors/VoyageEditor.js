@@ -9,7 +9,7 @@ import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
 import { useLazyGetVoyageByIdAdminQuery } from "../../slices/VoyageSlice";
 import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
-import { usePatchVoyageMutation } from "../../slices/VoyageSlice";
+import { usePatchVoyageAdminMutation } from "../../slices/VoyageSlice";
 
 
 export function VoyageEditor() {
@@ -20,7 +20,8 @@ export function VoyageEditor() {
   const [voyage, setVoyage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [patchVoyage] = usePatchVoyageMutation();
+  const [patchVoyage] = usePatchVoyageAdminMutation();
+  const [honeyPotValue, setHoneyPotValue] = useState("");
 
   const [
     triggerGetVoyageByIdAdmin,
@@ -34,6 +35,13 @@ export function VoyageEditor() {
   ] = useLazyGetVoyageByIdAdminQuery();
 
   const handlePatchVoyage = async () => {
+
+
+    if (honeyPotValue) {
+      console.warn("Bot detected – update blocked");
+      return;
+    }
+
     if (!voyageId) return;
 
     setSaving(true);
@@ -146,6 +154,15 @@ export function VoyageEditor() {
         margin: "auto", marginTop: "2rem"
       }}>
         <h3 style={{ marginBottom: "2rem" }}>Voyage Editor</h3>
+
+        <input
+          type="text"
+          value={honeyPotValue}
+          onChange={(e) => setHoneyPotValue(e.target.value)}
+          style={{ display: "none" }}
+          autoComplete="off"
+        />
+
         <div style={{ marginBottom: "20px" }}>
           <div style={rowStyle}>
             <div style={labelStyle}>Voyage Id</div>

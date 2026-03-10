@@ -99,16 +99,15 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
       // ... other configuration options
     }),
-    patchVoyage: builder.mutation({
+    patchVoyageAdmin: builder.mutation({
       query: ({ voyageId, patchDoc }) => {
         return {
-          url: `/api/Voyage/PatchVoyage/${voyageId}`,
+          url: `/api/Voyage/PatchVoyageAdmin/${voyageId}`,
           method: "PATCH",
           body: patchDoc,
         };
       },
     }),
-
     confirmVoyage: builder.mutation({
       query: (voyageId) => ({
         url: `/api/Voyage/confirmVoyage/${voyageId}`,
@@ -389,7 +388,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useCreateVoyageMutation,
-  usePatchVoyageMutation,
+  usePatchVoyageAdminMutation,
   useAddVoyageImageMutation,
   useAddWaypointMutation,
   useAddWaypointNoImageMutation,
