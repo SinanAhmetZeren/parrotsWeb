@@ -16,19 +16,25 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
-    getVoyageById2: builder.query({
-      query: (voyageId) => `/api/Voyage/GetVoyageById/${voyageId}`,
-      transformResponse: (responseData) => {
-        return responseData.data;
-      },
-      refetchOnMountOrArgChange: true,
-      refetchOnReconnect: true,
-    }),
     getVoyageById: builder.query({
       query: (voyageId) => {
         // const token = localStorage.getItem("storedToken");
         return {
           url: `/api/Voyage/GetVoyageById/${voyageId}`,
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+        };
+      },
+      transformResponse: (responseData) => responseData.data,
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
+    getVoyageByIdAdmin: builder.query({
+      query: (voyageId) => {
+        // const token = localStorage.getItem("storedToken");
+        return {
+          url: `/api/Voyage/GetVoyageByIdAdmin/${voyageId}`,
           // headers: {
           //   Authorization: `Bearer ${token}`,
           // },
@@ -93,6 +99,16 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
       // ... other configuration options
     }),
+    patchVoyage: builder.mutation({
+      query: ({ voyageId, patchDoc }) => {
+        return {
+          url: `/api/Voyage/PatchVoyage/${voyageId}`,
+          method: "PATCH",
+          body: patchDoc,
+        };
+      },
+    }),
+
     confirmVoyage: builder.mutation({
       query: (voyageId) => ({
         url: `/api/Voyage/confirmVoyage/${voyageId}`,
@@ -348,6 +364,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useCreateVoyageMutation,
+  usePatchVoyageMutation,
   useAddVoyageImageMutation,
   useAddWaypointMutation,
   useAddWaypointNoImageMutation,
@@ -357,6 +374,8 @@ export const {
   useCheckAndDeleteVoyageMutation,
   useGetVoyagesByUserByIdQuery,
   useGetVoyageByIdQuery,
+  useLazyGetVoyageByIdQuery,
+  useLazyGetVoyageByIdAdminQuery,
   useSendBidMutation,
   useChangeBidMutation,
   useAcceptBidMutation,

@@ -19,6 +19,19 @@ export function TopBarMenu() {
     <nav className="flex space-x-2 sm:space-x-2 overflow-x-auto sm:overflow-x-visible">
       {isLoggedIn ? (
         <>
+
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              isActive
+                ? `${activeStyle} ${commonStyle}`
+                : `${inactiveStyle} ${commonStyle}`
+            }
+          >
+            Admin
+          </NavLink>
+
+
           <NavLink
             to="/"
             className={({ isActive }) =>

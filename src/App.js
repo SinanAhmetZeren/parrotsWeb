@@ -30,6 +30,7 @@ import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
 import { ParrotCoinPage } from "./pages/ParrotCoinPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminPage from "./pages/AdminPage";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -106,6 +107,7 @@ function App() {
           <>
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/parrotcoinpage" element={<ParrotCoinPage />} />
             <Route path="/edit-profile" element={<EditProfilePage />} />

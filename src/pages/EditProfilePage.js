@@ -36,20 +36,15 @@ export function EditProfilePage() {
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
   const dispatch = useDispatch();
-
   const fileInputRef_ProfileImage = createRef();
   const fileInputRef_BackgroundImage = createRef();
-
   const [backGroundImage, setBackGroundImage] = useState(null);
   const [backGroundImagePreview, setBackGroundImagePreview] = useState(null);
-
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
-
   const [userName, setUserName] = useState("");
   const [userTitle, setUserTitle] = useState("");
   const [userBio, setUserBio] = useState("");
-
   const [email, setEmail] = useState("");
   const [displayEmail, setDisplayEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -61,9 +56,7 @@ export function EditProfilePage() {
   const [youtubeProfile, setYoutubeProfile] = useState("");
   const [emailHidden, setEmailHidden] = useState();
   const [honeyPotValue, setHoneyPotValue] = useState("");
-
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
