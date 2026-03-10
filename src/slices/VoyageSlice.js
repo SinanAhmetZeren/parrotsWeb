@@ -228,6 +228,22 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    getBidsByUserId: builder.query({
+      query: (userId) => `/api/Bid/userBids/${userId}`,
+      transformResponse: (responseData) => {
+        return responseData.data;
+      },
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
+    getBidsByVoyageId: builder.query({
+      query: (voyageId) => `/api/Bid/voyageBids/${voyageId}`,
+      transformResponse: (responseData) => {
+        return responseData.data;
+      },
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
     addWaypointNoImage: builder.mutation({
       query: (data) => {
         const {
@@ -374,6 +390,10 @@ export const {
   useCheckAndDeleteVoyageMutation,
   useGetVoyagesByUserByIdQuery,
   useGetVoyageByIdQuery,
+  useGetBidsByUserIdQuery,
+  useLazyGetBidsByUserIdQuery,
+  useGetBidsByVoyageIdQuery,
+  useLazyGetBidsByVoyageIdQuery,
   useLazyGetVoyageByIdQuery,
   useLazyGetVoyageByIdAdminQuery,
   useSendBidMutation,
