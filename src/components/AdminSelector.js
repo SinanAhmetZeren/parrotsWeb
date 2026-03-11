@@ -10,7 +10,6 @@ export default function AdminSelector({ selected, setSelected }) {
         { key: "bidEditor", label: "Bid Editor" },
         { key: "vehicleEditor", label: "Vehicle Editor" },
         { key: "userEditor", label: "User Editor" },
-        { key: "moneyManagement", label: "Money Management" }
     ];
 
     const metrics = [

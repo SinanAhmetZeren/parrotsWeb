@@ -33,6 +33,7 @@ export function UserEditor() {
   const [tiktokProfile, setTiktokProfile] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [youtubeProfile, setYoutubeProfile] = useState("");
+  const [parrotCoinBalance, setParrotCoinBalance] = useState("");
   const [emailHidden, setEmailHidden] = useState();
   const [honeyPotValue, setHoneyPotValue] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -99,7 +100,7 @@ export function UserEditor() {
 
   const populateUserFields = (data) => {
     if (!data) return;
-
+    console.log("parrot coins: ", data);
     setUserName(data.userName);
     setUserTitle(data.title);
     setUserBio(data.bio);
@@ -113,6 +114,7 @@ export function UserEditor() {
     setLinkedinProfile(data.linkedin || "");
     setTiktokProfile(data.tiktok || "");
     setEmailHidden(data.emailVisible === false); // ensure boolean
+    setParrotCoinBalance(data.parrotCoinBalance)
 
   };
 
@@ -182,6 +184,7 @@ export function UserEditor() {
       { op: "replace", path: "/title", value: userTitle },
       { op: "replace", path: "/bio", value: userBio },
       { op: "replace", path: "/emailVisible", value: !emailHidden },
+      { op: "replace", path: "/parrotCoinBalance", value: parrotCoinBalance },
     ];
     try {
       const response = await patchUser({ userId: searchUserId, patchDoc });
@@ -325,6 +328,17 @@ export function UserEditor() {
           />
         </div>
 
+
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>YouTube</div>
+          <input
+            type="text"
+            value={youtubeProfile}
+            onChange={(e) => setYoutubeProfile(e.target.value)}
+            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
+          />
+        </div>
+
       </div>
 
 
@@ -404,11 +418,11 @@ export function UserEditor() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>YouTube</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Parrot Coins</div>
           <input
-            type="text"
-            value={youtubeProfile}
-            onChange={(e) => setYoutubeProfile(e.target.value)}
+            type="number"
+            value={parrotCoinBalance}
+            onChange={(e) => setParrotCoinBalance(e.target.value)}
             style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
           />
         </div>

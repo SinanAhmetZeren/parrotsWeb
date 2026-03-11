@@ -14,6 +14,8 @@ import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
 import { UserEditor } from "../components/Editors/UserEditor";
 import { VehicleEditor } from "../components/Editors/VehicleEditor";
+import { WeeklyPurchasesMetrics } from "../components/Metrics/PurchasesMetrics";
+import { WeeklyTransactionsMetrics } from "../components/Metrics/TransactionsMetrics";
 
 
 function AdminPage() {
@@ -59,6 +61,8 @@ function AdminPage() {
             {adminView === "bidEditor" && <BidEditor />}
             {adminView === "vehicleEditor" && <VehicleEditor />}
             {adminView === "userEditor" && <UserEditor />}
+            {adminView === "purchases" && <WeeklyPurchasesMetrics />}
+            {adminView === "transactions" && <WeeklyTransactionsMetrics />}
 
 
           </div>
