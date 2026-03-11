@@ -27,6 +27,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+    getVehicleByIdAdmin: builder.query({
+      query: (vehicleId) => `/api/Vehicle/GetVehicleByIdAdmin/${vehicleId}`,
+      transformResponse: (responseData) => {
+        return responseData.data;
+      },
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+    }),
     createVehicle: builder.mutation({
       query: (data) => {
         const {
@@ -165,6 +173,19 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    patchVehicleAdmin: builder.mutation({
+      query: ({ vehicleId, patchDoc }) => {
+        console.log("--->");
+        console.log(patchDoc);
+        console.log(vehicleId);
+
+        return {
+          url: `/api/Vehicle/PatchVehicleAdmin/${vehicleId}`,
+          method: "PATCH",
+          body: patchDoc,
+        };
+      },
+    }),
     getVehicleImagesByVehicleId: builder.query({
       query: (vehicleId) =>
         `/api/Vehicle/GetVehiclesImagesByVehicleId/${vehicleId}`,
@@ -186,6 +207,9 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetVehiclesByUserByIdQuery,
   useGetVehicleByIdQuery,
+  useLazyGetVehicleByIdQuery,
+  useGetVehicleByIdAdminQuery,
+  useLazyGetVehicleByIdAdminQuery,
   useCreateVehicleMutation,
   useConfirmVehicleMutation,
   useAddVehicleImageMutation,
@@ -196,6 +220,7 @@ export const {
   useAddVehicleToFavoritesMutation,
   useDeleteVehicleFromFavoritesMutation,
   usePatchVehicleMutation,
+  usePatchVehicleAdminMutation,
   useGetVehicleImagesByVehicleIdQuery,
   useDeleteVehicleMutation,
 } = extendedApiSlice;

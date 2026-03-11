@@ -306,7 +306,7 @@ export function UserEditor() {
 
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Title</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Title</div>
           <input
             type="text"
             value={userTitle}
@@ -316,7 +316,7 @@ export function UserEditor() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Phone</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Phone</div>
           <input
             type="tel"
             value={phoneNumber}
@@ -332,7 +332,7 @@ export function UserEditor() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Display Email</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Display Email</div>
           <input
             type="email"
             value={displayEmail}
@@ -342,7 +342,7 @@ export function UserEditor() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Facebook</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Facebook</div>
           <input
             type="text"
             value={facebookProfile}
@@ -352,7 +352,7 @@ export function UserEditor() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Instagram</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Instagram</div>
           <input
             type="text"
             value={instagramProfile}
@@ -368,7 +368,7 @@ export function UserEditor() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>Twitter</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Twitter</div>
           <input
             type="text"
             value={twitterProfile}
@@ -378,7 +378,7 @@ export function UserEditor() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>TikTok</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>TikTok</div>
           <input
             type="text"
             value={tiktokProfile}
@@ -388,7 +388,7 @@ export function UserEditor() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>LinkedIn</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>LinkedIn</div>
           <input
             type="text"
             value={linkedinProfile}
@@ -404,7 +404,7 @@ export function UserEditor() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "8rem" }}>YouTube</div>
+          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>YouTube</div>
           <input
             type="text"
             value={youtubeProfile}
@@ -448,7 +448,9 @@ export function UserEditor() {
 
 
       {/* Bio */}
-      <div style={{ marginTop: "10px" }}>
+      <div style={{ marginTop: "10px", display: "flex" }}>
+        <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Bio</div>
+
         <textarea
           value={userBio}
           placeholder="Bio"

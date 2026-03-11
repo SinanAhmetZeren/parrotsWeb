@@ -153,7 +153,6 @@ export function VoyageEditor() {
         width: "80%", backgroundColor: parrotDarkBlue,
         margin: "auto", marginTop: "2rem"
       }}>
-        <h3 style={{ marginBottom: "2rem" }}>Voyage Editor</h3>
 
         <input
           type="text"

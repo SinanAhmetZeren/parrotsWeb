@@ -170,7 +170,6 @@ export function BidEditor() {
       }}>
 
 
-        <h3 style={{ marginBottom: "2rem" }}>Bid Editor</h3>
         <div style={{ marginBottom: "20px" }}>
           <div style={rowStyle}>
             <div style={labelStyle}>Voyage Id</div>

@@ -13,6 +13,7 @@ import { VoyageEditor } from "../components/Editors/VoyageEditor";
 import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
 import { UserEditor } from "../components/Editors/UserEditor";
+import { VehicleEditor } from "../components/Editors/VehicleEditor";
 
 
 function AdminPage() {
@@ -56,7 +57,7 @@ function AdminPage() {
 
             {adminView === "voyageEditor" && <VoyageEditor />}
             {adminView === "bidEditor" && <BidEditor />}
-            {/*adminView === "vehicleEditor" && <VehicleEditor />*/}
+            {adminView === "vehicleEditor" && <VehicleEditor />}
             {adminView === "userEditor" && <UserEditor />}
 
 
