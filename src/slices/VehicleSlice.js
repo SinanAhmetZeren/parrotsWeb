@@ -223,4 +223,5 @@ export const {
   usePatchVehicleAdminMutation,
   useGetVehicleImagesByVehicleIdQuery,
   useDeleteVehicleMutation,
+
 } = extendedApiSlice;

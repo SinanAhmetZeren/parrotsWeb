@@ -16,6 +16,11 @@ import { UserEditor } from "../components/Editors/UserEditor";
 import { VehicleEditor } from "../components/Editors/VehicleEditor";
 import { WeeklyPurchasesMetrics } from "../components/Metrics/PurchasesMetrics";
 import { WeeklyTransactionsMetrics } from "../components/Metrics/TransactionsMetrics";
+import { WeeklyVoyagesMetrics } from "../components/Metrics/VoyagesMetrics";
+import { WeeklyVehiclesMetrics } from "../components/Metrics/VehiclesMetrics";
+import { WeeklyUsersMetrics } from "../components/Metrics/UsersMetrics";
+import { WeeklyBidsMetrics } from "../components/Metrics/BidsMetrics";
+import { WeeklyMessagesMetrics } from "../components/Metrics/MessagesMetrics";
 
 
 function AdminPage() {
@@ -63,6 +68,11 @@ function AdminPage() {
             {adminView === "userEditor" && <UserEditor />}
             {adminView === "purchases" && <WeeklyPurchasesMetrics />}
             {adminView === "transactions" && <WeeklyTransactionsMetrics />}
+            {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
+            {adminView === "vehiclesRegistered" && <WeeklyVehiclesMetrics />}
+            {adminView === "usersCreated" && <WeeklyUsersMetrics />}
+            {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
+            {adminView === "messaging" && <WeeklyMessagesMetrics />}
 
 
           </div>

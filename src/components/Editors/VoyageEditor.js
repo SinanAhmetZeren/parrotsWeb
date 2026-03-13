@@ -1,21 +1,14 @@
 /* eslint-disable no-undef */
 import "../../assets/css/advancedmarker.css";
 import "../../assets/css/ConnectPage.css";
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { TopBarMenu } from "../TopBarMenu";
-import { TopLeftComponent } from "../TopLeftComponent";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { useLazyGetVoyageByIdAdminQuery } from "../../slices/VoyageSlice";
-import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
-import { usePatchVoyageAdminMutation } from "../../slices/VoyageSlice";
-
+import { parrotBlue, parrotDarkBlue, parrotPlaceholderGrey } from "../../styles/colors";
+import { usePatchVoyageAdminMutation, useLazyGetVoyageByIdAdminQuery } from "../../slices/VoyageSlice";
 
 export function VoyageEditor() {
-  useParams();
-  const currentUserId = localStorage.getItem("storedUserId");
-  const navigate = useNavigate();
+
   const [voyageId, setVoyageId] = useState("");
   const [voyage, setVoyage] = useState(null);
   const [loading, setLoading] = useState(false);

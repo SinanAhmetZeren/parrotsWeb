@@ -1,25 +1,24 @@
 import React, { useState } from "react";
-import { parrotBlueDarkTransparent, parrotDarkBlue, parrotPlaceholderGrey } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotDarkBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
 
 export default function AdminSelector({ selected, setSelected }) {
 
     const [group, setGroup] = useState("editors");
 
     const editors = [
-        { key: "voyageEditor", label: "Voyage Editor" },
-        { key: "bidEditor", label: "Bid Editor" },
-        { key: "vehicleEditor", label: "Vehicle Editor" },
-        { key: "userEditor", label: "User Editor" },
+        { key: "voyageEditor", label: "Voyages" },
+        { key: "bidEditor", label: "Bids" },
+        { key: "vehicleEditor", label: "Vehicles" },
+        { key: "userEditor", label: "Users" },
     ];
 
     const metrics = [
         { key: "purchases", label: "Purchases" },
         { key: "transactions", label: "Transactions" },
-        { key: "voyagesCreated", label: "Voyages Created" },
-        { key: "vehiclesRegistered", label: "Vehicles Registered" },
-        { key: "usersCreated", label: "Users Created" },
-        { key: "bidsCreated", label: "Bids Created" },
-        { key: "bidsAccepted", label: "Bids Accepted" },
+        { key: "voyagesCreated", label: "Voyages" },
+        { key: "vehiclesRegistered", label: "Vehicles" },
+        { key: "usersCreated", label: "Users" },
+        { key: "bidsCreated", label: "Bids" },
         { key: "messaging", label: "Messaging" }
     ];
 
@@ -29,7 +28,7 @@ export default function AdminSelector({ selected, setSelected }) {
         padding: "8px 16px",
         cursor: "pointer",
         border: "1px solid #ccc",
-        background: group === name ? parrotDarkBlue : parrotBlueDarkTransparent,
+        background: group === name ? parrotBlue : parrotBlueDarkTransparent,
         color: group === name ? "white" : parrotPlaceholderGrey,
         opacity: group === name ? 1 : 0.5,
         borderRadius: "6px",
@@ -43,14 +42,19 @@ export default function AdminSelector({ selected, setSelected }) {
         background: selected === name ? parrotDarkBlue : parrotBlueDarkTransparent,
         color: selected === name ? "white" : parrotPlaceholderGrey,
         opacity: selected === name ? 1 : 0.5,
-        borderRadius: "6px"
+        borderRadius: "6px",
+        fontWeight: "bold"
+
     });
 
     return (
-        <div style={{ width: "100%", padding: "10px", borderBottom: "1px solid #ddd" }}>
+        <div style={{
+            width: "100%", padding: "10px", borderBottom: "1px solid #ddd",
+            display: "grid", gridTemplateColumns: "1fr 7fr"
+        }}>
 
             {/* Row 1 */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+            <div style={{ display: "flex", gap: "10px", marginRight: "3rem" }}>
                 <button style={topButton("editors")} onClick={() => setGroup("editors")}>
                     Editors
                 </button>

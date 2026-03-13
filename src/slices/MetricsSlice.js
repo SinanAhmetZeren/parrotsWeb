@@ -21,12 +21,47 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
             refetchOnMountOrArgChange: true,
             refetchOnReconnect: true,
         }),
+        getWeeklyVoyages: builder.query({
+            query: () => "/api/Metrics/weeklyVoyages",
+            transformResponse: (responseData) => responseData.data,
+            refetchOnMountOrArgChange: true,
+            refetchOnReconnect: true,
+        }),
+        getWeeklyVehicles: builder.query({
+            query: () => "/api/Metrics/weeklyVehicles",
+            transformResponse: (responseData) => responseData.data,
+            refetchOnMountOrArgChange: true,
+            refetchOnReconnect: true,
+        }),
+        getWeeklyUsers: builder.query({
+            query: () => "/api/Metrics/weeklyUsers",
+            transformResponse: (responseData) => responseData.data,
+            refetchOnMountOrArgChange: true,
+            refetchOnReconnect: true,
+        }),
+        getWeeklyBids: builder.query({
+            query: () => "/api/Metrics/weeklyBids",
+            transformResponse: (responseData) => responseData.data,
+            refetchOnMountOrArgChange: true,
+            refetchOnReconnect: true,
+        }),
+        getWeeklyMessages: builder.query({
+            query: () => "/api/Metrics/weeklyMessages",
+            transformResponse: (responseData) => responseData.data,
+            refetchOnMountOrArgChange: true,
+            refetchOnReconnect: true,
+        }),
     }),
     overrideExisting: true,
 });
 
 export const {
     useGetWeeklyPurchasesQuery,
-    useGetWeeklyTransactionsQuery
+    useGetWeeklyTransactionsQuery,
+    useGetWeeklyVoyagesQuery,
+    useGetWeeklyVehiclesQuery,
+    useGetWeeklyUsersQuery,
+    useGetWeeklyBidsQuery,
+    useGetWeeklyMessagesQuery
 
 } = extendedMetricsApi;

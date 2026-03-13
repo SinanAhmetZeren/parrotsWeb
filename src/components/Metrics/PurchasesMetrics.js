@@ -26,34 +26,42 @@ export function WeeklyPurchasesMetrics() {
     const formatNumber = (num) => num?.toLocaleString();
 
     return (
-        <div style={{ padding: "20px", fontFamily: "Arial", width: "90%", margin: "auto", backgroundColor: parrotDarkBlue }}>
+        <div style={{
+            padding: "20px", fontFamily: "Arial",
+            width: "85%", margin: "auto", backgroundColor: parrotDarkBlue
+        }}>
             <h2 style={{ marginBottom: "1rem" }}>Weekly Purchases Metrics</h2>
 
-            {/* Table */}
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2rem" }}>
-                <thead>
-                    <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
-                        <th style={{ padding: "8px", border: "1px solid #ddd" }}>Week Starting</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd" }}>Number of Purchases</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd" }}>Total Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {purchasesData.map((week) => (
-                        <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
-                            <td style={{ padding: "8px" }}>{formatDate(week.weekStart)}</td>
-                            <td style={{ padding: "8px" }}>{formatNumber(week.purchaseCount)}</td>
-                            <td style={{ padding: "8px" }}>${formatNumber(week.totalAmount)}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div style={{ width: "80%", height: "20rem", margin: "auto", overflowY: "auto", backgroundColor: "white", borderRadius: "8px", padding: "1rem" }}>
 
+                {/* Table */}
+                <table style={{
+                    width: "80%", borderCollapse: "collapse", backgroundColor: "white", margin: "auto",
+                    marginBottom: "2rem"
+                }}>
+                    <thead>
+                        <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
+                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Week Starting</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Number of Purchases</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {purchasesData.map((week) => (
+                            <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatDate(week.weekStart)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.purchaseCount)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.totalAmount)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             {/* Line Chart */}
             <h3 style={{ marginBottom: "1rem" }}>Purchases Over Time</h3>
 
 
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="80%" height={350} style={{ margin: "auto" }}>
                 <ComposedChart
                     data={purchasesData}
                     margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
@@ -72,7 +80,8 @@ export function WeeklyPurchasesMetrics() {
                         orientation="right"
                         width={80}
                         tickFormatter={(value) => `$${formatNumber(value)}`}
-                        label={{ value: "Total Amount ($)", angle: 90, position: "insideRight" }}
+                        label={{ value: "Total Amount ($)", angle: -90, position: "insideRight", offset: -40 }}
+
                     />
                     <Tooltip
                         labelFormatter={formatDate}
@@ -81,9 +90,9 @@ export function WeeklyPurchasesMetrics() {
                         }
                     />
                     <Legend />
+
                     {/* Bar for purchaseCount */}
                     <Bar yAxisId="left" dataKey="purchaseCount" name="Purchases" fill="#8884d849" barSize={30} />
-/>
                     {/* Line for totalAmount */}
                     <Line yAxisId="right" type="monotone" dataKey="totalAmount" name="Total Amount" stroke="#82ca9d" strokeWidth={3} dot={false} />
                 </ComposedChart>

@@ -1,26 +1,14 @@
 /* eslint-disable no-undef */
 import "../../assets/css/advancedmarker.css";
 import "../../assets/css/ConnectPage.css";
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { TopBarMenu } from "../TopBarMenu";
-import { TopLeftComponent } from "../TopLeftComponent";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { useLazyGetVoyageByIdAdminQuery } from "../../slices/VoyageSlice";
-import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotPlaceholderGrey, parrotRed, parrotTextDarkBlue } from "../../styles/colors";
-import { useSelector } from "react-redux";
-import { useLazyGetSingleUserByUserNameQuery, useLazyGetUserByIdQuery, usePatchUserAdminMutation, usePatchUserMutation } from "../../slices/UserSlice";
+import { parrotBlue, parrotDarkBlue, } from "../../styles/colors";
+import { useLazyGetSingleUserByUserNameQuery, useLazyGetUserByIdQuery, usePatchUserAdminMutation } from "../../slices/UserSlice";
 
 
 export function UserEditor() {
-  const local_userId = localStorage.getItem("storedUserId");
-  const state_userId = useSelector((state) => state.users.userId);
-  const userId = local_userId !== null ? local_userId : state_userId;
-  const [backGroundImage, setBackGroundImage] = useState(null);
-  const [backGroundImagePreview, setBackGroundImagePreview] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [userName, setUserName] = useState("");
   const [userTitle, setUserTitle] = useState("");
   const [userBio, setUserBio] = useState("");
@@ -68,35 +56,6 @@ export function UserEditor() {
     },
   ] = useLazyGetSingleUserByUserNameQuery();
 
-  const handleSearchUserbyUserId2 = async () => {
-    setSearchingByUserId(true)
-    console.log(searchUserId);
-    if (!searchUserId || searchUserId.trim() === "") {
-      console.warn("Username is empty");
-      setSearchingByUserId(false)
-
-      return;
-    }
-    let a = await triggerGetUserById(searchUserId);
-    console.log("by id - email visible: ", a.data.emailVisible);
-
-    setSearchingByUserId(false)
-  };
-
-
-  const handleSearchUserbyUserName2 = async () => {
-    setSearchingByUsername(true)
-    console.log(searchUserName);
-    if (!searchUserName || searchUserName.trim() === "") {
-      console.warn("Username is empty");
-      setSearchingByUsername(false)
-
-      return;
-    }
-    let a = await triggerGetUserByUserName(searchUserName);
-    console.log("by username - email visible: ", a.data);
-    setSearchingByUsername(false)
-  };
 
   const populateUserFields = (data) => {
     if (!data) return;

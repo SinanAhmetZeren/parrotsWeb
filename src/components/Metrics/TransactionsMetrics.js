@@ -64,40 +64,48 @@ export function WeeklyTransactionsMetrics() {
     const colWidth = 150;
 
     return (
-        <div style={{ padding: "20px", fontFamily: "Arial", width: "95%", margin: "auto", backgroundColor: parrotDarkBlue }}>
+        <div style={{
+            padding: "20px", fontFamily: "Arial", width: "85%",
+            margin: "auto", backgroundColor: parrotDarkBlue
+        }}>
             <h2 style={{ marginBottom: "1rem" }}>Weekly Transactions Metrics</h2>
+            <div style={{ width: "80%", height: "20rem", margin: "auto", overflowY: "auto", backgroundColor: "white", borderRadius: "8px", padding: "1rem" }}>
 
-            {/* Table */}
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2rem" }}>
-                <thead>
-                    <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: "120px" }}>Week Starting</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Count</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Total</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Count</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Total</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Count</th>
-                        <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {chartData.map((week) => (
-                        <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
-                            <td style={{ padding: "8px" }}>{formatDate(week.weekStart)}</td>
-                            <td style={{ padding: "8px" }}>{formatNumber(week.send_parrotCoins_count)}</td>
-                            <td style={{ padding: "8px" }}>${formatNumber(week.send_parrotCoins)}</td>
-                            <td style={{ padding: "8px" }}>{formatNumber(week.receive_parrotCoins_count)}</td>
-                            <td style={{ padding: "8px" }}>${formatNumber(week.receive_parrotCoins)}</td>
-                            <td style={{ padding: "8px" }}>{formatNumber(week.voyage_cost_count)}</td>
-                            <td style={{ padding: "8px" }}>${formatNumber(week.voyage_cost)}</td>
+                {/* Table */}
+                <table style={{
+                    width: "80%", margin: "auto", backgroundColor: "white",
+                    borderCollapse: "collapse", marginBottom: "2rem"
+                }}>
+                    <thead>
+                        <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: "120px" }}>Week Starting</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Count</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Total</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Count</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Total</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Count</th>
+                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Total</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        {chartData.map((week) => (
+                            <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatDate(week.weekStart)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.send_parrotCoins_count)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.send_parrotCoins)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.receive_parrotCoins_count)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.receive_parrotCoins)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.voyage_cost_count)}</td>
+                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.voyage_cost)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             {/* Line Chart */}
             <h3 style={{ marginBottom: "1rem" }}>Transactions Over Time</h3>
-            <ResponsiveContainer width="100%" height={350}>
+
+            <ResponsiveContainer width="90%" height={350} style={{ margin: "auto" }}>
                 <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
                     style={{ backgroundColor: "white", borderRadius: "8px", padding: "10px" }} // white background
 

@@ -7,8 +7,8 @@ import { TopLeftComponent } from "../TopLeftComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchBidMutation, usePatchVoyageAdminMutation } from "../../slices/VoyageSlice";
-import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../../styles/colors";
+import { useLazyGetBidsByUserIdQuery, useLazyGetBidsByVoyageIdQuery, usePatchBidMutation } from "../../slices/VoyageSlice";
+import { parrotBlue, parrotDarkBlue } from "../../styles/colors";
 
 
 export function BidEditor() {
