@@ -1,14 +1,13 @@
 /* eslint-disable no-undef */
 import "../assets/css/advancedmarker.css";
 import "../assets/css/ConnectPage.css";
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { useLazyGetVoyageByIdAdminQuery } from "../slices/VoyageSlice";
-import { parrotBlue, parrotDarkBlue, parrotGreyTransparent, parrotPlaceholderGrey, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue, } from "../styles/colors";
 import { VoyageEditor } from "../components/Editors/VoyageEditor";
 import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
@@ -25,15 +24,7 @@ import { WeeklyMessagesMetrics } from "../components/Metrics/MessagesMetrics";
 
 function AdminPage() {
   useParams();
-  const currentUserId = localStorage.getItem("storedUserId");
-  const navigate = useNavigate();
-  const [voyageId, setVoyageId] = useState("");
-  const [voyage, setVoyage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [adminView, setAdminView] = useState("voyageEditor");
-
-
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
 
@@ -41,8 +32,6 @@ function AdminPage() {
     console.log(".....Health check failed.....");
     return <SomethingWentWrong />;
   }
-
-
 
   return (
     (
@@ -56,23 +45,58 @@ function AdminPage() {
                 <TopBarMenu />
               </div>
             </div>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                height: "100%"
+              }}
+            >
+              {/* LEFT SELECTOR */}
+              <div style={{ width: "14rem" }}>
+                <AdminSelector selected={adminView} setSelected={setAdminView} />
+              </div>
 
+              {/* RIGHT PAGE */}
 
+              <div
+                style={{
+                  flex: 1,
+                  padding: "1rem",
+                  overflowY: "scroll",
+                  height: "94vh",
+                  scrollbarWidth: "none",     // Firefox
+                  msOverflowStyle: "none"     // IE / Edge
+                }}
+                className="hide-scrollbar"
+              >
 
+                <style>
+                  {`
+      .hide-scrollbar {
+        scrollbar-width: none;      /* Firefox */
+        -ms-overflow-style: none;   /* IE/Edge */
+      }
 
-            <AdminSelector selected={adminView} setSelected={setAdminView} />
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;              /* Chrome/Safari */
+      }
+    `}
+                </style>
 
-            {adminView === "voyageEditor" && <VoyageEditor />}
-            {adminView === "bidEditor" && <BidEditor />}
-            {adminView === "vehicleEditor" && <VehicleEditor />}
-            {adminView === "userEditor" && <UserEditor />}
-            {adminView === "purchases" && <WeeklyPurchasesMetrics />}
-            {adminView === "transactions" && <WeeklyTransactionsMetrics />}
-            {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
-            {adminView === "vehiclesRegistered" && <WeeklyVehiclesMetrics />}
-            {adminView === "usersCreated" && <WeeklyUsersMetrics />}
-            {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
-            {adminView === "messaging" && <WeeklyMessagesMetrics />}
+                {adminView === "voyageEditor" && <VoyageEditor />}
+                {adminView === "bidEditor" && <BidEditor />}
+                {adminView === "vehicleEditor" && <VehicleEditor />}
+                {adminView === "userEditor" && <UserEditor />}
+                {adminView === "purchases" && <WeeklyPurchasesMetrics />}
+                {adminView === "transactions" && <WeeklyTransactionsMetrics />}
+                {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
+                {adminView === "vehiclesRegistered" && <WeeklyVehiclesMetrics />}
+                {adminView === "usersCreated" && <WeeklyUsersMetrics />}
+                {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
+                {adminView === "messaging" && <WeeklyMessagesMetrics />}
+              </div>
+            </div>
 
 
           </div>

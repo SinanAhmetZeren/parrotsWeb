@@ -15,6 +15,7 @@ const usersSlice = createSlice({
     userFavoriteVoyages: [0],
     userFavoriteVehicles: [0],
     unreadMessages: false,
+    isAdmin: false
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -26,6 +27,7 @@ const usersSlice = createSlice({
         state.userName = action.payload.userName;
         state.userProfileImage = action.payload.profileImageUrl;
         state.unreadMessages = action.payload.unreadMessages;
+        state.isAdmin = action.payload.isAdmin;
 
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
@@ -48,6 +50,7 @@ const usersSlice = createSlice({
         state.userName = "";
         state.userProfileImage = "";
         state.unreadMessages = false;
+        state.isAdmin = false;
 
         localStorage.removeItem("storedToken");
         localStorage.removeItem("storedRefreshToken");

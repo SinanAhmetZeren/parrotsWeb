@@ -3,13 +3,15 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAsLoggedOut } from "../slices/UserSlice";
 import { useState } from "react";
-import { parrotBlue, parrotGreen } from "../styles/colors";
+import { parrotBananaLeafGreen, parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotGreen, parrotGreenTransparent, parrotPistachioGreen, parrotRed } from "../styles/colors";
 import { apiSlice } from "../api/apiSlice";
 import { store } from '../store/store';
 
 export function TopBarMenu() {
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const unreadMessages = useSelector((state) => state.users.unreadMessages);
+  // console.log("--> Unread messages", unreadMessages);
+  const isAdmin = useSelector((state) => state.users.isAdmin);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -19,17 +21,20 @@ export function TopBarMenu() {
     <nav className="flex space-x-2 sm:space-x-2 overflow-x-auto sm:overflow-x-visible">
       {isLoggedIn ? (
         <>
+          {isAdmin &&
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `${commonStyle} ${isActive ? activeStyle : inactiveStyle}`
+              }
+              style={({ isActive }) => ({
+                color: !isActive ? parrotGreen : parrotPistachioGreen,
+              })}
+            >
+              Admin
+            </NavLink>}
 
-          <NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              isActive
-                ? `${activeStyle} ${commonStyle}`
-                : `${inactiveStyle} ${commonStyle}`
-            }
-          >
-            Admin
-          </NavLink>
+
 
 
           <NavLink
@@ -191,6 +196,7 @@ export function TopBarMenu() {
 
 const activeStyle = "text-white";
 const inactiveStyle = "text-blue-500";
+
 const commonStyle =
   "font-bold text-xl p-1 px-6 hover:bg-opacity-30 hover:bg-blue-800 hover:text-white hover:rounded-2xl";
 

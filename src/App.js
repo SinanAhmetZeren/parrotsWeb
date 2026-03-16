@@ -36,7 +36,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 function App() {
   var isLoggedIn = useSelector((state) => state.users.isLoggedIn);
   const currentUserId = useSelector((state) => state.users.userId);
-  const unreadMessages = useSelector((state) => state.users.unreadMessages);
+  const unreadMessagesFromState = useSelector((state) => state.users.unreadMessages);
   const userName = useSelector((state) => state.users.userName);
   const dispatch = useDispatch()
 
@@ -69,7 +69,7 @@ function App() {
           }
           console.log("Hub is:", isHubReady() ? "ready" : "not ready");
           const hasUnread = await invokeHub("CheckUnreadMessages", currentUserId);
-          console.log("checked unread -> ", hasUnread);
+          console.log("-->>checked unread during init hub:-> ", hasUnread);
           if (hasUnread)
             dispatch(setUnreadMessages(true));
         } catch (err) {
@@ -94,8 +94,8 @@ function App() {
 
 
   useEffect(() => {
-    console.log("unread", unreadMessages);
-  }, [unreadMessages]);
+    console.log("unread from state: ", unreadMessagesFromState);
+  }, [unreadMessagesFromState]);
 
   return (
     <Router>

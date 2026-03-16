@@ -128,6 +128,7 @@ function LoginPage() {
             refreshToken: confirmResponse.refreshToken,
             userName: confirmResponse.userName,
             profileImageUrl: confirmResponse.profileImageUrl,
+            isAdmin: confirmResponse.isAdmin
           })
         );
       }
@@ -155,6 +156,10 @@ function LoginPage() {
         Email: username,
         Password: password,
       }).unwrap();
+
+
+      console.log("---------->login response: ");
+      console.log(loginResponse.isAdmin);
 
       if (!loginResponse?.token) {
         setIsLoggingIn(false);
@@ -189,6 +194,8 @@ function LoginPage() {
           refreshToken: loginResponse.refreshToken,
           userName: loginResponse.userName,
           profileImageUrl: loginResponse.profileImageUrl,
+          isAdmin: loginResponse.isAdmin
+
         })
       );
 
@@ -293,6 +300,8 @@ function LoginPage() {
             refreshToken: resetPasswordResponse.refreshToken,
             userName: resetPasswordResponse.userName,
             profileImageUrl: resetPasswordResponse.profileImageUrl,
+            isAdmin: resetPasswordResponse.isAdmin
+
           })
         );
       }

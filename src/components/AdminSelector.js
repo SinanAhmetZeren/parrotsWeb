@@ -49,34 +49,32 @@ export default function AdminSelector({ selected, setSelected }) {
 
     return (
         <div style={{
-            width: "100%", padding: "10px", borderBottom: "1px solid #ddd",
-            display: "grid", gridTemplateColumns: "1fr 7fr"
+            width: "14rem",
+            padding: "10px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px"
         }}>
-
             {/* Row 1 */}
-            <div style={{ display: "flex", gap: "10px", marginRight: "3rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "3rem" }}>
                 <button style={topButton("editors")} onClick={() => setGroup("editors")}>
                     Editors
                 </button>
-
                 <button style={topButton("metrics")} onClick={() => setGroup("metrics")}>
                     Metrics
                 </button>
             </div>
-
             {/* Row 2 */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", gap: "8px" }}>
                 {items.map(item => (
                     <button
                         key={item.key}
                         style={itemButton(item.key)}
-                        onClick={() => setSelected(item.key)}
-                    >
+                        onClick={() => setSelected(item.key)}>
                         {item.label}
                     </button>
                 ))}
             </div>
-
         </div>
     );
 }
