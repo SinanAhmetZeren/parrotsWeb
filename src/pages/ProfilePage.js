@@ -64,7 +64,10 @@ function ProfilePage() {
   useEffect(() => {
     const token = localStorage.getItem("storedToken");
     if (userId && token) {
-      triggerGetUserById(userId);
+      console.log("getting data for user id: ", userId);
+
+      const res = triggerGetUserById(userId);
+      console.log(res);
     }
 
     return () => {

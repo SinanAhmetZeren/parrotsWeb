@@ -21,6 +21,9 @@ export function SocialRenderComponent({ userData }) {
     setItemsWithValue(itemsWithValue.length);
   }, []);
 
+  console.log("user data: ", userData);
+  console.log("user data email visible: ", userData.emailVisible);
+
   // using DisplayEmail
   if (userData.displayEmail !== null && userData.emailVisible === true) {
     contactDataArray.push({ key: "email", value: userData.displayEmail });
