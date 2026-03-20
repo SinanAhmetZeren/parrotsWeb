@@ -1,7 +1,7 @@
 import { color, text } from "d3";
 import React, { useState } from "react";
 import { parrotBlue, parrotButtonGreen, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotRed, parrotTextDarkBlue } from "../styles/colors";
-import logoMini from '../assets/images/parrots-logo-mini.png';
+import logoMini from '../assets/images/ParrotsLogoHead.png';
 
 const TermsOfUseComponent = () => {
     const [isOpen, setIsOpen] = useState(false);

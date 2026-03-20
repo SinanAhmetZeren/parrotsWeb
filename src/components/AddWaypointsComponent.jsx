@@ -25,7 +25,8 @@ import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
 import { DefaultSpinner } from "./DefaultSpinner";
 
-const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
+const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
 
 export const AddWaypointsPage = ({
     voyageId,

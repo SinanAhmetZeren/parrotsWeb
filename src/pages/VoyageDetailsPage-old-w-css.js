@@ -38,7 +38,8 @@ function VoyageDetailsPage() {
   const { voyageId } = useParams();
   console.log("voyageId from params:", voyageId);
   const userId = localStorage.getItem("storedUserId");
-  const myApiKey = "AIzaSyAsqIXNMISkZ0eprGc2iTLbiQk0QBtgq0c";
+  const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
   const [userBid, setUserBid] = useState("");
   const [userBidAccepted, setUserBidAccepted] = useState("");
   const mapRef = useRef();

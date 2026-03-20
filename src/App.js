@@ -54,6 +54,10 @@ function App() {
   }, [userName]);
 
   useEffect(() => {
+
+
+    if (!currentUserId) return; // <- guard against null
+
     let unreadHandlerTrue;
     console.log("unread message useEffect");
     const InitHub = async () => {

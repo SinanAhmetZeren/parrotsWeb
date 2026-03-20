@@ -34,7 +34,6 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
-  // const myApiKey2 = "AIzaSyAsqIXNMISkZ0prGc2iTLbiQk0QBtgq0";
   const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
