@@ -28,6 +28,25 @@
   color: #61dafb;
 }
 
+.parrot-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.parrot-popup .leaflet-popup-content {
+  margin: 0;
+}
+
+.parrot-popup .leaflet-popup-tip-container {
+  display: none;
+}
+
+.parrot-popup .leaflet-popup-close-button {
+  display: none;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

@@ -1,8 +1,6 @@
 import React from "react";
-import parrotsLogo2 from "../assets/images/parrots-logo-mini.png";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import {
-  parrotBlueSemiTransparent,
   parrotTextDarkBlue,
 } from "../styles/colors";
 import { TopLeftComponent } from "./TopLeftComponent";

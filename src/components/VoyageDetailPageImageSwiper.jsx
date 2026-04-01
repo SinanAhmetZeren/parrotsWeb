@@ -10,7 +10,7 @@ import { Navigation, EffectCoverflow } from "swiper/modules";
 
 
 
-export function VoyageDetailPageImageSwiper({ voyageData }) {
+export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUrl = ``;
 
@@ -18,7 +18,7 @@ export function VoyageDetailPageImageSwiper({ voyageData }) {
   ]
 
   return (
-    <div style={{ backgroundColor: "" }}>
+    <div style={{ backgroundColor: "", display: opacity !== 1 && "none" }}>
       <div style={{ backgroundColor: "" }}>
         <Swiper
           effect="coverflow"

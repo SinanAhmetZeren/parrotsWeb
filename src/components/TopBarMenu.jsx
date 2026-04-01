@@ -12,6 +12,7 @@ export function TopBarMenu() {
   const unreadMessages = useSelector((state) => state.users.unreadMessages);
   // console.log("--> Unread messages", unreadMessages);
   const isAdmin = useSelector((state) => state.users.isAdmin);
+  console.log("isadmin", isAdmin);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();

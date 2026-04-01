@@ -1,96 +1,37 @@
-/* eslint-disable no-undef */
-import "../assets/css/App.css";
-import "../assets/css/advancedmarker.css";
-import "swiper/css/pagination";
-import "swiper/css/effect-coverflow";
-import "swiper/css";
-import "swiper/css/navigation";
-import { useMap } from "@vis.gl/react-google-maps";
-import { useEffect, useRef } from "react";
+import { Polyline } from "react-leaflet";
 
 export function CreateVoyagePolyLineComponent3({ waypoints }) {
-  const map = useMap();
-  const polylineRef = useRef(null);
+  if (!waypoints || waypoints.length === 0) return null;
 
-  useEffect(() => {
-    if (!map || !waypoints || waypoints.length === 0) return;
+  const positions = waypoints.map((wp) => [wp.latitude, wp.longitude]);
 
-    // Remove previous polyline if it exists
-    if (polylineRef.current) {
-      polylineRef.current.setMap(null);
-    }
-
-    // Create the Polyline from the waypoints
-    const polylineCoordinates = waypoints.map((waypoint) => ({
-      lat: waypoint.latitude,
-      lng: waypoint.longitude,
-    }));
-
-    polylineRef.current = new google.maps.Polyline({
-      path: polylineCoordinates,
-      geodesic: true,
-      strokeColor: "#2ac", // Line color
-      strokeOpacity: 0.6,
-      strokeWeight: 4, // Line thickness
-    });
-
-    // Set the new Polyline on the map
-    polylineRef.current.setMap(map);
-
-    // Cleanup on unmount
-    return () => {
-      if (polylineRef.current) {
-        polylineRef.current.setMap(null);
-      }
-    };
-  }, [map, waypoints]); // Re-run when waypoints change
-
-  return null;
+  return (
+    <Polyline positions={positions} color="#2ac898" opacity={0.6} weight={4} />
+  );
 }
 
-
 export function CreateVoyagePolyLineComponent({ waypoints }) {
-  const map = useMap();
-  const polylinesRef = useRef([]);
+  if (!waypoints || waypoints.length < 2) return null;
 
-  useEffect(() => {
-    if (!map || !waypoints || waypoints.length < 2) return;
+  const colors = [
+    "#FF0000", "#FF7F00", "#FFD700", "#ADFF2F", "#00FF00",
+    "#00FFFF", "#1E90FF", "#0000FF", "#4B0082", "#9400D3",
+  ];
 
-    // Remove previous polylines
-    polylinesRef.current.forEach(polyline => polyline.setMap(null));
-    polylinesRef.current = [];
-
-    const colors = [
-      "#FF0000", "#FF7F00", "#FFD700", "#ADFF2F", "#00FF00",
-      "#00FFFF", "#1E90FF", "#0000FF", "#4B0082", "#9400D3"
-    ];
-
-
-    // Create multiple polylines with different colors
-    for (let i = 0; i < waypoints.length - 1; i++) {
-      const segment = [
-        { lat: waypoints[i].latitude, lng: waypoints[i].longitude },
-        { lat: waypoints[i + 1].latitude, lng: waypoints[i + 1].longitude },
-      ];
-
-      const color = colors[i % colors.length]; // Cycle through colors
-
-      const polyline = new google.maps.Polyline({
-        path: segment,
-        geodesic: true,
-        strokeColor: color,
-        strokeOpacity: 0.8,
-        strokeWeight: 4,
-      });
-
-      polyline.setMap(map);
-      polylinesRef.current.push(polyline);
-    }
-
-    return () => {
-      polylinesRef.current.forEach(polyline => polyline.setMap(null));
-    };
-  }, [map, waypoints]);
-
-  return null;
+  return (
+    <>
+      {waypoints.slice(0, -1).map((wp, i) => (
+        <Polyline
+          key={i}
+          positions={[
+            [wp.latitude, wp.longitude],
+            [waypoints[i + 1].latitude, waypoints[i + 1].longitude],
+          ]}
+          color={colors[i % colors.length]}
+          opacity={0.8}
+          weight={4}
+        />
+      ))}
+    </>
+  );
 }

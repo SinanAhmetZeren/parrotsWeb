@@ -76,9 +76,9 @@ function ProfilePage() {
     };
   }, [userId, triggerGetUserById]);
 
-  // useEffect(() => {
-  //   if (isSuccessUser) console.log("userData--------> ", userData);
-  // }, [userData, isSuccessUser]);
+  useEffect(() => {
+    if (isSuccessUser) console.log("userData--------> ", userData);
+  }, [userData, isSuccessUser]);
 
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();

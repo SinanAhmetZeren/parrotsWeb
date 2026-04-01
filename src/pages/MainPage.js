@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import "../assets/css/App.css";
-import "../assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
@@ -11,7 +10,6 @@ import {
   useLazyGetVoyagesByLocationQuery,
   useLazyGetFilteredVoyagesQuery
 } from "../slices/VoyageSlice";
-
 import {
   updateUserFavorites,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
@@ -19,25 +17,24 @@ import {
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { TopBarMenu } from "../components/TopBarMenu";
-import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
+import { MapContainer, TileLayer } from "react-leaflet";
 import { MainPageFiltersComponent } from "../components/MainPageFiltersComponent";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { MainPageNewVoyageButton } from "../components/MainPageNewVoyageButton";
-import { MarkerWithInfoWindow } from "../components/MainPageMarkerWithInfoWindow";
 import { MainPageMapPanComponent } from "../components/MainPageMapPanComponent";
 import { ClusteredVoyageMarkers } from "../components/MainPageClusteredParrots";
 import { convertDateFormat } from "../components/ConvertDateFormat";
-import { MainPageRefreshButton } from "../components/MainPageRefreshButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { MapTypeButton } from "../components/MapTypeButton";
 import { MainPageRefreshButtonNew } from "../components/MainPageRefreshButtonNew";
 
+const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
+
 function MainPage() {
   const userId = localStorage.getItem("storedUserId");
+  const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 
-  const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -45,58 +42,33 @@ function MainPage() {
   const [initialVoyages, setInitialVoyages] = useState([]);
   const [locationError, setLocationError] = useState(null);
   const [targetLocation, setTargetLocation] = useState({});
-  const markerClustererRef = useRef(null);
-  const markersRef = useRef([]);
   const [dates, setDates] = useState([
-    {
-      startDate: null,
-      endDate: null,
-      key: "selection",
-    },
+    { startDate: null, endDate: null, key: "selection" },
   ]);
   const [selectedVacancy, setSelectedVacancy] = useState();
   const [selectedVehicle, setSelectedVehicle] = useState();
   const [bounds, setBounds] = useState(null);
   const [initialBounds, setInitialBounds] = useState(null);
-  const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
-
-  const hasMapInitialized = useRef(false);
+  const [mapTypeId, setMapTypeId] = useState("hybrid");
 
   const dispatch = useDispatch();
   const [
     getVoyagesByLocation,
-    {
-      isError: isErrorVoyages,
-      isLoading: isLoadingVoyages,
-      isSuccess: isSuccessVoyages,
-    },
+    { isError: isErrorVoyages, isLoading: isLoadingVoyages, isSuccess: isSuccessVoyages },
   ] = useLazyGetVoyagesByLocationQuery();
   const [
     getFilteredVoyages,
-    {
-      isError: isErrorVoyagesFiltered,
-      isLoading: isLoadingVoyagesFiltered,
-      isSuccess: isSuccessVoyagesFiltered,
-    },
+    { isError: isErrorVoyagesFiltered, isLoading: isLoadingVoyagesFiltered, isSuccess: isSuccessVoyagesFiltered },
   ] = useLazyGetFilteredVoyagesQuery();
-
 
   const [
     getFavoriteVehicleIdsByUserId,
-    {
-      data: favoriteVehiclesData,
-      error: favoriteVehiclesError,
-      isError: isErrorFavoriteVehicles,
-    },
+    { data: favoriteVehiclesData, isError: isErrorFavoriteVehicles },
   ] = useLazyGetFavoriteVehicleIdsByUserIdQuery();
 
   const [
     getFavoriteVoyageIdsByUserId,
-    {
-      data: favoriteVoyagesData,
-      error: favoriteVoyagesError,
-      isError: isErrorFavoriteVoyages,
-    },
+    { data: favoriteVoyagesData, isError: isErrorFavoriteVoyages },
   ] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
 
   useEffect(() => {
@@ -121,25 +93,14 @@ function MainPage() {
       formattedEndDate: formattedEndDate,
     };
     const filteredVoyages = await getFilteredVoyages(data);
-    console.log("---> filtered: ");
-    console.log(filteredVoyages.data);
     setInitialVoyages(filteredVoyages.data || []);
-    console.log("bounds: ", bounds);
-  }, [
-    bounds,
-    dates.startDate,
-    dates.endDate,
-    selectedVacancy,
-    selectedVehicle,
-    getFilteredVoyages,
-  ]);
+  }, [bounds, dates.startDate, dates.endDate, selectedVacancy, selectedVehicle, getFilteredVoyages]);
 
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
 
-
-  // get location from browser
+  // Get location from browser
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -170,29 +131,24 @@ function MainPage() {
           }, 5000);
         }
       );
-    }
-    else {
+    } else {
       setLocationError("Geolocation is not supported by your browser.");
     }
-
   }, []);
 
-  // get initial voyages using initial location and deltas
+  // Fetch initial voyages once map bounds are set
   useEffect(() => {
     const getInitialVoyagesAfterLocation = async () => {
       if (!initialBounds) return;
       const { lat, lng } = initialBounds;
-      const lat1 = (lat.southWest + lat.northEast) / 2 - 0.1; //lat.southWest;
-      const lat2 = (lat.southWest + lat.northEast) / 2 + 0.1;//lat.northEast;
-      const lon1 = (lng.southWest + lng.northEast) / 2 - 0.17; //lng.southWest;
-      const lon2 = (lng.southWest + lng.northEast) / 2 + 0.17; //lng.northEast;
-
-
+      const lat1 = (lat.southWest + lat.northEast) / 2 - 0.1;
+      const lat2 = (lat.southWest + lat.northEast) / 2 + 0.1;
+      const lon1 = (lng.southWest + lng.northEast) / 2 - 0.17;
+      const lon2 = (lng.southWest + lng.northEast) / 2 + 0.17;
 
       try {
         setIsLoading(true);
         const voyages = await getVoyagesByLocation({ lon1, lon2, lat1, lat2 });
-        // console.log("get voyages by location:", lat1, lon1, lat2, lon2);
         setInitialVoyages(voyages?.data || []);
       } catch (error) {
         console.error("Error fetching voyages:", error);
@@ -203,146 +159,30 @@ function MainPage() {
     getInitialVoyagesAfterLocation();
   }, [getVoyagesByLocation, initialBounds]);
 
-  // renders markers
+  // Update favorite vehicles and voyages in local storage
   useEffect(() => {
-    if (isSuccessVoyages) {
-      markersRef.current = [];
-      console.log("initial voyages: ", initialVoyages);
-      const newMarkers = initialVoyages
-        .map((voyage, index) => {
-          const waypoint = voyage.waypoints?.[0];
-          if (!waypoint) {
-            return null;
-          }
-
-          return (
-            <MarkerWithInfoWindow
-              key={`${voyage.waypoints[0].latitude}-${index}`}
-              index={index}
-              position={{
-                lat: waypoint.latitude,
-                lng: waypoint.longitude,
-              }}
-              voyage={voyage}
-              onClick={() => {
-                handlePanToLocation(
-                  voyage.waypoints[0].latitude,
-                  voyage.waypoints[0].longitude
-                );
-              }}
-            />
-          );
-        })
-        .filter(Boolean);
-
-      if (!markerClustererRef.current) {
-        markerClustererRef.current = new MarkerClusterer({
-          // map: mapRef.current,
-          markers: newMarkers,
-        });
-      } else {
-        // console.log("Updating existing MarkerClusterer");
-        markerClustererRef.current.clearMarkers();
-        markerClustererRef.current.addMarkers(newMarkers);
-      }
-
-      markersRef.current = newMarkers;
-      // console.log("markersRef.current updated:", markersRef.current);
-    }
-  }, [initialVoyages, isSuccessVoyages]);
-
-
-  // update favorite vehicles and voyages in local storage with api data
-  useEffect(() => {
-    const updateFavorites = () => {
-      dispatch(
-        updateUserFavorites({
-          favoriteVehicles: favoriteVehiclesData,
-          favoriteVoyages: favoriteVoyagesData,
-        })
-      );
-    };
-    updateFavorites();
+    dispatch(
+      updateUserFavorites({
+        favoriteVehicles: favoriteVehiclesData,
+        favoriteVoyages: favoriteVoyagesData,
+      })
+    );
   }, [favoriteVehiclesData, favoriteVoyagesData, dispatch]);
 
-  function MapInitialBoundsComponent2({ setInitialBounds }) {
-    const map = useMap();
-    useEffect(() => {
-      if (!map || hasMapInitialized.current) return;
-      const onLoadBounds = map.getBounds();
-      if (!onLoadBounds) return;
-      const northEast = onLoadBounds.getNorthEast();
-      const southWest = onLoadBounds.getSouthWest();
-
-
-      setInitialBounds({
-        lat: {
-          northEast: northEast.lat(),
-          southWest: southWest.lat(),
-        },
-        lng: {
-          northEast: northEast.lng(),
-          southWest: southWest.lng(),
-        },
-      });
-      // console.log("onLoadBounds - Lat: ", onLoadBounds.getNorthEast().lat(), onLoadBounds.getSouthWest().lat());
-      hasMapInitialized.current = true;
-    }, [map, setInitialBounds]);
-    return null;
-  }
-
-
-  function MapInitialBoundsComponent({ setInitialBounds }) {
-    const map = useMap();
-
-    useEffect(() => {
-      if (!map || hasMapInitialized.current) return;
-      const listener = map.addListener("idle", () => {
-
-        if (hasMapInitialized.current) return;
-        const bounds = map.getBounds();
-        if (!bounds) return;
-        const northEast = bounds.getNorthEast();
-        const southWest = bounds.getSouthWest();
-        console.log("Correct bounds lat:", northEast.lat(), southWest.lat());
-        console.log("Correct bounds lng:", northEast.lng(), southWest.lng());
-
-        setInitialBounds({
-          lat: {
-            northEast: northEast.lat(),
-            southWest: southWest.lat(),
-          },
-          lng: {
-            northEast: northEast.lng(),
-            southWest: southWest.lng(),
-          },
-        });
-        hasMapInitialized.current = true;
-      });
-      return () => {
-        if (listener) listener.remove();
-      };
-    }, [map, setInitialBounds]);
-
-    return null;
-  }
-
-  const { data: healthCheckData, isError: isHealthCheckError } =
-    useHealthCheckQuery();
+  const { data: healthCheckData, isError: isHealthCheckError } = useHealthCheckQuery();
 
   if (isHealthCheckError) {
     console.log(".....Health check failed.....");
     return <SomethingWentWrong />;
   }
 
-  if (
-    isErrorVoyages ||
-    isErrorVoyagesFiltered ||
-    isErrorFavoriteVehicles ||
-    isErrorFavoriteVoyages
-  ) {
+  if (isErrorVoyages || isErrorVoyagesFiltered || isErrorFavoriteVehicles || isErrorFavoriteVoyages) {
     return <SomethingWentWrong />;
   }
+
+  const tileUrl = mapTypeId === "roadmap"
+    ? `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`
+    : `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
 
   return (
     <div className="App">
@@ -382,68 +222,47 @@ function MainPage() {
                 )}
               </div>
               <MainPageNewVoyageButton />
-
-
-
-
             </div>
 
-            {isLoading ? (
-              <div className="flex mainpage_BottomRight">
-                <div className="flex mainpage_MapContainer">
-                  <MapSpinner />
-                </div>
-              </div>
-            ) : (
-              <div className="flex mainpage_BottomRight">
-                <div className="flex mainpage_MapContainer">
-                  <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                    {!initialLatitude && (
-                      <div className={"cardSwiperSpinner"}>
-                        {/* <div className="spinner"></div> */}
+            <div className="flex mainpage_BottomRight">
+              <div className="flex mainpage_MapContainer">
+                {!initialLatitude ? (
+                  <div className={"cardSwiperSpinner"}></div>
+                ) : (
+                  <div style={{ position: "relative", height: "100%", width: "100%" }}>
+                    <MapContainer
+                      center={[initialLatitude, initialLongitude]}
+                      zoom={11}
+                      style={{ height: "100%", width: "100%" }}
+                      zoomControl={false}
+                      scrollWheelZoom={true}
+                    >
+                      <TileLayer url={tileUrl} attribution={tileAttribution} />
+                      <MainPageMapPanComponent
+                        setBounds={setBounds}
+                        setInitialBounds={setInitialBounds}
+                        targetLat={targetLocation?.lat}
+                        targetLng={targetLocation?.lng}
+                      />
+                      {isSuccessVoyages && initialVoyages?.length > 0 && (
+                        <ClusteredVoyageMarkers voyages={initialVoyages} />
+                      )}
+                    </MapContainer>
+                    {isLoading && (
+                      <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+                        <MapSpinner />
                       </div>
                     )}
-
-                    {initialLatitude && (
-                      <Map
-                        mapId={"mainpageMap"}
-                        defaultZoom={12}
-                        defaultCenter={{
-                          lat: initialLatitude,
-                          lng: initialLongitude,
-                        }}
-                        gestureHandling={"greedy"}
-                        disableDefaultUI
-                        onCameraChanged={() => setTargetLocation(null)}
-                        mapTypeControl={false} // Hide the big bulky Google button
-                        mapTypeId={mapTypeId} // <--- CRITICAL: Add this line to link the state to the map
-                      >
-
-
-                        <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
-                        <MainPageRefreshButtonNew applyFilter={applyFilter} />
-
-                        <MapInitialBoundsComponent
-                          setInitialBounds={setInitialBounds}
-                        />
-                        <MainPageMapPanComponent
-                          setBounds={setBounds}
-                          targetLat={targetLocation?.lat}
-                          targetLng={targetLocation?.lng}
-                        />
-                        {isSuccessVoyages && initialVoyages?.length > 0 && (
-                          <ClusteredVoyageMarkers voyages={initialVoyages} />
-                        )}
-                      </Map>
-                    )}
-                  </APIProvider>
-                </div>
+                    <div style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
+                      <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
+                    </div>
+                    <div style={{ position: "absolute", bottom: 0, left: 0, zIndex: 1000, width: "100%" }}>
+                      <MainPageRefreshButtonNew applyFilter={applyFilter} />
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-            {/* <div style={{ position: "absolute", right: 0, bottom: 0 }}> */}
-            {/* <div style={{ position: "absolute", left: 0, top: 0 }}>
-              <MainPageRefreshButton applyFilter={applyFilter} />
-            </div> */}
+            </div>
           </div>
         </div>
       </header>
@@ -453,59 +272,29 @@ function MainPage() {
 
 export default MainPage;
 
-const CardSwiperSpinner = () => {
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(255, 255, 255, .05)",
-        height: "100%",
-        width: "92%",
-        padding: "1vh",
-        borderRadius: "1.5rem",
-        position: "relative",
-        margin: "auto",
-        marginTop: "1rem",
-      }}
-    >
-      <div
-        className="spinner"
-        style={{
-          position: "absolute",
-          top: "40%",
-          left: "50%",
-          height: "5rem",
-          width: "5rem",
-          border: "8px solid rgba(173, 216, 230, 0.3)",
-          borderTop: "8px solid #1e90ff",
-        }}
-      ></div>
-    </div>
-  );
-};
+const CardSwiperSpinner = () => (
+  <div style={{
+    backgroundColor: "rgba(255,255,255,.05)", height: "100%", width: "92%",
+    padding: "1vh", borderRadius: "1.5rem", position: "relative",
+    margin: "auto", marginTop: "1rem",
+  }}>
+    <div className="spinner" style={{
+      position: "absolute", top: "40%", left: "50%",
+      height: "5rem", width: "5rem",
+      border: "8px solid rgba(173,216,230,0.3)", borderTop: "8px solid #1e90ff",
+    }}></div>
+  </div>
+);
 
-const MapSpinner = () => {
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(255, 255, 255, 0.05)",
-        height: "100%",
-        width: "100%",
-        borderRadius: "1.5rem",
-        position: "relative",
-      }}
-    >
-      <div
-        className="spinner"
-        style={{
-          position: "absolute",
-          top: "40%",
-          left: "50%",
-          height: "5rem",
-          width: "5rem",
-          border: "8px solid rgba(173, 216, 230, 0.3)",
-          borderTop: "8px solid #1e90ff",
-        }}
-      ></div>
-    </div>
-  );
-};
+const MapSpinner = () => (
+  <div style={{
+    backgroundColor: "rgba(255,255,255,0.05)", height: "100%", width: "100%",
+    borderRadius: "1.5rem", position: "relative",
+  }}>
+    <div className="spinner" style={{
+      position: "absolute", top: "40%", left: "50%",
+      height: "5rem", width: "5rem",
+      border: "8px solid rgba(173,216,230,0.3)", borderTop: "8px solid #1e90ff",
+    }}></div>
+  </div>
+);

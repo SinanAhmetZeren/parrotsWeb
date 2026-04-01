@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useGetVoyageByIdQuery } from "../slices/VoyageSlice";
 import { TopBarMenu } from "../components/TopBarMenu";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { MapContainer, TileLayer } from "react-leaflet";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VoyageDetailPageImageSwiper } from "../components/VoyageDetailPageImageSwiper";
 import { VoyageDetailPageDetails } from "../components/VoyageDetailPageDetails";
@@ -46,7 +46,7 @@ function VoyageDetailsPage() {
   const { voyageId } = useParams();
   console.log("voyageId from params:", voyageId);
   const userId = localStorage.getItem("storedUserId");
-  const myApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 
   const [userBid, setUserBid] = useState("");
   const [userBidAccepted, setUserBidAccepted] = useState("");
@@ -251,7 +251,7 @@ function VoyageDetailsPage() {
 
             <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
               <div style={voyageDetailsImagesStyle} className="flex">
-                <VoyageDetailPageImageSwiper voyageData={VoyageData} />
+                <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
               </div>
 
               <div style={{ ...voyageDetailsDetailsStyle2, position: "relative" }} className="flex">
@@ -271,37 +271,34 @@ function VoyageDetailsPage() {
 
             <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
               <div style={voyageDetailsMapContainerStyle} className="flex">
-                <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                  {latLngBoundsLiteral?.east ? (
-                    <Map
-                      ref={mapRef}
-                      mapId={"mainpageMap"}
-                      defaultBounds={latLngBoundsLiteral}
-                      style={{ borderRadius: "1rem", overflow: "hidden" }}
-                      gestureHandling={"greedy"}
-                      disableDefaultUI
-                      zoom={undefined}
-                      onCameraChanged={() => setTargetLocation(null)}
-                      mapTypeControl={false} // Hide the big bulky Google button
-                      mapTypeId={mapTypeId} // <--- CRITICAL: Add this line to link the state to the map
+                {latLngBoundsLiteral?.east ? (
+                  <div style={{ position: "relative", height: "100%", width: "100%" }}>
+                    <MapContainer
+                      bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
+                      style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+                      zoomControl={false}
+                      scrollWheelZoom={true}
                     >
-
-
-                      <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
+                      <TileLayer
+                        url={mapTypeId === "roadmap"
+                          ? `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`
+                          : `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`}
+                        attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                      />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
                       <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
                       {VoyageData.waypoints.map((waypoint, index) => (
                         <VoyageDetailMarkerWithInfoWindow
-                          key={`$${waypoint.id}`}
+                          key={`${waypoint.id}`}
                           index={index}
                           waypointTitle={waypoint.title}
                           position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
-                          onClick={() => handlePanToLocation(waypoint.latitude, waypoint.longitude)}
                         />
                       ))}
-                    </Map>
-                  ) : null}
-                </APIProvider>
+                    </MapContainer>
+                    <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
+                  </div>
+                ) : null}
               </div>
 
               <div style={voyageDetailsWaypointsContainerStyle}>
@@ -389,32 +386,33 @@ function VoyageDetailsPage() {
 
             <div style={{ ...voyageDetailsBottomRightStyleNew, display: "flex", flexDirection: "column" }}>
               <div style={voyageDetailsMapContainerStyle} className="flex">
-                <APIProvider apiKey={myApiKey} libraries={["marker"]}>
-                  {latLngBoundsLiteral?.east ? (
-                    <Map
-                      ref={mapRef}
-                      mapId={"mainpageMap"}
-                      defaultBounds={latLngBoundsLiteral}
-                      style={{ borderRadius: "1rem", overflow: "hidden" }}
-                      gestureHandling={"greedy"}
-                      disableDefaultUI
-                      zoom={undefined}
-                      onCameraChanged={() => setTargetLocation(null)}
+                {latLngBoundsLiteral?.east ? (
+                  <div style={{ position: "relative", height: "100%", width: "100%" }}>
+                    <MapContainer
+                      bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
+                      style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+                      zoomControl={false}
+                      scrollWheelZoom={true}
                     >
+                      <TileLayer
+                        url={mapTypeId === "roadmap"
+                          ? `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`
+                          : `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`}
+                        attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                      />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
                       <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
                       {VoyageData.waypoints.map((waypoint, index) => (
                         <VoyageDetailMarkerWithInfoWindow
-                          key={`$${waypoint.id}`}
+                          key={`${waypoint.id}`}
                           index={index}
                           waypointTitle={waypoint.title}
                           position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
-                          onClick={() => handlePanToLocation(waypoint.latitude, waypoint.longitude)}
                         />
                       ))}
-                    </Map>
-                  ) : null}
-                </APIProvider>
+                    </MapContainer>
+                  </div>
+                ) : null}
               </div>
 
               <div style={voyageDetailsWaypointsContainerStyle}>
