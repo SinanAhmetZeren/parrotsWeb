@@ -193,13 +193,15 @@ const TermsOfUseComponent = () => {
                                     { num: "4.", text: "Voyages and Bids", id: "voyages" },
                                     { num: "5.", text: "Communication Between Users", id: "communication" },
                                     { num: "6.", text: "Prohibited Activities", id: "prohibited" },
-                                    { num: "7.", text: "Intellectual Property", id: "ip" },
-                                    { num: "8.", text: "Limitation of Liability", id: "liability" },
-                                    { num: "9.", text: "Disclaimers", id: "disclaimers" },
-                                    { num: "10.", text: "Modifications", id: "modifications" },
-                                    { num: "11.", text: "Privacy Policy", id: "privacy" },
-                                    { num: "12.", text: "Governing Law", id: "law" },
-                                    { num: "13.", text: "Contact", id: "contact" },
+                                    { num: "7.", text: "Account Suspension and Termination", id: "suspension" },
+                                    { num: "8.", text: "Intellectual Property", id: "ip" },
+                                    { num: "9.", text: "Limitation of Liability", id: "liability" },
+                                    { num: "10.", text: "Disclaimers", id: "disclaimers" },
+                                    { num: "11.", text: "Modifications", id: "modifications" },
+                                    { num: "12.", text: "Privacy Policy", id: "privacy" },
+                                    { num: "13.", text: "Dispute Resolution", id: "dispute" },
+                                    { num: "14.", text: "Governing Law", id: "law" },
+                                    { num: "15.", text: "Contact", id: "contact" },
                                 ].map((item) => (
                                     <div
                                         key={item.id}
@@ -294,6 +296,9 @@ const TermsOfUseComponent = () => {
                                 <div style={styles.paragraph}>
                                     Users must be at least 18 years old. By using Parrots, you confirm that you meet this age requirement and have the legal capacity to enter into this agreement under UK law.
                                 </div>
+                                <div style={styles.paragraph}>
+                                    By creating an account or continuing to use the platform, you confirm that you have read, understood, and agree to be bound by these Terms. If you do not agree, you must not use the platform.
+                                </div>
                             </div>
 
 
@@ -309,6 +314,25 @@ const TermsOfUseComponent = () => {
                                 <div id="voyages" style={styles.sectionTitle}>4. Voyages and Bids</div>
                                 <div style={styles.paragraph}>
                                     Users may list vehicles and propose voyages. They can place bids for voyages listed by others. Parrots does not guarantee any voyage will occur, be safe, or as described. Some listings may be fake or incomplete. Participation is at users’ own risk.
+                                </div>
+                                <div style={styles.sectionTitle2}>a. Accepted Bids and Voyage Owner Responsibility</div>
+                                <div style={styles.paragraph}>
+                                    When a voyage owner accepts a bid, this constitutes an expression of intent between users only. It does not create a legally binding contract, and Parrots is not a party to any such arrangement.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots does not guarantee that a voyage owner will follow through on an accepted bid, fulfil any stated arrangements, or communicate further after acceptance. Users who have had a bid accepted proceed entirely at their own risk.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots strongly recommends that users:
+                                </div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Confirm arrangements directly with the voyage owner before making any personal plans</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Do not make non-refundable bookings or financial commitments based solely on a bid acceptance within the app</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Exercise caution when sharing personal contact details</div>
+                                <div style={styles.paragraph}>
+                                    Parrots shall not be held liable for any loss, inconvenience, or harm resulting from a voyage owner’s failure to proceed following bid acceptance.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Note: Parrots does not facilitate payments. Any financial arrangements made between users occur entirely outside the platform and are the sole responsibility of the parties involved.
                                 </div>
                             </div>
 
@@ -400,6 +424,11 @@ const TermsOfUseComponent = () => {
                                     threaten others; manipulate, mislead, or defraud other users; or violate
                                     intellectual property rights.
                                 </div>
+                                <div style={styles.paragraph}>Users must not:</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Impersonate any real person, business, or organisation</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Create multiple accounts to manipulate listings, bids, or platform visibility</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Post content containing external links for commercial or promotional purposes without Parrots' consent</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Use the platform to collect personal information from other users for purposes unrelated to genuine voyage participation</div>
 
                                 <div style={styles.sectionTitle2}>
                                     Content Moderation and Removal
@@ -422,20 +451,33 @@ const TermsOfUseComponent = () => {
 
 
                             <div style={transparentWrapper}>
-                                <div id="ip" style={styles.sectionTitle}>7. Intellectual Property</div>
+                                <div id="suspension" style={styles.sectionTitle}>7. Account Suspension and Termination</div>
+                                <div style={styles.paragraph}>
+                                    Parrots reserves the right to suspend, restrict, or permanently terminate any user account at its sole discretion, at any time, without prior notice, for any reason including but not limited to: breach of these Terms, suspicious activity, prolonged inactivity, or behaviour that Parrots reasonably considers harmful to the platform or its users.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Terminated users may not re-register without express permission from Parrots.
+                                </div>
+                            </div>
+
+                            <div style={transparentWrapper}>
+                                <div id="ip" style={styles.sectionTitle}>8. Intellectual Property</div>
                                 <div style={styles.paragraph}>
                                     Users retain ownership of content they post but grant Parrots a non-exclusive, royalty-free license to display it for the purpose of operating the service. Users must have the right to share all content uploaded.
                                 </div>
                             </div >
 
                             <div style={transparentWrapper}>
-                                <div id="liability" style={styles.sectionTitle}>8. Limitation of Liability</div>
+                                <div id="liability" style={styles.sectionTitle}>9. Limitation of Liability</div>
                                 <div style={styles.paragraph}>
-                                    Parrots is not liable for any losses, damages, or injuries from using the platform, including fraudulent or misleading listings. Users participate at their own risk.
+                                    Parrots is not liable for any direct, indirect, incidental, consequential, or special losses or damages arising from use of the platform, including but not limited to loss of data, loss of opportunity, personal injury, or property damage. To the maximum extent permitted by law, Parrots' total liability to any user shall not exceed zero, as the platform is provided free of charge.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Nothing in these Terms excludes or limits liability for death or personal injury caused by negligence, fraud, or any other liability that cannot be excluded under applicable UK law.
                                 </div>
                             </div>
                             <div style={transparentWrapper}>
-                                <div id="disclaimers" style={styles.sectionTitle}>9. Disclaimers</div>
+                                <div id="disclaimers" style={styles.sectionTitle}>10. Disclaimers</div>
                                 <div style={styles.paragraph}>
                                     The platform is provided “as is” without warranties. Parrots does not guarantee accuracy, reliability, or safety of content, listings, or communications.
                                 </div>
@@ -452,14 +494,14 @@ const TermsOfUseComponent = () => {
                                 </div>
                             </div>
                             <div style={transparentWrapper}>
-                                <div id="modifications" style={styles.sectionTitle}>10. Modifications</div>
+                                <div id="modifications" style={styles.sectionTitle}>11. Modifications</div>
                                 <div style={styles.paragraph}>
-                                    Parrots may update these Terms at any time. Users will be notified of updates. Continued use constitutes acceptance of the updated Terms.
+                                    Parrots may update these Terms at any time. Where changes are material, Parrots will make reasonable efforts to notify users, such as by displaying a notice within the app or sending an email to the registered address. Continued use of the platform after changes take effect constitutes acceptance of the updated Terms. Users who do not agree to updated Terms should stop using the platform and may request account deletion.
                                 </div>
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="privacy" style={styles.sectionTitle}>11. Privacy Policy</div>
+                                <div id="privacy" style={styles.sectionTitle}>12. Privacy Policy</div>
 
                                 <div style={styles.paragraph}>
                                     Parrots respects your privacy and is committed to protecting your personal data. This section explains how information is collected, used, stored, and protected when you use the platform.
@@ -494,6 +536,9 @@ const TermsOfUseComponent = () => {
                                 <div style={styles.sectionTitle2}>e. Data Sharing</div>
                                 <div style={styles.paragraph}>
                                     Parrots does not share personal data with third parties for marketing purposes. Information is visible to other users only where users choose to make it public (e.g., profiles, listings, messages).
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots uses trusted third-party infrastructure providers to store and serve data, including file storage and hosting services. These providers act as data processors under UK GDPR and are engaged under appropriate data processing terms. They do not have independent access to your data for their own purposes.
                                 </div>
 
                                 <div style={styles.sectionTitle2}>f. User Communications</div>
@@ -536,8 +581,17 @@ const TermsOfUseComponent = () => {
 
 
                             <div style={transparentWrapper}>
+                                <div id="dispute" style={styles.sectionTitle}>13. Dispute Resolution</div>
+                                <div style={styles.paragraph}>
+                                    In the event of a dispute, users are encouraged to contact Parrots at parrotsapp@gmail.com in the first instance to seek an informal resolution.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Parrots does not currently participate in any formal Alternative Dispute Resolution (ADR) scheme. Users retain the right to bring claims before a UK court of competent jurisdiction.
+                                </div>
+                            </div>
 
-                                <div id="law" style={styles.sectionTitle}>12. Governing Law</div>
+                            <div style={transparentWrapper}>
+                                <div id="law" style={styles.sectionTitle}>14. Governing Law</div>
                                 <div style={styles.paragraph}>
                                     These Terms are governed by the laws of the United Kingdom. Disputes shall be subject to UK courts.
                                 </div>
@@ -545,7 +599,7 @@ const TermsOfUseComponent = () => {
 
                             <div style={transparentWrapper}>
 
-                                <div id="contact" style={styles.sectionTitle}>13. Contact</div>
+                                <div id="contact" style={styles.sectionTitle}>15. Contact</div>
                                 <div style={styles.paragraph}>
                                     For questions regarding these Terms:
                                     <br />

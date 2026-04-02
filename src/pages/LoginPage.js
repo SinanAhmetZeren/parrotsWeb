@@ -24,6 +24,7 @@ import {
 } from "../styles/colors";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { TERMS_VERSION } from "../constants/TermsVersion";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import welcomeImage from "../assets/images/WelcomeWeb.png";
 import almostThereImage from "../assets/images/AlmostWeb.png";
@@ -58,6 +59,8 @@ function LoginPage() {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConfirmingUser, setIsConfirmingUser] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
@@ -236,6 +239,7 @@ function LoginPage() {
         Email: emailRegister,
         UserName: usernameRegister,
         Password: passwordRegister,
+        TermsVersion: TERMS_VERSION,
       }).unwrap();
 
       if (registerResponse?.token) {
@@ -578,17 +582,79 @@ function LoginPage() {
                     </div>
                   </div>
                   <div style={{ margin: "0.5rem", marginTop: "1rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+                      <div
+                        onClick={() => setTermsAccepted(prev => !prev)}
+                        style={{
+                          width: "1.1rem", height: "1.1rem", borderRadius: "3px",
+                          border: "2px solid #007bff", backgroundColor: termsAccepted ? "#007bff" : "white",
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {termsAccepted && <span style={{ color: "white", fontSize: "0.8rem", fontWeight: "bold" }}>✓</span>}
+                      </div>
+                      <span style={{ color: parrotTextDarkBlue, fontSize: "0.9rem" }}>
+                        I have read and agree to the{" "}
+                        <span
+                          onClick={() => setTermsModalOpen(true)}
+                          style={{ color: "#007bff", fontWeight: "bold", cursor: "pointer", textDecoration: "underline" }}
+                        >
+                          Terms of Use
+                        </span>
+                      </span>
+                    </div>
+
+                    {termsModalOpen && (
+                      <div style={{
+                        position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+                        backgroundColor: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center",
+                        justifyContent: "center", zIndex: 2000, padding: "1rem",
+                      }} onClick={() => setTermsModalOpen(false)}>
+                        <div style={{
+                          backgroundColor: "#fff", maxWidth: "800px", width: "100%",
+                          maxHeight: "85vh", overflowY: "auto", borderRadius: "1rem",
+                          padding: "2rem", position: "relative",
+                        }} onClick={e => e.stopPropagation()}>
+                          <button onClick={() => setTermsModalOpen(false)} style={{
+                            position: "absolute", top: "1rem", right: "1rem", fontSize: "1.5rem",
+                            background: "none", border: "none", cursor: "pointer",
+                          }}>×</button>
+                          <iframe
+                            src="/terms-inline"
+                            title="Terms of Use"
+                            style={{ display: "none" }}
+                          />
+                          <div style={{ color: "#222", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                            <p>Please view the full Terms of Use by clicking "Terms of Use" in the footer or profile menu, or scroll down to read them before accepting.</p>
+                            <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem", gap: "1rem" }}>
+                              <button onClick={() => { setTermsAccepted(true); setTermsModalOpen(false); }} style={{
+                                backgroundColor: "#007bff", color: "white", border: "none",
+                                padding: "0.6rem 1.5rem", borderRadius: "1rem", cursor: "pointer", fontWeight: "bold",
+                              }}>Accept</button>
+                              <button onClick={() => setTermsModalOpen(false)} style={{
+                                backgroundColor: "#eee", color: "#333", border: "none",
+                                padding: "0.6rem 1.5rem", borderRadius: "1rem", cursor: "pointer",
+                              }}>Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div
                       className="register-button"
-                      onClick={() => handleRegister()}
+                      onClick={() => termsAccepted && handleRegister()}
                       style={{
                         opacity:
                           usernameRegister &&
                             emailRegister &&
                             passwordRegister &&
-                            passwordRegister2
+                            passwordRegister2 &&
+                            termsAccepted
                             ? 1
                             : 0.5,
+                        cursor: termsAccepted ? "pointer" : "not-allowed",
                       }}
                     >
                       {" "}
