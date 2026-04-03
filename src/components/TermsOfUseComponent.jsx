@@ -3,10 +3,18 @@ import React, { useState } from "react";
 import { parrotBlue, parrotButtonGreen, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotRed, parrotTextDarkBlue } from "../styles/colors";
 import logoMini from '../assets/images/ParrotsLogoHead.png';
 
-const TermsOfUseComponent = () => {
+const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const modalOpen = isControlled ? controlledOpen : isOpen;
 
-    const toggleModal = () => setIsOpen(prev => !prev);
+    const toggleModal = () => {
+        if (isControlled) {
+            onClose?.();
+        } else {
+            setIsOpen(prev => !prev);
+        }
+    };
 
     // Inline styles as JS objects
     const styles = {
@@ -115,11 +123,13 @@ const TermsOfUseComponent = () => {
     return (
 
         <>
-            <button style={navigationButton} onClick={toggleModal}>
-                <span>Terms of Use</span>
-            </button>
+            {!isControlled && (
+                <button style={navigationButton} onClick={toggleModal}>
+                    <span>Terms of Use</span>
+                </button>
+            )}
 
-            {isOpen && (
+            {modalOpen && (
                 <div style={styles.modalOverlay} onClick={toggleModal}>
                     <div
                         style={styles.modalContent}
@@ -190,18 +200,19 @@ const TermsOfUseComponent = () => {
                                     { num: "1.", text: "About Parrots", id: "about" },
                                     { num: "2.", text: "Eligibility", id: "eligibility" },
                                     { num: "3.", text: "Profile and Content Responsibilities", id: "profile" },
-                                    { num: "4.", text: "Voyages and Bids", id: "voyages" },
-                                    { num: "5.", text: "Communication Between Users", id: "communication" },
-                                    { num: "6.", text: "Prohibited Activities", id: "prohibited" },
-                                    { num: "7.", text: "Account Suspension and Termination", id: "suspension" },
-                                    { num: "8.", text: "Intellectual Property", id: "ip" },
-                                    { num: "9.", text: "Limitation of Liability", id: "liability" },
-                                    { num: "10.", text: "Disclaimers", id: "disclaimers" },
-                                    { num: "11.", text: "Modifications", id: "modifications" },
-                                    { num: "12.", text: "Privacy Policy", id: "privacy" },
-                                    { num: "13.", text: "Dispute Resolution", id: "dispute" },
-                                    { num: "14.", text: "Governing Law", id: "law" },
-                                    { num: "15.", text: "Contact", id: "contact" },
+                                    { num: "4.", text: "Platform Neutrality and No Endorsement", id: "neutrality" },
+                                    { num: "5.", text: "Voyages and Bids", id: "voyages" },
+                                    { num: "6.", text: "Communication Between Users", id: "communication" },
+                                    { num: "7.", text: "Prohibited Activities", id: "prohibited" },
+                                    { num: "8.", text: "Account Suspension and Termination", id: "suspension" },
+                                    { num: "9.", text: "Intellectual Property", id: "ip" },
+                                    { num: "10.", text: "Limitation of Liability", id: "liability" },
+                                    { num: "11.", text: "Disclaimers", id: "disclaimers" },
+                                    { num: "12.", text: "Modifications", id: "modifications" },
+                                    { num: "13.", text: "Privacy Policy", id: "privacy" },
+                                    { num: "14.", text: "Dispute Resolution", id: "dispute" },
+                                    { num: "15.", text: "Governing Law", id: "law" },
+                                    { num: "16.", text: "Contact", id: "contact" },
                                 ].map((item) => (
                                     <div
                                         key={item.id}
@@ -311,7 +322,26 @@ const TermsOfUseComponent = () => {
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="voyages" style={styles.sectionTitle}>4. Voyages and Bids</div>
+                                <div id="neutrality" style={styles.sectionTitle}>4. Platform Neutrality and No Endorsement</div>
+                                <div style={styles.paragraph}>
+                                    Parrots is a technology platform that enables users to list, discover, and bid on voyages and vehicle hire. Parrots does not create, own, operate, or control any voyage, vehicle, or service listed on the platform.
+                                </div>
+                                <div style={styles.paragraph}>We do not verify, approve, endorse, or guarantee:</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• the accuracy or completeness of any listing</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• the identity, credentials, or reliability of any user</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• the quality, safety, or legality of any voyage or vehicle offered</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• that any voyage will depart, arrive, or be completed as described</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• any transaction, payment, or agreement made between users</div>
+                                <div style={styles.paragraph}>
+                                    All arrangements are made solely between the users involved. Parrots is not a party to any agreement, booking, or transaction between users and accepts no liability arising from them.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Any reliance on listings, user profiles, or content posted by other users is at your own risk.
+                                </div>
+                            </div>
+
+                            <div style={transparentWrapper}>
+                                <div id="voyages" style={styles.sectionTitle}>5. Voyages and Bids</div>
                                 <div style={styles.paragraph}>
                                     Users may list vehicles and propose voyages. They can place bids for voyages listed by others. Parrots does not guarantee any voyage will occur, be safe, or as described. Some listings may be fake or incomplete. Participation is at users’ own risk.
                                 </div>
@@ -341,7 +371,7 @@ const TermsOfUseComponent = () => {
 
 
                             <div style={transparentWrapper}>
-                                <div id="communication" style={styles.sectionTitle}>5. Communication Between Users</div>
+                                <div id="communication" style={styles.sectionTitle}>6. Communication Between Users</div>
                                 <div style={styles.paragraph}>
                                     Parrots allows users to communicate with each other through web-based messaging features.
                                     Messages may be false, misleading, or inappropriate, and Parrots does not monitor, control, or endorse user communications. Users are solely responsible for the content of their messages.
@@ -416,7 +446,7 @@ const TermsOfUseComponent = () => {
 
                             <div style={transparentWrapper}>
                                 <div id="prohibited" style={styles.sectionTitle}>
-                                    6. Prohibited Activities
+                                    7. Prohibited Activities
                                 </div>
 
                                 <div style={styles.paragraph}>
@@ -451,7 +481,7 @@ const TermsOfUseComponent = () => {
 
 
                             <div style={transparentWrapper}>
-                                <div id="suspension" style={styles.sectionTitle}>7. Account Suspension and Termination</div>
+                                <div id="suspension" style={styles.sectionTitle}>8. Account Suspension and Termination</div>
                                 <div style={styles.paragraph}>
                                     Parrots reserves the right to suspend, restrict, or permanently terminate any user account at its sole discretion, at any time, without prior notice, for any reason including but not limited to: breach of these Terms, suspicious activity, prolonged inactivity, or behaviour that Parrots reasonably considers harmful to the platform or its users.
                                 </div>
@@ -461,14 +491,14 @@ const TermsOfUseComponent = () => {
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="ip" style={styles.sectionTitle}>8. Intellectual Property</div>
+                                <div id="ip" style={styles.sectionTitle}>9. Intellectual Property</div>
                                 <div style={styles.paragraph}>
                                     Users retain ownership of content they post but grant Parrots a non-exclusive, royalty-free license to display it for the purpose of operating the service. Users must have the right to share all content uploaded.
                                 </div>
                             </div >
 
                             <div style={transparentWrapper}>
-                                <div id="liability" style={styles.sectionTitle}>9. Limitation of Liability</div>
+                                <div id="liability" style={styles.sectionTitle}>10. Limitation of Liability</div>
                                 <div style={styles.paragraph}>
                                     Parrots is not liable for any direct, indirect, incidental, consequential, or special losses or damages arising from use of the platform, including but not limited to loss of data, loss of opportunity, personal injury, or property damage. To the maximum extent permitted by law, Parrots' total liability to any user shall not exceed zero, as the platform is provided free of charge.
                                 </div>
@@ -477,7 +507,7 @@ const TermsOfUseComponent = () => {
                                 </div>
                             </div>
                             <div style={transparentWrapper}>
-                                <div id="disclaimers" style={styles.sectionTitle}>10. Disclaimers</div>
+                                <div id="disclaimers" style={styles.sectionTitle}>11. Disclaimers</div>
                                 <div style={styles.paragraph}>
                                     The platform is provided “as is” without warranties. Parrots does not guarantee accuracy, reliability, or safety of content, listings, or communications.
                                 </div>
@@ -494,14 +524,14 @@ const TermsOfUseComponent = () => {
                                 </div>
                             </div>
                             <div style={transparentWrapper}>
-                                <div id="modifications" style={styles.sectionTitle}>11. Modifications</div>
+                                <div id="modifications" style={styles.sectionTitle}>12. Modifications</div>
                                 <div style={styles.paragraph}>
                                     Parrots may update these Terms at any time. Where changes are material, Parrots will make reasonable efforts to notify users, such as by displaying a notice within the app or sending an email to the registered address. Continued use of the platform after changes take effect constitutes acceptance of the updated Terms. Users who do not agree to updated Terms should stop using the platform and may request account deletion.
                                 </div>
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="privacy" style={styles.sectionTitle}>12. Privacy Policy</div>
+                                <div id="privacy" style={styles.sectionTitle}>13. Privacy Policy</div>
 
                                 <div style={styles.paragraph}>
                                     Parrots respects your privacy and is committed to protecting your personal data. This section explains how information is collected, used, stored, and protected when you use the platform.
@@ -581,7 +611,7 @@ const TermsOfUseComponent = () => {
 
 
                             <div style={transparentWrapper}>
-                                <div id="dispute" style={styles.sectionTitle}>13. Dispute Resolution</div>
+                                <div id="dispute" style={styles.sectionTitle}>14. Dispute Resolution</div>
                                 <div style={styles.paragraph}>
                                     In the event of a dispute, users are encouraged to contact Parrots at parrotsapp@gmail.com in the first instance to seek an informal resolution.
                                 </div>
@@ -591,7 +621,7 @@ const TermsOfUseComponent = () => {
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="law" style={styles.sectionTitle}>14. Governing Law</div>
+                                <div id="law" style={styles.sectionTitle}>15. Governing Law</div>
                                 <div style={styles.paragraph}>
                                     These Terms are governed by the laws of the United Kingdom. Disputes shall be subject to UK courts.
                                 </div>
@@ -599,7 +629,7 @@ const TermsOfUseComponent = () => {
 
                             <div style={transparentWrapper}>
 
-                                <div id="contact" style={styles.sectionTitle}>15. Contact</div>
+                                <div id="contact" style={styles.sectionTitle}>16. Contact</div>
                                 <div style={styles.paragraph}>
                                     For questions regarding these Terms:
                                     <br />

@@ -25,6 +25,7 @@ import {
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { TERMS_VERSION } from "../constants/TermsVersion";
+import TermsOfUseComponent from "../components/TermsOfUseComponent";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import welcomeImage from "../assets/images/WelcomeWeb.png";
 import almostThereImage from "../assets/images/AlmostWeb.png";
@@ -605,42 +606,10 @@ function LoginPage() {
                       </span>
                     </div>
 
-                    {termsModalOpen && (
-                      <div style={{
-                        position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-                        backgroundColor: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center",
-                        justifyContent: "center", zIndex: 2000, padding: "1rem",
-                      }} onClick={() => setTermsModalOpen(false)}>
-                        <div style={{
-                          backgroundColor: "#fff", maxWidth: "800px", width: "100%",
-                          maxHeight: "85vh", overflowY: "auto", borderRadius: "1rem",
-                          padding: "2rem", position: "relative",
-                        }} onClick={e => e.stopPropagation()}>
-                          <button onClick={() => setTermsModalOpen(false)} style={{
-                            position: "absolute", top: "1rem", right: "1rem", fontSize: "1.5rem",
-                            background: "none", border: "none", cursor: "pointer",
-                          }}>×</button>
-                          <iframe
-                            src="/terms-inline"
-                            title="Terms of Use"
-                            style={{ display: "none" }}
-                          />
-                          <div style={{ color: "#222", fontSize: "0.95rem", lineHeight: 1.6 }}>
-                            <p>Please view the full Terms of Use by clicking "Terms of Use" in the footer or profile menu, or scroll down to read them before accepting.</p>
-                            <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem", gap: "1rem" }}>
-                              <button onClick={() => { setTermsAccepted(true); setTermsModalOpen(false); }} style={{
-                                backgroundColor: "#007bff", color: "white", border: "none",
-                                padding: "0.6rem 1.5rem", borderRadius: "1rem", cursor: "pointer", fontWeight: "bold",
-                              }}>Accept</button>
-                              <button onClick={() => setTermsModalOpen(false)} style={{
-                                backgroundColor: "#eee", color: "#333", border: "none",
-                                padding: "0.6rem 1.5rem", borderRadius: "1rem", cursor: "pointer",
-                              }}>Close</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    <TermsOfUseComponent
+                      open={termsModalOpen}
+                      onClose={() => setTermsModalOpen(false)}
+                    />
 
                     <div
                       className="register-button"
