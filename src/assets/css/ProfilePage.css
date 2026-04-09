@@ -331,6 +331,12 @@
   font-size: 1.2rem;
   margin-top: 0.5rem;
   text-align: left;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.profilePage_Bio::-webkit-scrollbar {
+  display: none;
 }
 
 .profilePage_CoverImage_Img {

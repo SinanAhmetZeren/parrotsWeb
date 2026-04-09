@@ -12,21 +12,28 @@ const userBaseUrl = ``;
 export function SearchUserResultsComponent({ query, setQuery, userId,
   setConversationUserId,
   setConversationUserUsername,
-  handleGoToUser
+  handleGoToUser,
+  setInputValue,
+  onLoadingChange,
 }) {
   const {
     data: usersData,
     isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
     isError: isErrorUsers,
     error: errorUser,
     isSuccess: isSuccessUsers,
     refetch: refetchUsers,
   } = useGetUsersByUsernameQuery(query, { skip: query.length < 3 });
 
+  React.useEffect(() => {
+    if (onLoadingChange) onLoadingChange(isLoadingUsers || isFetchingUsers);
+  }, [isLoadingUsers, isFetchingUsers, onLoadingChange]);
+
 
   return (
     <div style={searchMainContainer}>
-      {isLoadingUsers ? (
+      {isLoadingUsers || isFetchingUsers ? (
         <div style={{ marginTop: "20%" }}>
           <div className="spinner"></div>
         </div>
@@ -38,6 +45,8 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
             setConversationUserId={setConversationUserId}
             setConversationUserUsername={setConversationUserUsername}
             handleGoToUser={handleGoToUser}
+            setInputValue={setInputValue}
+            setQuery={setQuery}
           />
         </div>
       ) : isErrorUsers ? (
@@ -48,14 +57,16 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
 }
 
 
-function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser }) {
+function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser, setInputValue, setQuery }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
   const [hoveredUserImgID2, setHoveredUserImgID2] = React.useState("")
   const [hoveredUserImgID3, setHoveredUserImgID3] = React.useState("")
 
   const StartConversationWithUser = (user) => {
     setConversationUserId(user.id);
-    setConversationUserUsername(user.userName)
+    setConversationUserUsername(user.userName);
+    setQuery("");
+    setInputValue("");
   }
 
   if (!users) {

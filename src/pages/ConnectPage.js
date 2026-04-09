@@ -45,6 +45,7 @@ function ConnectPage() {
   const handleGoToUser = (userId, userName, userPublicId) => {
     navigate(`/profile-public/${userPublicId}/${userName}`);
   };
+  const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("");
   const [conversationUserId, setConversationUserId] = useState("");
   const [conversationUserUsername, setConversationUserUsername] = useState("");
@@ -52,6 +53,7 @@ function ConnectPage() {
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const dispatch = useDispatch();
   const {
     data: messagePreviewsData,
@@ -130,6 +132,11 @@ function ConnectPage() {
       refetchMessagePreviews();
     }
   }, [users, triggerGetMessages, refetchMessagePreviews]);
+
+  // Reset query when input is cleared
+  useEffect(() => {
+    if (inputValue.length === 0) setQuery("");
+  }, [inputValue]);
 
   // Update users state whenever IDs change
   useEffect(() => {
@@ -272,7 +279,12 @@ function ConnectPage() {
               <div className="flex connectPage_Bottom">
                 <div className="flex connectPage_BottomLeft">
                   <div style={SearchBarContainer}>
-                    <SearchUserComponent query={query} setQuery={setQuery} />
+                    <SearchUserComponent
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                      onSearch={() => setQuery(inputValue)}
+                      isLoading={isSearchLoading}
+                    />
                   </div>
                   {query.length > 2 && (
                     <div style={MessagePreviewsContainer}>
@@ -283,6 +295,8 @@ function ConnectPage() {
                         setConversationUserId={setConversationUserId}
                         setConversationUserUsername={setConversationUserUsername}
                         handleGoToUser={handleGoToUser}
+                        setInputValue={setInputValue}
+                        onLoadingChange={setIsSearchLoading}
                       />
                     </div>
                   )}

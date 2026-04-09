@@ -2,9 +2,11 @@ import "../assets/css/App.css";
 import * as React from "react";
 import { IoSearch } from "react-icons/io5";
 
-export function SearchUserComponent({ query, setQuery }) {
-  const handleInputChange = (event) => {
-    setQuery(event.target.value);
+export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading }) {
+  const isEnabled = inputValue.length >= 3;
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && isEnabled) onSearch();
   };
 
   return (
@@ -12,13 +14,23 @@ export function SearchUserComponent({ query, setQuery }) {
       <div style={searchUserContainer}>
         <input
           type="text"
-          value={query}
-          onChange={handleInputChange} // Use the correct handler
-          style={inputStyle} // Added styles for input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={inputStyle}
           placeholder="Search for users..."
         />
-        <div style={magnifierContainerStyle}>
-          <IoSearch style={magnifierStyle} />
+        <div
+          style={{ ...magnifierContainerStyle, cursor: isEnabled && !isLoading ? "pointer" : "default" }}
+          onClick={isEnabled && !isLoading ? onSearch : undefined}
+        >
+          {isLoading ? (
+            <div style={{ ...magnifierStyle, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={spinnerStyle} />
+            </div>
+          ) : (
+            <IoSearch style={{ ...magnifierStyle, color: isEnabled ? "#3c9dde" : "#c0c0c0" }} />
+          )}
         </div>
       </div>
     </div>
@@ -40,7 +52,6 @@ const magnifierStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  color: "#3c9dde",
   height: "3rem",
   width: "3rem",
   border: "2px solid #c0c0c070",
@@ -65,6 +76,15 @@ const inputStyle = {
   borderRadius: "2rem",
   fontSize: "1.3rem",
   border: "2px solid #c0c0c070",
+};
+
+const spinnerStyle = {
+  width: "1.4rem",
+  height: "1.4rem",
+  border: "3px solid #c0c0c070",
+  borderTop: "3px solid #3c9dde",
+  borderRadius: "50%",
+  animation: "spin 0.8s linear infinite",
 };
 
 const searchMainContainer = {
