@@ -440,6 +440,35 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
                                                 connection and that the App is open to receive the latest messages.
                                             </div>
                                         </div>
+
+                                        <div style={{ marginTop: "1rem" }}>
+                                            <div style={styles.sectionTitle2}>
+                                                <strong>d. Message Encryption & Data</strong>
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                Messages are encrypted when stored on our servers. However, message content is transmitted to and processed on our servers as plain text before encryption, and is not end-to-end encrypted.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                We recommend you do not share sensitive personal information through the messaging feature, including:
+                                            </div>
+                                            <ul style={{ ...styles.paragraph, marginTop: 0 }}>
+                                                <li>Passwords</li>
+                                                <li>Financial details or bank account information</li>
+                                                <li>Payment details</li>
+                                                <li>Passport or visa information</li>
+                                                <li>Identification documents</li>
+                                                <li>Phone numbers or email addresses</li>
+                                                <li>Home addresses</li>
+                                                <li>Current location</li>
+                                                <li>Health conditions</li>
+                                            </ul>
+                                            <div style={styles.paragraph}>
+                                                Message content may be accessed by Parrots staff where required by law or to enforce our policies.
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                Parrots reserves the right to delete messages or conversations at its discretion, including for policy enforcement, storage management purposes, or upon account deletion. Messages may be deleted after a retention period of up to 2 years.
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -578,7 +607,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
 
                                 <div style={styles.sectionTitle2}>g. Data Retention</div>
                                 <div style={styles.paragraph}>
-                                    Personal data is retained only as long as necessary to operate the service or comply with legal requirements. Users may request deletion of their account and associated data.
+                                    Personal data is retained only as long as necessary to operate the service or comply with legal requirements. Message content may be deleted after a retention period of up to 2 years. Users may request deletion of their account and associated data.
                                 </div>
 
                                 <div style={styles.sectionTitle2}>h. User Rights</div>
