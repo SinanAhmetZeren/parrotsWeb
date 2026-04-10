@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import ReactDOM from "react-dom/client";
 import "./assets/css/index.css";
 import App from "./App";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -14,7 +15,9 @@ root.render(
   <Provider store={store}>
     <React.StrictMode>
       <GoogleOAuthProvider clientId={clientId}>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </GoogleOAuthProvider>
     </React.StrictMode>
   </Provider>

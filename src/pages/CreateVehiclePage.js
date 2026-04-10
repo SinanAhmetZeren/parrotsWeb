@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { toast } from "react-toastify";
 
 function CreateVehiclePage() {
   const [createVehicle] = useCreateVehicleMutation();
@@ -88,7 +89,7 @@ function CreateVehiclePage() {
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
       setImage1(file);
@@ -105,7 +106,7 @@ function CreateVehiclePage() {
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
 
@@ -161,9 +162,9 @@ function CreateVehiclePage() {
         userId,
         vehicleType: selectedVehicleType,
         capacity: vehicleCapacity,
-      });
+      }).unwrap();
       console.log("-->>> response: ", response);
-      const createdVehicleId = response.data.data.id;
+      const createdVehicleId = response.data.id;
       console.log("3. Vehicle created with ID:", createdVehicleId, "...");
       setVehicleId(createdVehicleId);
       setVehicleDescription("");
@@ -176,10 +177,8 @@ function CreateVehiclePage() {
       setAddedVehicleImages([]);
       setPageState("s2");
     } catch (error) {
-      alert(
-        "-> Failed to create vehicle. Please check your connection and try again."
-      );
       console.error("Error creating vehicle:", error);
+      toast.error("Failed to create vehicle. Please check your connection and try again.");
     } finally {
       setIsRegisteringVehicle(false);
     }
@@ -204,13 +203,11 @@ function CreateVehiclePage() {
     );
 
     try {
-      await deleteVehicleImage(imageId);
+      await deleteVehicleImage(imageId).unwrap();
     } catch (error) {
       console.error("Error deleting image", error);
       setAddedVehicleImages(previousImages);
-      alert(
-        "Failed to delete image. Please check your connection and try again."
-      );
+      toast.error("Failed to delete image. Please check your connection and try again.");
     }
   };
 
@@ -242,11 +239,11 @@ function CreateVehiclePage() {
       const addedVehicleImageResponse = await addVehicleImage({
         vehicleImage,
         vehicleId,
-      });
+      }).unwrap();
 
       console.log("vehicleImage", vehicleImage);
 
-      const addedvehicleImageId = addedVehicleImageResponse.data.imagePath;
+      const addedvehicleImageId = addedVehicleImageResponse.imagePath;
       const newItem = {
         addedvehicleImageId,
         vehicleImage,
@@ -256,9 +253,7 @@ function CreateVehiclePage() {
       setImagePreview2(null);
     } catch (error) {
       console.error("Error uploading image", error);
-      alert(
-        "Failed to upload image. Please check your connection and try again."
-      );
+      toast.error("Failed to upload image. Please check your connection and try again.");
     }
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
@@ -270,10 +265,6 @@ function CreateVehiclePage() {
     console.log(".....Health check failed.....");
     return <SomethingWentWrong />;
   }
-
-  // if (isError) {
-  //   return <SomethingWentWrong />;
-  // }
 
   return (
     <div className="App">

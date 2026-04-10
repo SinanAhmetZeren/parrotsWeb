@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import "../assets/css/VehicleDetails.css";
+import { toast } from "react-toastify";
 import "../assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef } from "react";
 import "swiper/css/pagination";
@@ -104,9 +105,13 @@ function VehicleDetailsPage() {
 
   const handleDeleteVehicle = async () => {
     setIsDeleting(true);
-    const result = await deleteVehicle(vehicleId);
-    console.log("delete result:", result);
-    navigate("/profile", { state: { refetch: true } });
+    try {
+      await deleteVehicle(vehicleId).unwrap();
+      navigate("/profile", { state: { refetch: true } });
+    } catch (err) {
+      console.error("Error deleting vehicle:", err);
+      toast.error("Failed to delete vehicle. Please try again.");
+    }
     setIsDeleting(false);
   };
 

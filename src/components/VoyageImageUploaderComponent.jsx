@@ -14,6 +14,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { FreeMode } from "swiper/modules";
+import { toast } from "react-toastify";
 
 export const VoyageImageUploaderComponent = ({
   voyageImage,
@@ -38,10 +39,9 @@ export const VoyageImageUploaderComponent = ({
     try {
       const addedVoyageImageResponse = await addVoyageImage({
         voyageImage,
-        voyageId, //: "2216",
-        // voyageId,
-      });
-      const addedvoyageImageId = addedVoyageImageResponse.data.imagePath;
+        voyageId,
+      }).unwrap();
+      const addedvoyageImageId = addedVoyageImageResponse.imagePath;
       const newItem = {
         addedvoyageImageId,
         voyageImage,
@@ -54,9 +54,7 @@ export const VoyageImageUploaderComponent = ({
       setImagePreview2(null);
     } catch (error) {
       console.error("Error uploading image", error);
-      alert(
-        "Failed to upload image. Please check your connection and try again."
-      );
+      toast.error("Failed to upload image. Please check your connection and try again.");
     }
     setIsUploadingImage(false);
   }, [
@@ -74,13 +72,14 @@ export const VoyageImageUploaderComponent = ({
       if (!imageId) return;
 
       try {
-        await deleteVoyageImage(imageId); // Call API to delete the image
+        await deleteVoyageImage(imageId).unwrap();
 
         setAddedVoyageImages((prevImages) =>
           prevImages.filter((img) => img.addedvoyageImageId !== imageId)
         );
       } catch (error) {
         console.error("Error deleting image", error);
+        toast.error("Failed to delete image. Please try again.");
       }
     },
     [deleteVoyageImage, setAddedVoyageImages]
@@ -200,7 +199,7 @@ export const VoyageImageUploaderComponent = ({
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (file.size > maxSizeBytes) {
-        alert(`File size must be ${maxSizeMB}MB or less.`);
+        toast.error(`File size must be ${maxSizeMB}MB or less.`);
         if (fileInputRef2.current) {
           fileInputRef2.current.value = "";
         }

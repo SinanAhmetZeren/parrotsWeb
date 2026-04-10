@@ -27,6 +27,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { toast } from "react-toastify";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 function EditVehiclePage() {
@@ -119,7 +120,7 @@ function EditVehiclePage() {
       const maxSizeMB = 5;
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
 
@@ -137,7 +138,7 @@ function EditVehiclePage() {
       const maxSizeMB = 5;
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
       setVehicleImage(file);
@@ -206,16 +207,14 @@ function EditVehiclePage() {
       );
 
       if (imageToDelete?.addedvehicleImageId) {
-        await deleteVehicleImage(imageToDelete.addedvehicleImageId);
+        await deleteVehicleImage(imageToDelete.addedvehicleImageId).unwrap();
       } else if (imageToDelete?.id) {
-        await deleteVehicleImage(imageToDelete.id);
+        await deleteVehicleImage(imageToDelete.id).unwrap();
       }
     } catch (error) {
       console.error("Error deleting image", error);
-      setAddedVehicleImages(previousImages); // Revert to the previous state
-      alert(
-        "Failed to delete image. Please check your connection and try again."
-      );
+      setAddedVehicleImages(previousImages);
+      toast.error("Failed to delete image. Please check your connection and try again.");
     }
   };
 
@@ -235,16 +234,22 @@ function EditVehiclePage() {
     ];
 
     try {
-      const response = await patchVehicle({
+      await patchVehicle({
         patchDoc,
         currentVehicleId: vehicleId,
-      });
+      }).unwrap();
+      try {
+        await updateVehicleProfileImage({ vehicleImage: image1, vehicleId }).unwrap();
+      } catch (imgError) {
+        console.error("Error updating profile image", imgError);
+        toast.error("Details saved but profile image failed to update.");
+      }
+      setPageState("s2");
     } catch (error) {
-      console.error("Error", error);
+      console.error("Error updating vehicle", error);
+      toast.error("Failed to update vehicle. Please check your connection and try again.");
     }
-    updateVehicleProfileImage({ vehicleImage: image1, vehicleId: vehicleId });
     setIsUpdatingVehicle(false);
-    setPageState("s2");
   };
 
   const maxItems = 10;
@@ -275,9 +280,9 @@ function EditVehiclePage() {
       const addedVehicleImageResponse = await addVehicleImage({
         vehicleImage,
         vehicleId,
-      });
+      }).unwrap();
 
-      const addedvehicleImageId = addedVehicleImageResponse.data.imagePath;
+      const addedvehicleImageId = addedVehicleImageResponse.imagePath;
       const newItem = {
         addedvehicleImageId,
         vehicleImage,
@@ -287,9 +292,7 @@ function EditVehiclePage() {
       setImagePreview2(null);
     } catch (error) {
       console.error("Error uploading image", error);
-      alert(
-        "Failed to upload image. Please check your connection and try again."
-      );
+      toast.error("Failed to upload image. Please check your connection and try again.");
     }
     setIsUploadingImage(false);
   }, [vehicleImage, vehicleId, addVehicleImage]);
@@ -303,6 +306,26 @@ function EditVehiclePage() {
   }
 
   if (isErrorVehicles) return <SomethingWentWrong />;
+
+  if (isLoadingVehicles || !isSuccessVehicles) {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <div className="flex mainpage_Container">
+            <div className="flex mainpage_TopRow">
+              <TopLeftComponent />
+              <div className="flex mainpage_TopRight">
+                <TopBarMenu />
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "4rem" }}>
+              <div className="spinner" style={{ height: "3rem", width: "3rem", border: "4px solid white", borderTop: "4px solid #1e90ff" }}></div>
+            </div>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   return (
     <div className="App">

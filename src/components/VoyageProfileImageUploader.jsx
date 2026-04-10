@@ -13,6 +13,7 @@ import { IoRemoveCircleOutline } from "react-icons/io5";
 import uploadImage from "../assets/images/ParrotsLogoPlus.png";
 import "swiper/css";
 import "swiper/css/pagination";
+import { toast } from "react-toastify";
 // import '../assets/css/VehicleImagesSwiper.css';
 
 export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
@@ -46,7 +47,7 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
 

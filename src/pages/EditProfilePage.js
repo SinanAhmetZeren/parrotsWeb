@@ -22,6 +22,7 @@ import { updateUserName } from "../slices/UserSlice";
 import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { toast } from "react-toastify";
 
 /* TODO:
 when pressed update:
@@ -117,21 +118,11 @@ export function EditProfilePage() {
       { op: "replace", path: "/emailVisible", value: !emailHidden },
     ];
     try {
-      const response = await patchUser({ patchDoc, userId });
-      console.log("patch user response: ", response);
-      console.log("patch user response success: ", response.data.success);
-      if (response.data.success) {
-        console.log("Profile updated successfully");
-        dispatch(
-          updateUserName({
-            username: userName,
-          })
-        );
-      } else {
-        alert("Failed to update profile. Please try again.");
-      }
+      await patchUser({ patchDoc, userId }).unwrap();
+      dispatch(updateUserName({ username: userName }));
     } catch (error) {
-      console.error("Error uploading image", error);
+      console.error("Error updating profile", error);
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 
@@ -143,7 +134,7 @@ export function EditProfilePage() {
       const maxSizeMB = 5;
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
 
@@ -161,7 +152,7 @@ export function EditProfilePage() {
       const maxSizeMB = 5;
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        alert("File size must be 5MB or less.");
+        toast.error("File size must be 5MB or less.");
         return;
       }
 
@@ -203,10 +194,10 @@ export function EditProfilePage() {
       return;
     }
     try {
-      const response = await updateProfileImage({ profileImage, userId });
-      console.log("update profile image response: ", response);
+      await updateProfileImage({ profileImage, userId }).unwrap();
     } catch (error) {
-      console.error("Error uploading image", error);
+      console.error("Error uploading profile image", error);
+      toast.error("Failed to update profile image. Please try again.");
     }
   };
 
@@ -217,10 +208,10 @@ export function EditProfilePage() {
       return;
     }
     try {
-      const response = await updateBackgroundImage({ backGroundImage, userId });
-      console.log("update background image response: ", response);
+      await updateBackgroundImage({ backGroundImage, userId }).unwrap();
     } catch (error) {
-      console.error("Error uploading image", error);
+      console.error("Error uploading background image", error);
+      toast.error("Failed to update background image. Please try again.");
     }
   };
 

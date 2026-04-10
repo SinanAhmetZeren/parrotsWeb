@@ -35,6 +35,7 @@ import seafromsky from '../assets/images/seafromsky.jpg';
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotGreen, parrotLightBlue, parrotTextDarkBlue } from "../styles/colors";
 import { MapTypeButton } from "../components/MapTypeButton";
+import { toast } from "react-toastify";
 import { CustomToolTip } from "../components/CustomToolTip";
 import { PublicAndHeartAndPageStyleIcons } from "../components/PublicAndHeartAndPageStyleIcons";
 import { VoyageDetailBidsNew } from "../components/VoyageDetailPageBidsNew";
@@ -108,29 +109,39 @@ function VoyageDetailsPage() {
   const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
   const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
 
-  const handleAddVoyageToFavorites = () => {
+  const handleAddVoyageToFavorites = async () => {
     const voyageId_number = Number(voyageId);
     console.log("voyageId ", voyageId);
     console.log("voyageId_number", voyageId_number);
 
-    addVoyageToFavorites({ userId, voyageId: voyageId_number });
-    setIsFavorited(true);
-    dispatch(
-      addVoyageToUserFavorites({
-        favoriteVoyage: voyageId_number,
-      })
-    );
+    try {
+      await addVoyageToFavorites({ userId, voyageId: voyageId_number }).unwrap();
+      setIsFavorited(true);
+      dispatch(
+        addVoyageToUserFavorites({
+          favoriteVoyage: voyageId_number,
+        })
+      );
+    } catch (err) {
+      console.error("Error adding voyage to favorites:", err);
+      toast.error("Failed to add to favorites. Please try again.");
+    }
   };
 
-  const handleDeleteVoyageFromFavorites = () => {
+  const handleDeleteVoyageFromFavorites = async () => {
     const voyageId_number = Number(voyageId);
-    deleteVoyageFromFavorites({ userId, voyageId: voyageId_number });
-    setIsFavorited(false);
-    dispatch(
-      removeVoyageFromUserFavorites({
-        favoriteVoyage: voyageId_number,
-      })
-    );
+    try {
+      await deleteVoyageFromFavorites({ userId, voyageId: voyageId_number }).unwrap();
+      setIsFavorited(false);
+      dispatch(
+        removeVoyageFromUserFavorites({
+          favoriteVoyage: voyageId_number,
+        })
+      );
+    } catch (err) {
+      console.error("Error removing voyage from favorites:", err);
+      toast.error("Failed to remove from favorites. Please try again.");
+    }
   };
 
   useEffect(() => {

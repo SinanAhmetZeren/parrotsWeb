@@ -17,6 +17,8 @@ export function VoyageDetailWaypointCard({ waypoint, handlePanToLocation, voyage
   }
 
   console.log("->", waypoint);
+
+
   return (
     <div style={voyageDetailCard}>
       <div style={imageContainer}>

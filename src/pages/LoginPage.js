@@ -27,6 +27,7 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { TERMS_VERSION } from "../constants/TermsVersion";
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { toast } from "react-toastify";
 import welcomeImage from "../assets/images/WelcomeWeb.png";
 import almostThereImage from "../assets/images/AlmostWeb.png";
 import checkYourEmailImage from "../assets/images/CheckWeb.png";
@@ -141,16 +142,14 @@ function LoginPage() {
       navigate("/");
     } catch (err) {
       console.log("Error confirming user:", err.originalStatus === 400);
-      alert(
-        "Error confirming user.\nPlease check your confirmation code and try again."
-      );
+      toast.error("Error confirming user. Please check your confirmation code and try again.");
       setIsConfirmingUser(false);
     }
   };
 
   const handleLogin = async () => {
     if (!username || !password) {
-      alert("Please enter both email and password.");
+      toast.error("Please enter both email and password.");
       return;
     }
 
@@ -167,7 +166,7 @@ function LoginPage() {
 
       if (!loginResponse?.token) {
         setIsLoggingIn(false);
-        alert("Login failed: Invalid credentials.");
+        toast.error("Login failed: Invalid credentials.");
         return; // prevent redirect
       }
 
@@ -210,9 +209,9 @@ function LoginPage() {
     } catch (err) {
       setIsLoggingIn(false);
       if (err.status === 401) {
-        alert("Incorrect email or password.");
+        toast.error("Incorrect email or password.");
       } else {
-        alert("Login failed. Please try again.");
+        toast.error("Login failed. Please try again.");
       }
       console.error("Login error:", err);
     }
@@ -226,12 +225,12 @@ function LoginPage() {
       !passwordRegister ||
       !passwordRegister2
     ) {
-      alert("All fields are required for registration.");
+      toast.error("All fields are required for registration.");
       return;
     }
 
     if (passwordRegister !== passwordRegister2) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -250,14 +249,14 @@ function LoginPage() {
         setPageState("Register2");
         setIsRegistering(false);
       } else {
-        alert("Registration failed: No token received.");
+        toast.error("Registration failed: No token received.");
         setIsRegistering(false);
       }
     } catch (err) {
       console.error("Registration error:", err);
       setIsRegistering(false);
 
-      alert(
+      toast.error(
         err?.data?.message ||
         err?.error ||
         "Registration failed. Please check your details or try again later."
@@ -276,9 +275,7 @@ function LoginPage() {
       setIsSendingCode(false);
     } catch (err) {
       console.error("Failed to request reset code:", err);
-      alert(
-        "Failed to send reset code. Please check your email and try again."
-      );
+      toast.error("Failed to send reset code. Please check your email and try again.");
     }
   };
 
@@ -315,7 +312,7 @@ function LoginPage() {
       navigate("/");
     } catch (err) {
       console.log(err.status);
-      alert("Error resetting password. Please check your code and try again.");
+      toast.error("Error resetting password. Please check your code and try again.");
       setIsUpdatingPassword(false);
     }
   };

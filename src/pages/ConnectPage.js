@@ -18,6 +18,7 @@ import { ConversationComponent } from "../components/ConversationComponent";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { toast } from "react-toastify";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 
 import {
@@ -161,7 +162,12 @@ function ConnectPage() {
 
     try {
       if (!isHubReady()) {
-        console.warn("Hub not ready. Message may fail to send.");
+        setMessagesToDisplay((prev) =>
+          prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
+        );
+        setSendButtonDisabled(false);
+        toast.error("Not connected. Please wait and try again.");
+        return;
       }
 
       // Send message via centralized invoke
@@ -176,7 +182,7 @@ function ConnectPage() {
       setMessagesToDisplay((prev) =>
         prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
       );
-      alert("Failed to send message. Check connection and try again.");
+      toast.error("Failed to send message. Check connection and try again.");
     }
 
     setSendButtonDisabled(false);

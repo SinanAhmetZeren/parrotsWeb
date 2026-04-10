@@ -155,11 +155,11 @@ export default function CreateVoyagePage() {
         isPublicOnMap,
         userId,
         vehicleId,
-      });
+      }).unwrap();
 
-      if (!response.data.success) {
+      if (!response.success) {
 
-        console.log("response: ", response.data.message);
+        console.log("response: ", response.message);
 
         toast(
           ({ closeToast }) => (
@@ -180,7 +180,7 @@ export default function CreateVoyagePage() {
         return;
       }
 
-      const createdVoyageId = response.data.data.id;
+      const createdVoyageId = response.data.id;
       setVoyageId(createdVoyageId);
       console.log("created voyage id: ", createdVoyageId);
       setVoyageImage(null);
@@ -214,7 +214,8 @@ export default function CreateVoyagePage() {
       ]);
       setPageState(2);
     } catch (error) {
-      console.error("Error uploading image", error);
+      console.error("Error creating voyage", error);
+      toast.error("Failed to create voyage. Please check your connection and try again.");
     }
     setIsCreatingVoyage(false);
   };
@@ -224,9 +225,30 @@ export default function CreateVoyagePage() {
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
 
-  if (isHealthCheckError) {
-    console.log(".....Health check failed.....");
+  if (isHealthCheckError || isError) {
     return <SomethingWentWrong />;
+  }
+
+  if (isLoading) {
+    return (
+      <div style={{ height: "100vh", fontSize: "2rem" }}>
+        <div className="App">
+          <header className="App-header">
+            <div className="flex mainpage_Container">
+              <div className="flex mainpage_TopRow">
+                <TopLeftComponent />
+                <div className="flex mainpage_TopRight">
+                  <TopBarMenu />
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "center", marginTop: "4rem" }}>
+                <div className="spinner" style={{ height: "3rem", width: "3rem", border: "4px solid white", borderTop: "4px solid #1e90ff" }}></div>
+              </div>
+            </div>
+          </header>
+        </div>
+      </div>
+    );
   }
 
   return (

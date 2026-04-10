@@ -87,7 +87,9 @@ export default function FavoritePage() {
           <div className="flex favoritesPage_Bottom">
             <div className="flex favoritesPage_BottomLeft">
               <div className="flex favoritesPage_Vehicles">
-                {isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess ? (
+                {isFavoriteVehiclesLoading || isFavoriteVoyagesLoading ? (
+                  <FavoritesPlaceHolderComponent />
+                ) : isFavoriteVehiclesSuccess && isFavoriteVoyagesSuccess ? (
                   FavoriteVehiclesData?.length > 0 ? (
                     <FavoritesPageVehiclesComponent
                       FavoriteVehiclesData={FavoriteVehiclesData}
@@ -100,7 +102,9 @@ export default function FavoritePage() {
             </div>
             <div className="flex flex-col favoritesPage_BottomRight">
               <div className="flex favoritesPage_Voyages">
-                {isFavoriteVoyagesSuccess && isFavoriteVehiclesSuccess ? (
+                {isFavoriteVoyagesLoading || isFavoriteVehiclesLoading ? (
+                  <FavoritesPlaceHolderComponent />
+                ) : isFavoriteVoyagesSuccess && isFavoriteVehiclesSuccess ? (
                   FavoriteVoyagesData?.length > 0 ? (
                     <FavoritesPageVoyagesComponent
                       FavoriteVoyages={FavoriteVoyagesData}

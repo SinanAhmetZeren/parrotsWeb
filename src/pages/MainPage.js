@@ -210,7 +210,7 @@ function MainPage() {
                 />
               </div>
               <div style={{ height: "60vh" }}>
-                {isLoading ? (
+                {isLoading || isLoadingVoyagesFiltered ? (
                   <CardSwiperSpinner />
                 ) : (
                   <MainPageCardSwiper
@@ -248,7 +248,7 @@ function MainPage() {
                         <ClusteredVoyageMarkers voyages={initialVoyages} />
                       )}
                     </MapContainer>
-                    {isLoading && (
+                    {(isLoading || isLoadingVoyagesFiltered) && (
                       <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                         <MapSpinner />
                       </div>

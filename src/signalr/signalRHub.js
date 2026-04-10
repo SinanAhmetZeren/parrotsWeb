@@ -7,6 +7,8 @@ let messageHandlers = [];
 let refetchHandlers = [];
 let connectionUserId = null;
 let currentApiUrl = null;
+let initRetryCount = 0;
+const MAX_INIT_RETRIES = 10;
 
 // Helper to check if we can actually attempt a start
 const canStart = (state) => state === HubConnectionState.Disconnected;
@@ -33,6 +35,7 @@ export const initHubConnection = async (userId, apiUrl) => {
     // 1. If user changed, wipe the old connection entirely
     if (hubConnection && connectionUserId !== userId) {
         await stopHubConnection();
+        initRetryCount = 0;
     }
 
     connectionUserId = userId;
@@ -53,7 +56,10 @@ export const initHubConnection = async (userId, apiUrl) => {
             .withUrl(`${apiUrl}/chathub/11?userId=${userId}`, {
                 withCredentials: false, // fine for cross-origin if your API allows
             })
-            .withAutomaticReconnect()
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: (ctx) =>
+                    ctx.elapsedMilliseconds < 60000 ? 5000 : 15000
+            })
             .build();
 
         setupInternalListeners();
@@ -64,16 +70,22 @@ export const initHubConnection = async (userId, apiUrl) => {
         try {
             await hubConnection.start();
             chatReadyRef.current = true;
+            initRetryCount = 0;
             console.log("✅ SignalR connected");
             return hubConnection;
         } catch (err) {
             console.error("❌ SignalR start failed:", err);
             chatReadyRef.current = false;
 
-            // Retry logic: Only retry if it's still the same user
-            setTimeout(() => {
-                if (connectionUserId === userId) initHubConnection(userId, apiUrl);
-            }, 5000);
+            if (initRetryCount < MAX_INIT_RETRIES) {
+                initRetryCount++;
+                console.warn(`🔁 Init retry ${initRetryCount}/${MAX_INIT_RETRIES}`);
+                setTimeout(() => {
+                    if (connectionUserId === userId) initHubConnection(userId, apiUrl);
+                }, 5000);
+            } else {
+                console.error("❌ Max init retries reached. Giving up.");
+            }
 
             return null;
         }

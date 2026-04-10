@@ -240,6 +240,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         }
       },
       transformResponse: (responseData) => responseData.data,
+      keepUnusedDataFor: 0,
     }),
     registerUser: builder.mutation({
       query: (userData) => ({
