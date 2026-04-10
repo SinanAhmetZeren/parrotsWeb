@@ -451,7 +451,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
                                             <div style={styles.paragraph}>
                                                 We recommend you do not share sensitive personal information through the messaging feature, including:
                                             </div>
-                                            <ul style={{ ...styles.paragraph, marginTop: 0 }}>
+                                            <ul style={{ ...styles.paragraph, marginTop: 0, paddingLeft: "1.5rem", listStyleType: "disc" }}>
                                                 <li>Passwords</li>
                                                 <li>Financial details or bank account information</li>
                                                 <li>Payment details</li>
