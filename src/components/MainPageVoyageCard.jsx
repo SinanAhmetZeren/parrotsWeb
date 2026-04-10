@@ -17,7 +17,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
   return (
     <div className="card" style={cardContainerStyle}>
       <div className="card-image" style={cardImageStyle}>
-        <img src={voyageBaseUrl + cardData.profileImage} style={imageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle}>{cardData.name}</div>

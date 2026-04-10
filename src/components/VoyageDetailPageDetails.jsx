@@ -66,7 +66,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
             onMouseLeave={() => setHoveredUser(false)}
           >
             <img
-              src={baseUserImageUrl + voyageData.user.profileImageUrl}
+              src={baseUserImageUrl + (voyageData.user.profileImageThumbnailUrl || voyageData.user.profileImageUrl)}
               style={{
                 ...userImage,
                 ...(hoveredUser === true ? userprofileimgHover : {}),

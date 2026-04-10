@@ -86,7 +86,7 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
           onClick={() => {
             handleGoToUser(user.userId, user.userName, user.publicId);
           }}
-          src={userBaseUrl + user.profileImageUrl} alt="profile" />
+          src={userBaseUrl + (user.profileImageThumbnailUrl || user.profileImageUrl)} alt="profile" />
 
         <div style={userNameText}>{user.userName}</div>
         <div title={`Send Message to ${user.userName}`}

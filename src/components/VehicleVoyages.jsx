@@ -29,7 +29,7 @@ export default function VehicleVoyages({ voyages }) {
                 >
                     <div>
                         <img
-                            src={VoyageBaseUrl + item.profileImage}
+                            src={VoyageBaseUrl + (item.profileImageThumbnail || item.profileImage)}
                             alt={item.name}
                             style={styles.voyageImage}
                         />

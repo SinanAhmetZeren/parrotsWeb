@@ -65,7 +65,7 @@ export function ProfilePageVoyageCard({ voyage, index }) {
       )}
 
       <div className="card-image" style={cardImageContainerStyle}>
-        <img src={voyageBaseUrl + voyage?.profileImage} style={cardImageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle} title={voyage?.name}>{voyage?.name}</div>

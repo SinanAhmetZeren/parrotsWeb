@@ -38,7 +38,9 @@ export function MessagePreviewsComponent({
     sortedMessages.map((message, index) => {
       const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
       const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
-      const otherUserProfile = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
+      const otherUserProfileFull = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
+      const otherUserProfileThumb = message.receiverId === userId ? message.senderProfileThumbnailUrl : message.receiverProfileThumbnailUrl;
+      const otherUserProfile = otherUserProfileThumb || otherUserProfileFull;
       const otherUserPublicId = message.receiverId === userId ? message.senderPublicId : message.receiverPublicId;
 
 

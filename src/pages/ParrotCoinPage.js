@@ -397,7 +397,7 @@ export function ParrotCoinPage() {
                           onMouseLeave={() => { setHoveredSearch(null); }}
                         >
                           <img
-                            src={user.profileImageUrl}
+                            src={user.profileImageThumbnailUrl || user.profileImageUrl}
                             alt="recipient profile"
                             style={{ width: "3rem", height: "3rem", borderRadius: "50%", marginRight: 8 }}
                           />

@@ -17,7 +17,7 @@ export function FavoritesPageVehicleCard({ vehicle, index }) {
   return (
     <div key={index} className="card" style={cardContainerStyle} onClick={() => handleCardClick(vehicle?.id)}>
       <div className="card-image" style={cardImageContainerStyle}>
-        <img src={vehicleBaseUrl + vehicle?.profileImageUrl} style={cardImageStyle} alt="Boat tour" />
+        <img src={vehicleBaseUrl + (vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl)} style={cardImageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={{ display: "flex", flexDirection: "row" }}>

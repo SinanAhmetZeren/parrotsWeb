@@ -76,7 +76,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
               <div style={cardContainerStyle}>
                 <div style={cardImageStyle}>
                   <img
-                    src={voyage.profileImage}
+                    src={voyage.profileImageThumbnail || voyage.profileImage}
                     style={imageStyle}
                     alt="Voyage"
                   />
