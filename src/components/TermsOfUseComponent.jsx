@@ -56,7 +56,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
         modalCloseButton: {
             position: "absolute",
             top: "1rem",
-            right: "1rem",
+            right: "0.3rem",
             fontSize: "2rem",
             background: "none",
             border: "none",
