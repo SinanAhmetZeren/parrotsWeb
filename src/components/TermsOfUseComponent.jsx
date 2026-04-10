@@ -161,6 +161,13 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
                             &times;
                         </button>
 
+                        {onAccept && (
+                            <div style={{ backgroundColor: "#fff3cd", border: "1px solid #ffc107", borderRadius: "8px", padding: "0.75rem 1rem", marginBottom: "1rem", textAlign: "center" }}>
+                                <strong style={{ color: "#856404" }}>⚠ Our Terms of Use have been updated.</strong>
+                                <span style={{ color: "#856404" }}> Please scroll down, read and accept the updated terms to continue.</span>
+                            </div>
+                        )}
+
                         <div style={styles.termsContainer}>
                             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
                                 <img src={logoMini} alt="Parrots Logo" style={{ width: "3rem", marginBottom: "1rem" }} />
