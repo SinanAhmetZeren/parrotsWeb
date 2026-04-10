@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { parrotBlue, parrotButtonGreen, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotRed, parrotTextDarkBlue } from "../styles/colors";
 import logoMini from '../assets/images/ParrotsLogoHead.png';
 
-const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
+const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) => {
     const [isOpen, setIsOpen] = useState(false);
     const isControlled = controlledOpen !== undefined;
     const modalOpen = isControlled ? controlledOpen : isOpen;
@@ -670,6 +670,22 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose } = {}) => {
 
 
 
+                        {onAccept && (
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "1.5rem 0 0.5rem", gap: "0.75rem" }}>
+                                <button
+                                    onClick={onAccept}
+                                    style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "8px", padding: "0.8rem 3rem", fontSize: "1rem", cursor: "pointer", width: "100%", maxWidth: "400px" }}
+                                >
+                                    I Accept
+                                </button>
+                                <button
+                                    onClick={toggleModal}
+                                    style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: "0.9rem" }}
+                                >
+                                    Decline and go back
+                                </button>
+                            </div>
+                        )}
                         </div >
                     </div >
                 </div >

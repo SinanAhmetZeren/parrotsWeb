@@ -388,35 +388,12 @@ function LoginPage() {
 
   if (requiresTermsReAcceptance) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: "#fff" }}>
-        {/* Fixed header */}
-        <div style={{ padding: "1.5rem 2rem 1rem", textAlign: "center", borderBottom: "1px solid #eee" }}>
-          <h2 style={{ color: "#003580", margin: "0 0 0.5rem" }}>Our Terms of Use have been updated</h2>
-          <p style={{ color: "#555", margin: 0, fontSize: "0.95rem" }}>
-            We've updated our Terms of Use. Please read and accept them to continue using Parrots.
-          </p>
-        </div>
-
-        {/* Scrollable terms */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "1rem 2rem" }}>
-          <TermsOfUseComponent open={true} onClose={() => {}} />
-        </div>
-
-        {/* Fixed footer with buttons */}
-        <div style={{ padding: "1rem 2rem", borderTop: "1px solid #eee", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", backgroundColor: "#fff" }}>
-          <button
-            onClick={handleAcceptUpdatedTerms}
-            style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "8px", padding: "0.8rem 3rem", fontSize: "1rem", cursor: "pointer", width: "100%", maxWidth: "400px" }}
-          >
-            I Accept
-          </button>
-          <button
-            onClick={() => { setRequiresTermsReAcceptance(false); setPendingLoginData(null); }}
-            style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: "0.9rem" }}
-          >
-            Decline and go back
-          </button>
-        </div>
+      <div>
+        <TermsOfUseComponent
+          open={true}
+          onClose={() => { setRequiresTermsReAcceptance(false); setPendingLoginData(null); }}
+          onAccept={handleAcceptUpdatedTerms}
+        />
       </div>
     );
   }
