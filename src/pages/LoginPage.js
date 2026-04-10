@@ -9,6 +9,7 @@ import {
   useRegisterUserMutation,
   useConfirmUserMutation,
   useLoginUserMutation,
+  useAcceptTermsMutation,
   useRequestCodeMutation,
   useResetPasswordMutation,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
@@ -63,10 +64,13 @@ function LoginPage() {
   const [isConfirmingUser, setIsConfirmingUser] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [requiresTermsReAcceptance, setRequiresTermsReAcceptance] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState(null);
 
   const dispatch = useDispatch();
   const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
     useLoginUserMutation();
+  const [acceptTerms] = useAcceptTermsMutation();
   const [requestCode] = useRequestCodeMutation();
   const [resetPassword] = useResetPasswordMutation();
   const [
@@ -190,6 +194,13 @@ function LoginPage() {
         })
       );
 
+      if (loginResponse.requiresTermsAcceptance) {
+        setPendingLoginData(loginResponse);
+        setRequiresTermsReAcceptance(true);
+        setIsLoggingIn(false);
+        return;
+      }
+
       dispatch(
         updateAsLoggedIn({
           userId: loginResponse.userId,
@@ -198,7 +209,6 @@ function LoginPage() {
           userName: loginResponse.userName,
           profileImageUrl: loginResponse.profileImageUrl,
           isAdmin: loginResponse.isAdmin
-
         })
       );
 
@@ -214,6 +224,29 @@ function LoginPage() {
         toast.error("Login failed. Please try again.");
       }
       console.error("Login error:", err);
+    }
+  };
+
+  const handleAcceptUpdatedTerms = async () => {
+    try {
+      await acceptTerms().unwrap();
+      dispatch(
+        updateAsLoggedIn({
+          userId: pendingLoginData.userId,
+          token: pendingLoginData.token,
+          refreshToken: pendingLoginData.refreshToken,
+          userName: pendingLoginData.userName,
+          profileImageUrl: pendingLoginData.profileImageUrl,
+          isAdmin: pendingLoginData.isAdmin
+        })
+      );
+      setRequiresTermsReAcceptance(false);
+      setPendingLoginData(null);
+      setUsername("");
+      setPassword("");
+      navigate("/");
+    } catch (err) {
+      toast.error("Failed to accept terms. Please try again.");
     }
   };
 
@@ -352,6 +385,32 @@ function LoginPage() {
   }
 
   // if (isLoginError) return <SomethingWentWrong />;
+
+  if (requiresTermsReAcceptance) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "#fff", padding: "2rem" }}>
+        <h2 style={{ color: "#003580", marginBottom: "1rem" }}>Our Terms of Use have been updated</h2>
+        <p style={{ color: "#555", marginBottom: "1.5rem", textAlign: "center", maxWidth: "500px" }}>
+          Please read and accept the updated Terms of Use to continue using Parrots.
+        </p>
+        <div style={{ width: "100%", maxWidth: "700px", maxHeight: "60vh", overflowY: "auto", border: "1px solid #ddd", borderRadius: "8px", padding: "1rem", marginBottom: "1.5rem" }}>
+          <TermsOfUseComponent open={true} onClose={() => {}} />
+        </div>
+        <button
+          onClick={handleAcceptUpdatedTerms}
+          style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "8px", padding: "0.8rem 2rem", fontSize: "1rem", cursor: "pointer" }}
+        >
+          I Accept
+        </button>
+        <button
+          onClick={() => { setRequiresTermsReAcceptance(false); setPendingLoginData(null); }}
+          style={{ marginTop: "0.8rem", background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: "0.9rem" }}
+        >
+          Decline and go back
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="App">
