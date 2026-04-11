@@ -88,6 +88,11 @@ function LoginPage() {
     { isLoading: isLoadingConfirmUser, isSuccess: isSuccessConfirmUser },
   ] = useConfirmUserMutation();
 
+  if (sessionStorage.getItem("sessionExpired")) {
+    sessionStorage.removeItem("sessionExpired");
+    toast.warning("Your session has expired. Please log in again.");
+  }
+
   const handleForgotPassword = () => {
     setPageState("ForgotPassword");
   };

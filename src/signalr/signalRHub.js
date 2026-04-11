@@ -15,6 +15,7 @@ const canStart = (state) => state === HubConnectionState.Disconnected;
 
 document.addEventListener("visibilitychange", async () => {
     if (document.visibilityState === "visible" && hubConnection) {
+        if (!localStorage.getItem("storedToken")) return;
         if (canStart(hubConnection.state)) {
             try {
                 console.log("🔄 Tab focused: Reconnecting SignalR...");
@@ -117,6 +118,16 @@ function setupInternalListeners() {
 
     hubConnection.onclose(() => {
         chatReadyRef.current = false;
+        // Schedule re-init if user is still logged in (permanent disconnect recovery)
+        if (connectionUserId && localStorage.getItem("storedToken")) {
+            setTimeout(() => {
+                if (connectionUserId && localStorage.getItem("storedToken")) {
+                    console.log("🔁 Permanent disconnect — attempting re-init...");
+                    initRetryCount = 0;
+                    initHubConnection(connectionUserId, currentApiUrl);
+                }
+            }, 5000);
+        }
     });
 }
 
@@ -170,6 +181,13 @@ export const unregister_ReceiveUnreadNotification = (handler) => {
 };
 
 export const isHubReady = () => chatReadyRef.current && hubConnection?.state === HubConnectionState.Connected;
+
+export const getHubState = () => {
+    if (!hubConnection) return "disconnected";
+    if (hubConnection.state === HubConnectionState.Connected && chatReadyRef.current) return "connected";
+    if (hubConnection.state === HubConnectionState.Reconnecting) return "reconnecting";
+    return "disconnected";
+};
 
 export const invokeHub = async (method, ...args) => {
     if (isHubReady()) {

@@ -2,6 +2,7 @@ import "../assets/css/date-range-custom.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAsLoggedOut } from "../slices/UserSlice";
+import { stopHubConnection } from "../signalr/signalRHub";
 import { useState } from "react";
 import { parrotBananaLeafGreen, parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotGreen, parrotGreenTransparent, parrotPistachioGreen, parrotRed } from "../styles/colors";
 import { apiSlice } from "../api/apiSlice";
@@ -145,6 +146,7 @@ export function TopBarMenu() {
                     >
                       <button
                         onClick={() => {
+                          stopHubConnection();
                           dispatch(updateAsLoggedOut());
                           dispatch(apiSlice.util.resetApiState());
                           navigate("/login");

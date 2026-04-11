@@ -28,9 +28,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection, invokeHub, isHubReady, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
 import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
 import { ParrotCoinPage } from "./pages/ParrotCoinPage";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminPage from "./pages/AdminPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -101,9 +102,21 @@ function App() {
     console.log("unread from state: ", unreadMessagesFromState);
   }, [unreadMessagesFromState]);
 
+  useEffect(() => {
+    const handleOffline = () => toast.error("You are offline. Check your connection.", { toastId: "offline", autoClose: false });
+    const handleOnline = () => { toast.dismiss("offline"); toast.success("Back online.", { autoClose: 2000 }); };
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
 
 
   return (
+    <ErrorBoundary>
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -147,6 +160,7 @@ function App() {
       <ToastContainer position="top-center" style={{ marginTop: "6rem" }} />
 
     </Router>
+    </ErrorBoundary>
   );
 }
 

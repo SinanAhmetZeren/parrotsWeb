@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 // const API_URL = "https://adapting-sheepdog-annually.ngrok-free.app";
 // const API_URL = "https://parrots-api-backend.azurewebsites.net";
 const API_URL = process.env.REACT_APP_API_URL || "https://api.parrotsvoyages.com";
@@ -27,6 +28,7 @@ const deviceId = getDeviceId();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
+  timeout: 15000,
   prepareHeaders: (headers) => {
     headers.set("ngrok-skip-browser-warning", "1");
     let deviceId = localStorage.getItem("deviceId");
@@ -73,8 +75,19 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     } else {
       localStorage.removeItem("storedToken");
       localStorage.removeItem("storedRefreshToken");
+      localStorage.removeItem("storedUserId");
+      localStorage.removeItem("storedUserName");
+      localStorage.removeItem("storedProfileImageUrl");
+      sessionStorage.setItem("sessionExpired", "1");
       window.location.href = "/login";
     }
+  }
+  if (result.error) {
+    const status = result.error.status;
+    if (status === 500) toast.error("Server error. Please try again later.", { toastId: "err500" });
+    else if (status === 503) toast.error("Service unavailable. The server may be down.", { toastId: "err503" });
+    else if (status === "FETCH_ERROR") toast.error("Cannot reach the server. Check your connection.", { toastId: "fetchErr" });
+    else if (status === "TIMEOUT_ERROR") toast.error("Request timed out. Please try again.", { toastId: "timeout" });
   }
   return result;
 };

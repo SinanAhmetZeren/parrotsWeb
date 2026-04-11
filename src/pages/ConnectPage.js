@@ -24,6 +24,7 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import {
   isHubReady,
   invokeHub,
+  getHubState,
   register_ReceiveMessage,
   unregister_ReceiveMessage,
   register_ReceiveMessageRefetch,
@@ -55,6 +56,12 @@ function ConnectPage() {
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [hubState, setHubState] = useState(getHubState());
+
+  useEffect(() => {
+    const interval = setInterval(() => setHubState(getHubState()), 2000);
+    return () => clearInterval(interval);
+  }, []);
   const dispatch = useDispatch();
   const {
     data: messagePreviewsData,
@@ -158,6 +165,7 @@ function ConnectPage() {
     };
     // Optimistic UI Update
     setMessagesToDisplay((prev) => [...(prev ?? []), sentMessage]);
+    const savedMessage = message;
     setMessage("");
 
     try {
@@ -165,6 +173,7 @@ function ConnectPage() {
         setMessagesToDisplay((prev) =>
           prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
         );
+        setMessage(savedMessage);
         setSendButtonDisabled(false);
         toast.error("Not connected. Please wait and try again.");
         return;
@@ -280,7 +289,17 @@ function ConnectPage() {
                   <TopBarMenu />
                 </div>
               </div>
-              {/* <button onClick={() => stateOfTheHub()}>show state of the hub</button> */}
+              {hubState !== "connected" && (
+                <div style={{
+                  backgroundColor: hubState === "reconnecting" ? "#78350f" : "#7f1d1d",
+                  color: hubState === "reconnecting" ? "#fcd34d" : "#fca5a5",
+                  fontSize: "0.75rem",
+                  padding: "4px 12px",
+                  textAlign: "center",
+                }}>
+                  {hubState === "reconnecting" ? "⚠ Reconnecting to chat..." : "✕ Disconnected from chat — messages may not send"}
+                </div>
+              )}
 
               <div className="flex connectPage_Bottom">
                 <div className="flex connectPage_BottomLeft">
