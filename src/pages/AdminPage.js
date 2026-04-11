@@ -13,6 +13,7 @@ import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
 import { UserEditor } from "../components/Editors/UserEditor";
 import { VehicleEditor } from "../components/Editors/VehicleEditor";
+import { TermsEditor } from "../components/Editors/TermsEditor";
 import { WeeklyPurchasesMetrics } from "../components/Metrics/PurchasesMetrics";
 import { WeeklyTransactionsMetrics } from "../components/Metrics/TransactionsMetrics";
 import { WeeklyVoyagesMetrics } from "../components/Metrics/VoyagesMetrics";
@@ -20,6 +21,7 @@ import { WeeklyVehiclesMetrics } from "../components/Metrics/VehiclesMetrics";
 import { WeeklyUsersMetrics } from "../components/Metrics/UsersMetrics";
 import { WeeklyBidsMetrics } from "../components/Metrics/BidsMetrics";
 import { WeeklyMessagesMetrics } from "../components/Metrics/MessagesMetrics";
+import { LogViewer } from "../components/Editors/LogViewer";
 
 
 function AdminPage() {
@@ -88,6 +90,7 @@ function AdminPage() {
                 {adminView === "bidEditor" && <BidEditor />}
                 {adminView === "vehicleEditor" && <VehicleEditor />}
                 {adminView === "userEditor" && <UserEditor />}
+                {adminView === "termsEditor" && <TermsEditor />}
                 {adminView === "purchases" && <WeeklyPurchasesMetrics />}
                 {adminView === "transactions" && <WeeklyTransactionsMetrics />}
                 {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
@@ -95,6 +98,7 @@ function AdminPage() {
                 {adminView === "usersCreated" && <WeeklyUsersMetrics />}
                 {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
                 {adminView === "messaging" && <WeeklyMessagesMetrics />}
+                {adminView === "logViewer" && <LogViewer />}
               </div>
             </div>
 

@@ -50,7 +50,7 @@ function CreateVehiclePage() {
   const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
   const [pageState, setPageState] = useState("s1");
-  const [vehicleId, setVehicleId] = useState(3);
+  const [vehicleId, setVehicleId] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);

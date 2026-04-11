@@ -1,10 +1,12 @@
 import { color, text } from "d3";
 import React, { useState } from "react";
+import { useGetCurrentTermsAdminQuery } from "../slices/TermsSlice";
 import { parrotBlue, parrotButtonGreen, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotRed, parrotTextDarkBlue } from "../styles/colors";
 import logoMini from '../assets/images/ParrotsLogoHead.png';
 
 const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { data: currentTerms } = useGetCurrentTermsAdminQuery();
     const isControlled = controlledOpen !== undefined;
     const modalOpen = isControlled ? controlledOpen : isOpen;
 
@@ -171,8 +173,15 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
                         <div style={styles.termsContainer}>
                             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
                                 <img src={logoMini} alt="Parrots Logo" style={{ width: "3rem", marginBottom: "1rem" }} />
-                                <div style={styles.titleMain}>
-                                    Parrots
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <div style={styles.titleMain}>
+                                        Parrots
+                                    </div>
+                                    {currentTerms?.version && (
+                                        <div style={{ fontSize: "0.8rem", color: "#888", fontWeight: 500 }}>
+                                            Terms of Use — v{currentTerms.version}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

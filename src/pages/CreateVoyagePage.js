@@ -33,12 +33,12 @@ export default function CreateVoyagePage() {
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [pageState, setPageState] = useState(1);
-  const [voyageBrief, setVoyageBrief] = useState("333");
-  const [voyageDescription, setVoyageDescription] = useState("333");
+  const [voyageBrief, setVoyageBrief] = useState("");
+  const [voyageDescription, setVoyageDescription] = useState("");
   const [selectedVacancy, setSelectedVacancy] = useState(3); // empty
-  const [voyageName, setVoyageName] = useState("xyz");
-  const [minPrice, setMinPrice] = useState(5); // null
-  const [maxPrice, setMaxPrice] = useState(5);
+  const [voyageName, setVoyageName] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [currency, setCurrency] = useState("");
   const [isAuction, setIsAuction] = useState(false);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
@@ -46,10 +46,10 @@ export default function CreateVoyagePage() {
   const [calendarOpen, setCalendarOpen] = useState(true);
   // const [lastBidDate, setLastBidDate] = useState("2025-04-30");
   const [lastBidDate, setLastBidDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]);
-  const [voyageId, setVoyageId] = useState(15); // ""
+  const [voyageId, setVoyageId] = useState("");
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
-  const [vehicleId, setVehicleId] = useState(3); //""
+  const [vehicleId, setVehicleId] = useState("");
 
   const walkDBId = process.env.REACT_APP_WALK_ID;
   const runDBId = process.env.REACT_APP_RUN_ID;

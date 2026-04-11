@@ -1,128 +1,46 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useGetWeeklyTransactionsQuery } from "../../slices/MetricsSlice";
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from "recharts";
-import { parrotDarkBlue } from "../../styles/colors";
+import { MetricCard } from "./MetricCard";
 
 export function WeeklyTransactionsMetrics() {
-    const { data: transactionsData, isLoading, isError } = useGetWeeklyTransactionsQuery();
+  const { data, isLoading, isError } = useGetWeeklyTransactionsQuery();
+  if (isLoading) return <div style={{ padding: "1.5rem", color: "#64748b" }}>Loading...</div>;
+  if (isError || !data) return <div style={{ padding: "1.5rem", color: "#dc2626" }}>Error loading data.</div>;
 
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-        return date.toLocaleDateString("en-GB"); // DD/MM/YYYY
-    };
+  // Group flat rows by week
+  const grouped = {};
+  data.forEach(t => {
+    if (!grouped[t.weekStart]) grouped[t.weekStart] = { weekStart: t.weekStart };
+    grouped[t.weekStart][t.type] = t.totalAmount;
+    grouped[t.weekStart][`${t.type}_count`] = t.transactionCount;
+  });
+  const chartData = Object.values(grouped)
+    .map(w => ({
+      ...w,
+      send_parrotCoins: w.send_parrotCoins ?? 0,
+      receive_parrotCoins: w.receive_parrotCoins ?? 0,
+      voyage_cost: w.voyage_cost ?? 0,
+    }))
+    .sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
 
-    const formatNumber = (num) => num?.toLocaleString();
-
-    // Transform data for chart
-    let chartData = [];
-    if (transactionsData) {
-        const groupedByWeek = {};
-
-        transactionsData.forEach((t) => {
-            const weekKey = t.weekStart; // keep ISO for sorting
-            if (!groupedByWeek[weekKey]) groupedByWeek[weekKey] = { weekStart: weekKey };
-
-            // Fill data for chart
-            groupedByWeek[weekKey][t.type] = t.totalAmount;
-            groupedByWeek[weekKey][`${t.type}_count`] = t.transactionCount;
-        });
-
-        // Ensure every week has all three types
-        Object.values(groupedByWeek).forEach((week) => {
-            if (week.send_parrotCoins === undefined) week.send_parrotCoins = 0;
-            if (week.receive_parrotCoins === undefined) week.receive_parrotCoins = 0;
-            if (week.voyage_cost === undefined) week.voyage_cost = 0;
-
-            if (week.send_parrotCoins_count === undefined) week.send_parrotCoins_count = 0;
-            if (week.receive_parrotCoins_count === undefined) week.receive_parrotCoins_count = 0;
-            if (week.voyage_cost_count === undefined) week.voyage_cost_count = 0;
-
-            chartData.push(week);
-        });
-
-        // Sort by date ascending
-        chartData.sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
-    }
-
-    useEffect(() => {
-        console.log("Transactions Data:", transactionsData);
-        console.log("Chart Data:", chartData);
-    }, [transactionsData]);
-
-    if (isLoading) return <div>Loading weekly transactions...</div>;
-    if (isError || !transactionsData) return <div>Error loading weekly transactions.</div>;
-
-    const colWidth = 150;
-
-    return (
-        <div style={{
-            padding: "20px", fontFamily: "Arial", width: "85%",
-            margin: "auto", backgroundColor: parrotDarkBlue
-        }}>
-            <h2 style={{ marginBottom: "1rem" }}>Weekly Transactions Metrics</h2>
-            <div style={{ width: "80%", height: "20rem", margin: "auto", overflowY: "auto", backgroundColor: "white", borderRadius: "8px", padding: "1rem" }}>
-
-                {/* Table */}
-                <table style={{
-                    width: "80%", margin: "auto", backgroundColor: "white",
-                    borderCollapse: "collapse", marginBottom: "2rem"
-                }}>
-                    <thead>
-                        <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: "120px" }}>Week Starting</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Count</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Send Total</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Count</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Receive Total</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Count</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd", width: colWidth }}>Voyage Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {chartData.map((week) => (
-                            <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatDate(week.weekStart)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.send_parrotCoins_count)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.send_parrotCoins)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.receive_parrotCoins_count)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.receive_parrotCoins)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.voyage_cost_count)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.voyage_cost)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            {/* Line Chart */}
-            <h3 style={{ marginBottom: "1rem" }}>Transactions Over Time</h3>
-
-            <ResponsiveContainer width="90%" height={350} style={{ margin: "auto" }}>
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-                    style={{ backgroundColor: "white", borderRadius: "8px", padding: "10px" }} // white background
-
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="weekStart" tickFormatter={formatDate} />
-                    <YAxis width={80} tickFormatter={formatNumber} />
-                    <Tooltip
-                        labelFormatter={formatDate}
-                        formatter={(value) => (typeof value === "number" ? formatNumber(value) : value)}
-                    />
-                    <Legend />
-                    <Line type="monotone" dataKey="send_parrotCoins" name="Send Coins" strokeWidth={3} stroke="#ff7300" dot={false} />
-                    <Line type="monotone" dataKey="receive_parrotCoins" name="Receive Coins" strokeWidth={3} stroke="#82ca9d" dot={false} />
-                    <Line type="monotone" dataKey="voyage_cost" name="Voyage Cost" strokeWidth={3} stroke="#8884d8" dot={false} />
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
-    );
+  return (
+    <MetricCard
+      title="Weekly Transactions"
+      data={chartData}
+      columns={[
+        { key: "send_parrotCoins_count", label: "Send Count" },
+        { key: "send_parrotCoins", label: "Send Total", prefix: "$" },
+        { key: "receive_parrotCoins_count", label: "Receive Count" },
+        { key: "receive_parrotCoins", label: "Receive Total", prefix: "$" },
+        { key: "voyage_cost_count", label: "Voyage Count" },
+        { key: "voyage_cost", label: "Voyage Total", prefix: "$" },
+      ]}
+      chartType="line"
+      series={[
+        { key: "send_parrotCoins", label: "Send Coins", color: "#f97316", prefix: "$" },
+        { key: "receive_parrotCoins", label: "Receive Coins", color: "#34d399", prefix: "$" },
+        { key: "voyage_cost", label: "Voyage Cost", color: "#818cf8", prefix: "$" },
+      ]}
+    />
+  );
 }

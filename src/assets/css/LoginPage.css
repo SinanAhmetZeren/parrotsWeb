@@ -1,75 +1,39 @@
-.username-input::placeholder,
-.password-input::placeholder,
-.password-input-register::placeholder,
-.username-input-register::placeholder,
-.password-input-sendcode::placeholder,
-.username-input-sendcode::placeholder {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
 .username-input-login,
-.password-input-login {
-  border-radius: 0.5rem;
-  background-color: white;
-  border: 1px solid rgba(4, 4, 4, 0.2);
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-radius: 1.5rem;
-  padding-left: 1rem;
-}
-
-.username-input-sendcode,
-.password-input-sendcode {
-  border-radius: 0.5rem;
-  background-color: white;
-  border: 1px solid rgba(4, 4, 4, 0.2);
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-radius: 1.5rem;
-  padding-left: 1rem;
-}
-
+.password-input-login,
 .username-input-register,
-.password-input-register {
-  border-radius: 0.5rem;
+.password-input-register,
+.username-input-sendcode,
+.password-input-sendcode,
+.username-input-resetPassword,
+.password-input-resetPassword,
+.username-input-confirmationCode {
   background-color: white;
   border: 1px solid rgba(4, 4, 4, 0.2);
+  border-radius: 1.5rem;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   font-size: 1.2rem;
   font-weight: 700;
-  border-radius: 1.5rem;
-  padding-left: 1rem;
+  color: #00008B;
 }
 
-.username-input-resetPassword,
-.password-input-resetPassword {
-  border-radius: 0.5rem;
-  background-color: white;
-  border: 1px solid rgba(4, 4, 4, 0.2);
-  width: 100%;
-  padding: 0.5rem;
+.username-input-login::placeholder,
+.password-input-login::placeholder,
+.username-input-register::placeholder,
+.password-input-register::placeholder,
+.username-input-sendcode::placeholder,
+.password-input-sendcode::placeholder,
+.username-input-resetPassword::placeholder,
+.password-input-resetPassword::placeholder,
+.username-input-confirmationCode::placeholder {
   font-size: 1.2rem;
-  font-weight: 700;
-  border-radius: 1.5rem;
-  padding-left: 1rem;
+  font-weight: 600;
+  color: #a0a0a0;
 }
 
 .password-wrapper-login,
-.username-wrapper-login {
-  color: blue;
-  width: 100%;
-  margin: auto;
-  border-radius: 0.5rem;
-}
-
+.username-wrapper-login,
 .username-wrapper-confirmationCode {
-  color: blue;
   width: 100%;
   margin: auto;
   border-radius: 0.5rem;
@@ -77,7 +41,6 @@
 
 .password-wrapper-register,
 .username-wrapper-register {
-  color: blue;
   width: 100%;
   padding: 0.5rem;
   padding-bottom: 0;
@@ -87,7 +50,6 @@
 
 .password-wrapper-reset-password,
 .username-wrapper-reset-password {
-  color: blue;
   width: 100%;
   padding: 0.5rem;
   padding-bottom: 0;
@@ -175,18 +137,6 @@
   padding: 0.2rem;
   cursor: pointer;
   margin-top: 0.5rem;
-}
-
-.username-input-confirmationCode {
-  border-radius: 0.5rem;
-  background-color: white;
-  border: 1px solid rgba(4, 4, 4, 0.2);
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-radius: 1.5rem;
-  padding-left: 1rem;
 }
 
 .update-password-button {

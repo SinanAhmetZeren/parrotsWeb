@@ -18,7 +18,7 @@ import {
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import {
   parrotTextDarkBlue,
@@ -41,11 +41,11 @@ function LoginPage() {
     googleLoginMutation();
 
   const [pageState, setPageState] = useState("Login");
-  const [username, setUsername] = useState("sinanzen@gmail.com");
+  const [username, setUsername] = useState("");
   const [usernameRegister, setUsernameRegister] = useState("");
   const [emailRegister, setEmailRegister] = useState("");
   const [emailForgotPassword, setEmailForgotPassword] = useState("");
-  const [password, setPassword] = useState("123456");
+  const [password, setPassword] = useState("");
   const [passwordRegister, setPasswordRegister] = useState("");
   const [passwordRegister2, setPasswordRegister2] = useState("");
   const [passwordUpdate1, setPasswordUpdate1] = useState("");
@@ -267,6 +267,17 @@ function LoginPage() {
       return;
     }
 
+    const passwordValid =
+      passwordRegister.length >= 8 &&
+      /[A-Z]/.test(passwordRegister) &&
+      /[a-z]/.test(passwordRegister) &&
+      /[0-9]/.test(passwordRegister);
+
+    if (!passwordValid) {
+      toast.error("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.");
+      return;
+    }
+
     try {
       const registerResponse = await registerUser({
         Email: emailRegister,
@@ -453,12 +464,12 @@ function LoginPage() {
                           onClick={() => makeVisible()}
                         >
                           {showPassword ? (
-                            <AiOutlineEyeInvisible
+                            <AiFillEyeInvisible
                               size="2rem"
                               color={parrotTextDarkBlue}
                             />
                           ) : (
-                            <AiOutlineEye
+                            <AiFillEye
                               size="2rem"
                               color={parrotTextDarkBlue}
                             />
@@ -579,12 +590,12 @@ function LoginPage() {
                         onClick={() => makeVisibleRegister()}
                       >
                         {showPasswordRegister ? (
-                          <AiOutlineEyeInvisible
+                          <AiFillEyeInvisible
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
                         ) : (
-                          <AiOutlineEye
+                          <AiFillEye
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
@@ -611,21 +622,37 @@ function LoginPage() {
                         onClick={() => makeVisibleRegister2()}
                       >
                         {showPasswordRegister2 ? (
-                          <AiOutlineEyeInvisible
+                          <AiFillEyeInvisible
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
                         ) : (
-                          <AiOutlineEye
+                          <AiFillEye
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
                         )}
                       </span>
                     </div>
-                  </div>
-                  <div style={{ margin: "0.5rem", marginTop: "1rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+
+                    {(passwordRegister.length > 0 || passwordRegister2.length > 0) && (
+                      <div style={{ padding: "0.4rem 0.5rem 0", fontSize: "0.78rem", display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                        {[
+                          { label: "At least 8 characters", ok: passwordRegister.length >= 8 },
+                          { label: "One uppercase letter", ok: /[A-Z]/.test(passwordRegister) },
+                          { label: "One lowercase letter", ok: /[a-z]/.test(passwordRegister) },
+                          { label: "One number", ok: /[0-9]/.test(passwordRegister) },
+                          { label: "Passwords match", ok: passwordRegister.length > 0 && passwordRegister === passwordRegister2 },
+                        ].map(({ label, ok }) => (
+                          <span key={label} style={{ color: ok ? "#2e7d32" : "#c62828", fontWeight: 500 }}>
+                            {ok ? "✓" : "✗"} {label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                  <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
                       <div
                         onClick={() => setTermsAccepted(prev => !prev)}
                         style={{
@@ -662,7 +689,12 @@ function LoginPage() {
                             emailRegister &&
                             passwordRegister &&
                             passwordRegister2 &&
-                            termsAccepted
+                            termsAccepted &&
+                            passwordRegister.length >= 8 &&
+                            /[A-Z]/.test(passwordRegister) &&
+                            /[a-z]/.test(passwordRegister) &&
+                            /[0-9]/.test(passwordRegister) &&
+                            passwordRegister === passwordRegister2
                             ? 1
                             : 0.5,
                         cursor: termsAccepted ? "pointer" : "not-allowed",
@@ -671,6 +703,7 @@ function LoginPage() {
                       {" "}
                       {isRegistering ? <LoginSpinner /> : "Register"}
                     </div>
+                  </div>
                   </div>
                   <div style={{ marginRight: "1rem" }}>
                     <div className="signup-register">
@@ -816,12 +849,12 @@ function LoginPage() {
                         onClick={() => makeVisibleUpdate()}
                       >
                         {showPasswordUpdate1 ? (
-                          <AiOutlineEyeInvisible
+                          <AiFillEyeInvisible
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
                         ) : (
-                          <AiOutlineEye
+                          <AiFillEye
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
@@ -847,12 +880,12 @@ function LoginPage() {
                         onClick={() => makeVisibleUpdate2()}
                       >
                         {showPasswordUpdate2 ? (
-                          <AiOutlineEyeInvisible
+                          <AiFillEyeInvisible
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
                         ) : (
-                          <AiOutlineEye
+                          <AiFillEye
                             size="2rem"
                             color={parrotTextDarkBlue}
                           />
@@ -924,12 +957,10 @@ const wrapper = {
   paddingTop: "2rem",
   paddingBottom: "3rem",
   borderRadius: "1.5rem",
-  backgroundColor: "orange"
 };
 
 const mainContainer = {
-  backgroundColor: "rgba(255, 255, 255, .3)",
-  backgroundColor: "red",
+  backgroundColor: "rgba(10, 119, 234, 0.32)",
   width: "40%",
   margin: "auto",
   borderRadius: "2rem",

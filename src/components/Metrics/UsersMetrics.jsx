@@ -1,133 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useGetWeeklyUsersQuery } from "../../slices/MetricsSlice";
-import { parrotDarkBlue } from "../../styles/colors";
-import {
-    ComposedChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer
-} from "recharts";
+import { MetricCard } from "./MetricCard";
 
 export function WeeklyUsersMetrics() {
+  const { data, isLoading, isError } = useGetWeeklyUsersQuery();
+  if (isLoading) return <div style={{ padding: "1.5rem", color: "#64748b" }}>Loading...</div>;
+  if (isError || !data) return <div style={{ padding: "1.5rem", color: "#dc2626" }}>Error loading data.</div>;
 
-    const { data: usersData, isLoading, isError } = useGetWeeklyUsersQuery();
-
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-        return date.toLocaleDateString("en-GB");
-    };
-
-    const formatNumber = (num) => num?.toLocaleString();
-
-    useEffect(() => {
-        console.log(usersData);
-    }, [usersData]);
-
-    if (isLoading) return <div>Loading weekly Users...</div>;
-    if (isError || !usersData) return <div>Error loading weekly users.</div>;
-
-    return (
-        <div style={{
-            padding: "20px",
-            fontFamily: "Arial",
-            width: "85%",
-            margin: "auto",
-            backgroundColor: parrotDarkBlue
-        }}>
-
-            <h2 style={{ marginBottom: "1rem" }}>Weekly Users Created</h2>
-
-            {/* Table */}
-            <div style={{ width: "80%", height: "20rem", margin: "auto", overflowY: "auto", backgroundColor: "white", borderRadius: "8px", padding: "1rem" }}>
-
-                <table style={{
-                    width: "80%",
-                    borderCollapse: "collapse",
-                    backgroundColor: "white",
-                    margin: "auto",
-                    marginBottom: "2rem"
-                }}>
-
-                    <thead>
-                        <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
-                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>
-                                Week Starting
-                            </th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>
-                                Users Created
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {usersData.map((week) => (
-                            <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>
-                                    {formatDate(week.weekStart)}
-                                </td>
-
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>
-                                    {formatNumber(week.userCount)}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-
-                </table>
-            </div>
-            {/* Chart */}
-
-            <h3 style={{ marginBottom: "1rem" }}>Users Created Over Time</h3>
-
-            <ResponsiveContainer
-                width="80%"
-                height={350}
-                style={{ margin: "auto" }}
-            >
-
-                <ComposedChart
-                    data={usersData}
-                    margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-                    style={{ backgroundColor: "white", borderRadius: "8px", padding: "10px" }}
-                >
-
-                    <CartesianGrid strokeDasharray="3 3" />
-
-                    <XAxis
-                        dataKey="weekStart"
-                        tickFormatter={formatDate}
-                    />
-
-                    <YAxis
-                        width={80}
-                        tickFormatter={formatNumber}
-                        label={{ value: "Users", angle: -90, position: "insideLeft" }}
-                    />
-
-                    <Tooltip
-                        labelFormatter={formatDate}
-                        formatter={(value) =>
-                            typeof value === "number" ? formatNumber(value) : value
-                        }
-                    />
-
-                    <Legend />
-
-                    <Bar
-                        dataKey="userCount"
-                        name="Users Created"
-                        fill="#ffaa00af"
-                        barSize={20}
-                    />
-
-                </ComposedChart>
-
-            </ResponsiveContainer>
-
-        </div>
-    );
+  return (
+    <MetricCard
+      title="Weekly Users Created"
+      data={data}
+      columns={[{ key: "userCount", label: "Users Created" }]}
+      chartType="bar"
+      series={[{ key: "userCount", label: "Users Created", color: "#818cf8" }]}
+    />
+  );
 }

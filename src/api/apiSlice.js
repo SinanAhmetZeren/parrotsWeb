@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { useNavigate } from "react-router-dom";
-const API_URL = "https://adapting-sheepdog-annually.ngrok-free.app";
+// const API_URL = "https://adapting-sheepdog-annually.ngrok-free.app";
 // const API_URL = "https://parrots-api-backend.azurewebsites.net";
-// const API_URL = "https://api.parrotsvoyages.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://api.parrotsvoyages.com";
 
 const generateDeviceId = () => {
   const s4 = () =>

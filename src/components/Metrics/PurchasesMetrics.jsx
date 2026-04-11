@@ -1,103 +1,25 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useGetWeeklyPurchasesQuery } from "../../slices/MetricsSlice";
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { parrotDarkBlue } from "../../styles/colors";
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { MetricCard } from "./MetricCard";
 
 export function WeeklyPurchasesMetrics() {
-    const { data: purchasesData, isLoading, isError } = useGetWeeklyPurchasesQuery();
+  const { data, isLoading, isError } = useGetWeeklyPurchasesQuery();
+  if (isLoading) return <div style={{ padding: "1.5rem", color: "#64748b" }}>Loading...</div>;
+  if (isError || !data) return <div style={{ padding: "1.5rem", color: "#dc2626" }}>Error loading data.</div>;
 
-    // Helper function to format ISO date strings
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-        return date.toLocaleDateString("en-GB"); // DD/MM/YYYY
-    };
-
-    useEffect(() => { console.log(purchasesData); }, [purchasesData])
-
-    if (isLoading) {
-        return <div>Loading weekly purchases...</div>;
-    }
-
-    if (isError || !purchasesData) {
-        return <div>Error loading weekly purchases.</div>;
-    }
-    // Format numbers with commas
-    const formatNumber = (num) => num?.toLocaleString();
-
-    return (
-        <div style={{
-            padding: "20px", fontFamily: "Arial",
-            width: "85%", margin: "auto", backgroundColor: parrotDarkBlue
-        }}>
-            <h2 style={{ marginBottom: "1rem" }}>Weekly Purchases Metrics</h2>
-
-            <div style={{ width: "80%", height: "20rem", margin: "auto", overflowY: "auto", backgroundColor: "white", borderRadius: "8px", padding: "1rem" }}>
-
-                {/* Table */}
-                <table style={{
-                    width: "80%", borderCollapse: "collapse", backgroundColor: "white", margin: "auto",
-                    marginBottom: "2rem"
-                }}>
-                    <thead>
-                        <tr style={{ backgroundColor: "#4a90e2", color: "white" }}>
-                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Week Starting</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Number of Purchases</th>
-                            <th style={{ padding: "8px", border: "1px solid #ddd" }}>Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {purchasesData.map((week) => (
-                            <tr key={week.weekStart} style={{ borderBottom: "1px solid #ddd" }}>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatDate(week.weekStart)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>{formatNumber(week.purchaseCount)}</td>
-                                <td style={{ padding: "8px", color: parrotDarkBlue }}>${formatNumber(week.totalAmount)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            {/* Line Chart */}
-            <h3 style={{ marginBottom: "1rem" }}>Purchases Over Time</h3>
-
-
-            <ResponsiveContainer width="80%" height={350} style={{ margin: "auto" }}>
-                <ComposedChart
-                    data={purchasesData}
-                    margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
-                    style={{ backgroundColor: "white", borderRadius: "8px", padding: "10px" }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="weekStart" tickFormatter={formatDate} />
-                    <YAxis
-                        yAxisId="left"
-                        width={80}
-                        tickFormatter={formatNumber}
-                        label={{ value: "Purchases", angle: -90, position: "insideLeft" }}
-                    />
-                    <YAxis
-                        yAxisId="right"
-                        orientation="right"
-                        width={80}
-                        tickFormatter={(value) => `$${formatNumber(value)}`}
-                        label={{ value: "Total Amount ($)", angle: -90, position: "insideRight", offset: -40 }}
-
-                    />
-                    <Tooltip
-                        labelFormatter={formatDate}
-                        formatter={(value, name) =>
-                            name === "Total Amount" ? `$${formatNumber(value)}` : formatNumber(value)
-                        }
-                    />
-                    <Legend />
-
-                    {/* Bar for purchaseCount */}
-                    <Bar yAxisId="left" dataKey="purchaseCount" name="Purchases" fill="#8884d849" barSize={30} />
-                    {/* Line for totalAmount */}
-                    <Line yAxisId="right" type="monotone" dataKey="totalAmount" name="Total Amount" stroke="#82ca9d" strokeWidth={3} dot={false} />
-                </ComposedChart>
-            </ResponsiveContainer>
-
-        </div>
-    );
+  return (
+    <MetricCard
+      title="Weekly Purchases"
+      data={data}
+      columns={[
+        { key: "purchaseCount", label: "Purchases" },
+        { key: "totalAmount", label: "Total Amount", prefix: "$" },
+      ]}
+      chartType="bar"
+      series={[
+        { key: "purchaseCount", label: "Purchases", color: "#60a5fa" },
+        { key: "totalAmount", label: "Total Amount ($)", color: "#34d399" },
+      ]}
+    />
+  );
 }

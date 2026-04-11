@@ -1,18 +1,18 @@
-/* eslint-disable no-undef */
-import "../../assets/css/advancedmarker.css";
-import "../../assets/css/ConnectPage.css";
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { SomethingWentWrong } from "../SomethingWentWrong";
 import { useHealthCheckQuery } from "../../slices/HealthSlice";
-import { parrotBlue, parrotDarkBlue, } from "../../styles/colors";
 import { useLazyGetSingleUserByUserNameQuery, useLazyGetUserByIdQuery, usePatchUserAdminMutation } from "../../slices/UserSlice";
-
+import {
+  adminPage, adminCard, adminTitle, adminRow, adminLabel, adminInput,
+  adminTextarea, adminBtnPrimary, adminBtnSecondary, adminBoolBtn,
+  adminSearchBar, adminIdInput,
+} from "../../styles/adminStyles";
 
 export function UserEditor() {
   const [userName, setUserName] = useState("");
   const [userTitle, setUserTitle] = useState("");
   const [userBio, setUserBio] = useState("");
-  const [email, setEmail] = useState("");
   const [displayEmail, setDisplayEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [facebookProfile, setFacebookProfile] = useState("");
@@ -22,48 +22,26 @@ export function UserEditor() {
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [youtubeProfile, setYoutubeProfile] = useState("");
   const [parrotCoinBalance, setParrotCoinBalance] = useState("");
-  const [emailHidden, setEmailHidden] = useState();
+  const [emailHidden, setEmailHidden] = useState(false);
   const [honeyPotValue, setHoneyPotValue] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-
   const [searchUserName, setSearchUserName] = useState("");
   const [searchUserId, setSearchUserId] = useState("");
-  const [searchingByUsername, setSearchingByUsername] = useState(false)
-  const [searchingByUserId, setSearchingByUserId] = useState(false)
+  const [searchingByUsername, setSearchingByUsername] = useState(false);
+  const [searchingByUserId, setSearchingByUserId] = useState(false);
 
   const [patchUser] = usePatchUserAdminMutation();
+  const [triggerGetUserById] = useLazyGetUserByIdQuery();
+  const [triggerGetUserByUserName] = useLazyGetSingleUserByUserNameQuery();
 
-  const [
-    triggerGetUserById,
-    {
-      data: userData,
-      isLoading,
-      isError,
-      error,
-      isSuccess: isSuccessUser,
-    },
-  ] = useLazyGetUserByIdQuery();
-
-
-  const [
-    triggerGetUserByUserName,
-    {
-      data: userData2,
-      isLoading: isLoading2,
-      isError: isError2,
-      error: error2,
-      isSuccess: isSuccessUser2,
-    },
-  ] = useLazyGetSingleUserByUserNameQuery();
-
+  const { isError: isHealthCheckError } = useHealthCheckQuery();
+  if (isHealthCheckError) return <SomethingWentWrong />;
 
   const populateUserFields = (data) => {
     if (!data) return;
-    console.log("parrot coins: ", data);
     setUserName(data.userName);
     setUserTitle(data.title);
     setUserBio(data.bio);
-    setEmail(data.email || "");
     setDisplayEmail(data.displayEmail || "");
     setInstagramProfile(data.instagram || "");
     setYoutubeProfile(data.youtube || "");
@@ -72,64 +50,29 @@ export function UserEditor() {
     setTwitterProfile(data.twitter || "");
     setLinkedinProfile(data.linkedin || "");
     setTiktokProfile(data.tiktok || "");
-    setEmailHidden(data.emailVisible === false); // ensure boolean
-    setParrotCoinBalance(data.parrotCoinBalance)
-
+    setEmailHidden(data.emailVisible === false);
+    setParrotCoinBalance(data.parrotCoinBalance);
   };
 
-  /*
-  useEffect(() => {
-
-    if (!userData && !userData2) return;
-
-    if (isSuccessUser) {
-      populateUserFields(userData)
-    }
-
-    if (isSuccessUser2) {
-      populateUserFields(userData2)
-    }
-  }, [userData, isSuccessUser, userData2, isSuccessUser2]);
-*/
-
-  const handleSearchUserbyUserId = async () => {
-    setSearchingByUserId(true);
-    if (!searchUserId?.trim()) {
-      setSearchingByUserId(false);
-      return;
-    }
-
-    const result = await triggerGetUserById(searchUserId);
-    if (result?.data) {
-      setSearchUserName(result.data.userName)
-      populateUserFields(result.data); // populate immediately
-    }
-    setSearchingByUserId(false);
-  };
-
-  const handleSearchUserbyUserName = async () => {
+  const handleSearchByUserName = async () => {
     setSearchingByUsername(true);
-    if (!searchUserName?.trim()) {
-      setSearchingByUsername(false);
-      return;
-    }
-
+    if (!searchUserName?.trim()) { setSearchingByUsername(false); return; }
     const result = await triggerGetUserByUserName(searchUserName);
-    if (result?.data) {
-      console.log("result:", result.data.id);
-      setSearchUserId(result.data.id)
-      populateUserFields(result.data); // populate immediately
-    }
+    if (result?.data) { setSearchUserId(result.data.id); populateUserFields(result.data); }
     setSearchingByUsername(false);
   };
 
-  const handlePatchUser = async () => {
+  const handleSearchByUserId = async () => {
+    setSearchingByUserId(true);
+    if (!searchUserId?.trim()) { setSearchingByUserId(false); return; }
+    const result = await triggerGetUserById(searchUserId);
+    if (result?.data) { setSearchUserName(result.data.userName); populateUserFields(result.data); }
+    setSearchingByUserId(false);
+  };
 
-    if (honeyPotValue) {
-      console.warn("Bot detected – update blocked");
-      return;
-    }
-    setIsUpdatingProfile(true)
+  const handlePatchUser = async () => {
+    if (honeyPotValue) { console.warn("Bot detected"); return; }
+    setIsUpdatingProfile(true);
     const patchDoc = [
       { op: "replace", path: "/userName", value: userName },
       { op: "replace", path: "/displayEmail", value: displayEmail },
@@ -147,310 +90,70 @@ export function UserEditor() {
     ];
     try {
       const response = await patchUser({ userId: searchUserId, patchDoc });
-      console.log("patch user response: ", response);
-      console.log("patch user response success: ", response.data.success);
-      if (response.data.success) {
-        console.log("Profile updated successfully");
-
-      } else {
-        alert("Failed to update profile. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error uploading image", error);
-    }
-    finally {
-      setIsUpdatingProfile(false)
-    }
+      if (!response.data.success) alert("Failed to update profile.");
+    } catch (err) { console.error(err); }
+    finally { setIsUpdatingProfile(false); }
   };
 
-  const { data: healthCheckData, isError: isHealthCheckError } =
-    useHealthCheckQuery();
-
-  if (isHealthCheckError) {
-    console.log(".....Health check failed.....");
-    return <SomethingWentWrong />;
-  }
-
-
-
   return (
-    <div style={{ width: "90%", margin: "auto", padding: "1rem", fontFamily: "Arial", backgroundColor: parrotDarkBlue }}>
-      <h2>User Profile Editor</h2>
+    <div style={adminPage}>
+      <input type="text" value={honeyPotValue} onChange={e => setHoneyPotValue(e.target.value)} style={{ display: "none" }} autoComplete="off" tabIndex="-1" />
 
-      {/* Search Row */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 4fr 1fr",
-        gap: "8px",
-        marginBottom: "1rem",
-        alignItems: "center"
-      }}>
-        <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "16rem" }}>
-          Enter Username
-        </div>
-        <input
-          type="text"
-          placeholder="Search username"
-          style={{
-            width: "100%",
-            paddingLeft: "1rem",
-            height: "32px",
-            color: "darkblue"
-          }}
-          value={searchUserName}
-          onChange={(e) => setSearchUserName(e.target.value)}
-        />
+      <div style={adminCard}>
+        <div style={adminTitle}>User Editor</div>
 
-        <button
-          style={{
-            backgroundColor: parrotBlue,
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            height: "32px"
-          }}
-          onClick={() => handleSearchUserbyUserName()}
-        >
-          {searchingByUsername ? "Searching" : "Search"}
-        </button>
-      </div>
-
-      <input
-        type="text"
-        value={honeyPotValue}
-        onChange={(e) => setHoneyPotValue(e.target.value)}
-        style={{ display: "none" }}
-        autoComplete="off"
-      />
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 4fr 1fr",
-        gap: "8px",
-        marginBottom: "1rem",
-        alignItems: "center"
-      }}>
-        <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "16rem" }}>
-          Enter User Id</div>
-        <input
-          type="text"
-          placeholder="Search user id"
-          style={{
-            width: "100%",
-            paddingLeft: "1rem",
-            height: "32px",
-            color: "darkblue"
-          }}
-          value={searchUserId}
-          onChange={(e) => setSearchUserId(e.target.value)}
-        />
-
-        <button
-          style={{
-            backgroundColor: parrotBlue,
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            height: "32px"
-          }}
-          onClick={() => handleSearchUserbyUserId()}
-
-        >
-          {searchingByUserId ? "Searching" : "Search"}
-        </button>
-      </div>
-
-      {/* Row 1 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-
-
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Title</div>
-          <input
-            type="text"
-            value={userTitle}
-            onChange={(e) => setUserTitle(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
+        {/* Search */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
+          <div style={adminSearchBar}>
+            <input type="text" placeholder="Username" value={searchUserName} onChange={e => setSearchUserName(e.target.value)} style={adminIdInput} />
+            <button onClick={handleSearchByUserName} style={adminBtnSecondary}>
+              {searchingByUsername ? "Searching..." : "Fetch by Username"}
+            </button>
+          </div>
+          <div style={adminSearchBar}>
+            <input type="text" placeholder="User ID" value={searchUserId} onChange={e => setSearchUserId(e.target.value)} style={adminIdInput} />
+            <button onClick={handleSearchByUserId} style={adminBtnSecondary}>
+              {searchingByUserId ? "Searching..." : "Fetch by ID"}
+            </button>
+          </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Phone</div>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
+        {/* Fields grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem 1rem", marginBottom: "0.75rem" }}>
+          {[
+            ["Username", userName, setUserName, "text"],
+            ["Title", userTitle, setUserTitle, "text"],
+            ["Phone", phoneNumber, setPhoneNumber, "tel"],
+            ["Display Email", displayEmail, setDisplayEmail, "email"],
+            ["Parrot Coins", parrotCoinBalance, setParrotCoinBalance, "number"],
+            ["Facebook", facebookProfile, setFacebookProfile, "text"],
+            ["Instagram", instagramProfile, setInstagramProfile, "text"],
+            ["Twitter", twitterProfile, setTwitterProfile, "text"],
+            ["TikTok", tiktokProfile, setTiktokProfile, "text"],
+            ["LinkedIn", linkedinProfile, setLinkedinProfile, "text"],
+            ["YouTube", youtubeProfile, setYoutubeProfile, "text"],
+          ].map(([label, value, setter, type]) => (
+            <div key={label}>
+              <div style={adminLabel}>{label}</div>
+              <input type={type} value={value ?? ""} onChange={e => setter(e.target.value)} style={adminInput} />
+            </div>
+          ))}
         </div>
 
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>YouTube</div>
-          <input
-            type="text"
-            value={youtubeProfile}
-            onChange={(e) => setYoutubeProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
+        <div style={adminRow}>
+          <div style={adminLabel}>Bio</div>
+          <textarea value={userBio ?? ""} onChange={e => setUserBio(e.target.value)} style={adminTextarea} />
         </div>
 
-      </div>
-
-
-      {/* Row 2 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Display Email</div>
-          <input
-            type="email"
-            value={displayEmail}
-            onChange={(e) => setDisplayEmail(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Facebook</div>
-          <input
-            type="text"
-            value={facebookProfile}
-            onChange={(e) => setFacebookProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Instagram</div>
-          <input
-            type="text"
-            value={instagramProfile}
-            onChange={(e) => setInstagramProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-      </div>
-
-
-      {/* Row 3 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Twitter</div>
-          <input
-            type="text"
-            value={twitterProfile}
-            onChange={(e) => setTwitterProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>TikTok</div>
-          <input
-            type="text"
-            value={tiktokProfile}
-            onChange={(e) => setTiktokProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>LinkedIn</div>
-          <input
-            type="text"
-            value={linkedinProfile}
-            onChange={(e) => setLinkedinProfile(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-      </div>
-
-
-      {/* Row 4 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Parrot Coins</div>
-          <input
-            type="number"
-            value={parrotCoinBalance}
-            onChange={(e) => setParrotCoinBalance(e.target.value)}
-            style={{ width: "100%", paddingLeft: "1rem", height: "32px", color: "darkblue" }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-          <button
-            onClick={() => setEmailHidden(!emailHidden)}
-            style={{
-              backgroundColor: emailHidden ? "red" : "green",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              height: "32px"
-            }}
-          >
-            Email {emailHidden ? "Hidden" : "Visible"}
+        <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+          <button onClick={() => setEmailHidden(!emailHidden)} style={adminBoolBtn(!emailHidden)}>
+            Email: {emailHidden ? "Hidden" : "Visible"}
           </button>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-          <button
-            onClick={handlePatchUser}
-            disabled={isUpdatingProfile}
-            style={{
-              backgroundColor: parrotBlue,
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              height: "32px"
-            }}
-          >
+          <button onClick={handlePatchUser} disabled={isUpdatingProfile} style={{ ...adminBtnPrimary, opacity: isUpdatingProfile ? 0.5 : 1 }}>
             {isUpdatingProfile ? "Saving..." : "Save"}
           </button>
         </div>
-
       </div>
-
-
-      {/* Bio */}
-      <div style={{ marginTop: "10px", display: "flex" }}>
-        <div style={{ fontSize: "1.2rem", color: "white", backgroundColor: parrotBlue, width: "12rem" }}>Bio</div>
-
-        <textarea
-          value={userBio}
-          placeholder="Bio"
-          onChange={(e) => setUserBio(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "0.5rem",
-            minHeight: "80px",
-            color: "darkblue"
-          }}
-        />
-      </div>
-
-
-      {/* HoneyPot */}
-      <input
-        type="text"
-        value={honeyPotValue}
-        onChange={(e) => setHoneyPotValue(e.target.value)}
-        style={{ display: "none" }}
-        tabIndex="-1"
-        autoComplete="off"
-      />
-
     </div>
   );
-
-
 }
-
