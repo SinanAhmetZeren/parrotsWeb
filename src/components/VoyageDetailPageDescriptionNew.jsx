@@ -41,19 +41,22 @@ export function VoyageDetailPageDescriptionNew({ voyageDescription }) {
       </div>
       <div style={{ position: "relative" }}>
         <div className={"flex"} style={dataRowItem}>
-          <div style={infoBox}>
+          <div style={{
+            ...infoBox,
+            maxHeight: isExpanded ? "none" : "18rem",
+            overflowY: isExpanded ? "visible" : "hidden",
+          }}>
             <span
               ref={descriptionRef}
               style={{
                 ...descriptionTextStyle,
-                WebkitLineClamp: isExpanded ? "unset" : 7,
+                WebkitLineClamp: isExpanded ? "unset" : 9,
                 display: "-webkit-box",
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyageDescription) }}
             >
-              {/* {voyageDescription} */}
             </span>
           </div>
         </div>
@@ -115,10 +118,10 @@ const infoBox = {
 };
 
 const descriptionTextStyle = {
-  whiteSpace: "pre-wrap", // Respects line breaks and wraps text
-  textIndent: "0", // Remove any indentation at the start of the first line
-  // fontWeight: "500",
-  lineHeight: "1.3rem",
+  whiteSpace: "pre-wrap",
+  textIndent: "0",
+  lineHeight: "1.65rem",
+  letterSpacing: "0.015em",
   margin: "auto",
   marginTop: "0.6rem",
 };

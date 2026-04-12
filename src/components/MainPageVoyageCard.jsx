@@ -164,11 +164,12 @@ const cardBriefStyle = {
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
-  WebkitLineClamp: 5,
+  WebkitLineClamp: 4,
   textOverflow: "ellipsis",
   paddingLeft: "1rem",
   paddingRight: "1rem",
-  lineHeight: "1.2rem",
+  lineHeight: "1.65rem",
+  letterSpacing: "0.015em",
   marginTop: "0.5rem",
 };
 

@@ -149,6 +149,8 @@ const cardBriefStyle = {
   overflow: "hidden",
   WebkitLineClamp: 5,
   textOverflow: "ellipsis",
+  lineHeight: "1.65rem",
+  letterSpacing: "0.015em",
 };
 
 const cardDescriptionStyle = {

@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
-import { parrotBlue, parrotDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue, parrotCream } from "../styles/colors";
 import {
   useSendBidMutation,
   useChangeBidMutation,
@@ -459,8 +459,8 @@ const counterGroup = {
 };
 
 const counterButton = {
-  backgroundColor: parrotDarkBlue, // replaced hardcoded color
-  color: "white",
+  backgroundColor: parrotDarkBlue,
+  color: parrotCream,
   width: "2.5rem",
   height: "2.5rem",
   fontSize: "1.5rem",

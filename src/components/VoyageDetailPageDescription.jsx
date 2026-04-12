@@ -6,13 +6,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
-import scrollpaper from "../assets/images/scrollpaper.png";
 
 export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDescriptionLong, setIsDescriptionLong] = React.useState(false);
   const descriptionRef = React.useRef(null);
-  const visibleLines = 14; // Number of lines to show when not expanded
+  const visibleLines = 9;
   React.useEffect(() => {
     const el = descriptionRef.current;
     if (el) {
@@ -44,7 +43,7 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
         <div className={"flex"} style={dataRowItem}>
           <div style={{
             ...infoBox,
-            maxHeight: isExpanded ? "38vh" : "auto", // adjust 200px as you like
+            maxHeight: isExpanded ? "38vh" : "18rem",
             overflowY: isExpanded ? "auto" : "hidden",
           }
           }
@@ -63,10 +62,9 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
             />
           </div>
         </div>
-        {isDescriptionLong && !isExpanded && (
+        {isDescriptionLong && (
           <span onClick={toggleExpand} style={readMore}>
-            {/* {isExpanded ? "Read Less" : "Read More"} */}
-            Read More
+            {isExpanded ? "Read Less" : "Read More"}
           </span>
         )}
       </div>
@@ -104,10 +102,8 @@ const cardContainerStyle = {
   color: parrotTextDarkBlue,
   padding: "1rem",
   fontSize: "1.15rem",
-  backgroundImage: `url(${scrollpaper})`,
-  backgroundSize: "100% 100%",   // Stretch to width and height
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
+  backgroundColor: "#fff",
+  border: "1px solid #ddd",
 
 };
 
@@ -123,7 +119,7 @@ const userVehicleInfoRow = {
   margin: "0.2rem",
   justifyContent: "center",
   marginLeft: "1.3rem",
-  color: "darkred",
+  color: parrotTextDarkBlue,
   fontSize: "1.2rem",
   fontWeight: "600",
 
@@ -142,13 +138,13 @@ const infoBox = {
 };
 
 const descriptionTextStyle = {
-  whiteSpace: "pre-wrap", // Respects line breaks and wraps text
-  textIndent: "0", // Remove any indentation at the start of the first line
-  // fontWeight: "500",
-  lineHeight: "1.3rem",
+  whiteSpace: "pre-wrap",
+  textIndent: "0",
+  lineHeight: "1.65rem",
+  letterSpacing: "0.015em",
   margin: "auto",
   marginTop: "0.6rem",
-  color: "darkred"
+  color: parrotTextDarkBlue,
 };
 
 const vehicles = [

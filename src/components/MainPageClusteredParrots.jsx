@@ -107,7 +107,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                     style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
                     onClick={() => handleGoToVoyage(voyage.id)}
                   >
-                    click to see details
+                    see details
                   </div>
                 </div>
               </div>
@@ -197,14 +197,14 @@ const cardBriefStyle = {
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
-  WebkitLineClamp: 5,
+  WebkitLineClamp: 4,
   textOverflow: "ellipsis",
+  lineHeight: "1.65rem",
+  letterSpacing: "0.015em",
 };
 
 const cardDescriptionStyle = {
   fontSize: "1rem",
-  color: "blue",
-  fontWeight: "600",
   marginTop: "0.5rem",
 };
 

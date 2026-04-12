@@ -105,6 +105,7 @@ const messagesContainerStyle = {
 
 const containerStyle = {
   fontSize: "1rem",
+  fontFamily: "Nunito, sans-serif",
   margin: "10px",
   padding: "10px",
   display: "grid",
