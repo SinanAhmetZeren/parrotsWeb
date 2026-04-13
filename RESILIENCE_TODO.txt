@@ -1,0 +1,93 @@
+PARROTS WEB — RESILIENCE & ERROR HANDLING TODO
+================================================
+Generated: 2026-04-11
+Reference: parrotsapp (mobile) for parity
+
+
+1. AUTHENTICATION & TOKEN
+--------------------------
+[no] isAdmin lost on page refresh
+    - isAdmin is never persisted (not in localStorage, not in JWT decode on load)
+    - Admin top bar link disappears after F5
+    - Fix: read role from JWT claims on app init
+
+[no] isAdmin lost after refresh token call
+    - apiSlice.js does not dispatch any Redux action after a successful token refresh
+    - Fix: after refresh, update Redux state with isAdmin from response
+
+[ ] No handling for refresh token expiry (7 days)
+    - If refresh token is expired, user gets redirected to /login but with no message
+    - Fix: show "Your session has expired, please log in again" toast before redirect
+
+[no] Google login does not set isAdmin
+    - GoogleLoginButton likely calls updateAsLoggedIn but needs to verify isAdmin is included
+
+
+2. API / NETWORK
+-----------------
+[ ] No global offline detection
+    - No listener for window online/offline events
+    - If network drops mid-session, requests silently fail with no user feedback
+    - Fix: listen to navigator.onLine / offline event, show a banner
+
+[ ] apiSlice only handles 401 — all other error codes unhandled globally
+    - 500, 503, 404 etc. propagate to individual components inconsistently
+    - Some pages show SomethingWentWrong, others show nothing
+    - Fix: handle 500/503 in baseQueryWithReauth, show a toast or global error state
+
+[ ] No request timeout handling
+    - If server is slow/unresponsive, requests hang indefinitely
+    - Fix: add timeout to fetchBaseQuery
+
+
+3. SIGNALR
+-----------
+[ ] onclose handler does not attempt re-init after permanent disconnect
+    - withAutomaticReconnect handles transient drops but if connection closes permanently
+      (server restart, long idle), onclose fires and nothing re-initiates
+    - Fix: in onclose, schedule a re-init attempt after delay
+
+[ ] No user-facing indicator of SignalR connection state
+    - User has no idea if chat is connected or disconnected
+    - Messages can appear to send (no error shown) but silently fail if hub not ready
+    - Fix: show a small "Connecting..." / "Reconnecting..." banner in ConnectPage
+
+[ ] invokeHub silently warns to console when hub not ready
+    - console.warn only — user gets no feedback that their message was not sent
+    - ConnectPage shows toast.error("Not connected") — but only in some paths
+    - Fix: ensure all invokeHub call sites handle the not-ready case with user feedback
+
+[ ] Tab visibility reconnect does not handle the case where userId is no longer valid
+    - On focus, reconnect is attempted but connectionUserId may be stale if user logged out in another tab
+    - Fix: check if user is still logged in before reconnecting on visibility change
+
+[ ] No cleanup on logout
+    - stopHubConnection should be called on updateAsLoggedOut
+    - Currently unclear if this is wired up
+
+
+4. MESSAGING / CONNECT PAGE
+-----------------------------
+[ ] Failed message send has no retry mechanism
+    - If send fails, toast is shown but message is lost — user must retype
+    - Fix: keep failed message in input or offer a retry button. ------>>>>>>>>>>> implement on the app too.
+
+[ ] No pagination or load-more for message history
+    - Long conversations load all at once
+    - Fix: paginate or virtualise message list
+
+
+5. GENERAL UI
+--------------
+[ ] SomethingWentWrong component used inconsistently
+    - Some pages use it on health check failure, others don't check health at all
+    - Fix: standardise — all main pages should handle isHealthCheckError
+
+[ ] No loading skeleton / spinner consistency
+    - Some pages show spinners, others show blank while loading
+    - Fix: standardise loading states across pages
+
+[ ] No error boundary around main routes
+    - A JS runtime error in any page crashes the whole app
+    - ErrorBoundary component exists but unclear if it wraps routes in App.js
+    - Fix: wrap each route in ErrorBoundary

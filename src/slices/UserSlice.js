@@ -427,15 +427,21 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
     }),
     purchaseCoins: builder.mutation({
-      query: ({ userId, coins, usdAmount, paymentProviderId }) => ({
+      query: ({ userId, coins, eurAmount, paymentProviderId }) => ({
         url: `/api/User/PurchaseCoins`,
         method: "POST",
         body: {
           userId,
           coins,
-          usdAmount,
+          eurAmount,
           paymentProviderId
         },
+      }),
+    }),
+    claimFreeCoins: builder.mutation({
+      query: () => ({
+        url: `/api/User/ClaimFreeCoins`,
+        method: "POST",
       }),
     }),
     sendParrotCoins: builder.mutation({
@@ -514,6 +520,7 @@ export const {
   usePatchUserMutation,
   usePatchUserAdminMutation,
   usePurchaseCoinsMutation,
+  useClaimFreeCoinsMutation,
   useSendParrotCoinsMutation,
   useGetParrotCoinBalanceQuery,
   useLazyGetParrotCoinBalanceQuery

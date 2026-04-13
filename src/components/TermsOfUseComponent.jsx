@@ -229,6 +229,8 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
                                     { num: "14.", text: "Dispute Resolution", id: "dispute" },
                                     { num: "15.", text: "Governing Law", id: "law" },
                                     { num: "16.", text: "Contact", id: "contact" },
+                                    { num: "17.", text: "Service Termination and Discontinuation", id: "termination" },
+                                    { num: "18.", text: "Refund Policy", id: "refund" },
                                 ].map((item) => (
                                     <div
                                         key={item.id}
@@ -685,6 +687,50 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
                             </div>
 
 
+
+                            <div style={transparentWrapper}>
+                                <div id="termination" style={styles.sectionTitle}>17. Service Termination and Discontinuation</div>
+                                <div style={styles.paragraph}>
+                                    Parrots reserves the right to modify, suspend, or permanently discontinue the Service, or any part thereof, at any time and for any reason, with or without prior notice. We shall not be liable to you or any third party for any such modification, suspension, or discontinuation.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    In the event of permanent discontinuation of the Service, we will make reasonable efforts to provide advance notice. Any unused paid credits (such as ParrotCoins) purchased prior to the discontinuation date will be eligible for a refund, subject to the refund process described in our Refund Policy. We shall have no further obligation beyond such refund.
+                                </div>
+                                <div style={styles.paragraph}>
+                                    Upon termination or discontinuation, we will retain your data for a period of 30 days, during which you may request a copy of your personal data. After this period, your data may be permanently deleted in accordance with our Privacy Policy.
+                                </div>
+                            </div>
+
+                            <div style={transparentWrapper}>
+                                <div id="refund" style={styles.sectionTitle}>18. Refund Policy</div>
+                                <div style={styles.sectionTitle2}>ParrotCoins and Paid Credits</div>
+                                <div style={styles.paragraph}>
+                                    ParrotCoins are virtual credits within the Parrot Voyages application used to access premium features, such as displaying voyages on the public map.
+                                </div>
+                                <div style={styles.sectionTitle2}>Current Status of ParrotCoins</div>
+                                <div style={styles.paragraph}>
+                                    ParrotCoins are currently provided free of charge until further notice. No purchase is required at this time. Should operational or infrastructure costs require a transition to a paid model, users will be notified in advance. The refund terms below apply once ParrotCoins become a paid feature.
+                                </div>
+                                <div style={styles.sectionTitle2}>General Policy</div>
+                                <div style={styles.paragraph}>
+                                    Once ParrotCoins become a paid feature, all purchases will be denominated in Euro (EUR) and made through the applicable app store platform (Apple App Store or Google Play Store). All purchases of ParrotCoins will be final and non-refundable, except in the following circumstances:
+                                </div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• A technical error caused by Parrots resulted in credits not being applied to your account after a successful payment.</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• The Service is permanently discontinued, in which case unused ParrotCoins will be refunded as described in the Service Termination clause above.</div>
+                                <div style={{ ...styles.paragraph, textIndent: "2rem" }}>• Applicable consumer protection law in your jurisdiction grants you a statutory right to a refund that cannot be waived by this policy.</div>
+                                <div style={styles.sectionTitle2}>Platform Purchases</div>
+                                <div style={styles.paragraph}>
+                                    If you purchase ParrotCoins through the Apple App Store or Google Play Store, refund requests must be submitted directly to Apple or Google in accordance with their respective refund policies. Parrots has no control over and cannot process refunds for purchases made through these platforms.
+                                </div>
+                                <div style={styles.sectionTitle2}>How to Request a Refund</div>
+                                <div style={styles.paragraph}>
+                                    To request a refund for an eligible purchase, contact us at parrotsapp@gmail.com within 14 days of the purchase date. Please include your registered email address, the date of purchase, and a description of the issue. We will respond within 5 business days.
+                                </div>
+                                <div style={styles.sectionTitle2}>Unused Credits on Service Discontinuation</div>
+                                <div style={styles.paragraph}>
+                                    In the event that Parrots permanently discontinues the Service, users with a remaining ParrotCoin balance will be contacted at the email address associated with their account with instructions for claiming a refund. Refund claims must be submitted within 60 days of the discontinuation notice.
+                                </div>
+                            </div>
 
                         {onAccept && (
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "1.5rem 0 0.5rem", gap: "0.75rem" }}>

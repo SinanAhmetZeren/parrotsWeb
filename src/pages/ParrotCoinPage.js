@@ -10,7 +10,8 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import parrotcoin from "../assets/images/parrotcoin.png";
 import {
   usePurchaseCoinsMutation, useLazyGetParrotCoinBalanceQuery,
-  useLazyGetUsersByUsernameQuery, useSendParrotCoinsMutation
+  useLazyGetUsersByUsernameQuery, useSendParrotCoinsMutation,
+  useClaimFreeCoinsMutation
 } from "../slices/UserSlice";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
 import { IoSearch } from "react-icons/io5";
@@ -21,6 +22,7 @@ export function ParrotCoinPage() {
   const userId = local_userId !== null ? local_userId : state_userId;
   const navigate = useNavigate();
   const [purchaseCoins] = usePurchaseCoinsMutation();
+  const [claimFreeCoins] = useClaimFreeCoinsMutation();
   const [sendParrotCoins] = useSendParrotCoinsMutation();
   const [getParrotCoinBalance] = useLazyGetParrotCoinBalanceQuery();
   const [getUsersByUsername] = useLazyGetUsersByUsernameQuery();
@@ -30,6 +32,7 @@ export function ParrotCoinPage() {
   const [selectedAmounts, setSelectedAmounts] = useState([]); // basket array
   const [totalPayment, setTotalPayment] = useState(0); // basket array
   const [newBalance, setNewBalance] = useState(0);
+  const [isProcessingFree, setIsProcessingFree] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isProcessingSend, setIsProcessingSend] = useState(false)
   const [hovered, setHovered] = useState(null);
@@ -49,13 +52,13 @@ export function ParrotCoinPage() {
   // Calculate this variable every time the component renders
   const displayValue = amount === 0 ? "" : amount.toLocaleString();
   const purchaseOptions = [
-    { coins: 100, priceUSD: 3.00 },     // 1000 coins = $0.10
-    { coins: 1000, priceUSD: 30.0 },       // 10k coins = $1
-    { coins: 10000, priceUSD: 300.0 },     // 100k coins = $10
+    { coins: 100, priceEUR: 3.00 },
+    { coins: 1000, priceEUR: 30.0 },
+    { coins: 10000, priceEUR: 300.0 },
   ];
   const handleAddToBasket = (amount) => {
     setSelectedAmounts((prev) => [...prev, amount.coins]);
-    setTotalPayment((prev) => Math.round((prev + amount.priceUSD) * 100) / 100);
+    setTotalPayment((prev) => Math.round((prev + amount.priceEUR) * 100) / 100);
     setNewBalance((prev) => prev + amount.coins);
   };
   const handleClearBasket = () => {
@@ -63,6 +66,23 @@ export function ParrotCoinPage() {
     setTotalPayment(0);
     setNewBalance(currentBalance); // reset new balance to current
   };
+  const handleClaimFreeCoins = async () => {
+    if (isProcessingFree) return;
+    setIsProcessingFree(true);
+    try {
+      await claimFreeCoins().unwrap();
+      const response = await getParrotCoinBalance(userId).unwrap();
+      setCurrentBalance(response.balance);
+      setPurchases(response.purchases);
+      setTransactions(response.transactions);
+      setNewBalance(response.balance);
+    } catch (err) {
+      console.error("Error claiming free coins:", err);
+    } finally {
+      setIsProcessingFree(false);
+    }
+  };
+
   const handleConfirmPurchase = async () => {
     if (selectedAmounts.length === 0 || isProcessing) return;
     setIsProcessing(true);
@@ -72,7 +92,7 @@ export function ParrotCoinPage() {
       await purchaseCoins({
         userId: userId,
         coins: totalCoins,
-        usdAmount: totalPayment,
+        eurAmount: totalPayment,
         paymentProviderId: "parrotsVirtual"
       }).unwrap();
       // 2. Refetch the latest balance & purchases from server
@@ -89,7 +109,7 @@ export function ParrotCoinPage() {
 
       console.log(
         "Purchased coins:", totalCoins,
-        "for $", totalPayment.toFixed(2)
+        "for €", totalPayment.toFixed(2)
       );
 
     } catch (err) {
@@ -232,6 +252,41 @@ export function ParrotCoinPage() {
                 </div>
               </div>
             </div>
+            {/* FREE COINS BANNER — shown only when balance < 500 */}
+            {currentBalance < 500 && (
+              <div style={freeCoinsBanner}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "white" }}>
+                    🎁 Claim 100 Free ParrotCoins
+                  </span>
+                  <span style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.7)" }}>
+                    Your balance is below 500 — get a free top-up to get started.
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.2rem" }}>
+                    <span style={{ fontSize: "1rem", color: "#ff6b6b", textDecoration: "line-through", fontWeight: 700 }}>
+                      €3.00
+                    </span>
+                    <span style={{ fontSize: "1.1rem", color: parrotGreen, fontWeight: 800 }}>
+                      FREE  (€0.00)
+                    </span>
+                  </div>
+                </div>
+                <button
+                  style={isProcessingFree ? freeClaimButtonDisabled : freeClaimButton}
+                  disabled={isProcessingFree}
+                  onClick={handleClaimFreeCoins}
+                >
+                  {isProcessingFree ? (
+                    <div style={spinnerContainer}>
+                      <div className="spinner" style={spinnerInner}></div>
+                    </div>
+                  ) : (
+                    "Claim Free Coins"
+                  )}
+                </button>
+              </div>
+            )}
+
             <div style={wrapperWrapper}>
               <div style={wrapper}>
                 {/* 1ST ROW: Get Parrot Coins & AMOUNT BUTTONS */}
@@ -246,7 +301,7 @@ export function ParrotCoinPage() {
                     onMouseLeave={() => setHovered(null)}
                     onClick={() => handleAddToBasket(amt)}
                   >
-                    <span style={textStylePrice}>${amt.priceUSD.toFixed(2)}  </span>
+                    <span style={textStylePrice}>€{amt.priceEUR.toFixed(2)}  </span>
                     <span style={textStyle}>{amt.coins.toLocaleString()}</span>
                     <div style={coinContainer}>
                       <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
@@ -267,7 +322,7 @@ export function ParrotCoinPage() {
                 <div style={boxBasketRight}>
                   <span style={{ ...textStylePrice, color: "red", textDecoration: 'line-through' }}
                     title="it's discounted at the moment"
-                  >${totalPayment}  </span>
+                  >€{totalPayment}  </span>
                   {(
                     <>
                       <span style={textStyle}>
@@ -512,7 +567,7 @@ export function ParrotCoinPage() {
                 {/* Header Row */}
                 <div style={historyHeader}>
                   <span style={{ ...historyCell, justifyContent: "flex-end" }}>Amount</span>
-                  <span style={historyCell}>USD Paid</span>
+                  <span style={historyCell}>EUR Paid</span>
                   <span style={historyCell}>Date</span>
                   <span style={historyCell}>Status</span>
                 </div>
@@ -531,7 +586,7 @@ export function ParrotCoinPage() {
                         </span>
 
                         <span style={{ ...historyCell, color: "#ffcc00" }}>
-                          ${p.usdAmount.toFixed(2)}
+                          {p.eurAmount === 0 ? <span style={{ color: parrotGreen }}>FREE</span> : `€${p.eurAmount.toFixed(2)}`}
                         </span>
                         <span style={historyCell}>
                           {new Date(p.createdAt).toLocaleDateString()}
@@ -945,6 +1000,39 @@ const historyCell = {
   fontWeight: "600"
 };
 
+
+const freeCoinsBanner = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  backgroundColor: "rgba(0, 180, 120, 0.12)",
+  border: "1.5px solid rgba(0, 200, 140, 0.5)",
+  borderRadius: "1rem",
+  padding: "1rem 1.5rem",
+  marginBottom: "1rem",
+  width: "100%",
+  boxSizing: "border-box",
+};
+
+const freeClaimButton = {
+  padding: "0.6rem 2rem",
+  fontSize: "1rem",
+  fontWeight: 800,
+  borderRadius: "8px",
+  border: "none",
+  cursor: "pointer",
+  backgroundColor: parrotGreen,
+  color: "#0f2a47",
+  whiteSpace: "nowrap",
+  flexShrink: 0,
+};
+
+const freeClaimButtonDisabled = {
+  ...freeClaimButton,
+  backgroundColor: "rgba(42, 200, 152, 0.3)",
+  color: "rgba(255,255,255,0.3)",
+  cursor: "not-allowed",
+};
 
 const magnifierContainerStyle = {
   display: "flex",

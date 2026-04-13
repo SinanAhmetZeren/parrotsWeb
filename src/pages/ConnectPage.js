@@ -56,11 +56,13 @@ function ConnectPage() {
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [hubState, setHubState] = useState(getHubState());
+  const [hubState, setHubState] = useState("connected");
 
   useEffect(() => {
+    // Delay before showing disconnect state to avoid false banner on initial load
+    const delay = setTimeout(() => setHubState(getHubState()), 4000);
     const interval = setInterval(() => setHubState(getHubState()), 2000);
-    return () => clearInterval(interval);
+    return () => { clearTimeout(delay); clearInterval(interval); };
   }, []);
   const dispatch = useDispatch();
   const {
