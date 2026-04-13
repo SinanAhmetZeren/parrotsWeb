@@ -8,7 +8,7 @@ export function BlueHashtagText({ originalText }) {
   const formattedText = words
     .map((word) => {
       const isHashtag = word.startsWith("#");
-      return `<span style="color: ${isHashtag ? "blue" : parrotTextDarkBlue}; font-size: ${isHashtag ? "1.2rem" : "1.1rem"}; font-weight:${isHashtag ? "600" : ""} ">${word}</span>`;
+      return `<span style="color: ${isHashtag ? "blue" : parrotTextDarkBlue}; font-size: ${isHashtag ? "1.2rem" : "1.1rem"}; font-weight: 600; font-family: Nunito, sans-serif; line-height: 1.65rem; letter-spacing: 0.015em;">${word}</span>`;
     })
     .join(" ");
 

@@ -29,7 +29,7 @@ export function MainPageMapVoyageCard({ cardData }) {
               }}
             >
               <VehicleIcon vehicleType={cardData.vehicleType} />
-              {cardData.vehicle.name}
+              {cardData.vehicle?.name}
             </span>
             <span style={voyageDetailSpan}>
               👨‍👨‍👦‍👦
@@ -142,7 +142,9 @@ const cardContentStyle = {
 };
 
 const cardBriefStyle = {
-  fontSize: "1rem",
+  fontSize: "1.1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: "600",
   color: "black",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",

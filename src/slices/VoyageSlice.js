@@ -381,6 +381,24 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
+    addPlace: builder.mutation({
+      query: ({ name, brief, description, latitude, longitude }) => ({
+        url: `/api/Voyage/AddPlace`,
+        method: "POST",
+        body: { name, brief, description, latitude, longitude },
+      }),
+    }),
+    updateVoyageProfileImage: builder.mutation({
+      query: ({ voyageId, imageFile }) => {
+        const formData = new FormData();
+        formData.append("imageFile", imageFile);
+        return {
+          url: `/api/Voyage/${voyageId}/updateProfileImage`,
+          method: "POST",
+          body: formData,
+        };
+      },
+    }),
   }),
 
   overrideExisting: true,
@@ -416,4 +434,6 @@ export const {
   useGetFavoriteVoyagesByUserIdQuery,
   useAddVoyageToFavoritesMutation,
   useDeleteVoyageFromFavoritesMutation,
+  useAddPlaceMutation,
+  useUpdateVoyageProfileImageMutation,
 } = extendedApiSlice;

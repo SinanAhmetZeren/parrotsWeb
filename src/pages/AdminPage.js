@@ -22,6 +22,8 @@ import { WeeklyUsersMetrics } from "../components/Metrics/UsersMetrics";
 import { WeeklyBidsMetrics } from "../components/Metrics/BidsMetrics";
 import { WeeklyMessagesMetrics } from "../components/Metrics/MessagesMetrics";
 import { LogViewer } from "../components/Editors/LogViewer";
+import { PlaceEditor } from "../components/Editors/PlaceEditor";
+import { PlaceEditorEdit } from "../components/Editors/PlaceEditorEdit";
 
 
 function AdminPage() {
@@ -99,6 +101,8 @@ function AdminPage() {
                 {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
                 {adminView === "messaging" && <WeeklyMessagesMetrics />}
                 {adminView === "logViewer" && <LogViewer />}
+                {adminView === "placeEditor" && <PlaceEditor />}
+                {adminView === "placeEditorEdit" && <PlaceEditorEdit />}
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
+import parrotPlace from "../assets/images/goldparrotmarker.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
@@ -60,7 +61,7 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         const { latitude, longitude } = voyage.waypoints[0];
 
         const icon = L.icon({
-          iconUrl: markerImages[index % 6],
+          iconUrl: voyage.isPlace ? parrotPlace : markerImages[index % 6],
           iconSize: [50, 60],
           iconAnchor: [25, 60],
           popupAnchor: [0, -62],
@@ -83,32 +84,55 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
                 </div>
                 <div style={cardContentStyle}>
                   <div style={cardTitleStyle}>{voyage.name}</div>
-                  <div style={cardDescriptionStyle}>
-                    <div style={{ marginTop: "0.2rem", marginBottom: "0.2rem" }}>
-                      <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
-                        <VehicleIcon vehicleType={voyage.vehicleType} />
-                        {voyage.vehicle?.name}
-                      </span>
-                      <span style={voyageDetailSpan}>
-                        👨‍👨‍👦‍👦 {voyage.vacancy}
-                      </span>
-                    </div>
-                    <span style={voyageDetailSpan}>
-                      📅 {formatCustomDate(voyage.startDate)} to {formatCustomDate(voyage.endDate)}
-                    </span>
-                  </div>
-                  <div
-                    style={cardBriefStyle}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(voyage.brief),
-                    }}
-                  />
-                  <div
-                    style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
-                    onClick={() => handleGoToVoyage(voyage.id)}
-                  >
-                    see details
-                  </div>
+                  {voyage.isPlace ? (
+                    <>
+                      <div
+                        style={{ ...cardBriefStyle, WebkitLineClamp: 6, marginTop: "0.5rem" }}
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(voyage.description),
+                        }}
+                      />
+                      {voyage.brief && (
+                        <a
+                          href={voyage.brief.startsWith("http") ? voyage.brief : `https://${voyage.brief}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
+                        >
+                          visit website
+                        </a>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div style={cardDescriptionStyle}>
+                        <div style={{ marginTop: "0.2rem", marginBottom: "0.2rem" }}>
+                          <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
+                            <VehicleIcon vehicleType={voyage.vehicleType} />
+                            {voyage.vehicle?.name}
+                          </span>
+                          <span style={voyageDetailSpan}>
+                            👨‍👨‍👦‍👦 {voyage.vacancy}
+                          </span>
+                        </div>
+                        <span style={voyageDetailSpan}>
+                          📅 {formatCustomDate(voyage.startDate)} to {formatCustomDate(voyage.endDate)}
+                        </span>
+                      </div>
+                      <div
+                        style={cardBriefStyle}
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(voyage.brief),
+                        }}
+                      />
+                      <div
+                        style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
+                        onClick={() => handleGoToVoyage(voyage.id)}
+                      >
+                        see details
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </Popup>
@@ -192,7 +216,9 @@ const cardContentStyle = {
 };
 
 const cardBriefStyle = {
-  fontSize: "1rem",
+  fontSize: "1.1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: "600",
   color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",

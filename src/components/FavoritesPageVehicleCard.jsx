@@ -169,7 +169,9 @@ const cardContentStyle = {
 };
 
 const cardBriefStyle = {
-  fontSize: "1rem",
+  fontSize: "1.1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: "600",
   color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",

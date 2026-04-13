@@ -32,7 +32,7 @@ export function MainPageVoyageCard({ cardData, panToLocation }) {
           >
             <span style={{ ...voyageDetailSpan, marginRight: "0.5rem", }}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
-              {" "}{cardData.vehicle.name}
+              {" "}{cardData.vehicle?.name}
             </span>
             <span style={voyageDetailSpan}>
               👨‍👨‍👦‍👦
@@ -159,7 +159,9 @@ const cardTitleStyle = {
 };
 
 const cardBriefStyle = {
-  fontSize: "1rem",
+  fontSize: "1.1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: "600",
   color: parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",

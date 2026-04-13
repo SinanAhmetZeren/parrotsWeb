@@ -448,7 +448,8 @@ export function EditProfilePage() {
                       }}
                       style={{
                         color: parrotTextDarkBlue,
-                        fontWeight: "500",
+                        fontFamily: "Nunito, sans-serif",
+                        fontWeight: "600",
                         fontSize: "1.2rem",
                         borderRadius: "1.5rem",
                         padding: "0rem",
@@ -462,10 +463,15 @@ export function EditProfilePage() {
                               border: none !important; 
                             }
                             .ql-editor {
-                              border: none !important; 
+                              border: none !important;
                               padding: 0.5rem !important;
                               padding-left: 1rem !important;
                               padding-top: 1rem !important;
+                              font-family: "Nunito", sans-serif !important;
+                              font-weight: 600;
+                              font-size: 1.2rem;
+                              line-height: 1.65rem;
+                              letter-spacing: 0.015em;
                             }
                             .custom-quill .ql-editor.ql-blank::before {
                               // color: red; 

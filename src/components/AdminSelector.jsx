@@ -5,10 +5,11 @@ const sections = [
     {
         label: "Editors",
         items: [
+            { key: "userEditor", label: "Users" },
+            { key: "vehicleEditor", label: "Vehicles" },
             { key: "voyageEditor", label: "Voyages" },
             { key: "bidEditor", label: "Bids" },
-            { key: "vehicleEditor", label: "Vehicles" },
-            { key: "userEditor", label: "Users" },
+            { key: "placeEditorEdit", label: "Places" },
             { key: "termsEditor", label: "Terms of Use" },
             { key: "logViewer", label: "Logs" },
         ]
@@ -16,13 +17,19 @@ const sections = [
     {
         label: "Metrics",
         items: [
-            { key: "purchases", label: "Purchases" },
-            { key: "transactions", label: "Transactions" },
-            { key: "voyagesCreated", label: "Voyages" },
-            { key: "vehiclesRegistered", label: "Vehicles" },
             { key: "usersCreated", label: "Users" },
+            { key: "vehiclesRegistered", label: "Vehicles" },
+            { key: "voyagesCreated", label: "Voyages" },
             { key: "bidsCreated", label: "Bids" },
             { key: "messaging", label: "Messaging" },
+            { key: "purchases", label: "Purchases" },
+            { key: "transactions", label: "Transactions" },
+        ]
+    },
+    {
+        label: "Register",
+        items: [
+            { key: "placeEditor", label: "Places" },
         ]
     }
 ];

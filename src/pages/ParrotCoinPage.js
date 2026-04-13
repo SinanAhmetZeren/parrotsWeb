@@ -14,6 +14,7 @@ import {
   useClaimFreeCoinsMutation
 } from "../slices/UserSlice";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
+import { toast } from "react-toastify";
 import { IoSearch } from "react-icons/io5";
 
 export function ParrotCoinPage() {
@@ -32,6 +33,7 @@ export function ParrotCoinPage() {
   const [selectedAmounts, setSelectedAmounts] = useState([]); // basket array
   const [totalPayment, setTotalPayment] = useState(0); // basket array
   const [newBalance, setNewBalance] = useState(0);
+  const [balanceLoaded, setBalanceLoaded] = useState(false)
   const [isProcessingFree, setIsProcessingFree] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isProcessingSend, setIsProcessingSend] = useState(false)
@@ -68,6 +70,10 @@ export function ParrotCoinPage() {
   };
   const handleClaimFreeCoins = async () => {
     if (isProcessingFree) return;
+    if (currentBalance >= 500) {
+      toast.info("Your balance is above 500 — free coins are only available when your balance is below 500.");
+      return;
+    }
     setIsProcessingFree(true);
     try {
       await claimFreeCoins().unwrap();
@@ -186,6 +192,7 @@ export function ParrotCoinPage() {
           setPurchases(response.purchases);
           setTransactions(response.transactions);
           setNewBalance(response.balance);
+          setBalanceLoaded(true);
           console.log("purchases: ", response.purchases);
         } catch (err) {
           console.error("Failed to get balance:", err);
@@ -252,42 +259,38 @@ export function ParrotCoinPage() {
                 </div>
               </div>
             </div>
-            {/* FREE COINS BANNER — shown only when balance < 500 */}
-            {currentBalance < 500 && (
-              <div style={freeCoinsBanner}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "white" }}>
-                    🎁 Claim 100 Free ParrotCoins
-                  </span>
-                  <span style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.7)" }}>
-                    Your balance is below 500 — get a free top-up to get started.
-                  </span>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.2rem" }}>
-                    <span style={{ fontSize: "1rem", color: "#ff6b6b", textDecoration: "line-through", fontWeight: 700 }}>
-                      €3.00
-                    </span>
-                    <span style={{ fontSize: "1.1rem", color: parrotGreen, fontWeight: 800 }}>
-                      FREE  (€0.00)
-                    </span>
-                  </div>
-                </div>
-                <button
-                  style={isProcessingFree ? freeClaimButtonDisabled : freeClaimButton}
-                  disabled={isProcessingFree}
-                  onClick={handleClaimFreeCoins}
-                >
-                  {isProcessingFree ? (
-                    <div style={spinnerContainer}>
-                      <div className="spinner" style={spinnerInner}></div>
-                    </div>
-                  ) : (
-                    "Claim Free Coins"
-                  )}
-                </button>
-              </div>
-            )}
-
+            {/* FREE COINS BANNER */}
             <div style={wrapperWrapper}>
+              <div style={{ ...wrapper, borderRadius: "1rem", backgroundColor: "rgba(0, 180, 120, 0.08)", paddingTop: "0.8rem", paddingBottom: "0.8rem" }}>
+                <div style={{ ...boxSend, gridColumn: "1 / 4", flexDirection: "row", alignItems: "center", gap: "1rem" }}>
+                  <span style={textStyle}>🎁 Claim 100 Free ParrotCoins</span>
+                  <span style={{ fontSize: "1rem", color: "#ff6b6b", textDecoration: "line-through", fontWeight: 700 }}>€3.00</span>
+                  <span style={{ fontSize: "1rem", color: parrotGreen, fontWeight: 800 }}>FREE (€0.00)</span>
+                </div>
+                <div style={{ ...boxConfirm, gridColumn: "4" }}>
+                  <button
+                    style={isProcessingFree ? freeClaimButtonDisabled : freeClaimButton}
+                    disabled={isProcessingFree}
+                    onClick={handleClaimFreeCoins}
+                  >
+                    <div style={{ width: "100%", textAlign: "center", position: "relative" }}>
+                      {isProcessingFree ? (
+                        <>
+                          <div style={spinnerContainer}>
+                            <div className="spinner" style={spinnerInner}></div>
+                          </div>
+                          <span style={{ opacity: 0 }}>Claim Free Coins</span>
+                        </>
+                      ) : (
+                        "Claim Free Coins"
+                      )}
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ ...wrapperWrapper, display: "none" }}>
               <div style={wrapper}>
                 {/* 1ST ROW: Get Parrot Coins & AMOUNT BUTTONS */}
                 <div style={box3}>
@@ -311,7 +314,7 @@ export function ParrotCoinPage() {
                 ))}
               </div>
             </div>
-            <div style={wrapperWrapper2}>
+            <div style={{ ...wrapperWrapper2, display: "none" }}>
               <div style={wrapper2}>
                 {/* BASKET Row */}
                 <div style={boxBasketLeft}>
@@ -336,7 +339,7 @@ export function ParrotCoinPage() {
                 </div>
               </div>
             </div>
-            <div style={wrapperWrapper}>
+            <div style={{ ...wrapperWrapper, display: "none" }}>
               <div style={wrapper}>
 
                 {/* New Balance AFTER PURCHASE AND CONFIRM BUTTON */}
@@ -1001,18 +1004,6 @@ const historyCell = {
 };
 
 
-const freeCoinsBanner = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  backgroundColor: "rgba(0, 180, 120, 0.12)",
-  border: "1.5px solid rgba(0, 200, 140, 0.5)",
-  borderRadius: "1rem",
-  padding: "1rem 1.5rem",
-  marginBottom: "1rem",
-  width: "100%",
-  boxSizing: "border-box",
-};
 
 const freeClaimButton = {
   padding: "0.6rem 2rem",
