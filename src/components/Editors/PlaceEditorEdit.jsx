@@ -36,6 +36,9 @@ export function PlaceEditorEdit() {
       if (!data) {
         toast.error("Place not found.");
         setPlace(null);
+      } else if (!data.isPlace) {
+        toast.error("This ID does not belong to a place.");
+        setPlace(null);
       } else {
         setPlace(data);
         setImageFile(null);
