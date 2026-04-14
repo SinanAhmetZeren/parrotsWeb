@@ -89,7 +89,7 @@ export function MainPageCardSwiper({
             modules={[EffectCoverflow, Navigation]}
             style={{ width: "33rem" }}
           >
-            {voyagesData.map((data, index) => (
+            {voyagesData.filter(data => !data.isPlace).map((data, index) => (
               <SwiperSlide key={index} style={slideContainerStyle}>
                 <MainPageVoyageCard
                   cardData={data}

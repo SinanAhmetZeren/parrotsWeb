@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from "react";
-import { Marker, Popup } from "react-leaflet";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { Marker, Popup, Tooltip } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import * as d3 from "d3";
@@ -9,7 +9,8 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import parrotPlace from "../assets/images/goldparrotmarker.png";
+import parrotPlace from "../assets/images/goldenegg.png";
+import parrotPlaceOpen from "../assets/images/crackedgoldenegg.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
@@ -46,6 +47,110 @@ const createClusterCustomIcon = (cluster) => {
   });
 };
 
+function VoyageMarker({ voyage, icon, onGoToVoyage }) {
+  const markerRef = useRef(null);
+
+  return (
+    <Marker ref={markerRef} position={[voyage.waypoints[0].latitude, voyage.waypoints[0].longitude]} icon={icon}>
+      <Tooltip
+        permanent
+        direction="top"
+        offset={[0, -62]}
+        className="place-tooltip"
+        eventHandlers={{ click: () => markerRef.current?.openPopup() }}
+        interactive
+      >
+        {voyage.name}
+      </Tooltip>
+      <Popup maxWidth={540} autoPan={false} className="parrot-popup">
+        <div style={cardContainerStyle}>
+          <div style={cardImageStyle}>
+            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="Voyage" />
+          </div>
+          <div style={cardContentStyle}>
+            <div style={cardTitleStyle}>{voyage.name}</div>
+            <div style={cardDescriptionStyle}>
+              <div style={{ marginTop: "0.2rem", marginBottom: "0.2rem" }}>
+                <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
+                  <VehicleIcon vehicleType={voyage.vehicleType} />
+                  {voyage.vehicle?.name}
+                </span>
+                <span style={voyageDetailSpan}>
+                  👨‍👨‍👦‍👦 {voyage.vacancy}
+                </span>
+              </div>
+              <span style={voyageDetailSpan}>
+                📅 {formatCustomDate(voyage.startDate)} to {formatCustomDate(voyage.endDate)}
+              </span>
+            </div>
+            <div
+              style={cardBriefStyle}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyage.brief) }}
+            />
+            <div
+              style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
+              onClick={() => onGoToVoyage(voyage.id)}
+            >
+              see details
+            </div>
+          </div>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
+function PlaceMarker({ voyage, icon }) {
+  const markerRef = useRef(null);
+  const [popupOpen, setPopupOpen] = useState(false);
+
+  const openIcon = L.icon({ iconUrl: parrotPlaceOpen, iconSize: [50, 60], iconAnchor: [25, 60], popupAnchor: [0, -41] });
+
+  return (
+    <Marker
+      ref={markerRef}
+      position={[voyage.waypoints[0].latitude, voyage.waypoints[0].longitude]}
+      icon={popupOpen ? openIcon : icon}
+      eventHandlers={{ popupopen: () => setPopupOpen(true), popupclose: () => setPopupOpen(false) }}
+    >
+      <Tooltip
+        permanent
+        direction="top"
+        offset={[0, -62]}
+        className="place-tooltip place-tooltip-place"
+        eventHandlers={{ click: () => markerRef.current?.openPopup() }}
+        interactive
+      >
+        {voyage.name}
+      </Tooltip>
+      <Popup maxWidth={540} autoPan={false} className="parrot-popup">
+        <div style={cardContainerStyle}>
+          <div style={cardImageStyle}>
+            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="Place" />
+          </div>
+          <div style={cardContentStyle}>
+            <div style={cardTitleStyle}>{voyage.name}</div>
+            <div
+              style={{ ...cardBriefStyle, WebkitLineClamp: 6, marginTop: "0.5rem" }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyage.description) }}
+            />
+            {voyage.brief && (
+              <a
+                href={voyage.brief.startsWith("http") ? voyage.brief : `https://${voyage.brief}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
+              >
+                visit website
+              </a>
+            )}
+          </div>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 export const ClusteredVoyageMarkers = ({ voyages }) => {
   const navigate = useNavigate();
 
@@ -64,79 +169,20 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
           iconUrl: voyage.isPlace ? parrotPlace : markerImages[index % 6],
           iconSize: [50, 60],
           iconAnchor: [25, 60],
-          popupAnchor: [0, -62],
+          popupAnchor: voyage.isPlace ? [0, -41] : [0, -62],
         });
 
+        if (voyage.isPlace) {
+          return <PlaceMarker key={`place-${voyage.id}`} voyage={voyage} icon={icon} />;
+        }
+
         return (
-          <Marker
-            key={`${latitude}-${index}`}
-            position={[latitude, longitude]}
+          <VoyageMarker
+            key={`voyage-${voyage.id}-${index}`}
+            voyage={voyage}
             icon={icon}
-          >
-            <Popup maxWidth={540} autoPan={false} className="parrot-popup">
-              <div style={cardContainerStyle}>
-                <div style={cardImageStyle}>
-                  <img
-                    src={voyage.profileImageThumbnail || voyage.profileImage}
-                    style={imageStyle}
-                    alt="Voyage"
-                  />
-                </div>
-                <div style={cardContentStyle}>
-                  <div style={cardTitleStyle}>{voyage.name}</div>
-                  {voyage.isPlace ? (
-                    <>
-                      <div
-                        style={{ ...cardBriefStyle, WebkitLineClamp: 6, marginTop: "0.5rem" }}
-                        dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(voyage.description),
-                        }}
-                      />
-                      {voyage.brief && (
-                        <a
-                          href={voyage.brief.startsWith("http") ? voyage.brief : `https://${voyage.brief}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
-                        >
-                          visit website
-                        </a>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <div style={cardDescriptionStyle}>
-                        <div style={{ marginTop: "0.2rem", marginBottom: "0.2rem" }}>
-                          <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
-                            <VehicleIcon vehicleType={voyage.vehicleType} />
-                            {voyage.vehicle?.name}
-                          </span>
-                          <span style={voyageDetailSpan}>
-                            👨‍👨‍👦‍👦 {voyage.vacancy}
-                          </span>
-                        </div>
-                        <span style={voyageDetailSpan}>
-                          📅 {formatCustomDate(voyage.startDate)} to {formatCustomDate(voyage.endDate)}
-                        </span>
-                      </div>
-                      <div
-                        style={cardBriefStyle}
-                        dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(voyage.brief),
-                        }}
-                      />
-                      <div
-                        style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
-                        onClick={() => handleGoToVoyage(voyage.id)}
-                      >
-                        see details
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
+            onGoToVoyage={handleGoToVoyage}
+          />
         );
       })
       .filter(Boolean);

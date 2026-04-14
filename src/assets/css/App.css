@@ -47,6 +47,29 @@
   display: none;
 }
 
+.place-tooltip {
+  background: #003366;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+.place-tooltip::before {
+  display: none;
+}
+
+.place-tooltip-place {
+  color: #ffd700;
+  text-transform: uppercase;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
