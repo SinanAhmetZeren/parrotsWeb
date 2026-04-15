@@ -5,6 +5,9 @@ import { IoRemoveCircleOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import parrotMarker1 from "../../assets/images/parrotMarker1.png";
 import uploadImage from "../../assets/images/ParrotsLogoPlus.png";
+import whiteegg from "../../assets/images/whiteegg.png";
+import silveregg from "../../assets/images/silveregg.png";
+import goldenegg from "../../assets/images/goldenegg.png";
 import { useAddPlaceMutation, useUpdateVoyageProfileImageMutation } from "../../slices/VoyageSlice";
 import {
   adminPage, adminCard, adminTitle, adminRow, adminLabel,
@@ -36,6 +39,9 @@ export function PlaceEditor() {
   const [description, setDescription] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [placeType, setPlaceType] = useState(1);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -84,6 +90,9 @@ export function PlaceEditor() {
     setDescription("");
     setLatitude(null);
     setLongitude(null);
+    setPlaceType(1);
+    setStartDate("");
+    setEndDate("");
     handleCancelImage();
   };
 
@@ -93,7 +102,11 @@ export function PlaceEditor() {
     if (!canSubmit) return;
     setSaving(true);
     try {
-      const result = await addPlace({ name, brief, description, latitude, longitude }).unwrap();
+      const result = await addPlace({
+        name, brief, description, latitude, longitude, placeType,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      }).unwrap();
       const placeId = result.data?.id;
 
       if (imageFile && placeId) {
@@ -140,6 +153,46 @@ export function PlaceEditor() {
             placeholder="Full description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+
+        <div style={adminRow}>
+          <span style={adminLabel}>Level</span>
+          <div style={eggSelectorRow}>
+            {[
+              { value: 1, img: whiteegg, label: "White" },
+              { value: 2, img: silveregg, label: "Silver" },
+              { value: 3, img: goldenegg, label: "Golden" },
+            ].map(({ value, img, label }) => (
+              <div
+                key={value}
+                onClick={() => setPlaceType(value)}
+                style={eggSelectorItem(placeType === value)}
+              >
+                <img src={img} alt={label} style={eggSelectorImg} />
+                <span style={eggSelectorLabel}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={adminRow}>
+          <span style={adminLabel}>Start Date</span>
+          <input
+            type="date"
+            style={adminInput}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <div style={adminRow}>
+          <span style={adminLabel}>End Date</span>
+          <input
+            type="date"
+            style={adminInput}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
 
@@ -232,6 +285,36 @@ const imagePreviewStyle = {
   objectFit: "cover",
   borderRadius: "8px",
   border: "1px solid #cbd5e1",
+};
+
+const eggSelectorRow = {
+  display: "flex",
+  gap: "1rem",
+};
+
+const eggSelectorItem = (selected) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "0.3rem",
+  cursor: "pointer",
+  padding: "0.5rem 0.75rem",
+  borderRadius: "10px",
+  border: selected ? "2px solid #0077ea" : "2px solid transparent",
+  backgroundColor: selected ? "rgba(0,119,234,0.08)" : "transparent",
+  transition: "all 0.15s",
+});
+
+const eggSelectorImg = {
+  width: "2.8rem",
+  height: "3.2rem",
+  objectFit: "contain",
+};
+
+const eggSelectorLabel = {
+  fontSize: "0.75rem",
+  fontWeight: "600",
+  color: "#475569",
 };
 
 const cancelImageBtn = {

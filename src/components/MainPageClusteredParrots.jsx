@@ -9,11 +9,23 @@ import parrotMarker3 from "../assets/images/parrotMarker3.png";
 import parrotMarker4 from "../assets/images/parrotMarker4.png";
 import parrotMarker5 from "../assets/images/parrotMarker5.png";
 import parrotMarker6 from "../assets/images/parrotMarker6.png";
-import parrotPlace from "../assets/images/goldenegg.png";
-import parrotPlaceOpen from "../assets/images/crackedgoldenegg.png";
+import whiteegg from "../assets/images/whiteegg.png";
+import crackedwhiteegg from "../assets/images/crackedwhiteegg.png";
+import silveregg from "../assets/images/silveregg.png";
+import crackedsilveregg from "../assets/images/crackedsilveregg.png";
+import goldenegg from "../assets/images/goldenegg.png";
+import crackedgoldenegg from "../assets/images/crackedgoldenegg.png";
 import { useNavigate } from "react-router-dom";
 import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
+
+
+const placeIcons = {
+  1: { normal: whiteegg, open: crackedwhiteegg },
+  2: { normal: silveregg, open: crackedsilveregg },
+  3: { normal: goldenegg, open: crackedgoldenegg },
+};
+
 
 const markerImages = [
   parrotMarker1, parrotMarker2, parrotMarker3,
@@ -104,7 +116,8 @@ function PlaceMarker({ voyage, icon }) {
   const markerRef = useRef(null);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const openIcon = L.icon({ iconUrl: parrotPlaceOpen, iconSize: [50, 60], iconAnchor: [25, 60], popupAnchor: [0, -41] });
+  const eggSet = placeIcons[voyage.placeType] || placeIcons[3];
+  const openIcon = L.icon({ iconUrl: eggSet.open, iconSize: [50, 60], iconAnchor: [25, 60], popupAnchor: [0, -41] });
 
   return (
     <Marker
@@ -165,14 +178,17 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         if (!voyage.waypoints?.[0]) return null;
         const { latitude, longitude } = voyage.waypoints[0];
 
+        const isPlace = voyage.placeType > 0;
+        const eggSet = placeIcons[voyage.placeType];
+
         const icon = L.icon({
-          iconUrl: voyage.isPlace ? parrotPlace : markerImages[index % 6],
+          iconUrl: isPlace ? eggSet.normal : markerImages[index % 6],
           iconSize: [50, 60],
           iconAnchor: [25, 60],
-          popupAnchor: voyage.isPlace ? [0, -41] : [0, -62],
+          popupAnchor: isPlace ? [0, -41] : [0, -62],
         });
 
-        if (voyage.isPlace) {
+        if (isPlace) {
           return <PlaceMarker key={`place-${voyage.id}`} voyage={voyage} icon={icon} />;
         }
 

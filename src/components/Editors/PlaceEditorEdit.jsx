@@ -1,4 +1,7 @@
 import { useState, useRef } from "react";
+import whiteegg from "../../assets/images/whiteegg.png";
+import silveregg from "../../assets/images/silveregg.png";
+import goldenegg from "../../assets/images/goldenegg.png";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import uploadImage from "../../assets/images/ParrotsLogoPlus.png";
@@ -36,7 +39,7 @@ export function PlaceEditorEdit() {
       if (!data) {
         toast.error("Place not found.");
         setPlace(null);
-      } else if (!data.isPlace) {
+      } else if (data.placeType === 0) {
         toast.error("This ID does not belong to a place.");
         setPlace(null);
       } else {
@@ -78,6 +81,9 @@ export function PlaceEditorEdit() {
         { op: "replace", path: "/description", value: place.description },
         { op: "replace", path: "/isDeleted", value: place.isDeleted },
         { op: "replace", path: "/publicOnMap", value: place.publicOnMap },
+        { op: "replace", path: "/placeType", value: place.placeType },
+        { op: "replace", path: "/startDate", value: place.startDate },
+        { op: "replace", path: "/endDate", value: place.endDate },
       ].filter(item => item.value !== undefined);
       await patchVoyageAdmin({ voyageId: place.id, patchDoc }).unwrap();
 
@@ -152,6 +158,46 @@ export function PlaceEditorEdit() {
             </div>
 
             <div style={adminRow}>
+              <span style={adminLabel}>Level</span>
+              <div style={eggSelectorRow}>
+                {[
+                  { value: 1, img: whiteegg, label: "White" },
+                  { value: 2, img: silveregg, label: "Silver" },
+                  { value: 3, img: goldenegg, label: "Golden" },
+                ].map(({ value, img, label }) => (
+                  <div
+                    key={value}
+                    onClick={() => handleChange("placeType", value)}
+                    style={eggSelectorItem(p.placeType === value)}
+                  >
+                    <img src={img} alt={label} style={eggSelectorImg} />
+                    <span style={eggSelectorLabel}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={adminRow}>
+              <span style={adminLabel}>Start Date</span>
+              <input
+                type="date"
+                style={adminInput}
+                value={p.startDate ? p.startDate.slice(0, 10) : ""}
+                onChange={(e) => handleChange("startDate", e.target.value)}
+              />
+            </div>
+
+            <div style={adminRow}>
+              <span style={adminLabel}>End Date</span>
+              <input
+                type="date"
+                style={adminInput}
+                value={p.endDate ? p.endDate.slice(0, 10) : ""}
+                onChange={(e) => handleChange("endDate", e.target.value)}
+              />
+            </div>
+
+            <div style={adminRow}>
               <span style={adminLabel}>Image</span>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 <input
@@ -206,6 +252,36 @@ const imagePreviewStyle = {
   objectFit: "cover",
   borderRadius: "8px",
   border: "1px solid #cbd5e1",
+};
+
+const eggSelectorRow = {
+  display: "flex",
+  gap: "1rem",
+};
+
+const eggSelectorItem = (selected) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "0.3rem",
+  cursor: "pointer",
+  padding: "0.5rem 0.75rem",
+  borderRadius: "10px",
+  border: selected ? "2px solid #0077ea" : "2px solid transparent",
+  backgroundColor: selected ? "rgba(0,119,234,0.08)" : "transparent",
+  transition: "all 0.15s",
+});
+
+const eggSelectorImg = {
+  width: "2.8rem",
+  height: "3.2rem",
+  objectFit: "contain",
+};
+
+const eggSelectorLabel = {
+  fontSize: "0.75rem",
+  fontWeight: "600",
+  color: "#475569",
 };
 
 const cancelImageBtn = {
