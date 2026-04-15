@@ -142,7 +142,8 @@ function LoginPage() {
             refreshToken: confirmResponse.refreshToken,
             userName: confirmResponse.userName,
             profileImageUrl: confirmResponse.profileImageUrl,
-            isAdmin: confirmResponse.isAdmin
+            isAdmin: confirmResponse.isAdmin,
+            hasAcknowledgedPublicProfile: confirmResponse.hasAcknowledgedPublicProfile ?? false,
           })
         );
       }
@@ -213,7 +214,8 @@ function LoginPage() {
           refreshToken: loginResponse.refreshToken,
           userName: loginResponse.userName,
           profileImageUrl: loginResponse.profileImageUrl,
-          isAdmin: loginResponse.isAdmin
+          isAdmin: loginResponse.isAdmin,
+          hasAcknowledgedPublicProfile: loginResponse.hasAcknowledgedPublicProfile,
         })
       );
 
@@ -242,7 +244,8 @@ function LoginPage() {
           refreshToken: pendingLoginData.refreshToken,
           userName: pendingLoginData.userName,
           profileImageUrl: pendingLoginData.profileImageUrl,
-          isAdmin: pendingLoginData.isAdmin
+          isAdmin: pendingLoginData.isAdmin,
+          hasAcknowledgedPublicProfile: pendingLoginData.hasAcknowledgedPublicProfile ?? false,
         })
       );
       setRequiresTermsReAcceptance(false);
@@ -351,7 +354,8 @@ function LoginPage() {
             refreshToken: resetPasswordResponse.refreshToken,
             userName: resetPasswordResponse.userName,
             profileImageUrl: resetPasswordResponse.profileImageUrl,
-            isAdmin: resetPasswordResponse.isAdmin
+            isAdmin: resetPasswordResponse.isAdmin,
+            hasAcknowledgedPublicProfile: resetPasswordResponse.hasAcknowledgedPublicProfile ?? false,
 
           })
         );

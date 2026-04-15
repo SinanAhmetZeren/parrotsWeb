@@ -25,10 +25,17 @@ import { AddWaypointsPage } from "../components/AddWaypointsComponent";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { useAcknowledgePublicProfileMutation } from "../slices/UserSlice";
+import { setAcknowledgedPublicProfile } from "../slices/UserSlice";
 
 export default function CreateVoyagePage() {
   // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userId = localStorage.getItem("storedUserId");
+  const dispatch = useDispatch();
+  const hasAcknowledgedPublicProfile = useSelector((state) => state.users.hasAcknowledgedPublicProfile);
+  const [showPublicProfileModal, setShowPublicProfileModal] = useState(false);
+  const [acknowledgePublicProfile] = useAcknowledgePublicProfileMutation();
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -68,6 +75,22 @@ export default function CreateVoyagePage() {
       key: "selection",
     },
   ]);
+
+  useEffect(() => {
+    if (!hasAcknowledgedPublicProfile) {
+      setShowPublicProfileModal(true);
+    }
+  }, [hasAcknowledgedPublicProfile]);
+
+  const handleAcknowledge = async () => {
+    setShowPublicProfileModal(false);
+    try {
+      await acknowledgePublicProfile().unwrap();
+      dispatch(setAcknowledgedPublicProfile());
+    } catch (e) {
+      // silently ignore — not critical
+    }
+  };
 
   const [addVoyageImage] = useAddVoyageImageMutation();
   const [deleteVoyageImage] = useDeleteVoyageImageMutation();
@@ -258,6 +281,17 @@ export default function CreateVoyagePage() {
         fontSize: "2rem",
       }}
     >
+      {showPublicProfileModal && (
+        <div style={modalOverlay}>
+          <div style={modalBox}>
+            <div style={modalTitle}>ℹ️ Public Visibility</div>
+            <p style={modalText}>
+              Your voyage and profile are publicly visible — anyone can view them even if you choose not to show them on the map.
+            </p>
+            <button style={modalBtn} onClick={handleAcknowledge}>Got it</button>
+          </div>
+        </div>
+      )}
       <div className="App">
         <header className="App-header">
           <div className="flex mainpage_Container">
@@ -675,6 +709,68 @@ const DescriptionContainer = {
   backgroundColor: "white",
   borderRadius: "1.5rem",
   overflow: "hidden",
+};
+
+const modalOverlay = {
+  position: "fixed",
+  inset: 0,
+  backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 9999,
+};
+
+const modalBox = {
+  backgroundColor: "#fff",
+  borderRadius: "12px",
+  padding: "2rem",
+  maxWidth: "480px",
+  width: "90%",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+  textAlign: "center",
+};
+
+const modalTitle = {
+  fontSize: "1.3rem",
+  fontWeight: "700",
+  color: "#1e3a5f",
+  marginBottom: "1rem",
+};
+
+const modalText = {
+  fontSize: "1rem",
+  color: "#374151",
+  lineHeight: "1.6",
+  marginBottom: "1.5rem",
+};
+
+const modalBtn = {
+  backgroundColor: "#0077ea",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  padding: "0.65rem 2rem",
+  fontSize: "1rem",
+  fontWeight: "600",
+  cursor: "pointer",
+};
+
+const publicProfileNote = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: "0.5rem",
+  backgroundColor: "#fff3cd",
+  border: "1px solid #ffc107",
+  borderRadius: "8px",
+  padding: "0.75rem 1rem",
+  fontSize: "1.15rem",
+  color: "#664d03",
+  marginBottom: "0.75rem",
+  lineHeight: "1.5",
+  fontWeight: "500",
+  width: "65%",
+  alignSelf: "center",
 };
 
 const quellStyleBrief = `

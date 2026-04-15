@@ -15,7 +15,8 @@ const usersSlice = createSlice({
     userFavoriteVoyages: [0],
     userFavoriteVehicles: [0],
     unreadMessages: false,
-    isAdmin: false
+    isAdmin: false,
+    hasAcknowledgedPublicProfile: false,
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -28,6 +29,7 @@ const usersSlice = createSlice({
         state.userProfileImage = action.payload.profileImageUrl;
         state.unreadMessages = action.payload.unreadMessages;
         state.isAdmin = action.payload.isAdmin;
+        state.hasAcknowledgedPublicProfile = action.payload.hasAcknowledgedPublicProfile ?? false;
 
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
@@ -51,6 +53,7 @@ const usersSlice = createSlice({
         state.userProfileImage = "";
         state.unreadMessages = false;
         state.isAdmin = false;
+        state.hasAcknowledgedPublicProfile = false;
 
         localStorage.removeItem("storedToken");
         localStorage.removeItem("storedRefreshToken");
@@ -105,6 +108,9 @@ const usersSlice = createSlice({
           JSON.stringify(favoriteVoyages)
         );
       }
+    },
+    setAcknowledgedPublicProfile: (state) => {
+      state.hasAcknowledgedPublicProfile = true;
     },
     updateUserFavoriteVehicles: (state, action) => {
       if (action.payload.userFavoriteVehicles)
@@ -221,7 +227,8 @@ export const {
   addVehicleToUserFavorites,
   removeVehicleFromUserFavorites,
   setUnreadMessages,
-  markMessagesRead
+  markMessagesRead,
+  setAcknowledgedPublicProfile,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;
@@ -291,6 +298,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     acceptTerms: builder.mutation({
       query: () => ({
         url: "/api/account/accept-terms",
+        method: "POST",
+      }),
+    }),
+    acknowledgePublicProfile: builder.mutation({
+      query: () => ({
+        url: "/api/account/acknowledge-public-profile",
         method: "POST",
       }),
     }),
@@ -510,6 +523,7 @@ export const {
   useConfirmUserMutation,
   useLoginUserMutation,
   useAcceptTermsMutation,
+  useAcknowledgePublicProfileMutation,
   useGoogleLoginInternalMutation,
   useResetPasswordMutation,
   useGetUserByIdQuery,
