@@ -2,20 +2,48 @@ import { useNavigate } from "react-router-dom";
 import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
 import { color } from "d3";
+import whiteegg from "../assets/images/whiteegg.png";
+import silveregg from "../assets/images/silveregg.png";
+import goldenegg from "../assets/images/goldenegg.png";
+import circleparrot1 from "../assets/images/circleparrot1.png";
+import circleparrot2 from "../assets/images/circleparrot2.png";
+import circleparrot3 from "../assets/images/circleparrot3.png";
+import circleparrot4 from "../assets/images/circleparrot4.png";
+import circleparrot5 from "../assets/images/circleparrot5.png";
+import circleparrot6 from "../assets/images/circleparrot6.png";
+
+const markerImages = [circleparrot1, circleparrot2, circleparrot3, circleparrot4, circleparrot5, circleparrot6];
+
+const eggConfig = {
+  1: { image: whiteegg, background: "#e8e8e8" },
+  2: { image: silveregg, background: "#b0b7c3" },
+  3: { image: goldenegg, background: "#FFD700" },
+};
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
 
 
-export function MainPageVoyageCard({ cardData, panToLocation }) {
+export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
 
   const navigate = useNavigate();
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
   };
 
+  const egg = cardData.placeType > 0 ? eggConfig[cardData.placeType] : null;
+  const markerImage = markerImages[(cardIndex ?? 0) % markerImages.length];
+
   return (
     <div className="card" style={cardContainerStyle}>
+      {egg && (
+        <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
+          <img src={egg.image} alt="egg" style={eggBadgeImg} />
+        </div>
+      )}
+      <div style={markerBadgeClip}>
+        <img src={markerImage} alt="marker" style={markerBadgeImg} />
+      </div>
       <div className="card-image" style={cardImageStyle}>
         <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="Boat tour" />
       </div>
@@ -112,7 +140,46 @@ const voyageDetailSpan = {
   paddingRight: "1rem",
 };
 
+const markerBadgeClip = {
+  position: "absolute",
+  top: "16rem",
+  right: 8,
+  zIndex: 10,
+  backgroundColor: "rgba(0, 119, 234, 0.30)",
+  borderRadius: 30,
+  width: 35,
+  height: 35
+};
+
+const markerBadgeImg = {
+  marginTop: 2,
+  marginLeft: 1,
+  width: 34,
+  height: 38,
+};
+
+const eggBadgeClip = {
+  position: "absolute",
+  top: "16rem",
+  right: 8,
+  width: 34,
+  height: 34,
+  borderRadius: "50%",
+  zIndex: 10,
+  overflow: "hidden",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const eggBadgeImg = {
+  width: 34,
+  height: 38,
+  objectFit: "contain",
+};
+
 const cardContainerStyle = {
+  position: "relative",
   display: "flex",
   flexDirection: "column",
   border: "1px solid #ddd",

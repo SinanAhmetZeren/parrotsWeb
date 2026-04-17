@@ -9,6 +9,21 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectCoverflow } from "swiper/modules";
 import { MainPageVoyageCard } from "./MainPageVoyageCard";
+import { MainPagePlaceCard } from "./MainPagePlaceCard";
+
+function buildInterleavedList(data) {
+  const voyages = data.filter(v => !v.placeType || v.placeType === 0);
+  const places = data
+    .filter(v => v.placeType > 0)
+    .sort((a, b) => b.placeType - a.placeType); // gold first, then silver, then plain
+  const result = [];
+  let vi = 0, pi = 0;
+  while (vi < voyages.length || pi < places.length) {
+    for (let i = 0; i < 2 && vi < voyages.length; i++) result.push(voyages[vi++]);
+    if (pi < places.length) result.push(places[pi++]);
+  }
+  return result;
+}
 
 export function MainPageCardSwiper({
   voyagesData,
@@ -89,12 +104,13 @@ export function MainPageCardSwiper({
             modules={[EffectCoverflow, Navigation]}
             style={{ width: "33rem" }}
           >
-            {voyagesData.filter(data => !data.isPlace).map((data, index) => (
+            {buildInterleavedList(voyagesData).map((data, index) => (
               <SwiperSlide key={index} style={slideContainerStyle}>
-                <MainPageVoyageCard
-                  cardData={data}
-                  panToLocation={panToLocation}
-                />
+                {data.placeType > 0 ? (
+                  <MainPagePlaceCard cardData={data} panToLocation={panToLocation} />
+                ) : (
+                  <MainPageVoyageCard cardData={data} panToLocation={panToLocation} cardIndex={index} />
+                )}
               </SwiperSlide>
             ))}
           </Swiper>
