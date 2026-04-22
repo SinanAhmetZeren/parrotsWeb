@@ -89,17 +89,20 @@ export const VoyageImageUploaderComponent = ({
     backgroundColor: "#007bff",
     position: "absolute",
     bottom: "-0.5rem",
-    borderRadius: "2rem",
-    alignContent: "center",
-    justifyItems: "center",
+    borderRadius: "1.5rem",
     cursor: "pointer",
-    transition: "transform 0.3s ease-in-out",
-    fontSize: "1.5rem",
-    fontWeight: "800",
-    paddingLeft: "1rem",
-    paddingRight: "1rem",
+    fontSize: "1.2rem",
+    fontWeight: "bold",
+    padding: "0.6rem 1.5rem",
     left: "50%",
-    transform: "translateX(-50%)", // Centers it horizontally
+    transform: "translateX(-50%)",
+    color: "white",
+    border: "none",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+    transition: "box-shadow 0.2s ease",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+    whiteSpace: "nowrap",
   };
 
   const uploadedImagesContainer = {
@@ -289,12 +292,18 @@ export const VoyageImageUploaderComponent = ({
                     <IoRemoveCircleOutline size={"2.5rem"} />
                   </div>
 
-                  <div
+                  <button
                     style={addImageButton}
                     onClick={() => handleUploadImage()}
+                    disabled={isUploadingImage}
                   >
-                    Add Image
-                  </div>
+                    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: "6rem" }}>
+                      <span style={{ visibility: isUploadingImage ? "hidden" : "visible" }}>Add Image</span>
+                      {isUploadingImage && (
+                        <div className="spinner" style={{ height: "1rem", width: "1rem", border: "3px solid white", borderTop: "3px solid #1e90ff", position: "absolute" }}></div>
+                      )}
+                    </span>
+                  </button>
                 </>
               )}
             </div>

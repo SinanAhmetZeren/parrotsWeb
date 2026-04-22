@@ -16,7 +16,7 @@ const usersSlice = createSlice({
     userFavoriteVehicles: [0],
     unreadMessages: false,
     isAdmin: false,
-    hasAcknowledgedPublicProfile: false,
+    hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -30,6 +30,7 @@ const usersSlice = createSlice({
         state.unreadMessages = action.payload.unreadMessages;
         state.isAdmin = action.payload.isAdmin;
         state.hasAcknowledgedPublicProfile = action.payload.hasAcknowledgedPublicProfile ?? false;
+        localStorage.setItem("storedAcknowledgedPublicProfile", String(action.payload.hasAcknowledgedPublicProfile ?? false));
 
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
@@ -62,6 +63,7 @@ const usersSlice = createSlice({
         localStorage.removeItem("storedProfileImageUrl");
         localStorage.removeItem("storedFavoriteVehicles");
         localStorage.removeItem("storedFavoriteVoyages");
+        localStorage.removeItem("storedAcknowledgedPublicProfile");
       } catch (err) {
         console.error("Error setting localStorage:", err);
       }
@@ -111,6 +113,7 @@ const usersSlice = createSlice({
     },
     setAcknowledgedPublicProfile: (state) => {
       state.hasAcknowledgedPublicProfile = true;
+      localStorage.setItem("storedAcknowledgedPublicProfile", "true");
     },
     updateUserFavoriteVehicles: (state, action) => {
       if (action.payload.userFavoriteVehicles)

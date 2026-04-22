@@ -182,7 +182,6 @@ const cardContainerStyle = {
   position: "relative",
   display: "flex",
   flexDirection: "column",
-  border: "1px solid #ddd",
   borderRadius: "8px",
   overflow: "hidden",
   width: "24rem",

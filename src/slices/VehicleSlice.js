@@ -169,6 +169,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         return {
           url: `/api/Vehicle/PatchVehicle/${currentVehicleId}`,
           method: "PATCH",
+          headers: { "Content-Type": "application/json-patch+json" },
           body: patchDoc,
         };
       },

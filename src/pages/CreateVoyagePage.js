@@ -42,7 +42,7 @@ export default function CreateVoyagePage() {
   const [pageState, setPageState] = useState(1);
   const [voyageBrief, setVoyageBrief] = useState("");
   const [voyageDescription, setVoyageDescription] = useState("");
-  const [selectedVacancy, setSelectedVacancy] = useState(3); // empty
+  const [selectedVacancy, setSelectedVacancy] = useState(1);
   const [voyageName, setVoyageName] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
@@ -364,7 +364,6 @@ export default function CreateVoyagePage() {
                             setDates={setDates}
                             calendarOpen={calendarOpen}
                             setCalendarOpen={setCalendarOpen}
-
                           />
                         </div>
                       </div>
@@ -394,8 +393,9 @@ export default function CreateVoyagePage() {
                         selectedVacancy &&
                         vehicleId &&
                         voyageName &&
-                        minPrice &&
-                        maxPrice &&
+                        minPrice != null &&
+                        maxPrice != null &&
+                        maxPrice >= minPrice &&
                         lastBidDate &&
                         currency &&
                         // isAuction !== "" &&

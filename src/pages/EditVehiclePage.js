@@ -57,6 +57,7 @@ function EditVehiclePage() {
   const [vehicleCapacity, setVehicleCapacity] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [image1, setImage1] = useState(null);
+  const [newProfileImageSelected, setNewProfileImageSelected] = useState(false);
   const [vehicleImage, setVehicleImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imagePreview2, setImagePreview2] = useState(null);
@@ -125,6 +126,7 @@ function EditVehiclePage() {
       }
 
       setImage1(file);
+      setNewProfileImageSelected(true);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
     }
@@ -238,12 +240,15 @@ function EditVehiclePage() {
         patchDoc,
         currentVehicleId: vehicleId,
       }).unwrap();
-      try {
-        await updateVehicleProfileImage({ vehicleImage: image1, vehicleId }).unwrap();
-      } catch (imgError) {
-        console.error("Error updating profile image", imgError);
-        toast.error("Details saved but profile image failed to update.");
+      if (newProfileImageSelected) {
+        try {
+          await updateVehicleProfileImage({ vehicleImage: image1, vehicleId }).unwrap();
+        } catch (imgError) {
+          console.error("Error updating profile image", imgError);
+          toast.error("Details saved but profile image failed to update.");
+        }
       }
+      refetch();
       setPageState("s2");
     } catch (error) {
       console.error("Error updating vehicle", error);

@@ -38,3 +38,8 @@
   color: greenyellow !important; /* Change hover text color */
   font-weight: bold;
 }
+
+/* Lighter disabled/past dates */
+.rdrDayDisabled {
+  background-color: #fafafa !important;
+}

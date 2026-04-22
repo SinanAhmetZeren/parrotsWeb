@@ -141,10 +141,10 @@ function MainPage() {
     const getInitialVoyagesAfterLocation = async () => {
       if (!initialBounds) return;
       const { lat, lng } = initialBounds;
-      const lat1 = (lat.southWest + lat.northEast) / 2 - 0.1;
-      const lat2 = (lat.southWest + lat.northEast) / 2 + 0.1;
-      const lon1 = (lng.southWest + lng.northEast) / 2 - 0.17;
-      const lon2 = (lng.southWest + lng.northEast) / 2 + 0.17;
+      const lat1 = lat.southWest;
+      const lat2 = lat.northEast;
+      const lon1 = lng.southWest;
+      const lon2 = lng.northEast;
 
       try {
         setIsLoading(true);

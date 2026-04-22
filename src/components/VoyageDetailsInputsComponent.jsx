@@ -79,7 +79,7 @@ export const VoyageDetailsInputsComponent = ({
           isFixedPrice={isFixedPrice}
         />
       </div>
-      <div style={semiWhiteStyle}>
+      <div style={{ ...semiWhiteStyle, position: "relative" }}>
         <CreateVoyagePriceInput
           minPrice={minPrice}
           setMinPrice={setMinPrice}
@@ -88,6 +88,25 @@ export const VoyageDetailsInputsComponent = ({
           type={"Max Price"}
           isFixedPrice={isFixedPrice}
         />
+        {maxPrice != null && minPrice != null && maxPrice < minPrice && (
+          <div style={{
+            position: "absolute",
+            bottom: "-1.8rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgba(220,50,50,0.85)",
+            color: "white",
+            fontSize: "1.125rem",
+            fontWeight: 600,
+            padding: "0.2rem 0.8rem",
+            borderRadius: "1rem",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+            zIndex: 10,
+          }}>
+            Max price must be ≥ min price
+          </div>
+        )}
       </div>
       <div style={semiWhiteStyle}>
         <CreateVoyageCurrencySelector
@@ -229,13 +248,13 @@ const CreateVoyageVehicleSelector = ({
                 background: "#fff",
                 border: "1px solid #ccc",
                 borderRadius: "1.5rem",
-                marginTop: "2.5rem",
+                top: "2.5rem",
                 width: "75%",
                 right: "0rem",
-                maxHeight: "53vh", // Optional: Limit height for large lists
-                overflowY: "auto", // Enable scrolling if content exceeds height
-                scrollbarWidth: "none", // For Firefox (hide scrollbar)
-                msOverflowStyle: "none", // For IE/Edge (hide scrollbar)
+                maxHeight: "20rem",
+                overflowY: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
                 boxShadow: `
               0 4px 6px rgba(0, 0, 0, 0.3),
               inset 0 -4px 6px rgba(0, 0, 0, 0.3)

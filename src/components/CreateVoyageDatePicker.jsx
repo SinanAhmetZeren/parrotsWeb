@@ -4,6 +4,7 @@ import { DateRange } from "react-date-range";
 import { useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
+import parrotCoin from "../assets/images/parrotcoin.png";
 
 export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
   // .rdrDateDisplayItemActive input  -> i want to change this color with inline code
@@ -40,6 +41,7 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         justifyContent: "center",
         alignItems: "center",
         paddingTop: "3rem",
+        position: "relative",
       }}
     >
 
@@ -58,17 +60,41 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
           endDatePlaceholder="End Date"
           ranges={dates}
           locale={enUS}
+          minDate={new Date()}
           style={{ width: "33rem" }}
           className="custom-date-range"
         />
         <style>
           {`
             .custom-date-range .rdrDateDisplayItem input {
-              color: rgb(0, 123, 255); 
+              color: rgb(0, 123, 255);
             }
           `}
         </style>
       </div>
+      {dates[0]?.startDate && (
+        <div style={{
+          position: "absolute",
+          bottom: "-1.8rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          backgroundColor: "rgba(0,100,200,0.85)",
+          color: "white",
+          fontSize: "1.125rem",
+          fontWeight: 600,
+          padding: "0.3rem 3rem 0.3rem 1rem",
+          borderRadius: "1rem",
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.4rem",
+        }}>
+          <img src={parrotCoin} alt="coin" style={{ width: "1.4rem", height: "1.4rem" }} />
+          {Math.max(0, Math.floor((new Date(dates[0].startDate) - new Date()) / (1000 * 60 * 60 * 24)))} ParrotCoins will be used
+        </div>
+      )}
     </div >
   );
 };

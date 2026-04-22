@@ -44,7 +44,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
     Train: trainImage,
   };
 
-  const specialImage = specialVehicles[voyageData.vehicle.name];
+  const specialImage = specialVehicles[voyageData.vehicle?.name];
 
   return (
     /*
@@ -103,7 +103,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
               </span>
             )}
 
-            {!specialImage && (
+            {!specialImage && voyageData.vehicle && (
               <img
                 src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
                 style={{
