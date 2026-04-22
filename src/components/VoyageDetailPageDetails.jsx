@@ -6,380 +6,227 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
-import { FaWalking, FaRunning, FaTrain } from "react-icons/fa";
-import { parrotBlue, parrotGreen, parrotTextDarkBlue } from "../styles/colors";
+import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
 import trainImage from "../assets/images/train.jpeg";
 import walkImage from "../assets/images/walk1.jpeg";
 import runImage from "../assets/images/run1.jpeg";
-import { IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
-import { CustomToolTip } from "./CustomToolTip";
-import { CustomToolTipAuction } from "./CustomToolTipAuction";
-import { IoMdInformationCircleOutline } from "react-icons/io";
-
+import { BsPeople, BsPerson, BsCalendar, BsCashStack, BsTag } from "react-icons/bs";
+import { MdOutlineGavel, MdOutlineRocketLaunch } from "react-icons/md";
 
 export function VoyageDetailPageDetails({ voyageData }) {
-  const apiUrl = process.env.REACT_APP_API_URL;
   const baseUserImageUrl = ``;
   const baseVehicleImageUrl = ``;
   const [hoveredUser, setHoveredUser] = useState(false);
   const [hoveredVehicle, setHoveredVehicle] = useState(false);
   const [hoveredAuction, setHoveredAuction] = useState(false);
+  const [hoveredFixedPrice, setHoveredFixedPrice] = useState(false);
 
-  const auctionToolTipMessage = "The host will select the most suitable bids"
+  const auctionToolTipMessage = "The host will select the most suitable bids";
   const navigate = useNavigate();
+
   const handleGoToVehicle = (voyageData) =>
-    voyageData.vehicle.name === "Run" ||
-      voyageData.vehicle.name === "Walk" ||
-      voyageData.vehicle.name === "Train"
+    voyageData.vehicle?.name === "Run" ||
+    voyageData.vehicle?.name === "Walk" ||
+    voyageData.vehicle?.name === "Train"
       ? null
       : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
+
   const handleGoToUser = (user) => {
-    console.log("go to user: ", user.userName);
     navigate(`/profile-public/${user.publicId}/${user.userName}`);
   };
 
-  const specialVehicles = {
-    Run: runImage,
-    Walk: walkImage,
-    Train: trainImage,
-  };
-
+  const specialVehicles = { Run: runImage, Walk: walkImage, Train: trainImage };
   const specialImage = specialVehicles[voyageData.vehicle?.name];
 
   return (
-    /*
-    host, vehicle, vacancy, stars, ends, max price, min price, auction
-    */
+    <div style={cardContainerStyle}>
+      {/* Title */}
+      <div style={titleStyle}>{voyageData.name}</div>
 
-    <div style={cardContainerStyle} className="flex row">
+      <div style={divider} />
 
-
-      <div style={detailRow}> {/* host div  */}
-        <div>
-          <span style={detailName}>Host: </span>
-        </div>
-        <div style={{ ...detailInfo, cursor: "pointer" }}
-          onClick={() => handleGoToUser(voyageData.user)}>
-          <div
-            style={userAndVehicleBox}
-            onMouseEnter={() => setHoveredUser(true)}
-            onMouseLeave={() => setHoveredUser(false)}
-          >
-            <img
-              src={baseUserImageUrl + (voyageData.user.profileImageThumbnailUrl || voyageData.user.profileImageUrl)}
-              style={{
-                ...userImage,
-                ...(hoveredUser === true ? userprofileimgHover : {}),
-              }}
-              // onMouseEnter={() => setHoveredUser(true)}
-              // onMouseLeave={() => setHoveredUser(false)}
-              alt="profile"
-            />
-            <span style={userAndVehicleText}>
-              {voyageData.user.userName}
-            </span>
-          </div>
-        </div>
-      </div>
-
-
-      <div style={detailRow}>  {/* vehicle div */}
-        <div>
-          <span style={detailName}>Vehicle: </span>
-        </div>
-        <div style={{ ...detailInfo, cursor: "pointer" }}
-          onClick={() => handleGoToVehicle(voyageData)}
+      {/* Row 1: Host + Vehicle */}
+      <div style={row}>
+        <BsPerson size={22} color={parrotTextDarkBlue} style={{ flexShrink: 0 }} />
+        <div
+          style={{ ...pill, cursor: "pointer" }}
+          onClick={() => handleGoToUser(voyageData.user)}
+          onMouseEnter={() => setHoveredUser(true)}
+          onMouseLeave={() => setHoveredUser(false)}
         >
-          <div style={userAndVehicleBox}
-            onMouseEnter={() => setHoveredVehicle(true)}
-            onMouseLeave={() => setHoveredVehicle(false)}
+          <img
+            src={baseUserImageUrl + (voyageData.user.profileImageThumbnailUrl || voyageData.user.profileImageUrl)}
+            style={{ ...avatarImg, transform: hoveredUser ? "scale(1.15)" : "scale(1)" }}
+            alt="host"
+          />
+          <span style={pillText}>{voyageData.user.userName}</span>
+        </div>
 
-          >
-            {specialImage && (
-              <span
-              // style={userAndVehicleText}
-              >
-                <img src={specialImage} style={userImage} alt={voyageData.vehicle.name} />
-              </span>
-            )}
+        <MdOutlineRocketLaunch size={22} color={parrotTextDarkBlue} style={{ flexShrink: 0 }} />
 
-            {!specialImage && voyageData.vehicle && (
-              <img
-                src={baseVehicleImageUrl + voyageData.vehicle.profileImageUrl}
-                style={{
-                  ...userImage,
-                  ...(hoveredVehicle ? userprofileimgHover : {}),
-                }}
-                // onMouseEnter={() => setHoveredVehicle(true)}
-                // onMouseLeave={() => setHoveredVehicle(false)}
-                alt="vehicle"
-              />
-            )}
-            <span style={userAndVehicleText}>{voyageData.vehicle.name}</span>
-          </div>
-
+        <div
+          style={{ ...pill, cursor: voyageData.vehicle ? "pointer" : "default" }}
+          onClick={() => voyageData.vehicle && handleGoToVehicle(voyageData)}
+          onMouseEnter={() => setHoveredVehicle(true)}
+          onMouseLeave={() => setHoveredVehicle(false)}
+        >
+          {(specialImage || voyageData.vehicle) && (
+            <img
+              src={specialImage || (baseVehicleImageUrl + voyageData.vehicle.profileImageUrl)}
+              style={{ ...avatarImg, transform: hoveredVehicle ? "scale(1.15)" : "scale(1)" }}
+              alt="vehicle"
+            />
+          )}
+          <span style={pillText}>{voyageData.vehicle?.name}</span>
         </div>
       </div>
 
+      {/* Row 2: Spots + Dates */}
+      <div style={row}>
+        <BsPeople size={22} color={parrotTextDarkBlue} style={{ flexShrink: 0 }} />
+        <div style={{ ...pill, minWidth: "5rem", justifyContent: "center" }}>
+          <span style={pillText}>{voyageData.vacancy} spots</span>
+        </div>
 
-      <div style={detailRow}>
-        <div>
-          <span style={detailName}>Vacancy: </span>
-        </div>
-        <div style={detailInfo}>
-          <span>{voyageData.vacancy}</span>
-        </div>
-      </div>
-
-      <div style={detailRowDivided}>
-        <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Starts:
-          </div>
-          <div style={detailRowDividedChildInfo}>
-            {formatCustomDate(voyageData.startDate)}
-          </div>
-        </div>
-        <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Ends:
-          </div>
-          <div style={detailRowDividedChildInfo}>
-            {formatCustomDate(voyageData.endDate)}
-          </div>
+        <BsCalendar size={20} color={parrotTextDarkBlue} style={{ flexShrink: 0 }} />
+        <div style={{ ...pill, gap: "0.5rem", justifyContent: "center", paddingLeft: "1.2rem", paddingRight: "1.2rem" }}>
+          <span style={pillText}>{formatCustomDate(voyageData.startDate)}</span>
+          <span style={{ color: parrotGreen, fontWeight: "900", fontSize: "1.1rem" }}>→</span>
+          <span style={pillText}>{formatCustomDate(voyageData.endDate)}</span>
         </div>
       </div>
 
-      <div style={detailRowDivided}>
-        <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Min Price:
-          </div>
-          <div style={detailRowDividedChildInfo}>
-            {voyageData.currency} {voyageData.minPrice}
-          </div>
+      {/* Row 3: Price + Auction + Fixed Price */}
+      <div style={row}>
+        <BsCashStack size={22} color={parrotTextDarkBlue} style={{ flexShrink: 0 }} />
+        <div style={{ ...pill, gap: "0.4rem", padding: "0 0.8rem" }}>
+          <span style={pillText}>{voyageData.currency} {voyageData.minPrice}</span>
+          <span style={{ color: parrotGreen, fontWeight: "900", fontSize: "1.1rem" }}>→</span>
+          <span style={pillText}>{voyageData.currency} {voyageData.maxPrice}</span>
         </div>
-        <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Max Price:
-          </div>
-          <div style={detailRowDividedChildInfo}>
-            {voyageData.currency} {voyageData.maxPrice}
-          </div>
+
+        <MdOutlineGavel size={20} color={parrotTextDarkBlue} style={{ flexShrink: 0, opacity: voyageData.auction ? 1 : 0.35 }} />
+        <div
+          style={{ ...pill, cursor: "default", position: "relative", opacity: voyageData.auction ? 1 : 0.35 }}
+          onMouseEnter={() => setHoveredAuction(true)}
+          onMouseLeave={() => setHoveredAuction(false)}
+        >
+          <span style={pillText}>Auction</span>
+          {hoveredAuction && (
+            <div style={tooltipStyle}>
+              {voyageData.auction ? "This is an auction where the host will select the most suitable bids" : "This is not an auction where the host will select the most suitable bids"}
+            </div>
+          )}
         </div>
-      </div>
 
-      <div style={detailRowDivided}>
-        <div style={detailRowDividedChild}>
-          <div
-            style={{ ...detailRowDividedChildName, position: "relative" }}
-            onMouseEnter={() => setHoveredAuction(true)}
-            onMouseLeave={() => setHoveredAuction(false)}
-          >
-            Auction <IoMdInformationCircleOutline size={12} />:
-
-            <CustomToolTipAuction isHovered={hoveredAuction} message={auctionToolTipMessage} />
-          </div>
-
-          <div style={detailRowDividedChildInfo}>
-            {voyageData.auction ?
-              <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
-              :
-              <IoCloseCircleOutline color={parrotGreen} size={20} />
-            }
-          </div>
-        </div>
-        <div style={detailRowDividedChild}>
-          <div style={detailRowDividedChildName}>
-            Fixed Price:
-          </div>
-          <div style={detailRowDividedChildInfo}>
-            {voyageData.auction ?
-              <IoCheckmarkCircleOutline color={parrotGreen} size={20} />
-              :
-              <IoCloseCircleOutline color={parrotGreen} size={20} />
-
-            }
-          </div>
+        <BsTag size={18} color={parrotTextDarkBlue} style={{ flexShrink: 0, opacity: voyageData.fixedPrice ? 1 : 0.35 }} />
+        <div
+          style={{ ...pill, flexShrink: 0, position: "relative", opacity: voyageData.fixedPrice ? 1 : 0.35 }}
+          onMouseEnter={() => setHoveredFixedPrice(true)}
+          onMouseLeave={() => setHoveredFixedPrice(false)}
+        >
+          <span style={pillText}>Fixed Price</span>
+          {hoveredFixedPrice && (
+            <div style={tooltipStyle}>
+              {voyageData.fixedPrice ? "This voyage has a fixed price set by the host" : "This voyage does not have a fixed price set by the host"}
+            </div>
+          )}
         </div>
       </div>
-
     </div>
-
   );
-}
-
-const detailName = {
-  color: parrotTextDarkBlue,
-  fontWeight: "900",
-  fontSize: "1rem",
-  // backgroundColor: "yellow",
-  width: "100%",
-  display: "flex",
-
-};
-
-const detailRowDividedChild = {
-  color: parrotTextDarkBlue,
-  fontWeight: "900",
-  fontSize: "1rem",
-  // backgroundColor: "green",
-  width: "100%",
-  display: "flex",
-};
-
-const detailInfo = {
-  // backgroundColor: "orange",
-  fontSize: "1rem",
-  width: "100%",
-  display: "flex",
-  color: parrotBlue,
-  fontWeight: "800",
-};
-
-const detailRowDividedChildName = {
-  color: parrotTextDarkBlue,
-  fontWeight: "800",
-  fontSize: "1rem",
-  // backgroundColor: "pink",
-  width: "100%",
-  display: "flex",
-  // backgroundColor: "rgba(0, 119, 234,0.1)",
-
-}
-
-const detailRowDividedChildInfo = {
-  fontSize: "1rem",
-  width: "100%",
-  display: "flex",
-  // backgroundColor: "rgba(0, 119, 234,0.048)",
-  color: parrotBlue,
-  fontWeight: "800",
-
-}
-
-const detailRow = {
-  height: "2rem",
-  width: "94%",
-  margin: "auto",
-  borderRadius: "0.3rem",
-  // marginBottom: "0.5rem",
-  display: "grid",
-  gridTemplateColumns: "1fr 3fr",
-  alignItems: "center",
-};
-
-const detailRowDivided = {
-  height: "2rem",
-  width: "94%",
-  margin: "auto",
-  borderRadius: "0.3rem",
-  // marginBottom: "0.5rem",
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  alignItems: "center",
-  gap: ".5rem"
-};
-
-const userImage = {
-  height: "2rem",
-  width: "2rem",
-  borderRadius: "3rem",
-  transition: "transform 0.3s ease-in-out", // Smooth transition
-};
-
-const userprofileimgHover = {
-  transform: "scale(1.2)", // Enlarge on hover
-};
-
-
-const cardContainerStyle = {
-  display: "flex", // Flex for horizontal layout
-  flexDirection: "column", // Ensure content is side-by-side
-  border: "1px solid #ddd",
-  borderRadius: "1rem",
-  overflow: "hidden",
-  width: "100%",
-  backgroundColor: "#fff",
-  margin: "0rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.2)
-`,
-  color: parrotTextDarkBlue,
-  padding: "1rem",
-  fontSize: "1rem",
-  paddingBottom: "2rem",
-};
-
-
-
-const userAndVehicleBox = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  backgroundColor: "rgba(0, 119, 234,0.06)",
-  borderRadius: "4rem",
-  // marginLeft: "0.5rem",
-  height: "2rem",
-  transition: "transform 0.3s ease-in-out", // Smooth transition
-
-};
-
-
-const userAndVehicleText = {
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-};
-
-const vehicles = [
-  "⛵", // Boat
-  "🚗", // Car
-  "🚐", // Caravan
-  "🚌", // Bus
-  "🚶", // Walk
-  "🏃", // Run
-  "🏍️", // Motorcycle
-  "🚲", // Bicycle
-  "🏠", // Tinyhouse
-  "✈️", // Airplane
-  "🚄", // Train
-];
-
-function formatCustomDate2(dateString) {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "2-digit",
-  })
-    .format(new Date(dateString))
-    .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
 }
 
 function formatCustomDate(dateString) {
   const date = new Date(dateString);
-
-  const options = { month: "short" }; // "Jan", "Feb", ...
-  const month = new Intl.DateTimeFormat("en-US", options).format(date);
-  const day = String(date.getDate()).padStart(2, "0"); // "01", "25"
-  const year = String(date.getFullYear()).slice(-2); // last 2 digits
-
+  const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
   return `${month} ${day}, ${year}`;
 }
 
-export default function VehicleIcon({ vehicleType }) {
-  const getVehicleEmoji = (typeIndex) => {
-    if (typeIndex >= 0 && typeIndex < vehicles.length) {
-      return vehicles[typeIndex];
-    }
-    return "❓";
-  };
+const cardContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  borderRadius: "1rem",
+  width: "100%",
+  backgroundColor: "#fff",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)",
+  padding: "1rem 1.2rem 1.5rem",
+  gap: "1.0rem",
+};
 
+const titleStyle = {
+  textAlign: "center",
+  fontSize: "1.6rem",
+  fontWeight: "900",
+  color: parrotGreen,
+  fontStyle: "italic",
+};
+
+const divider = {
+  height: "1px",
+  backgroundColor: "rgba(0,0,0,0.08)",
+  margin: "0.2rem 0",
+};
+
+const row = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: "0.9rem",
+  width: "100%",
+};
+
+const pill = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "rgba(0, 119, 234, 0.1)",
+  borderRadius: "4rem",
+  padding: "0.2rem 0.8rem 0.2rem 0.3rem",
+  gap: "0.3rem",
+};
+
+const tooltipStyle = {
+  position: "absolute",
+  bottom: "110%",
+  left: "50%",
+  transform: "translateX(-50%)",
+  backgroundColor: "rgba(0,0,0,0.75)",
+  color: "white",
+  borderRadius: "0.5rem",
+  padding: "0.3rem 0.7rem",
+  fontSize: "0.85rem",
+  fontWeight: "500",
+  whiteSpace: "nowrap",
+  zIndex: 100,
+  pointerEvents: "none",
+};
+
+const pillText = {
+  color: parrotTextDarkBlue,
+  fontWeight: "700",
+  fontSize: "1rem",
+  whiteSpace: "nowrap",
+};
+
+const avatarImg = {
+  height: "2rem",
+  width: "2rem",
+  borderRadius: "50%",
+  objectFit: "cover",
+  transition: "transform 0.2s ease",
+};
+
+const vehicles = [
+  "⛵","🚗","🚐","🚌","🚶","🏃","🏍️","🚲","🏠","✈️","🚄",
+];
+
+export default function VehicleIcon({ vehicleType }) {
   return (
-    <span style={{ textAlign: "center" }}>{getVehicleEmoji(vehicleType)}</span>
+    <span style={{ textAlign: "center" }}>
+      {vehicles[vehicleType] ?? "❓"}
+    </span>
   );
 }
-
-
-
-

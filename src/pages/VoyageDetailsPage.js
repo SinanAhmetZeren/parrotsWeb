@@ -18,7 +18,7 @@ import { VoyageDetailWaypointSwiper } from "../components/VoyageDetailWaypointSw
 import { VoyageDetailMapPanComponent } from "../components/VoyageDetailMapPanComponent";
 import { VoyageDetailMarkerWithInfoWindow } from "../components/VoyageDetailMarkerWithInfoWindow";
 import { VoyageDetailMapPolyLineComponent } from "../components/VoyageDetailMapPolyLineComponent";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   useAddVoyageToFavoritesMutation,
@@ -44,6 +44,7 @@ import { VoyageDetailPageImageSwiperNew } from "../components/VoyageDetailPageIm
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { voyageId } = useParams();
   console.log("voyageId from params:", voyageId);
   const userId = localStorage.getItem("storedUserId");
@@ -208,6 +209,12 @@ function VoyageDetailsPage() {
     }
   }, [isSuccessVoyage, VoyageData, userId]);
 
+  useEffect(() => {
+    if (isSuccessVoyage && VoyageData?.placeType > 0) {
+      navigate("/");
+    }
+  }, [isSuccessVoyage, VoyageData, navigate]);
+
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -220,7 +227,10 @@ function VoyageDetailsPage() {
     return <SomethingWentWrong />;
   }
 
-  if (isErrorVoyage) return <SomethingWentWrong />;
+  if (isErrorVoyage || (isSuccessVoyage && !VoyageData)) {
+    navigate("/");
+    return null;
+  }
 
   return isLoadingVoyage ? (
     <div style={spinnerContainer}>
@@ -702,7 +712,7 @@ export const voyageDetailsDetailsStyle = {
   marginLeft: "1rem",
   marginRight: "1rem",
   padding: "0.3rem",
-  height: "35vh",
+  height: "32vh",
 
 };
 

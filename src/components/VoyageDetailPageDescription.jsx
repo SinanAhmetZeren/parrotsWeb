@@ -11,7 +11,7 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDescriptionLong, setIsDescriptionLong] = React.useState(false);
   const descriptionRef = React.useRef(null);
-  const visibleLines = 9;
+  const visibleLines = 11;
   React.useEffect(() => {
     const el = descriptionRef.current;
     if (el) {
@@ -62,9 +62,9 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
             />
           </div>
         </div>
-        {isDescriptionLong && (
+        {isDescriptionLong && !isExpanded && (
           <span onClick={toggleExpand} style={readMore}>
-            {isExpanded ? "Read Less" : "Read More"}
+            Read More
           </span>
         )}
       </div>
