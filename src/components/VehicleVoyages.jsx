@@ -7,7 +7,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export default function VehicleVoyages({ voyages }) {
+export default function VehicleVoyages({ voyages, isDarkMode = false }) {
     const navigate = useNavigate();
 
     const handleNavigateToVoyage = (voyageId) => {
@@ -25,7 +25,7 @@ export default function VehicleVoyages({ voyages }) {
                 <div
                     key={item.id}
                     onClick={() => handleNavigateToVoyage(item.id)}
-                    style={styles.voyageContainer}
+                    style={{ ...styles.voyageContainer, ...(isDarkMode ? { backgroundColor: "rgba(255,255,255,0.07)" } : {}) }}
                 >
                     <div>
                         <img
@@ -34,7 +34,7 @@ export default function VehicleVoyages({ voyages }) {
                             style={styles.voyageImage}
                         />
                     </div>
-                    <div style={styles.nameAndVacancy}>
+                    <div style={{ ...styles.nameAndVacancy, color: isDarkMode ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}>
 
                         <span style={styles.voyageName}>{item.name}</span>
                         <span style={styles.voyageVacancy}>{item.vacancy}<FaUsers size={12} /></span>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
-import { color } from "d3";
 import whiteegg from "../assets/images/whiteegg.png";
 import silveregg from "../assets/images/silveregg.png";
 import goldenegg from "../assets/images/goldenegg.png";
@@ -25,7 +25,7 @@ const voyageBaseUrl = ``;
 
 
 export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
-
+  const dark = useSelector((state) => state.users.isDarkMode);
   const navigate = useNavigate();
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
@@ -35,7 +35,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
   const markerImage = markerImages[(cardIndex ?? 0) % markerImages.length];
 
   return (
-    <div className="card" style={cardContainerStyle}>
+    <div className="card" style={cardContainerStyle(dark)}>
       {egg && (
         <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
           <img src={egg.image} alt="egg" style={eggBadgeImg} />
@@ -48,7 +48,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
         <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="Boat tour" />
       </div>
       <div className="card-content" style={cardContentStyle}>
-        <div style={cardTitleStyle}>{cardData.name}</div>
+        <div style={cardTitleStyle(dark)}>{cardData.name}</div>
 
         {/* DETAILS */}
         <div style={cardDescriptionStyle}>
@@ -58,16 +58,16 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
               marginBottom: "0.2rem",
             }}
           >
-            <span style={{ ...voyageDetailSpan, marginRight: "0.5rem", }}>
+            <span style={{ ...voyageDetailSpan(dark), marginRight: "0.5rem", }}>
               <VehicleIcon vehicleType={cardData.vehicleType} />
               {" "}{cardData.vehicle?.name}
             </span>
-            <span style={voyageDetailSpan}>
+            <span style={voyageDetailSpan(dark)}>
               👨‍👨‍👦‍👦
               {" "}{cardData.vacancy}
             </span>
           </div>
-          <span style={voyageDetailSpan}>
+          <span style={voyageDetailSpan(dark)}>
             📅 {formatCustomDate(cardData.startDate)} - {" "}
             {formatCustomDate(cardData.endDate)}
           </span>
@@ -76,7 +76,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
         {/* BRIEF */}
 
         <div
-          style={cardBriefStyle}
+          style={cardBriefStyle(dark)}
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(cardData.brief)
           }}
@@ -85,7 +85,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
           <button onClick={() => handleCardClick(cardData.id)}
-            style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotDarkBlue, boxShadow: "none" }}>
+            style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotDarkBlue, boxShadow: "none" }}>
             Trip Details
           </button>
           <button
@@ -95,7 +95,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
                 cardData.waypoints[0].longitude
               )
             }
-            style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotDarkBlue, boxShadow: "none" }}>
+            style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotDarkBlue, boxShadow: "none" }}>
             See on Map
           </button>
         </div>
@@ -131,14 +131,14 @@ export default function VehicleIcon({ vehicleType }) {
   );
 }
 
-const voyageDetailSpan = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
-  color: "#007bff",
+const voyageDetailSpan = (dark) => ({
+  backgroundColor: dark ? "rgba(255,255,255,0.1)" : "rgba(0, 119, 234,0.1)",
+  color: dark ? "rgba(255,255,255,0.85)" : "#007bff",
   borderRadius: "1rem",
   padding: "0.1rem",
   paddingLeft: "1rem",
   paddingRight: "1rem",
-};
+});
 
 const markerBadgeClip = {
   position: "absolute",
@@ -178,7 +178,7 @@ const eggBadgeImg = {
   objectFit: "contain",
 };
 
-const cardContainerStyle = {
+const cardContainerStyle = (dark) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -187,13 +187,10 @@ const cardContainerStyle = {
   width: "24rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: "#fff",
+  backgroundColor: dark ? "#0d2b4e" : "#fff",
   margin: "1rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
-`,
-};
+  boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.1)`,
+});
 
 const imageStyle = {
   width: "100%",
@@ -218,17 +215,17 @@ const cardContentStyle = {
 `,
 };
 
-const cardTitleStyle = {
+const cardTitleStyle = (dark) => ({
   fontSize: "1.3rem",
   fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
-};
+  color: dark ? "rgba(255,255,255,0.9)" : "rgba(10, 119, 234,1)",
+});
 
-const cardBriefStyle = {
+const cardBriefStyle = (dark) => ({
   fontSize: "1.1rem",
   fontFamily: "Nunito, sans-serif",
   fontWeight: "600",
-  color: parrotTextDarkBlue,
+  color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -239,7 +236,7 @@ const cardBriefStyle = {
   lineHeight: "1.65rem",
   letterSpacing: "0.015em",
   marginTop: "0.5rem",
-};
+});
 
 const cardDescriptionStyle = {
   fontSize: "1rem",

@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 import whiteegg from "../assets/images/whiteegg.png";
 import silveregg from "../assets/images/silveregg.png";
@@ -10,6 +11,7 @@ const eggConfig = {
 };
 
 export function MainPagePlaceCard({ cardData, panToLocation }) {
+  const dark = useSelector((state) => state.users.isDarkMode);
   const egg = eggConfig[cardData.placeType] || eggConfig[1];
 
   const handleLinkClick = () => {
@@ -19,7 +21,7 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
   };
 
   return (
-    <div style={cardContainerStyle}>
+    <div style={cardContainerStyle(dark)}>
       {/* egg badge */}
       <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
         <img src={egg.image} alt="egg" style={eggBadgeImg} />
@@ -36,20 +38,20 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
 
       {/* content */}
       <div style={cardContentStyle}>
-        <div style={cardTitleStyle}>{cardData.name}</div>
-        <div style={cardDescriptionStyle}>{cardData.description}</div>
+        <div style={cardTitleStyle(dark)}>{cardData.name}</div>
+        <div style={cardDescriptionStyle(dark)}>{cardData.description}</div>
 
         {/* buttons */}
         <div style={buttonContainerStyle}>
           {cardData.brief && (
-            <button onClick={handleLinkClick} style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotTextDarkBlue }}>
+            <button onClick={handleLinkClick} style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}>
               Visit
             </button>
           )}
           {cardData.waypoints?.[0] && (
             <button
               onClick={() => panToLocation(cardData.waypoints[0].latitude, cardData.waypoints[0].longitude)}
-              style={{ ...buttonStyle, backgroundColor: "#00336615", color: parrotTextDarkBlue }}
+              style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}
             >
               See on Map
             </button>
@@ -60,7 +62,7 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
   );
 }
 
-const cardContainerStyle = {
+const cardContainerStyle = (dark) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -69,10 +71,10 @@ const cardContainerStyle = {
   width: "24rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: "#fffdf8",
+  backgroundColor: dark ? "#0d2b4e" : "#fffdf8",
   margin: "1rem",
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.1)",
-};
+});
 
 const eggBadgeClip = {
   position: "absolute",
@@ -115,18 +117,18 @@ const cardContentStyle = {
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.4), inset 0 -6px 6px rgba(0, 0, 0, 0.4)",
 };
 
-const cardTitleStyle = {
+const cardTitleStyle = (dark) => ({
   fontSize: "1.3rem",
   fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
+  color: dark ? "rgba(255,255,255,0.9)" : "rgba(10, 119, 234,1)",
   marginBottom: "0.3rem",
-};
+});
 
-const cardDescriptionStyle = {
+const cardDescriptionStyle = (dark) => ({
   fontSize: "1.05rem",
   fontFamily: "Nunito, sans-serif",
   fontWeight: "600",
-  color: parrotTextDarkBlue,
+  color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -134,7 +136,7 @@ const cardDescriptionStyle = {
   textOverflow: "ellipsis",
   lineHeight: "1.55rem",
   flex: 1,
-};
+});
 
 const buttonContainerStyle = {
   display: "flex",

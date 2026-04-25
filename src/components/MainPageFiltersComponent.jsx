@@ -15,13 +15,14 @@ export const MainPageFiltersComponent = ({
   setSelectedVacancy,
   applyFilter,
   calendarOpen,
-  setCalendarOpen
+  setCalendarOpen,
+  isDarkMode = false,
 }) => {
+  const dark = isDarkMode;
   return (
-    <div // FILTER COMPONENT
+    <div
       style={{
-        // backgroundColor: "rgba(5, 8, 58, 0.85)",
-        backgroundColor: "rgba(255, 255, 255, 0.3)",
+        backgroundColor: dark ? "rgba(13,43,78,0.85)" : "rgba(255, 255, 255, 0.3)",
         height: "17vh",
         width: "92%",
         padding: "1vh",
@@ -30,14 +31,11 @@ export const MainPageFiltersComponent = ({
         margin: "auto"
       }}
     >
-      <div
-        style={{
-          paddingTop: "0.2rem",
-        }}
-      >
+      <div style={{ paddingTop: "0.2rem" }}>
         <MainPageDatePicker dates={dates} setDates={setDates}
           calendarOpen={calendarOpen}
           setCalendarOpen={setCalendarOpen}
+          isDarkMode={isDarkMode}
         />
       </div>
       <div
@@ -55,12 +53,14 @@ export const MainPageFiltersComponent = ({
           <MainPageVehiclePicker
             selectedVehicle={selectedVehicle}
             setSelectedVehicle={setSelectedVehicle}
+            isDarkMode={isDarkMode}
           />
         </div>
         <div style={{ width: "50%" }}>
           <MainPageVacancyPicker
             selectedVacancy={selectedVacancy}
             setSelectedVacancy={setSelectedVacancy}
+            isDarkMode={isDarkMode}
           />
         </div>
       </div>

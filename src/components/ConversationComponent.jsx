@@ -5,8 +5,9 @@ import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTr
 import { use } from "react";
 import { invokeHub, isHubReady } from "../signalr/signalRHub";
 
-export function ConversationComponent({ currentUserId, messagesToDisplay, conversationUserId
+export function ConversationComponent({ currentUserId, messagesToDisplay, conversationUserId, isDarkMode = false
 }) {
+  const dark = isDarkMode;
   const messagesEndRef = useRef(null);
 
   // Notify server when entering/leaving conversation
@@ -46,8 +47,8 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
           <div
             key={index}
             style={{
-              ...containerStyle,
-              justifySelf: isCurrentUser ? "end" : "start", // Align messages dynamically
+              ...containerStyle(dark),
+              justifySelf: isCurrentUser ? "end" : "start",
             }}
           >
             <div style={messageTextStyle}>
@@ -56,12 +57,12 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
             </div>
             <div style={dateAndTimeContainerStyle}>
               <div>
-                <span style={{ color: parrotBlueDarkTransparent2 }}>
+                <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
                   {time}
                 </span>
               </div>
               <div>
-                <span style={{ color: parrotBlueDarkTransparent }}>
+                <span style={{ color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>
                   {date}
                 </span>
               </div>
@@ -103,7 +104,7 @@ const messagesContainerStyle = {
   // backgroundColor: "red"
 };
 
-const containerStyle = {
+const containerStyle = (dark) => ({
   fontSize: "1rem",
   fontFamily: "Nunito, sans-serif",
   margin: "10px",
@@ -111,12 +112,12 @@ const containerStyle = {
   display: "grid",
   gridTemplateColumns: "3fr 10rem",
   borderRadius: "4rem",
-  color: "darkblue",
+  color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
   width: "auto",
   maxWidth: "80%",
   wordBreak: "break-word",
-  backgroundColor: "rgb(246, 246, 246)",
-};
+  backgroundColor: dark ? "#0a2240" : "rgb(246, 246, 246)",
+});
 
 
 

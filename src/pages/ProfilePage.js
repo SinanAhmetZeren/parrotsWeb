@@ -24,6 +24,7 @@ function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
@@ -107,7 +108,7 @@ function ProfilePage() {
             <div className="flex profilePage_BottomLeft">
               <div style={buttonsAndImagesContainer}>
                 <div style={buttonsContainer}>
-                  <TermsOfUseComponent />
+                  <TermsOfUseComponent isDarkMode={isDarkMode} />
                   <div
                     style={{
                       display: "flex",
@@ -115,10 +116,10 @@ function ProfilePage() {
                       gap: "0.5rem",
                     }}
                   >
-                    <div onClick={() => handleGoToPublicPage()} style={navigationButton}>
+                    <div onClick={() => handleGoToPublicPage()} style={navButton(isDarkMode)}>
                       <span>Public Profile</span>
                     </div>
-                    <div onClick={() => handleGoToEditProfilePage()} style={navigationButton}>
+                    <div onClick={() => handleGoToEditProfilePage()} style={navButton(isDarkMode)}>
                       <span>Edit Profile</span>
                     </div>
                   </div>
@@ -166,31 +167,34 @@ function ProfilePage() {
 
               </div>
               <div className="flex profilePage_BioAndContactDetails">
-                <div className="flex profilePage_BioTitleUserName">
+                <div
+                  className="flex profilePage_BioTitleUserName"
+                  style={isDarkMode ? { backgroundColor: "#0d2b4e" } : {}}
+                >
                   <div
                     className="flex profilePage_UserName"
                     style={{ justifyContent: "left" }}
                   >
                     <span
                       className="profilePage_UserName"
-                      style={{ color: parrotTextDarkBlue }}
+                      style={{ color: isDarkMode ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue }}
                     >
                       {userData.userName}
                     </span>
                   </div>
                   <div
                     className="flex profilePage_Title"
-                    style={{ color: parrotTextDarkBlue }}
+                    style={{ color: isDarkMode ? "rgba(255,255,255,0.75)" : parrotTextDarkBlue }}
                   >
                     <span className="profilePage_Title">{userData.title}</span>
                   </div>
                   <div className="flex profilePage_Bio">
-                    <BlueHashtagText originalText={userData.bio} />
+                    <BlueHashtagText originalText={userData.bio} isDarkMode={isDarkMode} />
                   </div>
                 </div>
                 <div className="flex profilePage_ContactDetails">
                   {isSuccessUser ? (
-                    <SocialRenderComponent userData={userData} />
+                    <SocialRenderComponent userData={userData} isDarkMode={isDarkMode} />
                   ) : null}
                 </div>
               </div>
@@ -215,6 +219,7 @@ function ProfilePage() {
 
                       <ProfilePageVehiclesComponent
                         userData={userData}
+                        isDarkMode={isDarkMode}
                       // userFavoriteVehicles={state_favVehicles}
                       />
                     </>
@@ -232,7 +237,7 @@ function ProfilePage() {
                         </span>
                       </div>
                       <div style={noVoyagesYetContainer}>
-                        <NoVoyagesVehiclesPlaceHolder type={"Vehicle"} />
+                        <NoVoyagesVehiclesPlaceHolder type={"Vehicle"} isDarkMode={isDarkMode} />
                       </div>
                     </>
                   )
@@ -255,6 +260,7 @@ function ProfilePage() {
                       </div>
                       <ProfilePageVoyagesComponent
                         userData={userData}
+                        isDarkMode={isDarkMode}
                       // userFavoriteVoyages={state_favVoyages}
                       />
                     </>
@@ -272,7 +278,7 @@ function ProfilePage() {
                         </span>
                       </div>
                       <div style={noVoyagesYetContainer}>
-                        <NoVoyagesVehiclesPlaceHolder type={"Voyage"} />
+                        <NoVoyagesVehiclesPlaceHolder type={"Voyage"} isDarkMode={isDarkMode} />
                       </div>
                     </>
                   )
@@ -332,10 +338,10 @@ const buttonsAndImagesContainer = {
 };
 
 
-const navigationButton = {
+const navButton = (dark) => ({
   borderRadius: "1.5rem",
-  backgroundColor: "white",
-  color: "#007bff",
+  backgroundColor: dark ? "#0d2b4e" : "white",
+  color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
   padding: "0.2rem 0.8rem",
   textAlign: "center",
   fontWeight: "bold",
@@ -346,7 +352,7 @@ const navigationButton = {
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
-};
+});
 
 
 

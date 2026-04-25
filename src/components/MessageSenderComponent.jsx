@@ -9,7 +9,9 @@ export function MessageSenderComponent({
   handleSendMessage,
   sendButtonDisabled,
   conversationUserUsername,
+  isDarkMode = false,
 }) {
+  const dark = isDarkMode;
   const handleInputChange = (e) => {
     setMessage(e.target.value);
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -19,11 +21,12 @@ export function MessageSenderComponent({
   // console.log("--> sendbuttondisabled: ", sendButtonDisabled);
 
   return (
-    <div style={inputContainerStyle}>
+    <div style={inputContainerStyle(dark)}>
       <textarea
         value={message}
         placeholder={`Write a message to ${conversationUserUsername}`}
-        style={messageInputStyle}
+        style={messageInputStyle(dark)}
+        maxLength={500}
         onInput={handleInputChange}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
@@ -47,22 +50,23 @@ export function MessageSenderComponent({
   );
 }
 
-const inputContainerStyle = {
+const inputContainerStyle = (dark) => ({
   display: "grid",
   gridTemplateColumns: "85% 10%",
   gap: "1rem",
   alignItems: "center",
   width: "100%",
   padding: "1rem",
-  backgroundColor: "#f0f0f0",
-};
+  backgroundColor: dark ? "#0a2240" : "#f0f0f0",
+});
 
-const messageInputStyle = {
+const messageInputStyle = (dark) => ({
   height: "4rem",
   width: "100%",
   padding: "1rem",
   fontSize: "1.3rem",
-  color: "black",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+  backgroundColor: dark ? "#0d2b4e" : "white",
   overflowY: "hidden",
   minHeight: "1rem",
   maxHeight: "10rem",
@@ -71,8 +75,8 @@ const messageInputStyle = {
   paddingRight: "2rem",
   marginRop: "1rem",
   borderRadius: "2rem",
-  border: "2px solid #c0c0c070",
-};
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+});
 
 const sendButtonStyle = {
   width: "7rem",

@@ -16,7 +16,7 @@ import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoHeartSharp } from "react-icons/io5";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DOMPurify from "dompurify";
 import Modal from "react-modal";
 
@@ -41,6 +41,8 @@ function VehicleDetailsPage() {
   const dispatch = useDispatch();
   const { vehicleId } = useParams();
   const userId = localStorage.getItem("storedUserId");
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const dark = isDarkMode;
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(0);
@@ -164,16 +166,17 @@ function VehicleDetailsPage() {
                 <TopBarMenu />
               </div>
             </div>
-            <div className="vehiclePage1_vehicleContainer">
+            <div className="vehiclePage1_vehicleContainer" style={dark ? { backgroundColor: "rgba(13,43,78,0.75)" } : {}}>
               <div
                 className="vehiclePage1_dataContainer"
                 style={{
                   position: "relative",
-                  height: "70vh",               // or "400px" or "80%" if parent has height
+                  height: "70vh",
                   overflowY: "scroll",
                   overflowX: "hidden",
-                  msOverflowStyle: "none",  // IE, Edge
-                  scrollbarWidth: "none"    // Firefox
+                  msOverflowStyle: "none",
+                  scrollbarWidth: "none",
+                  ...(dark ? { backgroundColor: "rgba(255,255,255,0.05)" } : {}),
                 }}
               >
                 {isFavorited ? (
@@ -198,38 +201,39 @@ function VehicleDetailsPage() {
                   </div>
                 )}
 
-                <div className="vehiclePage1_detailsContainer">
+                <div className="vehiclePage1_detailsContainer" style={dark ? { backgroundColor: "#0d2b4e", color: "rgba(255,255,255,0.9)" } : {}}>
                   <div className="vehiclePage1_nameContainer">
-                    <div className=" ">
+                    <div style={dark ? cellLabelDark : {}}>
                       <span>Name</span>
                     </div>
-                    <div className=" ">
+                    <div style={dark ? cellValueDark : {}}>
                       <span>{VehicleData.name}</span>
                     </div>
                   </div>
                   <div className="vehiclePage1_vacancyContainer">
-                    <div className=" ">
+                    <div style={dark ? cellLabelDark : {}}>
                       <span>Capacity</span>
                     </div>
-                    <div className=" ">
+                    <div style={dark ? cellValueDark : {}}>
                       <span>{VehicleData.capacity}</span>
                     </div>
                   </div>
                   <div className="vehiclePage1_typeContainer">
-                    <div className=" ">
+                    <div style={dark ? cellLabelDark : {}}>
                       <span>Type</span>
                     </div>
-                    <div className=" ">
+                    <div style={dark ? cellValueDark : {}}>
                       <span>{VehicleTypes[VehicleData.type]}</span>
                     </div>
                   </div>
 
                   <div className="vehiclePage1_hostContainer">
-                    <div className=" ">
+                    <div style={dark ? cellLabelDark : {}}>
                       <span>Host</span>
                     </div>
                     <div
                       className=" "
+                      style={dark ? cellValueDark : {}}
                       onClick={() =>
                         handleGoToUser({
                           userId: VehicleData.user.id,
@@ -272,12 +276,12 @@ function VehicleDetailsPage() {
                     </div>
                   </div>
                 </div>
-                <div className="vehiclePage1_descriptionContainer">
-                  <div className="vehiclePage1_descriptionContainer_inner">
-                    <div className="vehiclePage1_descriptionContainer_descriptionTitle">
+                <div className="vehiclePage1_descriptionContainer" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                  <div className="vehiclePage1_descriptionContainer_inner" style={dark ? { backgroundColor: "#0d2b4e", color: "rgba(255,255,255,0.85)" } : {}}>
+                    <div className="vehiclePage1_descriptionContainer_descriptionTitle" style={dark ? { color: "rgba(255,255,255,0.9)" } : {}}>
                       <span style={{ fontWeight: "bold" }}>Description</span>
                     </div>
-                    <div className="vehiclePage1_descriptionContainer_descriptionContent">
+                    <div className="vehiclePage1_descriptionContainer_descriptionContent" style={dark ? { color: "rgba(255,255,255,0.85)" } : {}}>
                       {/* <span> {VehicleData.description}</span> */}
                       <div
                         dangerouslySetInnerHTML={{
@@ -289,13 +293,13 @@ function VehicleDetailsPage() {
                   </div>
                 </div>
                 {VehicleData.voyages?.length > 0 && (
-                  <div className="vehicleVoyagesContainer">
-                    <VehicleVoyages voyages={VehicleData.voyages} />
+                  <div className="vehicleVoyagesContainer" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                    <VehicleVoyages voyages={VehicleData.voyages} isDarkMode={dark} />
                   </div>
                 )}
               </div>
 
-              <div className="vehiclePage1_swiperContainer">
+              <div className="vehiclePage1_swiperContainer" style={dark ? { backgroundColor: "rgba(255,255,255,0.05)" } : {}}>
                 <VehiclePageImageSwiper vehicleData={VehicleData} />
               </div>
             </div>
@@ -584,6 +588,24 @@ const modalStyle = {
     zIndex: 1050,
     backgroundColor: "#f8f9fa",
   },
+};
+
+const cellLabelDark = {
+  backgroundColor: "rgba(255,255,255,0.08)",
+  color: "rgba(255,255,255,0.6)",
+  fontWeight: 700,
+  marginBottom: "0.3rem",
+  borderRadius: ".4rem",
+  textAlign: "start",
+  paddingLeft: "0.3rem",
+};
+
+const cellValueDark = {
+  backgroundColor: "rgba(255,255,255,0.05)",
+  color: "rgba(255,255,255,0.9)",
+  borderRadius: ".4rem",
+  textAlign: "start",
+  paddingLeft: "0.3rem",
 };
 
 const titleWrapperStyle = {

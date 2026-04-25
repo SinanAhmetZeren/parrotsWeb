@@ -17,6 +17,7 @@ const usersSlice = createSlice({
     unreadMessages: false,
     isAdmin: false,
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
+    isDarkMode: localStorage.getItem("storedIsDarkMode") !== "false",
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -212,6 +213,10 @@ const usersSlice = createSlice({
     markMessagesRead: (state) => {
       state.unreadMessages = false;
     },
+    setIsDarkMode: (state, action) => {
+      state.isDarkMode = action.payload;
+      localStorage.setItem("storedIsDarkMode", String(action.payload));
+    },
 
   },
 });
@@ -232,6 +237,7 @@ export const {
   setUnreadMessages,
   markMessagesRead,
   setAcknowledgedPublicProfile,
+  setIsDarkMode,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

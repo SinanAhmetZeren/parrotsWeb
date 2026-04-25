@@ -6,7 +6,8 @@ import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 import { parrotTextDarkBlue } from "../styles/colors";
 
-export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
+export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen, isDarkMode = false }) => {
+  const dark = isDarkMode;
 
   const calendarRef = useRef(null);
   const handleDateChange = (item) => {
@@ -64,18 +65,16 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
             type="text"
             readOnly
             value={`${formatDate(dates[0].startDate)}`}
-            placeholder="Start Date" // Placeholder text
+            placeholder="Start Date"
             style={{
               width: "65%",
               padding: ".3rem",
-              border: "1px solid #ccc",
+              border: dark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #ccc",
               borderRadius: "1.5rem",
               textAlign: "center",
-              color: parrotTextDarkBlue,
-              boxShadow: `
-            0 4px 6px rgba(0, 0, 0, 0.3),
-            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-          `,
+              color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+              backgroundColor: dark ? "#0d2b4e" : "white",
+              boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)`,
             }}
           />
         </div>
@@ -97,18 +96,16 @@ export const MainPageDatePicker = ({ dates, setDates, calendarOpen, setCalendarO
             type="text"
             readOnly
             value={`${formatDate(dates[0].endDate)}`}
-            placeholder="End Date" // Placeholder text
+            placeholder="End Date"
             style={{
               width: "65%",
-              border: "1px solid #ccc",
               padding: ".3rem",
+              border: dark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #ccc",
               borderRadius: "1.5rem",
               textAlign: "center",
-              color: parrotTextDarkBlue,
-              boxShadow: `
-            0 4px 6px rgba(0, 0, 0, 0.3),
-            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-          `,
+              color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+              backgroundColor: dark ? "#0d2b4e" : "white",
+              boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)`,
             }}
           />
         </div>

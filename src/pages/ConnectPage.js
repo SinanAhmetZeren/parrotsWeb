@@ -30,7 +30,7 @@ import {
   register_ReceiveMessageRefetch,
   unregister_ReceiveMessageRefetch,
 } from "../signalr/signalRHub"; // your centralized hub module
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages } from "../slices/UserSlice";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import { parrotTextDarkBlue } from "../styles/colors";
@@ -55,6 +55,7 @@ function ConnectPage() {
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
+  const sendTimestampsRef = useRef([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [hubState, setHubState] = useState("connected");
 
@@ -65,6 +66,8 @@ function ConnectPage() {
     return () => { clearTimeout(delay); clearInterval(interval); };
   }, []);
   const dispatch = useDispatch();
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const dark = isDarkMode;
   const {
     data: messagePreviewsData,
     isLoading: isLoadingmessagePreviews,
@@ -156,9 +159,15 @@ function ConnectPage() {
   //  send message + optimistic UI update + refetch previews. 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
+
+    // Frontend rate limit: block if 5 messages sent within 5 seconds
+    const now = Date.now();
+    sendTimestampsRef.current = sendTimestampsRef.current.filter(t => now - t < 5000);
+    if (sendTimestampsRef.current.length >= 5) return;
+    sendTimestampsRef.current.push(now);
+
     setSendButtonDisabled(true);
-    const now = new Date();
-    const formattedDateTime = now.toISOString();
+    const formattedDateTime = new Date().toISOString();
     const sentMessage = {
       dateTime: formattedDateTime,
       receiverId: conversationUserId,
@@ -304,13 +313,14 @@ function ConnectPage() {
               )}
 
               <div className="flex connectPage_Bottom">
-                <div className="flex connectPage_BottomLeft">
-                  <div style={SearchBarContainer}>
+                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#0a2240" } : SearchBarContainer}>
                     <SearchUserComponent
                       inputValue={inputValue}
                       setInputValue={setInputValue}
                       onSearch={() => setQuery(inputValue)}
                       isLoading={isSearchLoading}
+                      isDarkMode={isDarkMode}
                     />
                   </div>
                   {query.length > 2 && (
@@ -324,11 +334,12 @@ function ConnectPage() {
                         handleGoToUser={handleGoToUser}
                         setInputValue={setInputValue}
                         onLoadingChange={setIsSearchLoading}
+                        isDarkMode={isDarkMode}
                       />
                     </div>
                   )}
                   {isSuccessmessagePreviews && query.length < 3 && (
-                    <div style={MessagePreviewsContainer}>
+                    <div style={MessagePreviewsContainer} className={dark ? "dark-scrollbar" : ""}>
                       <MessagePreviewsComponent
                         messagesData={safeMessagePreviewsData}
                         userId={currentUserId}
@@ -336,12 +347,13 @@ function ConnectPage() {
                         setConversationUserId={setConversationUserId}
                         setConversationUserUsername={setConversationUserUsername}
                         handleGoToUser={handleGoToUser}
+                        isDarkMode={isDarkMode}
                       />
                     </div>
                   )}
                 </div>
-                <div className="flex connectPage_BottomRight">
-                  <div style={ConversationComponentContainer}>
+                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#0d2b4e" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : ""}>
 
                     {!conversationUserId &&
                       <div style={imageWrapperWrapper}>
@@ -361,6 +373,7 @@ function ConnectPage() {
                       messagesToDisplay={messagesToDisplay}
                       currentUserId={currentUserId}
                       conversationUserId={conversationUserId}
+                      isDarkMode={isDarkMode}
                     />
                   </div>
 
@@ -374,6 +387,7 @@ function ConnectPage() {
                         setMessage={setMessage}
                         handleSendMessage={handleSendMessage}
                         sendButtonDisabled={sendButtonDisabled}
+                        isDarkMode={isDarkMode}
                       />
                     </div>
                   )}
@@ -430,8 +444,7 @@ const image = {
   margin: "auto",
   alignSelf: "center",
   margintop: "15rem",
-
-
+  borderRadius: "6rem",
 }
 
 const subText = {

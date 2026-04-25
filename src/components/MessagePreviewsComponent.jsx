@@ -13,8 +13,10 @@ export function MessagePreviewsComponent({
   // selectedUserId,
   setConversationUserId,
   setConversationUserUsername,
-  handleGoToUser
+  handleGoToUser,
+  isDarkMode = false,
 }) {
+  const dark = isDarkMode;
   const { conversationUserId: selectedUserId } = useParams();
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
@@ -57,8 +59,8 @@ export function MessagePreviewsComponent({
       return (
         <div key={index}
           style={{
-            ...containerStyle,
-            ...((otherUserUserId === selectedConversationUserId) && selectedContainerStyle)
+            ...containerStyle(dark),
+            ...((otherUserUserId === selectedConversationUserId) && selectedContainerStyle(dark))
           }}
           title={message.text} onClick={() => setUserDetails()}>
           <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
@@ -78,18 +80,18 @@ export function MessagePreviewsComponent({
           </div>
           <div style={UsernameAndTextContainer}>
             <div>
-              <span style={messageUsernameStyle}>{otherUserUsername}</span>
+              <span style={messageUsernameStyle(dark)}>{otherUserUsername}</span>
             </div>
             <div>
-              <span style={messageTextStyle}>{message.text}</span>
+              <span style={messageTextStyle(dark)}>{message.text}</span>
             </div>
           </div>
           <div style={timestampContainer}>
             <div>
-              <span style={{ ...messageTimeStyle, color: parrotBlueDarkTransparent2 }}>{time}</span>
+              <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
             </div>
             <div>
-              <span style={{ ...messageTimeStyle, color: parrotBlueDarkTransparent }}>{date}</span>
+              <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span>
             </div>
           </div>
         </div>)
@@ -97,10 +99,10 @@ export function MessagePreviewsComponent({
   );
 }
 
-const selectedContainerStyle = {
+const selectedContainerStyle = (dark) => ({
   boxShadow: "inset 0 0 3px rgba(60, 157, 222,0.5)",
-  backgroundColor: "white"
-}
+  backgroundColor: dark ? "#163d6a" : "white",
+})
 
 const userprofileimg = {
   height: "4rem",
@@ -114,17 +116,17 @@ const userprofileimgHover = {
   transform: "scale(1.2)", // Enlarge on hover
 };
 
-const containerStyle = {
+const containerStyle = (dark) => ({
   fontSize: "1rem",
-  backgroundColor: "rgb(246, 246, 246)",
+  backgroundColor: dark ? "#0a2240" : "rgb(246, 246, 246)",
   margin: "10px",
   padding: "10px",
   display: "grid",
   gridTemplateColumns: "1fr 3fr 1.5fr",
   alignItems: "center",
   borderRadius: "4rem",
-  cursor: "pointer"
-};
+  cursor: "pointer",
+});
 
 const userprofileimgContainer = {
   cursor: "pointer"
@@ -139,31 +141,30 @@ const timestampContainer = {
 
 
 
-const messageTextStyle = {
+const messageTextStyle = (dark) => ({
   fontSize: "1.3rem",
   textAlign: "left",
-  color: "#3c9dde",
-  color: "darkblue",
+  color: dark ? "rgba(255,255,255,0.7)" : "darkblue",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
   WebkitLineClamp: 1,
   textOverflow: "ellipsis",
-}
+})
 
 
 
-const messageUsernameStyle = {
+const messageUsernameStyle = (dark) => ({
   fontSize: "1.3rem",
   textAlign: "left",
-  color: "#3c9dde",
+  color: dark ? "rgba(255,255,255,0.9)" : "#3c9dde",
   fontWeight: "bold",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
   WebkitLineClamp: 1,
   textOverflow: "ellipsis",
-}
+})
 
 
 const messageTimeStyle = {

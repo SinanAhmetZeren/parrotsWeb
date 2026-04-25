@@ -3,8 +3,7 @@ import { parrotTextDarkBlue } from "../styles/colors";
 import he from "he";
 import DOMPurify from "dompurify";
 
-export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles }) {
-  const apiUrl = process.env.REACT_APP_API_URL;
+export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles, isDarkMode = false }) {
   const vehicleBaseUrl = ``;
   const navigate = useNavigate();
   const handleCardClick = (vehicleId) => {
@@ -12,46 +11,38 @@ export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles })
   };
   const isFavorited = userFavoriteVehicles?.includes(vehicle?.id);
 
+  const dark = isDarkMode;
 
   return (
-    <div key={index} className="card" style={cardContainerStyle} onClick={() => handleCardClick(vehicle?.id)}>
-      <div className="card-image" style={cardImageContainerStyle}>
+    <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(vehicle?.id)}>
+      <div className="card-image" style={cardImageContainerStyle(dark)}>
         <img src={vehicleBaseUrl + (vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl)} style={cardImageStyle} alt="Boat tour" />
       </div>
-      <div className="card-content" style={cardContentStyle}>
-        <div style={{
-          display: "flex", flexDirection: "row"
-        }}>
-          <div style={vehicleNameStyle} >
-            <span style={vehicleNameStyle_Text} title={vehicle?.name}>
+      <div className="card-content" style={cardContentStyle(dark)}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={vehicleNameStyle}>
+            <span style={vehicleNameText(dark)} title={vehicle?.name}>
               {vehicle?.name?.length > 18 ? `${vehicle?.name.substring(0, 18)}...` : vehicle?.name}
             </span>
           </div>
           <div style={vehicleTypeStyle}>
-            <span style={vehicleTypeStyle_Text} title={vehicle?.type}>
+            <span style={pillStyle(dark)} title={vehicle?.type}>
               <VehicleIcon vehicleType={vehicle?.type} />
             </span>
           </div>
           <div style={vehicleCapacityStyle}>
-            <span style={vehicleCapacityStyle_Text} title={"capacity is " + vehicle?.capacity + ((vehicle?.capacity > 1) ? " people" : " person")}>🧑‍🤝‍🧑{vehicle?.capacity}
+            <span style={pillStyle(dark)} title={"capacity is " + vehicle?.capacity + ((vehicle?.capacity > 1) ? " people" : " person")}>
+              🧑‍🤝‍🧑{vehicle?.capacity}
             </span>
           </div>
         </div>
-        {/* <div style={cardBriefStyle}>{vehicle?.description}</div> */}
 
-        <div style={cardBriefStyle}>
+        <div style={cardBriefStyle(dark)}>
           {vehicle?.description?.length > 280 ? (
             <div
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
-                  he
-                    .decode(
-                      vehicle?.description
-                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                        .replace(/\s+/g, " ")     // normalize spaces
-                        .trim()
-                    )
-                    .substring(0, 280) + "..."
+                  he.decode(vehicle?.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()).substring(0, 280) + "..."
                 ),
               }}
             />
@@ -59,119 +50,82 @@ export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles })
             <div
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
-                  he
-                    .decode(
-                      vehicle?.description
-                        .replace(/<[^>]+>/g, " ") // strip all HTML tags
-                        .replace(/\s+/g, " ")     // normalize spaces
-                        .trim()
-                    )
+                  he.decode(vehicle?.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())
                 ),
               }}
             />
           )}
         </div>
-
-
       </div>
-    </div >
+    </div>
   );
 }
 
+const vehicleNameStyle = { flex: 1 };
+const vehicleTypeStyle = {};
+const vehicleCapacityStyle = { marginRight: "0.5rem" };
 
-const vehicleNameStyle = {
-  flex: 1,
-};
-
-const vehicleTypeStyle = {
-  // flex: 1,
-}
-
-const vehicleCapacityStyle = {
-  // flex: 1,
-  marginRight: "0.5rem"
-};
-
-const vehicleNameStyle_Text = {
-  fontSize: "1.3rem",
-  fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
-  borderRadius: "1rem",
-  padding: "0.1rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-};
-
-const vehicleTypeStyle_Text = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
-  borderRadius: "1rem",
-  padding: "0.1rem",
-  paddingLeft: ".5rem",
-  paddingRight: ".5rem",
-  fontSize: "1rem",
-  fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
-};
-
-const vehicleCapacityStyle_Text = {
-  backgroundColor: "rgba(0, 119, 234,0.1)",
-  borderRadius: "1rem",
-  paddingLeft: ".5rem",
-  paddingRight: ".5rem",
-  fontSize: "1rem",
-  fontWeight: "bold",
-  color: "rgba(10, 119, 234,1)",
-};
-
-const cardContainerStyle = {
+const cardContainer = (dark) => ({
   display: "flex",
   flexDirection: "row",
-  // border: "1px solid #ddd",
   borderRadius: "2rem",
   overflow: "hidden",
   width: "40rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: "#fff",
+  backgroundColor: dark ? "#0d2b4e" : "#fff",
   margin: "auto",
   marginBottom: ".5rem",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.3),
-  inset 0 -8px 6px rgba(0, 0, 0, 0.1)
-`,
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.1)",
   cursor: "pointer",
-};
+});
 
-const cardImageStyle = {
-  width: "16rem",
-  height: "101%",
-  objectFit: "cover",
-};
+const cardImageStyle = { width: "16rem", height: "101%", objectFit: "cover" };
 
-const cardImageContainerStyle = {
+const cardImageContainerStyle = (dark) => ({
   height: "14rem",
   minWidth: "16rem",
   objectFit: "cover",
-  borderBottom: "1px solid #ddd",
-};
+  borderBottom: dark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #ddd",
+});
 
-const cardContentStyle = {
+const cardContentStyle = (dark) => ({
   display: "flex",
   height: "14rem",
   minWidth: "24rem",
   width: "24rem",
   flexDirection: "column",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.4),
-  inset 0 -6px 6px rgba(0, 0, 0, 0.4)
-`,
-};
+  boxShadow: dark
+    ? "0 4px 6px rgba(0,0,0,0.4), inset 0 -6px 6px rgba(0,0,0,0.3)"
+    : "0 4px 6px rgba(0,0,0,0.4), inset 0 -6px 6px rgba(0,0,0,0.4)",
+});
 
-const cardBriefStyle = {
+const vehicleNameText = (dark) => ({
+  fontSize: "1.3rem",
+  fontWeight: "bold",
+  color: dark ? "rgba(255,255,255,0.9)" : "rgba(10,119,234,1)",
+  borderRadius: "1rem",
+  padding: "0.1rem",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+});
+
+const pillStyle = (dark) => ({
+  backgroundColor: dark ? "rgba(255,255,255,0.1)" : "rgba(0,119,234,0.1)",
+  borderRadius: "1rem",
+  padding: "0.1rem",
+  paddingLeft: ".5rem",
+  paddingRight: ".5rem",
+  fontSize: "1rem",
+  fontWeight: "bold",
+  color: dark ? "rgba(255,255,255,0.85)" : "rgba(10,119,234,1)",
+});
+
+const cardBriefStyle = (dark) => ({
   fontSize: "1.1rem",
   fontFamily: "Nunito, sans-serif",
   fontWeight: "600",
-  color: parrotTextDarkBlue,
+  color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -185,29 +139,13 @@ const cardBriefStyle = {
   width: "90%",
   margin: "auto",
   marginTop: "0.6rem",
-};
-
+});
 
 export default function VehicleIcon({ vehicleType }) {
   const vehicles = {
-    Boat: "⛵",
-    Car: "🚗",
-    Caravan: "🚐",
-    Bus: "🚌",
-    Walk: "🚶",
-    Run: "🏃",
-    Motorcycle: "🏍️",
-    Bicycle: "🚲",
-    Tinyhouse: "🏠",
-    Airplane: "✈️",
-    Train: "🚄",
+    Boat: "⛵", Car: "🚗", Caravan: "🚐", Bus: "🚌", Walk: "🚶",
+    Run: "🏃", Motorcycle: "🏍️", Bicycle: "🚲", Tinyhouse: "🏠",
+    Airplane: "✈️", Train: "🚄",
   };
-
-  const getVehicleEmoji = (type) => {
-    return vehicles[type] || "❓";
-  };
-
-  return (
-    <span style={{ textAlign: "center", fontSize: "1.5rem" }}>{getVehicleEmoji(vehicleType)}</span>
-  );
+  return <span style={{ textAlign: "center", fontSize: "1.5rem" }}>{vehicles[vehicleType] || "❓"}</span>;
 }

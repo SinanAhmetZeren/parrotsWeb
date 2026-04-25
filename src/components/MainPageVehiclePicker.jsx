@@ -4,7 +4,9 @@ import { parrotTextDarkBlue } from "../styles/colors";
 export const MainPageVehiclePicker = ({
   selectedVehicle,
   setSelectedVehicle,
+  isDarkMode = false,
 }) => {
+  const dark = isDarkMode;
   // const [selectedVehicle, setSelectedVehicle] = useState("");
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -65,15 +67,13 @@ export const MainPageVehiclePicker = ({
           style={{
             width: "65%",
             padding: ".3rem",
-            border: "1px solid #ccc",
+            border: dark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
-            color: parrotTextDarkBlue,
+            color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+            backgroundColor: dark ? "#0d2b4e" : "white",
             cursor: "pointer",
-            boxShadow: `
-            0 4px 6px rgba(0, 0, 0, 0.3),
-            inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-          `,
+            boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)`,
           }}
         />
 
@@ -90,10 +90,7 @@ export const MainPageVehiclePicker = ({
               marginTop: "2.5rem",
               width: "65%",
               right: "0rem",
-              boxShadow: `
-              0 4px 6px rgba(0, 0, 0, 0.3),
-              inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-            `,
+              boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)`,
             }}
           >
             {vehicles.map((vehicle, index) => (
@@ -107,11 +104,7 @@ export const MainPageVehiclePicker = ({
                   padding: ".5rem 1rem",
                   cursor: "pointer",
                   color: parrotTextDarkBlue,
-                  boxShadow: `
-                  inset 0 -3px 8px rgba(0, 0, 0, 0.05)
-                `,
-                  borderBottom:
-                    index !== vehicles.length - 1 ? "1px solid #eee" : "none",
+                  borderBottom: index !== vehicles.length - 1 ? "1px solid #eee" : "none",
                 }}
               >
                 {vehicle}

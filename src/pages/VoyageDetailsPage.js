@@ -71,7 +71,7 @@ function VoyageDetailsPage() {
   const [isPublicOnMap, setIsPublicOnMap] = useState(false);
   const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
   const [isLegacyView, setIsLegacyView] = useState(true)
-  const [isDarkMode, setIsDarkMode] = useState(true)
+  const isDarkMode = useSelector((state) => state.users.isDarkMode)
 
 
   let favoriteVoyages;
@@ -288,7 +288,6 @@ function VoyageDetailsPage() {
                   isLegacyView={isLegacyView}
                   setIsLegacyView={setIsLegacyView}
                   isDarkMode={isDarkMode}
-                  setIsDarkMode={setIsDarkMode}
                 />
               </div>
               <div style={voyageDetailsDescriptionStyle} className="flex">
@@ -392,7 +391,6 @@ function VoyageDetailsPage() {
                   isLegacyView={isLegacyView}
                   setIsLegacyView={setIsLegacyView}
                   isDarkMode={isDarkMode}
-                  setIsDarkMode={setIsDarkMode}
                 />
                 {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
               </div>

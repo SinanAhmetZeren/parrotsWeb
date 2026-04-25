@@ -1,12 +1,13 @@
 import "../assets/css/date-range-custom.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAsLoggedOut } from "../slices/UserSlice";
+import { updateAsLoggedOut, setIsDarkMode } from "../slices/UserSlice";
 import { stopHubConnection } from "../signalr/signalRHub";
 import { useState } from "react";
 import { parrotBananaLeafGreen, parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotGreen, parrotGreenTransparent, parrotPistachioGreen, parrotRed } from "../styles/colors";
 import { apiSlice } from "../api/apiSlice";
 import { store } from '../store/store';
+import { IoSunny, IoMoon } from "react-icons/io5";
 
 export function TopBarMenu() {
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
@@ -14,6 +15,7 @@ export function TopBarMenu() {
   // console.log("--> Unread messages", unreadMessages);
   const isAdmin = useSelector((state) => state.users.isAdmin);
   console.log("isadmin", isAdmin);
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -193,9 +195,31 @@ export function TopBarMenu() {
           </NavLink>
         </>
       )}
+      <button
+        onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
+        style={darkModeToggleStyle}
+        title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      >
+        {isDarkMode
+          ? <IoSunny size="1.4rem" color="goldenrod" />
+          : <IoMoon size="1.4rem" color="goldenrod" />
+        }
+      </button>
     </nav>
   );
 }
+
+const darkModeToggleStyle = {
+  marginLeft: "0.5rem",
+  padding: "0.4rem 0.6rem",
+  borderRadius: "2rem",
+  border: "none",
+  backgroundColor: "rgba(59, 130, 246, 0.2)",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
 const activeStyle = "text-white";
 const inactiveStyle = "text-blue-500";

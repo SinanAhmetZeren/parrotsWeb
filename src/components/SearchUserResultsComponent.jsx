@@ -15,7 +15,9 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
   handleGoToUser,
   setInputValue,
   onLoadingChange,
+  isDarkMode = false,
 }) {
+  const dark = isDarkMode;
   const {
     data: usersData,
     isLoading: isLoadingUsers,
@@ -38,7 +40,7 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
           <div className="spinner"></div>
         </div>
       ) : isSuccessUsers && query.length > 2 ? (
-        <div style={searchResultsContainer}>
+        <div style={searchResultsContainer(dark)}>
           <RenderSearchResults
             users={usersData}
             userId={userId}
@@ -47,6 +49,7 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
             handleGoToUser={handleGoToUser}
             setInputValue={setInputValue}
             setQuery={setQuery}
+            dark={dark}
           />
         </div>
       ) : isErrorUsers ? (
@@ -57,7 +60,7 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
 }
 
 
-function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser, setInputValue, setQuery }) {
+function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser, setInputValue, setQuery, dark }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
   const [hoveredUserImgID2, setHoveredUserImgID2] = React.useState("")
   const [hoveredUserImgID3, setHoveredUserImgID3] = React.useState("")
@@ -75,37 +78,27 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
   }
   return <div style={searchResults}>
     {users.map((user) => (
-      <div style={singleSearchResult} key={user.id}>
+      <div style={singleSearchResult(dark)} key={user.id}>
         <img
           title={`See ${user.userName}'s profile`}
           style={{ ...userProfileImg, ...((hoveredUserImgID3 === user.id) ? userprofileimgHover : {}) }}
-          onMouseEnter={() => {
-            setHoveredUserImgID3(user.id)
-          }}
+          onMouseEnter={() => { setHoveredUserImgID3(user.id) }}
           onMouseLeave={() => setHoveredUserImgID3("")}
-          onClick={() => {
-            handleGoToUser(user.userId, user.userName, user.publicId);
-          }}
+          onClick={() => { handleGoToUser(user.userId, user.userName, user.publicId); }}
           src={userBaseUrl + (user.profileImageThumbnailUrl || user.profileImageUrl)} alt="profile" />
 
-        <div style={userNameText}>{user.userName}</div>
+        <div style={userNameText(dark)}>{user.userName}</div>
         <div title={`Send Message to ${user.userName}`}
-          style={{ ...sendMessageStyle, ...((hoveredUserImgID === user.id) ? seeProfileStyleHover : {}) }}
-          onMouseEnter={() => {
-            setHoveredUserImgID(user.id)
-          }}
+          style={{ ...actionButtonStyle(dark), ...((hoveredUserImgID === user.id) ? actionButtonHover : {}) }}
+          onMouseEnter={() => { setHoveredUserImgID(user.id) }}
           onMouseLeave={() => setHoveredUserImgID("")}
           onClick={() => StartConversationWithUser(user)}><TiMessages />
         </div>
         <div title={`See ${user.userName}'s profile`}
-          style={{ ...seeProfileStyle, ...((hoveredUserImgID2 === user.id) ? seeProfileStyleHover : {}) }}
-          onMouseEnter={() => {
-            setHoveredUserImgID2(user.id)
-          }}
+          style={{ ...actionButtonStyle(dark), ...((hoveredUserImgID2 === user.id) ? actionButtonHover : {}) }}
+          onMouseEnter={() => { setHoveredUserImgID2(user.id) }}
           onMouseLeave={() => setHoveredUserImgID2("")}
-          onClick={() => //handleGoToUser(user.id, user.userName)
-            handleGoToUser(user.userId, user.userName, user.publicId)
-          }>
+          onClick={() => handleGoToUser(user.userId, user.userName, user.publicId)}>
           <CgProfile />
         </div>
       </div>
@@ -115,29 +108,18 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
 
 
 
-const seeProfileStyleHover = {
-  transform: "scale(1.2)", // Enlarge on hover
+const actionButtonHover = {
+  transform: "scale(1.2)",
 };
 
-const seeProfileStyle = {
-  backgroundColor: "white",
+const actionButtonStyle = (dark) => ({
+  backgroundColor: dark ? "#0d2b4e" : "white",
   alignSelf: "center",
   color: "#3c9dde",
   borderRadius: "2rem",
   padding: ".5rem",
-  border: "2px solid #3c9dee42"
-}
-
-const sendMessageStyle = {
-  backgroundColor: "white",
-  alignSelf: "center",
-  color: "#3c9dde",
-  borderRadius: "2rem",
-  padding: ".5rem",
-  border: "2px solid #3c9dee42"
-}
-
-
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #3c9dee42",
+})
 
 const searchResults = {
   margin: "1rem",
@@ -150,14 +132,14 @@ const searchMainContainer = {
   height: "93vh",
 }
 
-const searchResultsContainer = {
+const searchResultsContainer = (dark) => ({
   height: "calc(100% - 5rem)",
-  backgroundColor: "white",
-}
+  backgroundColor: dark ? "#0d2b4e" : "white",
+})
 
-const singleSearchResult = {
+const singleSearchResult = (dark) => ({
   width: "100%",
-  backgroundColor: "#f6f6f6",
+  backgroundColor: dark ? "#0a2240" : "#f6f6f6",
   marginBottom: "1rem",
   display: "grid",
   gridTemplateColumns: "4rem 6fr 1fr 1fr",
@@ -165,27 +147,25 @@ const singleSearchResult = {
   borderRadius: "4rem",
   padding: ".5rem",
   cursor: "pointer",
-};
+});
 
 const userProfileImg = {
   height: "4rem",
   width: "4rem",
   borderRadius: "50%",
   marginRight: "1rem",
-  transition: "transform 0.3s ease-in-out", // Smooth transition
-
+  transition: "transform 0.3s ease-in-out",
 }
 
 const userprofileimgHover = {
-  transform: "scale(1.2)", // Enlarge on hover
+  transform: "scale(1.2)",
 };
 
-const userNameText = {
+const userNameText = (dark) => ({
   fontSize: "1.3rem",
   fontWeight: "bold",
   textAlign: "center",
   alignItems: "center",
   alignSelf: "center",
-  color: "#3c9dde",
-}
-
+  color: dark ? "rgba(255,255,255,0.9)" : "#3c9dde",
+})

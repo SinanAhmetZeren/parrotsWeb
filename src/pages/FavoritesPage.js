@@ -12,9 +12,11 @@ import { FavoritesPlaceHolderComponent } from "../components/FavoritesPlaceHolde
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { EmptyFavoritesComponent } from "../components/EmptyFavoritesComponent";
+import { useSelector } from "react-redux";
 
 export default function FavoritePage() {
   const userId = localStorage.getItem("storedUserId");
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
   // console.log("userid", userId);
   const {
     data: FavoriteVoyagesData,
@@ -93,6 +95,7 @@ export default function FavoritePage() {
                   FavoriteVehiclesData?.length > 0 ? (
                     <FavoritesPageVehiclesComponent
                       FavoriteVehiclesData={FavoriteVehiclesData}
+                      isDarkMode={isDarkMode}
                     />
                   ) : <EmptyFavoritesComponent />
                 ) : (
@@ -108,6 +111,7 @@ export default function FavoritePage() {
                   FavoriteVoyagesData?.length > 0 ? (
                     <FavoritesPageVoyagesComponent
                       FavoriteVoyages={FavoriteVoyagesData}
+                      isDarkMode={isDarkMode}
                     />
                   ) : <EmptyFavoritesComponent />
                 ) : (

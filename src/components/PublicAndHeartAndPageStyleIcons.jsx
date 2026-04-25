@@ -1,8 +1,8 @@
-import { IoHeartSharp, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import { IoHeartSharp } from "react-icons/io5";
 import { CustomToolTip } from "./CustomToolTip";
 import { useState } from "react";
-import { MdOutlineArticle, MdPublic } from "react-icons/md";
-import { parrotBlueDarkTransparent2, parrotDarkBlue, parrotGreen, parrotPistachioGreen } from "../styles/colors";
+import { MdPublic } from "react-icons/md";
+import { parrotBlueDarkTransparent2, parrotDarkBlue } from "../styles/colors";
 import { LuScroll } from "react-icons/lu";
 import { RiComputerLine } from "react-icons/ri";
 
@@ -14,12 +14,10 @@ export const PublicAndHeartAndPageStyleIcons = ({
     handleDeleteVoyageFromFavorites,
     setIsLegacyView,
     isDarkMode,
-    setIsDarkMode,
 }) => {
     const [isHoveredHeart, setIsHoveredHeart] = useState(false)
     const [isHoveredPublicOnMap, setIsHoveredPublicOnMap] = useState(false)
     const [isHoveredLegacy, setIsHoveredLegacy] = useState(false)
-    const [isHoveredTheme, setIsHoveredTheme] = useState(false)
     return (
         <>
             {isFavorited ? (
@@ -60,18 +58,6 @@ export const PublicAndHeartAndPageStyleIcons = ({
                 </div>
             )}
 
-
-            <div
-                onClick={() => setIsDarkMode && setIsDarkMode(!isDarkMode)}
-                onMouseEnter={() => setIsHoveredTheme(true)}
-                onMouseLeave={() => setIsHoveredTheme(false)}
-                style={themeIconStyle}>
-                {isDarkMode
-                    ? <IoSunnyOutline size="1.5rem" color="goldenrod" />
-                    : <IoMoonOutline size="1.5rem" color={parrotDarkBlue} />
-                }
-                <CustomToolTip isHovered={isHoveredTheme} message={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"} />
-            </div>
 
             {isLegacyView ? (
                 <div
@@ -125,20 +111,6 @@ const heartIconStyle = (borderColor) => ({
     borderStyle: "solid",
     cursor: "pointer"
 });
-
-const themeIconStyle = {
-    position: "absolute",
-    backgroundColor: "white",
-    right: "11.5rem",
-    top: "-.50rem",
-    borderRadius: "3rem",
-    padding: "0.5rem",
-    zIndex: 1000,
-    borderWidth: "2px",
-    borderColor: "goldenrod",
-    borderStyle: "solid",
-    cursor: "pointer",
-};
 
 const legacyIconStyle = (borderColor) => ({
     position: "absolute",

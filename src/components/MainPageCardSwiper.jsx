@@ -29,14 +29,16 @@ export function MainPageCardSwiper({
   voyagesData,
   panToLocation,
   calendarOpen,
-  setCalendarOpen }) {
+  setCalendarOpen,
+  isDarkMode = false }) {
+  const dark = isDarkMode;
 
 
   // console.log(voyagesData.length);
   return (
     voyagesData.length === 0 ?
       <div style={{
-        backgroundColor: "rgba(255, 255, 255, 0.3)",
+        backgroundColor: dark ? "rgba(13,43,78,0.85)" : "rgba(255, 255, 255, 0.3)",
         height: "100%",
         width: "92%",
         padding: "1vh",

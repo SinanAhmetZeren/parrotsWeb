@@ -4,7 +4,7 @@ import { useGetCurrentTermsAdminQuery } from "../slices/TermsSlice";
 import { parrotBlue, parrotButtonGreen, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotRed, parrotTextDarkBlue } from "../styles/colors";
 import logoMini from '../assets/images/ParrotsLogoHead.png';
 
-const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) => {
+const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMode = false } = {}) => {
     const [isOpen, setIsOpen] = useState(false);
     const { data: currentTerms } = useGetCurrentTermsAdminQuery();
     const isControlled = controlledOpen !== undefined;
@@ -21,7 +21,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
     // Inline styles as JS objects
     const styles = {
         modalOpenButton: {
-            backgroundColor: "#007bff",
+            backgroundColor: isDarkMode ? "#0d2b4e" : "#007bff",
             color: "white",
             padding: "0.6rem 1.2rem",
             border: "none",
@@ -131,7 +131,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept } = {}) =
 
         <>
             {!isControlled && (
-                <button style={navigationButton} onClick={toggleModal}>
+                <button style={{ ...navigationButton, backgroundColor: isDarkMode ? "#0d2b4e" : "white", color: isDarkMode ? "rgba(255,255,255,0.9)" : "#007bff" }} onClick={toggleModal}>
                     <span>Terms of Use</span>
                 </button>
             )}

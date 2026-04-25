@@ -15,7 +15,7 @@ import {
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
 } from "../slices/UserSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { MainPageFiltersComponent } from "../components/MainPageFiltersComponent";
@@ -52,6 +52,7 @@ function MainPage() {
   const [mapTypeId, setMapTypeId] = useState("hybrid");
 
   const dispatch = useDispatch();
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const [
     getVoyagesByLocation,
     { isError: isErrorVoyages, isLoading: isLoadingVoyages, isSuccess: isSuccessVoyages },
@@ -207,6 +208,7 @@ function MainPage() {
                   applyFilter={applyFilter}
                   calendarOpen={calendarOpen}
                   setCalendarOpen={setCalendarOpen}
+                  isDarkMode={isDarkMode}
                 />
               </div>
               <div style={{ height: "60vh" }}>
@@ -218,6 +220,7 @@ function MainPage() {
                     panToLocation={handlePanToLocation}
                     setCalendarOpen={setCalendarOpen}
                     calendarOpen={calendarOpen}
+                    isDarkMode={isDarkMode}
                   />
                 )}
               </div>
