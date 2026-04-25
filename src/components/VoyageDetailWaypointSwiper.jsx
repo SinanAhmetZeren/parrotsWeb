@@ -5,8 +5,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { VoyageDetailWaypointCard } from "./VoyageDetailWaypointCard";
+import { VoyageDetailWaypointCardLight } from "./VoyageDetailWaypointCardLight";
 
-export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity, voyageImage }) {
+export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opacity, voyageImage, isDarkMode = true }) {
 
   return (
     <div style={{ opacity: opacity, overflow: "hidden" }}>
@@ -36,7 +37,10 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
 
             }}
           >
-            <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} voyageImage={voyageImage} />
+            {isDarkMode
+              ? <VoyageDetailWaypointCard waypoint={waypoint} handlePanToLocation={handlePanToLocation} voyageImage={voyageImage} />
+              : <VoyageDetailWaypointCardLight waypoint={waypoint} handlePanToLocation={handlePanToLocation} voyageImage={voyageImage} />
+            }
           </SwiperSlide>
         ))}
       </Swiper>

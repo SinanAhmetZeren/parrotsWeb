@@ -42,6 +42,13 @@ import { PublicAndHeartAndPageStyleIcons } from "../components/PublicAndHeartAnd
 import { VoyageDetailBidsNew } from "../components/VoyageDetailPageBidsNew";
 import { VoyageDetailPageDescriptionNew } from "../components/VoyageDetailPageDescriptionNew";
 import { VoyageDetailPageImageSwiperNew } from "../components/VoyageDetailPageImageSwiperNew";
+import { VoyageDetailPageDetailsLight } from "../components/VoyageDetailPageDetailsLight";
+import { VoyageDetailPageDetailsLegacyLight } from "../components/VoyageDetailPageDetailsLegacyLight";
+import { VoyageDetailPageDescriptionLight } from "../components/VoyageDetailPageDescriptionLight";
+import { VoyageDetailPageDescriptionNewLight } from "../components/VoyageDetailPageDescriptionNewLight";
+import { VoyageDetailBidsLight } from "../components/VoyageDetailPageBidsLight";
+import { VoyageDetailBidsNewLight } from "../components/VoyageDetailPageBidsNewLight";
+import { VoyageDetailWaypointCardLight } from "../components/VoyageDetailWaypointCardLight";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
@@ -64,6 +71,7 @@ function VoyageDetailsPage() {
   const [isPublicOnMap, setIsPublicOnMap] = useState(false);
   const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
   const [isLegacyView, setIsLegacyView] = useState(true)
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
 
   let favoriteVoyages;
@@ -255,21 +263,13 @@ function VoyageDetailsPage() {
 
 
               <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
-                <VoyageDetailPageDetailsLegacy voyageData={VoyageData} />
+                {isDarkMode ? <VoyageDetailPageDetailsLegacy voyageData={VoyageData} /> : <VoyageDetailPageDetailsLegacyLight voyageData={VoyageData} />}
               </div>
               <div style={voyageDetailsBidsStyle} className="flex">
-                <VoyageDetailBids
-                  userId={userId}
-                  voyageId={voyageId}
-                  voyageData={VoyageData}
-                  ownVoyage={userId === VoyageData.userId}
-                  userBid={userBid}
-                  userBidAccepted={userBidAccepted}
-                  currentUserId={userId}
-                  isSuccessVoyage={isSuccessVoyage}
-                  refetch={refetch}
-                  setOpacity={setOpacity}
-                />
+                {isDarkMode
+                  ? <VoyageDetailBids userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                  : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                }
               </div>
 
             </div>
@@ -287,10 +287,15 @@ function VoyageDetailsPage() {
                   isPublicOnMap={isPublicOnMap}
                   isLegacyView={isLegacyView}
                   setIsLegacyView={setIsLegacyView}
+                  isDarkMode={isDarkMode}
+                  setIsDarkMode={setIsDarkMode}
                 />
               </div>
               <div style={voyageDetailsDescriptionStyle} className="flex">
-                <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
+                {isDarkMode
+                  ? <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
+                  : <VoyageDetailPageDescriptionLight voyageDescription={VoyageData.description} voyageName={VoyageData} />
+                }
               </div>
             </div>
 
@@ -332,6 +337,7 @@ function VoyageDetailsPage() {
                   handlePanToLocation={handlePanToLocation}
                   opacity={opacity}
                   voyageImage={VoyageData.profileImage}
+                  isDarkMode={isDarkMode}
                 />
               </div>
             </div>
@@ -385,27 +391,24 @@ function VoyageDetailsPage() {
                   isPublicOnMap={isPublicOnMap}
                   isLegacyView={isLegacyView}
                   setIsLegacyView={setIsLegacyView}
+                  isDarkMode={isDarkMode}
+                  setIsDarkMode={setIsDarkMode}
                 />
-                <VoyageDetailPageDetails voyageData={VoyageData} />
+                {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
               </div>
 
               <div style={voyageDetailsDescriptionStyle} className="flex">
-                <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
+                {isDarkMode
+                  ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
+                  : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
+                }
               </div>
 
               <div style={voyageDetailsBidsStyle} className="flex">
-                <VoyageDetailBidsNew
-                  userId={userId}
-                  voyageId={voyageId}
-                  voyageData={VoyageData}
-                  ownVoyage={userId === VoyageData.userId}
-                  userBid={userBid}
-                  userBidAccepted={userBidAccepted}
-                  currentUserId={userId}
-                  isSuccessVoyage={isSuccessVoyage}
-                  refetch={refetch}
-                  setOpacity={setOpacity}
-                />
+                {isDarkMode
+                  ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                  : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                }
               </div>
             </div>
 
@@ -446,6 +449,7 @@ function VoyageDetailsPage() {
                   handlePanToLocation={handlePanToLocation}
                   opacity={opacity}
                   voyageImage={VoyageData.profileImage}
+                  isDarkMode={isDarkMode}
                 />
               </div>
             </div>
