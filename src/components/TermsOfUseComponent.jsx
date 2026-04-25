@@ -21,7 +21,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
     // Inline styles as JS objects
     const styles = {
         modalOpenButton: {
-            backgroundColor: isDarkMode ? "#0d2b4e" : "#007bff",
+            backgroundColor: "#007bff",
             color: "white",
             padding: "0.6rem 1.2rem",
             border: "none",
@@ -131,7 +131,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
 
         <>
             {!isControlled && (
-                <button style={{ ...navigationButton, backgroundColor: isDarkMode ? "#0d2b4e" : "white", color: isDarkMode ? "rgba(255,255,255,0.9)" : "#007bff" }} onClick={toggleModal}>
+                <button style={navigationButton} onClick={toggleModal}>
                     <span>Terms of Use</span>
                 </button>
             )}

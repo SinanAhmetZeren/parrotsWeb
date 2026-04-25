@@ -67,11 +67,10 @@ export const MainPageVehiclePicker = ({
           style={{
             width: "65%",
             padding: ".3rem",
-            border: dark ? "1px solid rgba(255,255,255,0.2)" : "1px solid #ccc",
+            border: "1px solid #ccc",
             borderRadius: "1.5rem",
             textAlign: "center",
-            color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
-            backgroundColor: dark ? "#0d2b4e" : "white",
+            color: parrotTextDarkBlue,
             cursor: "pointer",
             boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)`,
           }}

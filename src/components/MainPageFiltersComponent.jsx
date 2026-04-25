@@ -22,7 +22,7 @@ export const MainPageFiltersComponent = ({
   return (
     <div
       style={{
-        backgroundColor: dark ? "rgba(13,43,78,0.85)" : "rgba(255, 255, 255, 0.3)",
+        backgroundColor: "rgba(255, 255, 255, 0.3)",
         height: "17vh",
         width: "92%",
         padding: "1vh",

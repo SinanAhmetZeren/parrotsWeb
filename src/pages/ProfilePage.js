@@ -338,10 +338,10 @@ const buttonsAndImagesContainer = {
 };
 
 
-const navButton = (dark) => ({
+const navButton = (_dark) => ({
   borderRadius: "1.5rem",
-  backgroundColor: dark ? "#0d2b4e" : "white",
-  color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
+  backgroundColor: "white",
+  color: "#007bff",
   padding: "0.2rem 0.8rem",
   textAlign: "center",
   fontWeight: "bold",
