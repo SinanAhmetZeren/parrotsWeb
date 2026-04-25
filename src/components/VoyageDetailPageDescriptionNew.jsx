@@ -71,28 +71,24 @@ export function VoyageDetailPageDescriptionNew({ voyageDescription }) {
 }
 
 const cardContainerStyle = {
-  display: "flex", // Flex for horizontal layout
-  flexDirection: "column", // Ensure content is side-by-side
-  border: "1px solid #ddd",
+  display: "flex",
+  flexDirection: "column",
   borderRadius: "1rem",
   overflow: "hidden",
   width: "100%",
-  backgroundColor: "#fff",
+  backgroundColor: "#0d2b4e",
   margin: "0rem",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.2)
 `,
-  color: "rgba(0, 119, 234,1)",
-  color: parrotTextDarkBlue,
+  color: "rgba(255,255,255,0.9)",
   padding: "1rem",
   fontSize: "1.15rem",
 };
 
 const voyageName = {
   color: "#2ac898",
-  color: "rgba(0, 119, 234,1)",
-
   fontWeight: "800",
   fontSize: "1.5rem",
 };

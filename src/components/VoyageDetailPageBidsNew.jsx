@@ -294,8 +294,6 @@ const userImageStyle = {
 
 const voyageName = {
   color: "#2ac898",
-  color: "rgba(0, 119, 234,1)",
-
   fontWeight: "800",
   fontSize: "1.5rem",
 };
@@ -310,16 +308,12 @@ const userVehicleInfoRow = {
 const cardContainerStyle = {
   display: "flex",
   flexDirection: "column",
-  border: "1px solid #ddd",
   borderRadius: "1rem",
   width: "100%",
-  backgroundColor: "#fff",
+  backgroundColor: "#0d2b4e",
   margin: "0rem",
-  boxShadow: `
-    0 4px 6px rgba(0, 0, 0, 0.3),
-    inset 0 -8px 6px rgba(0, 0, 0, 0.2)
-  `,
-  color: parrotTextDarkBlue,
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)",
+  color: "rgba(255,255,255,0.9)",
   padding: "1rem",
   fontSize: "1.15rem",
   maxHeight: "50vh",
@@ -329,7 +323,7 @@ const cardContainerStyle = {
 
 const dataRowItem = {
   marginTop: ".3rem",
-  backgroundColor: "rgba(0, 119, 234,0.05)",
+  backgroundColor: "rgba(255,255,255,0.07)",
   borderRadius: "1rem",
 };
 
@@ -350,6 +344,7 @@ const userNameStyle = {
   textOverflow: "ellipsis",
   fontWeight: "500",
   paddingLeft: "0.2rem",
+  color: "rgba(255,255,255,0.9)",
 };
 
 const personCountStyle = {
@@ -367,6 +362,12 @@ const bidMessage = {
   wordWrap: "break-word",
   marginLeft: "1rem",
   width: "50%",
+  backgroundColor: "rgba(255,255,255,0.08)",
+  borderRadius: "1rem",
+  padding: "0.2rem 0.5rem",
+  fontSize: "0.8rem",
+  color: "rgba(255,255,255,0.8)",
+  fontWeight: "500",
 };
 
 const bidAmount = {
@@ -380,10 +381,10 @@ const bidAmount = {
 
 const acceptBidStyle = {
   fontWeight: "bold",
-  color: "#0077EA",
+  color: "#ffffff",
   fontSize: "0.9rem",
   width: "12%",
-  backgroundColor: "rgba(0, 119, 234,0.1)",
+  backgroundColor: "rgba(255,255,255,0.15)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
   marginRight: "0.5rem",

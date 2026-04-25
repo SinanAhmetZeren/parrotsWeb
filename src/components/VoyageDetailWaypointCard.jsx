@@ -69,7 +69,7 @@ const voyageDetailCard = {
   height: "18rem",
   borderRadius: "1.5rem",
   overflow: "hidden",
-  backgroundColor: "white",
+  backgroundColor: "#0d2b4e",
   boxShadow: "rgba(0, 0, 0, 0.3) 0px 4px 6px, rgba(0, 0, 0, 0.2) 0px -8px 6px inset",
   width: "40rem",
 };
@@ -100,14 +100,12 @@ const voyageImageStyle = {
 const heading = {
   height: "2rem",
   color: "#2ac898",
-  color: "rgb(0, 119, 234)",
   fontWeight: "600",
 };
 
 const waypointBrief = {
   flexGrow: 1,
-  color: "rgb(0, 119, 234)",
-  color: parrotTextDarkBlue,
+  color: "rgba(255,255,255,0.9)",
   overflow: "hidden",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",

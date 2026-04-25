@@ -87,30 +87,27 @@ export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
 }
 
 const cardContainerStyle = {
-  display: "flex", // Flex for horizontal layout
-  flexDirection: "column", // Ensure content is side-by-side
-  // border: "1px solid #ddd",
+  display: "flex",
+  flexDirection: "column",
   borderRadius: "1rem",
   overflow: "hidden",
   width: "100%",
-  // backgroundColor: "#fff",
   margin: "0rem",
   boxShadow: `
   0 4px 6px rgba(0, 0, 0, 0.3),
   inset 0 -8px 6px rgba(0, 0, 0, 0.2)
 `,
-  color: parrotTextDarkBlue,
+  color: "rgba(255,255,255,0.9)",
   padding: "1rem",
   fontSize: "1.15rem",
-  backgroundColor: "#fff",
-  border: "1px solid #ddd",
-
+  backgroundColor: "#0d2b4e",
 };
 
 const voyageNameStyle = {
   fontWeight: "900",
   fontSize: "1.5rem",
-  fontStyle: "italic"
+  fontStyle: "italic",
+  color: "#2ac898",
 };
 
 const userVehicleInfoRow = {
@@ -119,7 +116,7 @@ const userVehicleInfoRow = {
   margin: "0.2rem",
   justifyContent: "center",
   marginLeft: "1.3rem",
-  color: parrotTextDarkBlue,
+  color: "rgba(255,255,255,0.9)",
   fontSize: "1.2rem",
   fontWeight: "600",
 
@@ -144,7 +141,7 @@ const descriptionTextStyle = {
   letterSpacing: "0.015em",
   margin: "auto",
   marginTop: "0.6rem",
-  color: parrotTextDarkBlue,
+  color: "rgba(255,255,255,0.9)",
 };
 
 const vehicles = [

@@ -18,7 +18,7 @@ export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
   ]
 
   return (
-    <div style={{ backgroundColor: "", display: opacity !== 1 && "none" }}>
+    <div style={{ position: "relative", zIndex: 0 }}>
       <div style={{ backgroundColor: "" }}>
         <Swiper
           effect="coverflow"

@@ -18,7 +18,7 @@ export function VoyageDetailPageImageSwiperNew({ voyageData }) {
   ]
 
   return (
-    <div style={{ backgroundColor: "" }}>
+    <div style={{ borderRadius: "1rem", overflow: "hidden" }}>
       <div style={{ backgroundColor: "" }}>
         <Swiper
           effect="coverflow"

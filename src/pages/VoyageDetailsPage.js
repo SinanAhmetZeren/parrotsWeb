@@ -12,6 +12,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { VoyageDetailPageImageSwiper } from "../components/VoyageDetailPageImageSwiper";
 import { VoyageDetailPageDetails } from "../components/VoyageDetailPageDetails";
+import { VoyageDetailPageDetailsLegacy } from "../components/VoyageDetailPageDetailsLegacy";
 import { VoyageDetailPageDescription } from "../components/VoyageDetailPageDescription";
 import { VoyageDetailBids } from "../components/VoyageDetailPageBids";
 import { VoyageDetailWaypointSwiper } from "../components/VoyageDetailWaypointSwiper";
@@ -251,8 +252,10 @@ function VoyageDetailsPage() {
 
           <div style={{ ...mainPageBottomRowStyle }} className="flex">
             <div style={voyageDetailsBottomLeftStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
+
+
               <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
-                <VoyageDetailPageDetails voyageData={VoyageData} />
+                <VoyageDetailPageDetailsLegacy voyageData={VoyageData} />
               </div>
               <div style={voyageDetailsBidsStyle} className="flex">
                 <VoyageDetailBids
@@ -268,10 +271,11 @@ function VoyageDetailsPage() {
                   setOpacity={setOpacity}
                 />
               </div>
+
             </div>
 
             <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
-              <div style={voyageDetailsImagesStyle} className="flex">
+              <div style={voyageDetailsImagesStyleLegacy} className="flex">
                 <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
               </div>
 
@@ -373,7 +377,7 @@ function VoyageDetailsPage() {
                 <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
               </div>
 
-              <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
+              <div style={{ ...voyageDetailsDetailsStyle, position: "relative", marginTop: "6rem" }} className="flex">
                 <PublicAndHeartAndPageStyleIcons
                   handleAddVoyageToFavorites={handleAddVoyageToFavorites}
                   handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
@@ -689,11 +693,20 @@ export const voyageDetailsDescriptionStyle = {
   paddingTop: 0,
 };
 
+export const voyageDetailsImagesStyleLegacy = {
+  alignItems: "center",
+  justifyContent: "center",
+  width: "92%",
+  margin: "auto",
+};
+
 export const voyageDetailsImagesStyle = {
   alignItems: "center",
   justifyContent: "center",
-  width: "calc(100% - 2rem)",
-  margin: "auto"
+  width: "80%",
+  height: "35vh",
+  margin: "auto",
+  marginBottom: "2rem",
 };
 
 export const voyageDetailsBidsStyle = {

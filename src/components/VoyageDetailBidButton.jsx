@@ -124,7 +124,7 @@ export const VoyageDetailBidButton = ({
         justifyContent: "center",
       }}
     >
-      <div>
+      <div style={{ marginTop: "1.5rem" }}>
         {userBidAccepted && !ownVoyage ? (
           <button
             disabled={true}
@@ -154,100 +154,57 @@ export const VoyageDetailBidButton = ({
         onRequestClose={closeNewBidModal}
         style={modalStyle}
       >
-        <div style={titleWrapperStyle}>
-          <span className="text-xl font-bold" style={titleTextStyle}>
-            Enter Your Bid
-          </span>
-        </div>
+        <div style={titleStyle}>Enter Your Bid</div>
+        <div style={subtitleStyle}>Set your offer price and number of guests</div>
 
-        {/* Voyagers */}
-        <div style={rowWrapperStyle}>
-          <label style={rowLabelStyle}>Voyagers:</label>
-          <div style={rowControlsWrapperStyle}>
-            <div style={counterGroup}>
-              <button style={counterButton} onClick={decrementPersonCount}>
-                -
-              </button>
-              <input
-                type="text"
-                value={personCount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                  setPersonCount(
-                    value === "" ? "" : Math.max(0, parseInt(value, 10))
-                  ); // Allow empty input or valid numbers
-                }}
-                style={{
-                  ...counterValue,
-                  textAlign: "center",
-                  border: "1px solid #ccc",
-                  width: "5rem",
-                }}
-              />
-              <button style={counterButton} onClick={incrementPersonCount}>
-                +
-              </button>
-            </div>
-          </div>
-          <label style={{ ...rowLabelStyle, justifySelf: "end" }}>Price:</label>
-          <div style={rowControlsWrapperStyle}>
-            <div style={counterGroup}>
-              <button style={counterButton} onClick={decrementPrice}>
-                -
-              </button>
-              <input
-                type="text"
-                value={price}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                  setPrice(Math.max(0, parseInt(value, 10) || 0));
-                }}
-                style={{
-                  ...counterValue,
-                  textAlign: "center",
-                  border: "1px solid #ccc",
-                  width: "5rem",
-                }}
-              />
-              <button style={counterButton} onClick={incrementPrice}>
-                +
-              </button>
-            </div>
+        <div style={fieldBlockStyle}>
+          <div style={fieldLabelStyle}>OFFER PRICE</div>
+          <div style={counterRowStyle}>
+            <button style={counterBtnStyle} onClick={decrementPrice}>-</button>
+            <input
+              type="text"
+              value={price}
+              onFocus={(e) => { if (e.target.value === "0") setPrice(""); }}
+              onBlur={(e) => { if (e.target.value === "") setPrice(0); }}
+              onChange={(e) => {
+                const n = e.target.value.replace(/\D/g, "");
+                setPrice(n === "" ? "" : parseInt(n, 10));
+              }}
+              style={counterInputStyle}
+            />
+            <button style={counterBtnStyle} onClick={incrementPrice}>+</button>
           </div>
         </div>
 
-        {/* Message */}
-        <div style={textareaWrapperStyle}>
-          <label style={rowLabelStyle}>Message:</label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            style={textareaStyle}
-          />
+        <div style={fieldBlockStyle}>
+          <div style={fieldLabelStyle}>GUESTS</div>
+          <div style={counterRowStyle}>
+            <button style={counterBtnStyle} onClick={decrementPersonCount}>-</button>
+            <input
+              type="text"
+              value={personCount}
+              onFocus={(e) => { if (e.target.value === "0") setPersonCount(""); }}
+              onBlur={(e) => { if (e.target.value === "") setPersonCount(1); }}
+              onChange={(e) => {
+                const n = e.target.value.replace(/\D/g, "");
+                setPersonCount(n === "" ? "" : parseInt(n, 10));
+              }}
+              style={counterInputStyle}
+            />
+            <button style={counterBtnStyle} onClick={incrementPersonCount}>+</button>
+          </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          {/* Buttons */}
-          <button
-            onClick={closeNewBidModal}
-            style={{
-              ...buttonStyle,
-              ...actionButtonStyle,
-              backgroundColor: "rgba(220, 53, 69,1)",
-              // border: "2px solid rgb(220,53,69)",
-              // color: "rgb(220,53,69)",
-              // boxShadow: "none",
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => handleSendBid(userProfileImage, userName)}
-            style={{
-              ...buttonStyle,
-              backgroundColor: "rgb(40, 167, 69)",
-              ...actionButtonStyle,
-            }}
-          >
+
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Add a message (optional)"
+          style={messageInputStyle}
+        />
+
+        <div style={bottomButtonsStyle}>
+          <button onClick={closeNewBidModal} style={cancelBtnStyle}>Cancel</button>
+          <button onClick={() => handleSendBid(userProfileImage, userName)} style={sendBtnStyle}>
             {changingBidState ? <AcceptOrChangeBidSpinner /> : "Send Bid"}
           </button>
         </div>
@@ -258,97 +215,57 @@ export const VoyageDetailBidButton = ({
         onRequestClose={closeChangeBidModal}
         style={modalStyle}
       >
-        <div style={titleWrapperStyle}>
-          <span className="text-xl font-bold" style={titleTextStyle}>
-            Enter Your Bid
-          </span>
-        </div>
+        <div style={titleStyle}>Change Your Bid</div>
+        <div style={subtitleStyle}>Update your offer price and number of guests</div>
 
-        {/* Voyagers */}
-        <div style={rowWrapperStyle}>
-          <label style={rowLabelStyle}>Voyagers:</label>
-          <div style={rowControlsWrapperStyle}>
-            <div style={counterGroup}>
-              <button style={counterButton} onClick={decrementPersonCount}>
-                -
-              </button>
-              <input
-                type="text"
-                value={personCount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                  setPersonCount(
-                    value === "" ? "" : Math.max(0, parseInt(value, 10))
-                  ); // Allow empty input or valid numbers
-                }}
-                style={{
-                  ...counterValue,
-                  textAlign: "center",
-                  border: "1px solid #ccc",
-                  width: "5rem",
-                }}
-              />
-              <button style={counterButton} onClick={incrementPersonCount}>
-                +
-              </button>
-            </div>
-          </div>
-          <label style={{ ...rowLabelStyle, justifySelf: "end" }}>Price:</label>
-          <div style={rowControlsWrapperStyle}>
-            <div style={counterGroup}>
-              <button style={counterButton} onClick={decrementPrice}>
-                -
-              </button>
-              <input
-                type="text"
-                value={price}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                  setPrice(Math.max(0, parseInt(value, 10) || 0));
-                }}
-                style={{
-                  ...counterValue,
-                  textAlign: "center",
-                  border: "1px solid #ccc",
-                  width: "5rem",
-                }}
-              />
-              <button style={counterButton} onClick={incrementPrice}>
-                +
-              </button>
-            </div>
+        <div style={fieldBlockStyle}>
+          <div style={fieldLabelStyle}>OFFER PRICE</div>
+          <div style={counterRowStyle}>
+            <button style={counterBtnStyle} onClick={decrementPrice}>-</button>
+            <input
+              type="text"
+              value={price}
+              onFocus={(e) => { if (e.target.value === "0") setPrice(""); }}
+              onBlur={(e) => { if (e.target.value === "") setPrice(0); }}
+              onChange={(e) => {
+                const n = e.target.value.replace(/\D/g, "");
+                setPrice(n === "" ? "" : parseInt(n, 10));
+              }}
+              style={counterInputStyle}
+            />
+            <button style={counterBtnStyle} onClick={incrementPrice}>+</button>
           </div>
         </div>
 
-        {/* Message */}
-        <div style={textareaWrapperStyle}>
-          <label style={rowLabelStyle}>Message:</label>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            style={textareaStyle}
-          />
+        <div style={fieldBlockStyle}>
+          <div style={fieldLabelStyle}>GUESTS</div>
+          <div style={counterRowStyle}>
+            <button style={counterBtnStyle} onClick={decrementPersonCount}>-</button>
+            <input
+              type="text"
+              value={personCount}
+              onFocus={(e) => { if (e.target.value === "0") setPersonCount(""); }}
+              onBlur={(e) => { if (e.target.value === "") setPersonCount(1); }}
+              onChange={(e) => {
+                const n = e.target.value.replace(/\D/g, "");
+                setPersonCount(n === "" ? "" : parseInt(n, 10));
+              }}
+              style={counterInputStyle}
+            />
+            <button style={counterBtnStyle} onClick={incrementPersonCount}>+</button>
+          </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          {/* Buttons */}
-          <button
-            onClick={closeChangeBidModal}
-            style={{
-              ...buttonStyle,
-              ...actionButtonStyle,
-              backgroundColor: "rgba(220, 53, 69,1)",
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => handleChangeBid(userProfileImage, userName)}
-            style={{
-              ...buttonStyle,
-              backgroundColor: "rgb(40, 167, 69)",
-              ...actionButtonStyle,
-            }}
-          >
+
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Add a message (optional)"
+          style={messageInputStyle}
+        />
+
+        <div style={bottomButtonsStyle}>
+          <button onClick={closeChangeBidModal} style={cancelBtnStyle}>Cancel</button>
+          <button onClick={() => handleChangeBid(userProfileImage, userName)} style={sendBtnStyle}>
             {changingBidState ? <AcceptOrChangeBidSpinner /> : "Change Bid"}
           </button>
         </div>
@@ -357,37 +274,8 @@ export const VoyageDetailBidButton = ({
   );
 };
 
-const actionButtonStyle = {
-  width: "45%",
-};
-const rowWrapperStyle = {
-  marginBottom: "1rem",
-  overflow: "hidden",
-  display: "grid", // Reverted back to grid layout
-  gridTemplateColumns: "1fr 2fr 1fr 2fr", // Ensure proper grid structure
-};
-
-const rowLabelStyle = {
-  padding: "0.5rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  borderRadius: "1rem",
-  fontWeight: "600",
-};
-
-const rowControlsWrapperStyle = {
-  // width: "75%",
-  padding: "0.5rem",
-  display: "flex",
-  justifyContent: "center",
-};
-
 const buttonStyle = {
-  padding: "0.5rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  // marginBottom: "1rem",
+  padding: "0.5rem 1rem",
   borderRadius: "1.5rem",
   textAlign: "center",
   color: "white",
@@ -395,96 +283,135 @@ const buttonStyle = {
   cursor: "pointer",
   fontSize: "1rem",
   border: "none",
-  boxShadow: `
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
-    `,
-  transition: "box-shadow 0.2s ease",
-  WebkitFontSmoothing: "antialiased",
-  MozOsxFontSmoothing: "grayscale",
-  right: 0,
 };
 
 const modalStyle = {
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 1000,
+  },
   content: {
     top: "50%",
-    left: "25%",
+    left: "18rem",
     right: "auto",
     bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    padding: "2rem",
-    borderRadius: "1rem",
+    transform: "translateY(-50%)",
+    padding: "1.75rem",
+    borderRadius: "1.5rem",
     zIndex: 1050,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#ffffff",
+    width: "28rem",
+    boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+    border: "none",
+    overflowX: "hidden",
   },
 };
 
-const titleWrapperStyle = {
-  display: "flex",
-  justifyContent: "center",
-  marginBottom: "1.5rem",
-};
-
-const titleTextStyle = {
-  // color: "rgba(10, 119, 234,1)",
+const titleStyle = {
+  fontSize: "1.25rem",
+  fontWeight: "800",
   color: "#163A5F",
-  fontWeight: "900",
+  marginBottom: "0.25rem",
 };
 
-const textareaWrapperStyle = {
+const subtitleStyle = {
+  fontSize: "0.8rem",
+  color: "#9aa0aa",
+  marginBottom: "1.25rem",
+};
+
+const fieldBlockStyle = {
   marginBottom: "1rem",
-  alignItems: "flex-start",
-  display: "grid", // Reverted back to grid layout
-  gridTemplateColumns: "1fr 5fr", // Ensure proper grid structure
 };
 
-const textareaStyle = {
-  width: "95%",
-  height: "4rem",
-  padding: "0.5rem",
-  border: "1px solid #ccc",
-  justifySelf: "center",
-  borderRadius: "0.5rem",
+const fieldLabelStyle = {
+  fontSize: "0.7rem",
+  color: "#9aa0aa",
+  fontWeight: "600",
+  letterSpacing: "0.05em",
+  marginBottom: "0.5rem",
 };
 
-const counterGroup = {
+const counterRowStyle = {
   display: "flex",
   alignItems: "center",
-  overflow: "hidden",
-  borderRadius: "0.5rem",
-  width: "fit-content",
-  fontFamily: `'Inter', 'Segoe UI', sans-serif`,
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+  justifyContent: "space-between",
+  gap: "0.25rem",
 };
 
-const counterButton = {
-  backgroundColor: parrotDarkBlue,
-  color: parrotCream,
-  width: "2.5rem",
-  height: "2.5rem",
+const counterBtnStyle = {
+  backgroundColor: "#ffffff",
+  color: "#2ecc71",
+  width: "5rem",
+  height: "2.75rem",
   fontSize: "1.5rem",
+  fontWeight: "700",
   border: "none",
+  borderRadius: "0.75rem",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  cursor: "pointer",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  flexShrink: 0,
+};
+
+const counterInputStyle = {
+  width: "4rem",
+  textAlign: "center",
+  fontSize: "1.75rem",
+  fontWeight: "800",
+  color: "#2ecc71",
+  border: "none",
+  outline: "none",
+  background: "transparent",
+  WebkitAppearance: "none",
+  MozAppearance: "textfield",
+};
+
+const messageInputStyle = {
+  width: "100%",
+  minHeight: "4rem",
+  padding: "0.75rem",
+  backgroundColor: "#f2f4f7",
+  border: "none",
+  borderRadius: "0.75rem",
+  fontSize: "0.9rem",
+  color: "#163A5F",
+  resize: "none",
+  marginBottom: "1.25rem",
+  boxSizing: "border-box",
+  outline: "none",
+};
+
+const bottomButtonsStyle = {
+  display: "flex",
+  gap: "0.75rem",
+};
+
+const cancelBtnStyle = {
+  flex: 1,
+  flexShrink: 1,
+  padding: "0.75rem",
+  borderRadius: "2rem",
+  border: "none",
+  backgroundColor: "#f2f4f7",
+  color: "#9aa0aa",
+  fontWeight: "700",
+  fontSize: "0.95rem",
   cursor: "pointer",
 };
 
-const counterValue = {
-  backgroundColor: "white",
-  width: "2.5rem",
-  height: "2.5rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "1.25rem",
-  fontWeight: 600,
-  borderTop: "1px solid #ccc",
-  borderBottom: "1px solid #ccc",
-  WebkitAppearance: "none", // Chrome, Safari, Edge, Opera
-  MozAppearance: "textfield", // Firefox
-  appearance: "textfield", // Ensure compatibility across all browsers
+const sendBtnStyle = {
+  flex: 2,
+  padding: "0.75rem",
+  borderRadius: "2rem",
+  border: "none",
+  backgroundColor: parrotBlue,
+  color: "white",
+  fontWeight: "700",
+  fontSize: "0.95rem",
+  cursor: "pointer",
 };
 
 const AcceptOrChangeBidSpinner = () => {

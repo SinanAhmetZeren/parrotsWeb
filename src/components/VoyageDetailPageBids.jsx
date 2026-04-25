@@ -344,10 +344,10 @@ const AcceptBidSpinner = () => {
 
 
 const messageButton = {
-  backgroundColor: "rgba(0, 119, 234,0.05)",
+  backgroundColor: "rgba(255,255,255,0.08)",
   borderRadius: "1rem",
   fontSize: "0.8rem",
-  color: "#0077EA",
+  color: "rgba(255,255,255,0.8)",
   fontWeight: "500",
   cursor: "pointer",
   width: "100%",
@@ -376,18 +376,17 @@ const imgWrapper = {
 const cardContainerStyle = {
   display: "flex",
   flexDirection: "column",
-  // border: "1px solid #ddd",
   borderRadius: "1rem",
   width: "100%",
-  // backgroundColor: "#fff",
+  backgroundColor: "#0d2b4e",
   margin: "0rem",
-  color: parrotTextDarkBlue,
-  // padding: "1rem",
+  color: "rgba(255,255,255,0.9)",
+  padding: "1rem",
   fontSize: "1.15rem",
   maxHeight: "55vh",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
-  // backgroundColor: "yellow"
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)",
 };
 
 
@@ -401,7 +400,7 @@ const dataRowItem = {
   padding: "0.5rem", // optional padding inside the grid
   height: "5rem",
   width: "25rem",
-  backgroundColor: "white",
+  backgroundColor: "rgba(255,255,255,0.07)",
   width: "100%",
   boxShadow: "rgba(0, 0, 0, 0.3) 0px 4px 6px, rgba(0, 0, 0, 0.2) 0px -8px 6px inset",
 
@@ -474,18 +473,17 @@ const personCountStyle = {
 };
 
 const bidMessage = {
-  whiteSpace: "nowrap",        // prevent wrapping to a new line
-  overflow: "hidden",          // hide overflow
-  textOverflow: "ellipsis",    // show "..." if text is too long
-  // display: "flex",             // keep it as flex to align vertically
-  alignItems: "center",        // center vertically
-  backgroundColor: parrotBlueTransparent,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  alignItems: "center",
+  backgroundColor: "rgba(255,255,255,0.08)",
   borderRadius: "1rem",
   padding: "0.2rem",
   paddingLeft: "0.5rem",
   width: "15rem",
   fontSize: "0.8rem",
-  color: "#0077EA",
+  color: "rgba(255,255,255,0.8)",
   fontWeight: "500",
   cursor: "pointer",
 };
@@ -501,16 +499,14 @@ const bidAmount = {
 
 const acceptBidStyle = {
   fontWeight: "bold",
-  color: "#0077EA",
+  color: "#ffffff",
   fontSize: "0.9rem",
-  // width: "12%",
-  backgroundColor: "rgba(0, 119, 234,0.1)",
+  backgroundColor: "rgba(255,255,255,0.15)",
   borderRadius: "1rem",
   marginLeft: "0.5rem",
   marginRight: "0.5rem",
   paddingLeft: "0.3rem",
   paddingRight: "0.3rem",
-  // backgroundColor: "pink"
 };
 
 const acceptedBidStyle = {

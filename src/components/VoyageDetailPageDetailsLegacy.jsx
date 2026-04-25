@@ -6,14 +6,14 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useNavigate } from "react-router-dom";
-import { parrotGreen, parrotTextDarkBlue } from "../styles/colors";
+import { parrotGreen } from "../styles/colors";
 import trainImage from "../assets/images/train.jpeg";
 import walkImage from "../assets/images/walk1.jpeg";
 import runImage from "../assets/images/run1.jpeg";
 import { BsPeople, BsPerson, BsCalendar, BsCashStack, BsTag } from "react-icons/bs";
 import { MdOutlineGavel, MdOutlineRocketLaunch } from "react-icons/md";
 
-export function VoyageDetailPageDetails({ voyageData }) {
+export function VoyageDetailPageDetailsLegacy({ voyageData }) {
   const baseUserImageUrl = ``;
   const baseVehicleImageUrl = ``;
   const [hoveredUser, setHoveredUser] = useState(false);
@@ -21,7 +21,6 @@ export function VoyageDetailPageDetails({ voyageData }) {
   const [hoveredAuction, setHoveredAuction] = useState(false);
   const [hoveredFixedPrice, setHoveredFixedPrice] = useState(false);
 
-  const auctionToolTipMessage = "The host will select the most suitable bids";
   const navigate = useNavigate();
 
   const handleGoToVehicle = (voyageData) =>
@@ -45,7 +44,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
 
       <div style={divider} />
 
-      {/* Row 1: Host + Vehicle + Spots */}
+      {/* Row 1: Host + Vehicle */}
       <div style={row}>
         <BsPerson size={22} color="rgba(255,255,255,0.8)" style={{ flexShrink: 0 }} />
         <div
@@ -79,22 +78,25 @@ export function VoyageDetailPageDetails({ voyageData }) {
           )}
           <span style={pillText}>{voyageData.vehicle?.name}</span>
         </div>
+      </div>
 
+      {/* Row 2: Spots + Dates */}
+      <div style={row}>
         <BsPeople size={22} color="rgba(255,255,255,0.8)" style={{ flexShrink: 0 }} />
         <div style={{ ...pill, minWidth: "5rem", justifyContent: "center" }}>
           <span style={pillText}>{voyageData.vacancy} spots</span>
         </div>
-      </div>
 
-      {/* Row 2: Dates + Price + Auction + Fixed Price */}
-      <div style={row}>
         <BsCalendar size={20} color="rgba(255,255,255,0.8)" style={{ flexShrink: 0 }} />
         <div style={{ ...pill, gap: "0.5rem", justifyContent: "center", paddingLeft: "1.2rem", paddingRight: "1.2rem" }}>
           <span style={pillText}>{formatCustomDate(voyageData.startDate)}</span>
           <span style={{ color: parrotGreen, fontWeight: "900", fontSize: "1.1rem" }}>→</span>
           <span style={pillText}>{formatCustomDate(voyageData.endDate)}</span>
         </div>
+      </div>
 
+      {/* Row 3: Price + Auction + Fixed Price */}
+      <div style={row}>
         <BsCashStack size={22} color="rgba(255,255,255,0.8)" style={{ flexShrink: 0 }} />
         <div style={{ ...pill, gap: "0.4rem", padding: "0 0.8rem" }}>
           <span style={pillText}>{voyageData.currency} {voyageData.minPrice}</span>
@@ -215,15 +217,3 @@ const avatarImg = {
   objectFit: "cover",
   transition: "transform 0.2s ease",
 };
-
-const vehicles = [
-  "⛵","🚗","🚐","🚌","🚶","🏃","🏍️","🚲","🏠","✈️","🚄",
-];
-
-export default function VehicleIcon({ vehicleType }) {
-  return (
-    <span style={{ textAlign: "center" }}>
-      {vehicles[vehicleType] ?? "❓"}
-    </span>
-  );
-}
