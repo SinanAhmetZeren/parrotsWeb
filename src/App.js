@@ -36,6 +36,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
   var isLoggedIn = useSelector((state) => state.users.isLoggedIn);
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const bgImageVariant = useSelector((state) => state.users.bgImageVariant);
   const currentUserId = useSelector((state) => state.users.userId);
   const unreadMessagesFromState = useSelector((state) => state.users.unreadMessages);
   const userName = useSelector((state) => state.users.userName);
@@ -53,6 +55,16 @@ function App() {
       document.title = `${userName} @ Parrots App`;
     }
   }, [userName]);
+
+  useEffect(() => {
+    const image = bgImageVariant === "new"
+      ? require("./assets/images/seafromabove1.png")
+      : require("./assets/images/seafromsky.jpg");
+    document.body.style.backgroundImage = `url(${image})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+  }, [bgImageVariant]);
 
   useEffect(() => {
 

@@ -8,7 +8,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,10 +16,6 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  background-image: url("../../assets/images/seafromsky.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   margin: 0;
   height: 100vh;
 }
@@ -51,7 +47,6 @@
   width: 3rem;
   height: 3rem;
   background-repeat: no-repeat;
-  background-position: center;
 }
 
 .swiper-slide:not(.swiper-slide-active) {

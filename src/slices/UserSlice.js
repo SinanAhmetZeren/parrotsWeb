@@ -18,7 +18,8 @@ const usersSlice = createSlice({
     unreadMessages: false,
     isAdmin: false,
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
-    isDarkMode: localStorage.getItem("storedIsDarkMode") !== "false",
+    isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
+    bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -234,7 +235,10 @@ const usersSlice = createSlice({
       state.isDarkMode = action.payload;
       localStorage.setItem("storedIsDarkMode", String(action.payload));
     },
-
+    setBgImageVariant: (state, action) => {
+      state.bgImageVariant = action.payload;
+      localStorage.setItem("storedBgImageVariant", action.payload);
+    },
   },
 });
 
@@ -255,6 +259,7 @@ export const {
   markMessagesRead,
   setAcknowledgedPublicProfile,
   setIsDarkMode,
+  setBgImageVariant,
   setBookmarkedUserIds,
   addBookmarkedUserId,
   removeBookmarkedUserId,

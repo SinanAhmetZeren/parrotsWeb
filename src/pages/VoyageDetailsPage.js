@@ -30,7 +30,6 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { IoHeartSharp } from "react-icons/io5";
 import { MdPublic } from "react-icons/md";
-import seafromsky from '../assets/images/seafromsky.jpg';
 
 
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
@@ -540,7 +539,7 @@ export const appHeaderStyle = {
   justifyContent: "center",
   fontSize: "calc(10px + 2vmin)",
   color: "white",
-  backgroundImage: `url(${seafromsky})`,
+  backgroundImage: "none",
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundAttachment: "fixed",

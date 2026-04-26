@@ -1,7 +1,7 @@
 import "../assets/css/date-range-custom.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAsLoggedOut, setIsDarkMode } from "../slices/UserSlice";
+import { updateAsLoggedOut, setIsDarkMode, setBgImageVariant } from "../slices/UserSlice";
 import { stopHubConnection } from "../signalr/signalRHub";
 import { useState } from "react";
 import { parrotBananaLeafGreen, parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotGreen, parrotGreenTransparent, parrotPistachioGreen, parrotRed } from "../styles/colors";
@@ -17,6 +17,7 @@ export function TopBarMenu() {
   const isAdmin = useSelector((state) => state.users.isAdmin);
   console.log("isadmin", isAdmin);
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const bgImageVariant = useSelector((state) => state.users.bgImageVariant);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -108,13 +109,51 @@ export function TopBarMenu() {
             <div style={{ width: "1px", height: "1.5rem", backgroundColor: "rgba(255,255,255,0.2)", margin: "0 0.25rem" }} />
 
             <div
+              onClick={() => dispatch(setBgImageVariant(bgImageVariant === "new" ? "old" : "new"))}
+              title={bgImageVariant === "new" ? "Switch to old background" : "Switch to new background"}
+              style={{
+                width: "3.6rem",
+                height: "2rem",
+                borderRadius: "2rem",
+                backgroundColor: bgImageVariant === "new" ? "rgba(30,111,168,0.5)" : "rgba(10,15,30,0.5)",
+                position: "relative",
+                transition: "background-color 0.3s ease",
+                boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              <div style={{
+                position: "absolute",
+                top: "0.15rem",
+                left: bgImageVariant === "new" ? "0.15rem" : "1.75rem",
+                width: "1.7rem",
+                height: "1.7rem",
+                borderRadius: "50%",
+                backgroundColor: bgImageVariant === "new" ? "rgb(7, 159, 200)" : "rgb(11, 23, 53)",
+                transition: "left 0.3s ease",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.6rem",
+                fontWeight: "bold",
+                color: "white",
+              }}>
+                🌊
+              </div>
+            </div>
+
+            <div style={{ width: "1px", height: "1.5rem", backgroundColor: "rgba(255,255,255,0.2)", margin: "0 0.25rem" }} />
+
+            <div
               onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
               title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               style={{
                 width: "3.6rem",
                 height: "2rem",
                 borderRadius: "2rem",
-                backgroundColor: isDarkMode ? "#334155" : "#cbd5e1",
+                backgroundColor: isDarkMode ? "#0a0f1e" : "#cbd5e1",
                 position: "relative",
                 transition: "background-color 0.3s ease",
                 boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
@@ -129,7 +168,7 @@ export function TopBarMenu() {
                 width: "1.7rem",
                 height: "1.7rem",
                 borderRadius: "50%",
-                backgroundColor: "white",
+                backgroundColor: isDarkMode ? "#1a2744" : "white",
                 transition: "left 0.3s ease",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
                 display: "flex",
@@ -137,7 +176,7 @@ export function TopBarMenu() {
                 justifyContent: "center",
               }}>
                 {isDarkMode
-                  ? <IoMoon size="0.8rem" color="#334155" />
+                  ? <IoMoon size="0.8rem" color="#e2e8f0" />
                   : <IoSunny size="0.8rem" color="goldenrod" />
                 }
               </div>
