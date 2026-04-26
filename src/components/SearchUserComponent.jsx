@@ -1,8 +1,10 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { IoSearch } from "react-icons/io5";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { parrotRed } from "../styles/colors";
 
-export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false }) {
+export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false, showSaved = false, onToggleSaved }) {
   const dark = isDarkMode;
   const isEnabled = inputValue.length >= 3;
 
@@ -26,12 +28,25 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
           onClick={isEnabled && !isLoading ? onSearch : undefined}
         >
           {isLoading ? (
-            <div style={{ ...magnifierStyle(dark), display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={magnifierStyle(dark)}>
               <div style={spinnerStyle} />
             </div>
           ) : (
-            <IoSearch style={{ ...magnifierStyle(dark), color: isEnabled ? "#3c9dde" : (dark ? "rgba(255,255,255,0.3)" : "#c0c0c0") }} />
+            <div style={magnifierStyle(dark)}>
+              <IoSearch size="1.3rem" color={isEnabled ? "#3c9dde" : (dark ? "rgba(255,255,255,0.3)" : "#c0c0c0")} />
+            </div>
           )}
+        </div>
+        <div
+          style={{ ...magnifierContainerStyle, cursor: "pointer" }}
+          onClick={onToggleSaved}
+        >
+          <div style={bookmarkButtonStyle(showSaved, dark)}>
+            {showSaved
+              ? <BsBookmarkFill size="1.1rem" />
+              : <BsBookmark size="1.1rem" />
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -55,6 +70,7 @@ const magnifierStyle = (dark) => ({
   height: "3rem",
   width: "3rem",
   border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
 });
 
 const searchUserContainer = {
@@ -66,7 +82,7 @@ const searchUserContainer = {
 };
 
 const inputStyle = (dark) => ({
-  width: "26rem",
+  width: "23rem",
   height: "3rem",
   paddingLeft: "2rem",
   paddingRight: "2rem",
@@ -88,6 +104,21 @@ const spinnerStyle = {
   borderRadius: "50%",
   animation: "spin 0.8s linear infinite",
 };
+
+const bookmarkButtonStyle = (active, dark) => ({
+  borderRadius: "50%",
+  backgroundColor: dark ? "#0d2b4e" : "white",
+  color: active ? parrotRed : (dark ? "rgba(255,255,255,0.3)" : "#c0c0c0"),
+  width: "3rem",
+  height: "3rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  transition: "background-color 0.2s ease",
+  flexShrink: 0,
+});
 
 const searchMainContainer = {
   display: "flex",

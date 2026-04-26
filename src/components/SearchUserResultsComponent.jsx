@@ -16,6 +16,7 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
   setInputValue,
   onLoadingChange,
   isDarkMode = false,
+  staticUsers = null,
 }) {
   const dark = isDarkMode;
   const {
@@ -26,12 +27,35 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
     error: errorUser,
     isSuccess: isSuccessUsers,
     refetch: refetchUsers,
-  } = useGetUsersByUsernameQuery(query, { skip: query.length < 3 });
+  } = useGetUsersByUsernameQuery(query, { skip: staticUsers !== null || query.length < 3 });
 
   React.useEffect(() => {
     if (onLoadingChange) onLoadingChange(isLoadingUsers || isFetchingUsers);
   }, [isLoadingUsers, isFetchingUsers, onLoadingChange]);
 
+  if (staticUsers !== null) {
+    return (
+      <div style={searchMainContainer}>
+        <div style={searchResultsContainer(dark)}>
+          {staticUsers?.length > 0
+            ? <RenderSearchResults
+                users={staticUsers}
+                userId={userId}
+                setConversationUserId={setConversationUserId}
+                setConversationUserUsername={setConversationUserUsername}
+                handleGoToUser={handleGoToUser}
+                setInputValue={setInputValue}
+                setQuery={setQuery}
+                dark={dark}
+              />
+            : <div style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", marginTop: "3rem", fontSize: "1rem" }}>
+                No saved users yet
+              </div>
+          }
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={searchMainContainer}>
@@ -132,9 +156,9 @@ const searchMainContainer = {
   height: "93vh",
 }
 
-const searchResultsContainer = (dark) => ({
+const searchResultsContainer = (_dark) => ({
   height: "calc(100% - 5rem)",
-  backgroundColor: dark ? "#0d2b4e" : "white",
+  backgroundColor: "transparent",
 })
 
 const singleSearchResult = (dark) => ({

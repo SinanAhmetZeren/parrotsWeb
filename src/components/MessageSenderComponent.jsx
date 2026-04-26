@@ -1,5 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import { parrotBlue } from "../styles/colors";
 
 export function MessageSenderComponent({
   conversationUserId,
@@ -14,6 +15,9 @@ export function MessageSenderComponent({
   hideSendLabel = false,
 }) {
   const dark = isDarkMode;
+  const [focused, setFocused] = React.useState(false);
+  const showLabel = !hideSendLabel && conversationUserUsername && !focused && !message;
+
   const handleInputChange = (e) => {
     setMessage(e.target.value);
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -21,20 +25,29 @@ export function MessageSenderComponent({
 
   return (
     <div style={inputContainerStyle(dark)}>
-      <textarea
-        value={message}
-        placeholder={placeholder !== undefined ? placeholder : `Write a message to ${conversationUserUsername}`}
-        style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1 }}
-        maxLength={500}
-        disabled={!conversationUserId}
-        onInput={handleInputChange}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-          }
-        }}
-      />
+      <div style={textareaWrapperStyle}>
+        {showLabel && (
+          <div style={labelStyle(dark)} onClick={() => setFocused(true)}>
+            Write a message to <span style={{ color: parrotBlue, fontWeight: "bold" }}>{conversationUserUsername}</span>
+          </div>
+        )}
+        <textarea
+          value={message}
+          placeholder=""
+          style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1 }}
+          maxLength={500}
+          disabled={!conversationUserId}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onInput={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
+        />
+      </div>
       <button
         disabled={sendButtonDisabled || message.trim() === ""}
         onClick={() => handleSendMessage()}
@@ -58,6 +71,22 @@ const inputContainerStyle = (dark) => ({
   width: "100%",
   padding: "1rem",
   backgroundColor: dark ? "rgba(10,34,64,0.8)" : "rgba(0,51,102,0.8)",
+});
+
+const textareaWrapperStyle = {
+  position: "relative",
+  width: "100%",
+};
+
+const labelStyle = (dark) => ({
+  position: "absolute",
+  top: "40%",
+  transform: "translateY(-50%)",
+  left: "2rem",
+  fontSize: "1.3rem",
+  color: dark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
+  pointerEvents: "none",
+  userSelect: "none",
 });
 
 const messageInputStyle = (dark) => ({

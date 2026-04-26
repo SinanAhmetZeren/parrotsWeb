@@ -14,6 +14,7 @@ const usersSlice = createSlice({
     userProfileImage: localStorage.getItem("storedProfileImageUrl"),
     userFavoriteVoyages: [0],
     userFavoriteVehicles: [0],
+    bookmarkedUserIds: JSON.parse(localStorage.getItem("storedBookmarkedUserIds")) || [],
     unreadMessages: false,
     isAdmin: false,
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
@@ -64,7 +65,9 @@ const usersSlice = createSlice({
         localStorage.removeItem("storedProfileImageUrl");
         localStorage.removeItem("storedFavoriteVehicles");
         localStorage.removeItem("storedFavoriteVoyages");
+        localStorage.removeItem("storedBookmarkedUserIds");
         localStorage.removeItem("storedAcknowledgedPublicProfile");
+        state.bookmarkedUserIds = [];
       } catch (err) {
         console.error("Error setting localStorage:", err);
       }
@@ -207,6 +210,20 @@ const usersSlice = createSlice({
       );
     },
 
+    setBookmarkedUserIds: (state, action) => {
+      state.bookmarkedUserIds = action.payload;
+      localStorage.setItem("storedBookmarkedUserIds", JSON.stringify(action.payload));
+    },
+    addBookmarkedUserId: (state, action) => {
+      if (!state.bookmarkedUserIds.includes(action.payload)) {
+        state.bookmarkedUserIds = [...state.bookmarkedUserIds, action.payload];
+        localStorage.setItem("storedBookmarkedUserIds", JSON.stringify(state.bookmarkedUserIds));
+      }
+    },
+    removeBookmarkedUserId: (state, action) => {
+      state.bookmarkedUserIds = state.bookmarkedUserIds.filter(id => id !== action.payload);
+      localStorage.setItem("storedBookmarkedUserIds", JSON.stringify(state.bookmarkedUserIds));
+    },
     setUnreadMessages: (state, action) => {
       state.unreadMessages = action.payload;
     },
@@ -238,6 +255,9 @@ export const {
   markMessagesRead,
   setAcknowledgedPublicProfile,
   setIsDarkMode,
+  setBookmarkedUserIds,
+  addBookmarkedUserId,
+  removeBookmarkedUserId,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;
@@ -513,6 +533,31 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
+    getBookmarks: builder.query({
+      query: () => `/api/Bookmark/getBookmarks`,
+      transformResponse: (responseData) => responseData.data,
+      providesTags: ["Bookmarks"],
+    }),
+    getBookmarkedUserIds: builder.query({
+      query: () => `/api/Bookmark/getBookmarkedUserIds`,
+      transformResponse: (responseData) => responseData.data,
+    }),
+    addBookmark: builder.mutation({
+      query: (bookmarkedUserId) => ({
+        url: `/api/Bookmark/addBookmark/${bookmarkedUserId}`,
+        method: "POST",
+      }),
+      transformResponse: (responseData) => responseData.data,
+      invalidatesTags: ["Bookmarks"],
+    }),
+    removeBookmark: builder.mutation({
+      query: (bookmarkedUserId) => ({
+        url: `/api/Bookmark/removeBookmark/${bookmarkedUserId}`,
+        method: "DELETE",
+      }),
+      transformResponse: (responseData) => responseData.data,
+      invalidatesTags: ["Bookmarks"],
+    }),
   }),
   overrideExisting: true,
 });
@@ -546,5 +591,11 @@ export const {
   useClaimFreeCoinsMutation,
   useSendParrotCoinsMutation,
   useGetParrotCoinBalanceQuery,
-  useLazyGetParrotCoinBalanceQuery
+  useLazyGetParrotCoinBalanceQuery,
+  useGetBookmarksQuery,
+  useLazyGetBookmarksQuery,
+  useGetBookmarkedUserIdsQuery,
+  useLazyGetBookmarkedUserIdsQuery,
+  useAddBookmarkMutation,
+  useRemoveBookmarkMutation,
 } = extendedApiSlice;

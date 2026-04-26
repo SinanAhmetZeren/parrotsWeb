@@ -31,7 +31,7 @@ import {
   unregister_ReceiveMessageRefetch,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
-import { setUnreadMessages } from "../slices/UserSlice";
+import { setUnreadMessages, useGetBookmarksQuery } from "../slices/UserSlice";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import { parrotTextDarkBlue } from "../styles/colors";
 
@@ -57,6 +57,7 @@ function ConnectPage() {
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
   const sendTimestampsRef = useRef([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
   const [hubState, setHubState] = useState("connected");
 
   useEffect(() => {
@@ -68,6 +69,15 @@ function ConnectPage() {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const dark = isDarkMode;
+  const { data: bookmarksRaw } = useGetBookmarksQuery(undefined, { skip: !showSaved });
+  const bookmarksData = React.useMemo(() => bookmarksRaw?.map(b => ({
+    id: b.bookmarkedUserId,
+    userId: b.bookmarkedUserId,
+    userName: b.userName,
+    profileImageUrl: b.profileImageUrl,
+    profileImageThumbnailUrl: b.profileImageThumbnailUrl,
+    publicId: b.publicId,
+  })) ?? [], [bookmarksRaw]);
   const {
     data: messagePreviewsData,
     isLoading: isLoadingmessagePreviews,
@@ -318,13 +328,29 @@ function ConnectPage() {
                     <SearchUserComponent
                       inputValue={inputValue}
                       setInputValue={setInputValue}
-                      onSearch={() => setQuery(inputValue)}
+                      onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
                       isLoading={isSearchLoading}
                       isDarkMode={isDarkMode}
+                      showSaved={showSaved}
+                      onToggleSaved={() => { setShowSaved(s => !s); setQuery(""); setInputValue(""); }}
                     />
                   </div>
-                  {query.length > 2 && (
-                    <div style={MessagePreviewsContainer}>
+                  {showSaved ? (
+                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
+                      <SearchUserResultsComponent
+                        query=""
+                        setQuery={() => {}}
+                        userId={currentUserId}
+                        setConversationUserId={(id) => { setConversationUserId(id); setShowSaved(false); }}
+                        setConversationUserUsername={setConversationUserUsername}
+                        handleGoToUser={handleGoToUser}
+                        setInputValue={setInputValue}
+                        isDarkMode={isDarkMode}
+                        staticUsers={bookmarksData}
+                      />
+                    </div>
+                  ) : query.length > 2 ? (
+                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
                       <SearchUserResultsComponent
                         query={query}
                         setQuery={setQuery}
@@ -337,8 +363,7 @@ function ConnectPage() {
                         isDarkMode={isDarkMode}
                       />
                     </div>
-                  )}
-                  {isSuccessmessagePreviews && query.length < 3 && (
+                  ) : isSuccessmessagePreviews && (
                     <div style={MessagePreviewsContainer} className={dark ? "dark-scrollbar" : "light-scrollbar"}>
                       <MessagePreviewsComponent
                         messagesData={safeMessagePreviewsData}

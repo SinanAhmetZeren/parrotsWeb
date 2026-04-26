@@ -14,7 +14,9 @@ import {
   useResetPasswordMutation,
   useLazyGetFavoriteVoyageIdsByUserIdQuery,
   useLazyGetFavoriteVehicleIdsByUserIdQuery,
+  useLazyGetBookmarkedUserIdsQuery,
   updateUserFavorites,
+  setBookmarkedUserIds,
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { updateAsLoggedIn } from "../slices/UserSlice";
@@ -83,6 +85,7 @@ function LoginPage() {
     useLazyGetFavoriteVehicleIdsByUserIdQuery();
   const [getFavoriteVoyageIdsByUserId] =
     useLazyGetFavoriteVoyageIdsByUserIdQuery();
+  const [getBookmarkedUserIds] = useLazyGetBookmarkedUserIdsQuery();
 
   const [
     confirmUser,
@@ -201,21 +204,18 @@ function LoginPage() {
       localStorage.setItem("storedToken", loginResponse.token);
       localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
 
-      // Get user favorites
-      const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
-        loginResponse.userId
-      ).unwrap();
-      const favoriteVoyages = await getFavoriteVoyageIdsByUserId(
-        loginResponse.userId
-      ).unwrap();
+      // Get user favorites and bookmarks
+      const [favoriteVehicles, favoriteVoyages, bookmarkedIds] = await Promise.all([
+        getFavoriteVehicleIdsByUserId(loginResponse.userId).unwrap(),
+        getFavoriteVoyageIdsByUserId(loginResponse.userId).unwrap(),
+        getBookmarkedUserIds().unwrap(),
+      ]);
 
-      // Update Redux state
-      dispatch(
-        updateUserFavorites({
-          favoriteVehicles: favoriteVehicles.data,
-          favoriteVoyages: favoriteVoyages.data,
-        })
-      );
+      dispatch(updateUserFavorites({
+        favoriteVehicles: favoriteVehicles.data,
+        favoriteVoyages: favoriteVoyages.data,
+      }));
+      dispatch(setBookmarkedUserIds(bookmarkedIds || []));
 
       if (loginResponse.requiresTermsAcceptance) {
         setPendingLoginData(loginResponse);

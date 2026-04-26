@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import "../assets/css/ProfilePage.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -12,17 +12,24 @@ import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesCom
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotTextDarkBlue, parrotRed } from "../styles/colors";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useAddBookmarkMutation, useRemoveBookmarkMutation } from "../slices/UserSlice";
+import { addBookmarkedUserId, removeBookmarkedUserId } from "../slices/UserSlice";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
 function ProfilePagePublic() {
   const { userId } = useParams();
   const { userName } = useParams();
   const local_userId = localStorage.getItem("storedUserId");
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
-
+  const bookmarkedUserIds = useSelector((state) => state.users.bookmarkedUserIds);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [addBookmark] = useAddBookmarkMutation();
+  const [removeBookmark] = useRemoveBookmarkMutation();
 
   const handleSendMessageRequest = () => {
     navigate(`/connect/${userId}/${userName}`);
@@ -40,6 +47,30 @@ function ProfilePagePublic() {
     isError: isErrorUser,
     isSuccess: isSuccessUser,
   } = useGetUserByPublicIdQuery(userId);
+
+  // userId from URL is publicId; use userData.id (internal) for bookmark operations
+  const internalUserId = userData?.id ?? null;
+  const isBookmarked = internalUserId ? bookmarkedUserIds.includes(internalUserId) : false;
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const [bookmarkHovered, setBookmarkHovered] = useState(false);
+
+  const handleToggleBookmark = async () => {
+    if (!internalUserId || bookmarkLoading) return;
+    setBookmarkLoading(true);
+    try {
+      if (isBookmarked) {
+        await removeBookmark(internalUserId).unwrap();
+        dispatch(removeBookmarkedUserId(internalUserId));
+      } else {
+        await addBookmark(internalUserId).unwrap();
+        dispatch(addBookmarkedUserId(internalUserId));
+      }
+    } catch (err) {
+      console.error("Bookmark toggle failed:", err);
+    } finally {
+      setBookmarkLoading(false);
+    }
+  };
 
   const { data: healthCheckData, isError: isHealthCheckError } = useHealthCheckQuery();
 
@@ -63,14 +94,29 @@ function ProfilePagePublic() {
             <div className="flex profilePage_BottomLeft">
               <div className="flex profilePage_CoverAndProfile">
                 <div style={buttonsContainer}>
-                  <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
                     <div onClick={() => handleSendMessageRequest()} style={navButton(isDarkMode)}>
                       <span>Send Message</span>
                     </div>
-                    {local_userId === userId &&
-                      <div onClick={() => handleGoToProfilePage()} style={navButton(isDarkMode)}>
-                        <span>Profile</span>
-                      </div>
+                    {local_userId === internalUserId
+                      ? <div onClick={() => handleGoToProfilePage()} style={navButton(isDarkMode)}>
+                          <span>Profile</span>
+                        </div>
+                      : <div style={{ position: "relative" }}
+                            onMouseEnter={() => setBookmarkHovered(true)}
+                            onMouseLeave={() => setBookmarkHovered(false)}
+                          >
+                          <div onClick={handleToggleBookmark} style={bookmarkButton(isBookmarked, bookmarkLoading)}>
+                            {bookmarkLoading
+                              ? <div style={bookmarkSpinner} />
+                              : isBookmarked ? <BsBookmarkFill size="1.1rem" /> : <BsBookmark size="1.1rem" />}
+                          </div>
+                          {bookmarkHovered && !bookmarkLoading && (
+                            <div style={bookmarkTooltip}>
+                              {isBookmarked ? "Remove bookmark" : "Bookmark user"}
+                            </div>
+                          )}
+                        </div>
                     }
                   </div>
                 </div>
@@ -168,6 +214,46 @@ const buttonsContainer = {
   display: "flex", justifyContent: "flex-end", alignItems: "center",
   padding: "0.5rem", boxSizing: "border-box",
   borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem",
+};
+
+const bookmarkButton = (active, loading) => ({
+  borderRadius: "50%",
+  backgroundColor: "white",
+  color: loading ? "#c0c0c0" : active ? parrotRed : "#c0c0c0",
+  width: "2.2rem",
+  height: "2.2rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: loading ? "default" : "pointer",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  transition: "background-color 0.2s ease",
+  flexShrink: 0,
+});
+
+const bookmarkTooltip = {
+  position: "absolute",
+  bottom: "calc(100% + 8px)",
+  left: "50%",
+  transform: "translateX(-50%)",
+  backgroundColor: "white",
+  color: "#333",
+  fontSize: "0.9rem",
+  padding: "6px 14px",
+  borderRadius: "8px",
+  whiteSpace: "nowrap",
+  pointerEvents: "none",
+  zIndex: 10,
+  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+};
+
+const bookmarkSpinner = {
+  width: "1rem",
+  height: "1rem",
+  border: "2px solid rgba(0,0,0,0.15)",
+  borderTop: "2px solid #007bff",
+  borderRadius: "50%",
+  animation: "spin 0.7s linear infinite",
 };
 
 const navButton = (_dark) => ({
