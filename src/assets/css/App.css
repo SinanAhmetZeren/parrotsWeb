@@ -47,6 +47,39 @@
   display: none;
 }
 
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: -2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #003366;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 9999;
+}
+
+.nav-icon-wrapper:hover .nav-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 .place-tooltip {
   background: #003366;
   border: none;

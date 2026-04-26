@@ -40,14 +40,14 @@ function CreateVehiclePage() {
   const [vehicleDescription, setVehicleDescription] = useState("");
   const [vehicleCapacity, setVehicleCapacity] = useState(null);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
-  const [image1, setImage1] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [vehicleImage, setVehicleImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [imagePreview2, setImagePreview2] = useState(null);
+  const [galleryImagePreview, setGalleryImagePreview] = useState(null);
   const fileInputRef = React.createRef();
-  const fileInputRef2 = React.createRef();
-  const [hoveredUserImg, setHoveredUserImg] = useState(false);
-  const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
+  const galleryImageInputRef = React.createRef();
+  const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
+  const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
   const [pageState, setPageState] = useState("s1");
   const [vehicleId, setVehicleId] = useState("");
@@ -62,14 +62,14 @@ function CreateVehiclePage() {
       vehicleDescription !== "<p><br></p>" &&
       vehicleCapacity &&
       selectedVehicleType &&
-      image1
+      profileImageFile
     );
   }, [
     vehicleName,
     vehicleDescription,
     vehicleCapacity,
     selectedVehicleType,
-    image1,
+    profileImageFile,
   ]);
 
   // useEffect(() => {
@@ -92,7 +92,7 @@ function CreateVehiclePage() {
         toast.error("File size must be 5MB or less.");
         return;
       }
-      setImage1(file);
+      setProfileImageFile(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
     }
@@ -112,7 +112,7 @@ function CreateVehiclePage() {
 
       setVehicleImage(file);
       const previewUrl = URL.createObjectURL(file);
-      setImagePreview2(previewUrl);
+      setGalleryImagePreview(previewUrl);
     }
   };
 
@@ -120,7 +120,7 @@ function CreateVehiclePage() {
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview);
     }
-    setImage1(null);
+    setProfileImageFile(null);
     setImagePreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -128,13 +128,13 @@ function CreateVehiclePage() {
   };
 
   const handleCancelUpload2 = () => {
-    if (imagePreview2) {
-      URL.revokeObjectURL(imagePreview2);
+    if (galleryImagePreview) {
+      URL.revokeObjectURL(galleryImagePreview);
     }
     setVehicleImage(null);
-    setImagePreview2(null);
-    if (fileInputRef2.current) {
-      fileInputRef2.current.value = "";
+    setGalleryImagePreview(null);
+    if (galleryImageInputRef.current) {
+      galleryImageInputRef.current.value = "";
     }
   };
 
@@ -143,12 +143,12 @@ function CreateVehiclePage() {
   };
 
   const handleImageClick2 = () => {
-    fileInputRef2.current.click();
+    galleryImageInputRef.current.click();
   };
 
   const handleCreateVehicle = async () => {
     console.log("1.  Creating vehicle...  ");
-    if (!image1) {
+    if (!profileImageFile) {
       return;
     }
     setIsRegisteringVehicle(true);
@@ -156,7 +156,7 @@ function CreateVehiclePage() {
       console.log("2.  Sending request...  ");
 
       const response = await createVehicle({
-        vehicleImage: image1,
+        vehicleImage: profileImageFile,
         name: vehicleName,
         description: vehicleDescription,
         userId,
@@ -171,7 +171,7 @@ function CreateVehiclePage() {
       setVehicleCapacity("");
       setSelectedVehicleType("");
       setVehicleName("");
-      setImage1("");
+      setProfileImageFile("");
       setImagePreview("");
       setVehicleImage("");
       setAddedVehicleImages([]);
@@ -250,7 +250,7 @@ function CreateVehiclePage() {
       };
       setAddedVehicleImages((prevImages) => [...prevImages, newItem]);
       setVehicleImage(null);
-      setImagePreview2(null);
+      setGalleryImagePreview(null);
     } catch (error) {
       console.error("Error uploading image", error);
       toast.error("Failed to upload image. Please check your connection and try again.");
@@ -310,8 +310,9 @@ function CreateVehiclePage() {
                       <div className=" ">
                         <input
                           type="text"
-                          placeholder="Vehicle Name"
+                          placeholder="Vehicle name (max 20)"
                           value={vehicleName}
+                          maxLength={20}
                           style={
                             {
                               // backgroundColor: "rgb(249, 245, 244)"
@@ -445,17 +446,17 @@ function CreateVehiclePage() {
                           }}
                         />
                       )}
-                      {image1 && (
+                      {profileImageFile && (
                         <div
                           onClick={handleCancelUpload}
                           style={{
                             ...deleteImageIcon,
-                            ...(hoveredUserImg ? deleteImageIconHover : {}),
+                            ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}),
                           }}
                           onMouseEnter={() => {
-                            setHoveredUserImg(true);
+                            setIsProfileImageDeleteHovered(true);
                           }}
-                          onMouseLeave={() => setHoveredUserImg(false)}
+                          onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
                         >
                           <IoRemoveCircleOutline size={"2.5rem"} />
                         </div>
@@ -521,7 +522,7 @@ function CreateVehiclePage() {
                       onChange={handleImageChange2}
                       onClick={(e) => (e.target.value = null)}
                       style={{ display: "none" }}
-                      ref={fileInputRef2}
+                      ref={galleryImageInputRef}
                     />
                     <div
                       style={{
@@ -529,12 +530,12 @@ function CreateVehiclePage() {
                         width: "25rem",
                       }}
                     >
-                      {imagePreview2 ? (
+                      {galleryImagePreview ? (
                         <div className="image-preview">
                           <img
-                            src={imagePreview2}
+                            src={galleryImagePreview}
                             alt="Uploaded preview"
-                            style={uploadImage2}
+                            style={galleryImageUploadStyle}
                           />
                         </div>
                       ) : (
@@ -542,7 +543,7 @@ function CreateVehiclePage() {
                           src={uploadImage}
                           alt="Upload Icon"
                           onClick={handleImageClick2}
-                          style={uploadImage2}
+                          style={galleryImageUploadStyle}
                         />
                       )}
                       {vehicleImage && (
@@ -550,13 +551,13 @@ function CreateVehiclePage() {
                           <div
                             onClick={handleCancelUpload2}
                             style={{
-                              ...deleteImageIcon2,
-                              ...(hoveredUserImg2 ? deleteImageIconHover2 : {}),
+                              ...galleryImageDeleteIcon,
+                              ...(isGalleryImageDeleteHovered ? galleryImageDeleteIconHover : {}),
                             }}
                             onMouseEnter={() => {
-                              setHoveredUserImg2(true);
+                              setIsGalleryImageDeleteHovered(true);
                             }}
-                            onMouseLeave={() => setHoveredUserImg2(false)}
+                            onMouseLeave={() => setIsGalleryImageDeleteHovered(false)}
                           >
                             <IoRemoveCircleOutline size={"2.5rem"} />
                           </div>
@@ -617,7 +618,7 @@ function CreateVehiclePage() {
                                         item.addedvehicleImageId
                                       )
                                     }
-                                    style={deleteImageIcon3}
+                                    style={uploadedImageDeleteIcon}
                                   >
                                     <IoRemoveCircleOutline size={"2.5rem"} />
                                   </div>
@@ -835,7 +836,7 @@ const userUploadedImage = {
   margin: "0.5rem",
 };
 
-const uploadImage2 = {
+const galleryImageUploadStyle = {
   width: "25rem",
   height: "25rem",
   objectFit: "cover",
@@ -885,7 +886,7 @@ const deleteImageIconHover = {
   transform: "scale(1.2)",
 };
 
-const deleteImageIcon2 = {
+const galleryImageDeleteIcon = {
   backgroundColor: " #3c9dee99",
   width: "3rem",
   height: "3rem",
@@ -899,7 +900,7 @@ const deleteImageIcon2 = {
   transition: "transform 0.3s ease-in-out",
 };
 
-const deleteImageIcon3 = {
+const uploadedImageDeleteIcon = {
   backgroundColor: " #3e99",
   width: "3rem",
   height: "3rem",
@@ -913,7 +914,7 @@ const deleteImageIcon3 = {
   transition: "transform 0.3s ease-in-out",
 };
 
-const deleteImageIconHover2 = {
+const galleryImageDeleteIconHover = {
   transform: "scale(1.2)",
 };
 

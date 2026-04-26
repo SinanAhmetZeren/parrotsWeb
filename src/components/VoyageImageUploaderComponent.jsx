@@ -28,7 +28,7 @@ export const VoyageImageUploaderComponent = ({
   setIsUploadingImage,
   setPageState,
 }) => {
-  const deleteImageIconHover2 = {
+  const newImageDeleteIconHover = {
     transform: "scale(1.2)",
   };
   const handleUploadImage = useCallback(async () => {
@@ -51,7 +51,7 @@ export const VoyageImageUploaderComponent = ({
         return newState;
       });
       setVoyageImage(null);
-      setImagePreview2(null);
+      setNewImagePreview(null);
     } catch (error) {
       console.error("Error uploading image", error);
       toast.error("Failed to upload image. Please check your connection and try again.");
@@ -115,7 +115,7 @@ export const VoyageImageUploaderComponent = ({
     msOverflowStyle: "none",
   };
 
-  const deleteImageIcon2 = {
+  const newImageDeleteIcon = {
     backgroundColor: " #3c9dee99",
     width: "3rem",
     height: "3rem",
@@ -156,7 +156,7 @@ export const VoyageImageUploaderComponent = ({
     margin: "0.5rem",
   };
 
-  const deleteImageIcon3 = {
+  const uploadedImageDeleteIcon = {
     backgroundColor: " #3e99",
     width: "3rem",
     height: "3rem",
@@ -189,9 +189,9 @@ export const VoyageImageUploaderComponent = ({
     [addedVoyageImages, maxItems, placeholders]
   );
 
-  const fileInputRef2 = React.createRef();
-  const [imagePreview2, setImagePreview2] = useState(null);
-  const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
+  const newImageInputRef = React.createRef();
+  const [newImagePreview, setNewImagePreview] = useState(null);
+  const [isNewImageDeleteHovered, setIsNewImageDeleteHovered] = useState(false);
 
 
   const handleImageChange2 = (e) => {
@@ -203,30 +203,30 @@ export const VoyageImageUploaderComponent = ({
 
       if (file.size > maxSizeBytes) {
         toast.error(`File size must be ${maxSizeMB}MB or less.`);
-        if (fileInputRef2.current) {
-          fileInputRef2.current.value = "";
+        if (newImageInputRef.current) {
+          newImageInputRef.current.value = "";
         }
         return;
       }
 
       setVoyageImage(file);
       const previewUrl = URL.createObjectURL(file);
-      setImagePreview2(previewUrl);
+      setNewImagePreview(previewUrl);
     }
   };
 
   const handleImageClick2 = () => {
-    fileInputRef2.current.click();
+    newImageInputRef.current.click();
   };
 
   const handleCancelUpload2 = () => {
-    if (imagePreview2) {
-      URL.revokeObjectURL(imagePreview2);
+    if (newImagePreview) {
+      URL.revokeObjectURL(newImagePreview);
     }
     setVoyageImage(null);
-    setImagePreview2(null);
-    if (fileInputRef2.current) {
-      fileInputRef2.current.value = "";
+    setNewImagePreview(null);
+    if (newImageInputRef.current) {
+      newImageInputRef.current.value = "";
     }
   };
 
@@ -252,7 +252,7 @@ export const VoyageImageUploaderComponent = ({
               onChange={handleImageChange2}
               onClick={(e) => (e.target.value = null)} // Reset value before selection
               style={{ display: "none" }}
-              ref={fileInputRef2}
+              ref={newImageInputRef}
             />
             <div
               style={{
@@ -260,10 +260,10 @@ export const VoyageImageUploaderComponent = ({
                 width: "25rem",
               }}
             >
-              {imagePreview2 ? (
+              {newImagePreview ? (
                 <div className="image-preview">
                   <img
-                    src={imagePreview2}
+                    src={newImagePreview}
                     alt="Uploaded preview"
                     style={uploadImage2}
                   />
@@ -281,13 +281,13 @@ export const VoyageImageUploaderComponent = ({
                   <div
                     onClick={handleCancelUpload2}
                     style={{
-                      ...deleteImageIcon2,
-                      ...(hoveredUserImg2 ? deleteImageIconHover2 : {}),
+                      ...newImageDeleteIcon,
+                      ...(isNewImageDeleteHovered ? newImageDeleteIconHover : {}),
                     }}
                     onMouseEnter={() => {
-                      setHoveredUserImg2(true);
+                      setIsNewImageDeleteHovered(true);
                     }}
-                    onMouseLeave={() => setHoveredUserImg2(false)}
+                    onMouseLeave={() => setIsNewImageDeleteHovered(false)}
                   >
                     <IoRemoveCircleOutline size={"2.5rem"} />
                   </div>
@@ -342,7 +342,7 @@ export const VoyageImageUploaderComponent = ({
                             onClick={() =>
                               handleDeleteImage(item.addedvoyageImageId)
                             }
-                            style={deleteImageIcon3}
+                            style={uploadedImageDeleteIcon}
                           >
                             <IoRemoveCircleOutline size={"2.5rem"} />
                           </div>

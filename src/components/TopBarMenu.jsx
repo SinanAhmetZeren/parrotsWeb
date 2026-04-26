@@ -8,6 +8,7 @@ import { parrotBananaLeafGreen, parrotBlue, parrotBlueDarkTransparent, parrotBlu
 import { apiSlice } from "../api/apiSlice";
 import { store } from '../store/store';
 import { IoSunny, IoMoon } from "react-icons/io5";
+import { MdOutlineHome, MdOutlineAccountCircle, MdFavoriteBorder, MdOutlineShare } from "react-icons/md";
 
 export function TopBarMenu() {
   const isLoggedIn = useSelector((state) => state.users.isLoggedIn);
@@ -41,145 +42,108 @@ export function TopBarMenu() {
 
 
 
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive
-                ? `${activeStyle} ${commonStyle}`
-                : `${inactiveStyle} ${commonStyle}`
-            }
-          >
-            Home
-          </NavLink>
-
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              isActive
-                ? `${activeStyle} ${commonStyle}`
-                : `${inactiveStyle} ${commonStyle}`
-            }
-          >
-            Profile
-          </NavLink>
-
-          <NavLink
-            to="/favorites"
-            className={({ isActive }) =>
-              isActive
-                ? `${activeStyle} ${commonStyle}`
-                : `${inactiveStyle} ${commonStyle}`
-            }
-          >
-            Favorites
-          </NavLink>
-
-          <NavLink
-            to="/connect"
-            className={({ isActive }) =>
-              isActive
-                ? `${activeStyle} ${commonStyle}`
-                : `${inactiveStyle} ${commonStyle}`
-            }
-          >
-            {/* Connect */}
-
-
-            <div className="flex items-center relative">
-              Connect
-              {unreadMessages && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="16"
-                    width="16"
-                    fill="white"
-                    viewBox="0 0 24 24"
-                    style={{ marginLeft: 0, padding: 2 }}
-                  >
-                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                  </svg>
-
-
-                </span>
-              )}
-            </div>
-
-          </NavLink>
-
-          <>
-            <button
-              onClick={() => {
-                setShowModal(true);
-              }}
-              className={`${inactiveStyle} ${commonStyle}`}
+          <div style={navPill}>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? iconActiveStyle : iconInactiveStyle
+              }
             >
-              Logout
-            </button>
-
-            {showModal && (
-              // <div className="modal-overlay" style={modalOverlay}>
-              //   <div className="modal-content" style={modalContent}>
-
-              <div
-                className="modal-overlay"
-                style={modalOverlay}
-                onClick={() => setShowModal(false)} // closes on any overlay click
-              >
-                <div
-                  className="modal-content"
-                  style={modalContent}
-                  onClick={(e) => e.stopPropagation()} // prevents the inner click from bubbling
-                >
-                  <h3
-                    style={{
-                      color: "rgba(10, 119, 234,.7)",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Are you sure you want to log out?
-                  </h3>
-                  <div className="modal-buttons" style={modalButtons}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <button
-                        onClick={() => {
-                          stopHubConnection();
-                          dispatch(updateAsLoggedOut());
-                          dispatch(apiSlice.util.resetApiState());
-                          navigate("/login");
-
-                          console.log(store.getState().api); // check RTK Query slice
-
-                        }}
-                        style={{ ...buttonStyle, ...Logout }}
-                      >
-                        Yes, Logout
-                      </button>
-                    </div>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <button
-                        onClick={() => setShowModal(false)}
-                        style={{ ...buttonStyle, ...Stay }}
-                      >
-                        No, Stay
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <div className="nav-icon-wrapper">
+                <MdOutlineHome size="1.5rem" />
+                <span className="nav-tooltip">Home</span>
               </div>
-            )}
-          </>
+            </NavLink>
+
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                isActive ? iconActiveStyle : iconInactiveStyle
+              }
+            >
+              <div className="nav-icon-wrapper">
+                <MdOutlineAccountCircle size="1.5rem" />
+                <span className="nav-tooltip">Profile</span>
+              </div>
+            </NavLink>
+
+            <NavLink
+              to="/favorites"
+              className={({ isActive }) =>
+                isActive ? iconActiveStyle : iconInactiveStyle
+              }
+            >
+              <div className="nav-icon-wrapper">
+                <MdFavoriteBorder size="1.5rem" />
+                <span className="nav-tooltip">Favorites</span>
+              </div>
+            </NavLink>
+
+            <NavLink
+              to="/connect"
+              className={({ isActive }) =>
+                isActive ? iconActiveStyle : iconInactiveStyle
+              }
+            >
+              <div className="nav-icon-wrapper">
+                <MdOutlineShare size="1.5rem" />
+                <span className="nav-tooltip">Connect</span>
+                {unreadMessages && (
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="16"
+                      width="16"
+                      fill="white"
+                      viewBox="0 0 24 24"
+                      style={{ marginLeft: 0, padding: 2 }}
+                    >
+                      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+            </NavLink>
+
+            <div style={{ width: "1px", height: "1.5rem", backgroundColor: "rgba(255,255,255,0.2)", margin: "0 0.25rem" }} />
+
+            <div
+              onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              style={{
+                width: "3.6rem",
+                height: "2rem",
+                borderRadius: "2rem",
+                backgroundColor: isDarkMode ? "#334155" : "#cbd5e1",
+                position: "relative",
+                transition: "background-color 0.3s ease",
+                boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              <div style={{
+                position: "absolute",
+                top: "0.15rem",
+                left: isDarkMode ? "1.75rem" : "0.15rem",
+                width: "1.7rem",
+                height: "1.7rem",
+                borderRadius: "50%",
+                backgroundColor: "white",
+                transition: "left 0.3s ease",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                {isDarkMode
+                  ? <IoMoon size="0.8rem" color="#334155" />
+                  : <IoSunny size="0.8rem" color="goldenrod" />
+                }
+              </div>
+            </div>
+          </div>
+
         </>
       ) : (
         <>
@@ -195,16 +159,6 @@ export function TopBarMenu() {
           </NavLink>
         </>
       )}
-      <button
-        onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
-        style={darkModeToggleStyle}
-        title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      >
-        {isDarkMode
-          ? <IoSunny size="1.4rem" color="goldenrod" />
-          : <IoMoon size="1.4rem" color="goldenrod" />
-        }
-      </button>
     </nav>
   );
 }
@@ -225,7 +179,21 @@ const activeStyle = "text-white";
 const inactiveStyle = "text-blue-500";
 
 const commonStyle =
-  "font-bold text-xl p-1 px-6 hover:bg-opacity-30 hover:bg-blue-800 hover:text-white hover:rounded-2xl";
+  "font-bold text-xl p-1 px-2 hover:bg-opacity-30 hover:bg-blue-800 hover:text-white hover:rounded-2xl";
+
+const navPill = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
+  backdropFilter: "blur(8px)",
+  borderRadius: "2rem",
+  padding: "0.3rem 0.6rem",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+};
+
+const iconActiveStyle = "text-white p-2 rounded-full bg-white bg-opacity-20";
+const iconInactiveStyle = "text-blue-400 p-2 rounded-full hover:bg-white hover:bg-opacity-10 hover:text-white transition-colors";
 
 const buttonStyle = {
   width: "100%",

@@ -187,9 +187,10 @@ export const AddWaypointsPage = ({
                                     <span style={titleStyle}>Title:</span>
                                     <input
                                         type="text"
-                                        placeholder="Waypoint title"
+                                        placeholder="Waypoint title (max 25)"
                                         value={waypointTitle}
                                         onChange={(e) => setWaypointTitle(e.target.value)}
+                                        maxLength={25}
                                         style={titleInputStyle}
                                     />
                                 </div>
@@ -292,7 +293,7 @@ export const AddWaypointsPage = ({
 
 const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, setImagePreview }) => {
     const fileInputRef = React.createRef();
-    const [hoveredUserImg, setHoveredUserImg] = useState(false)
+    const [isDeleteHovered, setIsDeleteHovered] = useState(false)
 
     const handleImageChange = (e) => {
         const files = e.target.files;
@@ -336,9 +337,9 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, 
                 {imagePreview && (
                     <div
                         onClick={handleCancelUpload}
-                        style={{ ...deleteImageIcon, ...(hoveredUserImg ? deleteImageIconHover : {}) }}
-                        onMouseEnter={() => setHoveredUserImg(true)}
-                        onMouseLeave={() => setHoveredUserImg(false)}
+                        style={{ ...deleteImageIcon, ...(isDeleteHovered ? deleteImageIconHover : {}) }}
+                        onMouseEnter={() => setIsDeleteHovered(true)}
+                        onMouseLeave={() => setIsDeleteHovered(false)}
                     >
                         <IoRemoveCircleOutline size={"2.5rem"} />
                     </div>
@@ -350,7 +351,8 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, 
 
 const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => (
     <textarea
-        placeholder="Waypoint brief"
+        placeholder="Waypoint brief (max 300)"
+        maxLength={300}
         value={waypointBrief}
         onChange={(e) => setWaypointBrief(e.target.value)}
         style={{
@@ -434,7 +436,7 @@ const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint }) => {
 }
 
 const WaypointComponent = ({ description, profileImage, title, waypointId, handleDeleteWaypoint }) => {
-    const [hoveredUserImg2, setHoveredUserImg2] = useState(false);
+    const [isDeleteHovered, setIsDeleteHovered] = useState(false);
     return (
         <div style={{
             backgroundColor: "rgba(255,255,255,1)",
@@ -458,9 +460,9 @@ const WaypointComponent = ({ description, profileImage, title, waypointId, handl
             </div>
             <div
                 onClick={() => handleDeleteWaypoint(waypointId)}
-                style={{ ...deleteImageIcon2, ...(hoveredUserImg2 ? deleteImageIconHover2 : {}) }}
-                onMouseEnter={() => setHoveredUserImg2(true)}
-                onMouseLeave={() => setHoveredUserImg2(false)}
+                style={{ ...waypointDeleteIcon, ...(isDeleteHovered ? waypointDeleteIconHover : {}) }}
+                onMouseEnter={() => setIsDeleteHovered(true)}
+                onMouseLeave={() => setIsDeleteHovered(false)}
             >
                 <IoRemoveCircleOutline size={"2.5rem"} />
             </div>
@@ -558,11 +560,11 @@ const deleteImageIcon = {
 
 const deleteImageIconHover = { transform: "scale(1.2)" }
 
-const deleteImageIcon2 = {
+const waypointDeleteIcon = {
     backgroundColor: "#3e99", width: "3rem", height: "3rem",
     position: "absolute", top: ".5rem", right: "1.5rem",
     borderRadius: "2rem", alignContent: "center", justifyItems: "center",
     cursor: "pointer", transition: "transform 0.3s ease-in-out", zIndex: "200"
 }
 
-const deleteImageIconHover2 = { transform: "scale(1.2)" }
+const waypointDeleteIconHover = { transform: "scale(1.2)" }

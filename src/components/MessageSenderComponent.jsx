@@ -10,6 +10,8 @@ export function MessageSenderComponent({
   sendButtonDisabled,
   conversationUserUsername,
   isDarkMode = false,
+  placeholder,
+  hideSendLabel = false,
 }) {
   const dark = isDarkMode;
   const handleInputChange = (e) => {
@@ -17,20 +19,18 @@ export function MessageSenderComponent({
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
-  // console.log("--> message: ", message);
-  // console.log("--> sendbuttondisabled: ", sendButtonDisabled);
-
   return (
     <div style={inputContainerStyle(dark)}>
       <textarea
         value={message}
-        placeholder={`Write a message to ${conversationUserUsername}`}
-        style={messageInputStyle(dark)}
+        placeholder={placeholder !== undefined ? placeholder : `Write a message to ${conversationUserUsername}`}
+        style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1 }}
         maxLength={500}
+        disabled={!conversationUserId}
         onInput={handleInputChange}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault(); // prevent new line
+            e.preventDefault();
             handleSendMessage();
           }
         }}
@@ -40,11 +40,11 @@ export function MessageSenderComponent({
         onClick={() => handleSendMessage()}
         style={{
           ...sendButtonStyle,
-          backgroundColor: sendButtonDisabled || message.trim() === "" ? "gray" : "#007bff",
+          backgroundColor: !hideSendLabel && (sendButtonDisabled || message.trim() === "") ? "gray" : "#007bff",
+          opacity: hideSendLabel ? 0.2 : 1,
         }}
       >
-        {" "}
-        Send{" "}
+        {hideSendLabel ? "" : "Send"}
       </button>
     </div>
   );
@@ -57,7 +57,7 @@ const inputContainerStyle = (dark) => ({
   alignItems: "center",
   width: "100%",
   padding: "1rem",
-  backgroundColor: dark ? "#0a2240" : "#f0f0f0",
+  backgroundColor: dark ? "rgba(10,34,64,0.8)" : "rgba(0,51,102,0.8)",
 });
 
 const messageInputStyle = (dark) => ({

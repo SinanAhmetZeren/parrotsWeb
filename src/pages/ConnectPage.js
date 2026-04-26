@@ -313,8 +313,8 @@ function ConnectPage() {
               )}
 
               <div className="flex connectPage_Bottom">
-                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
-                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#0a2240" } : SearchBarContainer}>
+                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "rgba(13,43,78,0.5)" } : {}}>
+                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "rgba(13,43,78,0.5)" } : SearchBarContainer}>
                     <SearchUserComponent
                       inputValue={inputValue}
                       setInputValue={setInputValue}
@@ -339,7 +339,7 @@ function ConnectPage() {
                     </div>
                   )}
                   {isSuccessmessagePreviews && query.length < 3 && (
-                    <div style={MessagePreviewsContainer} className={dark ? "dark-scrollbar" : ""}>
+                    <div style={MessagePreviewsContainer} className={dark ? "dark-scrollbar" : "light-scrollbar"}>
                       <MessagePreviewsComponent
                         messagesData={safeMessagePreviewsData}
                         userId={currentUserId}
@@ -352,8 +352,8 @@ function ConnectPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
-                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#0d2b4e" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : ""}>
+                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "rgba(13,43,78,0)" } : {}}>
+                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "rgba(13,43,78,0.5)" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "light-scrollbar"}>
 
                     {!conversationUserId &&
                       <div style={imageWrapperWrapper}>
@@ -377,20 +377,20 @@ function ConnectPage() {
                     />
                   </div>
 
-                  {conversationUserId && (
-                    <div style={{ width: "100%" }}>
-                      <MessageSenderComponent
-                        conversationUserId={conversationUserId}
-                        conversationUserUsername={conversationUserUsername}
-                        currentUserId={currentUserId}
-                        message={message}
-                        setMessage={setMessage}
-                        handleSendMessage={handleSendMessage}
-                        sendButtonDisabled={sendButtonDisabled}
-                        isDarkMode={isDarkMode}
-                      />
-                    </div>
-                  )}
+                  <div style={{ width: "100%" }}>
+                    <MessageSenderComponent
+                      conversationUserId={conversationUserId}
+                      conversationUserUsername={conversationUserUsername}
+                      currentUserId={currentUserId}
+                      message={message}
+                      setMessage={setMessage}
+                      handleSendMessage={handleSendMessage}
+                      sendButtonDisabled={!conversationUserId || sendButtonDisabled}
+                      isDarkMode={isDarkMode}
+                      placeholder={conversationUserId ? `Write a message to ${conversationUserUsername}` : ""}
+                      hideSendLabel={!conversationUserId}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -420,7 +420,7 @@ const ConversationComponentContainer = {
 };
 
 const SearchBarContainer = {
-  backgroundColor: "rgb(240, 240, 240)",
+  backgroundColor: "#003366",
   height: "9vh",
 };
 
@@ -444,7 +444,7 @@ const image = {
   margin: "auto",
   alignSelf: "center",
   margintop: "15rem",
-  borderRadius: "6rem",
+  borderRadius: "11rem",
 }
 
 const subText = {

@@ -64,6 +64,7 @@ function LoginPage() {
   const [isConfirmingUser, setIsConfirmingUser] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   const [requiresTermsReAcceptance, setRequiresTermsReAcceptance] = useState(false);
   const [pendingLoginData, setPendingLoginData] = useState(null);
 
@@ -93,11 +94,27 @@ function LoginPage() {
     toast.warning("Your session has expired. Please log in again.");
   }
 
+  const resetAllForms = () => {
+    setUsernameRegister("");
+    setEmailRegister("");
+    setEmailForgotPassword("");
+    setPasswordRegister("");
+    setPasswordRegister2("");
+    setPasswordUpdate1("");
+    setPasswordUpdate2("");
+    setConfirmationCode("");
+    setSixDigitCode("");
+    setTermsAccepted(false);
+    setFocusedField(null);
+  };
+
   const handleForgotPassword = () => {
+    resetAllForms();
     setPageState("ForgotPassword");
   };
 
   const handleSignup = () => {
+    resetAllForms();
     setPageState("Register1");
   };
 
@@ -298,6 +315,7 @@ function LoginPage() {
         setUsernameRegister("");
         setPasswordRegister("");
         setPasswordRegister2("");
+        resetAllForms();
         setPageState("Register2");
         setIsRegistering(false);
       } else {
@@ -323,6 +341,7 @@ function LoginPage() {
 
     try {
       await requestCode(emailForgotPassword).unwrap(); // Await and unwrap to catch errors
+      resetAllForms();
       setPageState("ResetPassword");
       setIsSendingCode(false);
     } catch (err) {
@@ -547,7 +566,46 @@ function LoginPage() {
                 </div>
               </>
             ) : pageState === "Register1" ? (
-              <div style={mainContainer}>
+              <div style={{ ...mainContainer, position: "relative" }}>
+                {focusedField === "username" && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "At least 3 characters", ok: usernameRegister.length >= 3 },
+                      { label: "Max 25 characters", ok: usernameRegister.length <= 25 },
+                      { label: "Letters, numbers, underscores only", ok: usernameRegister.length === 0 || /^[a-zA-Z0-9_]+$/.test(usernameRegister) },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {focusedField === "email" && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "Valid email format", ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(focusedField === "password" || focusedField === "confirmPassword") && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "At least 8 characters", ok: passwordRegister.length >= 8 },
+                      { label: "One uppercase letter", ok: /[A-Z]/.test(passwordRegister) },
+                      { label: "One lowercase letter", ok: /[a-z]/.test(passwordRegister) },
+                      { label: "One number", ok: /[0-9]/.test(passwordRegister) },
+                      { label: "Passwords match", ok: passwordRegister.length > 0 && passwordRegister === passwordRegister2 },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={wrapper}>
                   {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
                   <img src={letsGetStartedImage} alt="Lets get started"
@@ -562,9 +620,12 @@ function LoginPage() {
                     <div className="username-wrapper-register">
                       <input
                         type="text"
-                        placeholder="Username (max 25 characters)"
+                        placeholder="Username (3-25 characters)"
                         value={usernameRegister}
+                        maxLength={25}
                         onChange={(e) => setUsernameRegister(e.target.value)}
+                        onFocus={() => setFocusedField("username")}
+                        onBlur={() => setFocusedField(null)}
                         className="username-input-register"
                         style={{ color: parrotTextDarkBlue }}
                       />
@@ -575,6 +636,8 @@ function LoginPage() {
                         placeholder="Email"
                         value={emailRegister}
                         onChange={(e) => setEmailRegister(e.target.value)}
+                        onFocus={() => setFocusedField("email")}
+                        onBlur={() => setFocusedField(null)}
                         className="username-input-register"
                         style={{ color: parrotTextDarkBlue }}
                       />
@@ -586,6 +649,8 @@ function LoginPage() {
                         placeholder="Password"
                         value={passwordRegister}
                         onChange={(e) => setPasswordRegister(e.target.value)}
+                        onFocus={() => setFocusedField("password")}
+                        onBlur={() => setFocusedField(null)}
                         className="password-input-register"
                         style={{ color: parrotTextDarkBlue }}
                       />
@@ -618,6 +683,8 @@ function LoginPage() {
                         placeholder="Re-enter Password"
                         value={passwordRegister2}
                         onChange={(e) => setPasswordRegister2(e.target.value)}
+                        onFocus={() => setFocusedField("confirmPassword")}
+                        onBlur={() => setFocusedField(null)}
                         className="password-input-register"
                         style={{ color: parrotTextDarkBlue }}
                       />
@@ -643,22 +710,6 @@ function LoginPage() {
                         )}
                       </span>
                     </div>
-
-                    {(passwordRegister.length > 0 || passwordRegister2.length > 0) && (
-                      <div style={{ padding: "0.4rem 0.5rem 0", fontSize: "0.78rem", display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                        {[
-                          { label: "At least 8 characters", ok: passwordRegister.length >= 8 },
-                          { label: "One uppercase letter", ok: /[A-Z]/.test(passwordRegister) },
-                          { label: "One lowercase letter", ok: /[a-z]/.test(passwordRegister) },
-                          { label: "One number", ok: /[0-9]/.test(passwordRegister) },
-                          { label: "Passwords match", ok: passwordRegister.length > 0 && passwordRegister === passwordRegister2 },
-                        ].map(({ label, ok }) => (
-                          <span key={label} style={{ color: ok ? "#2e7d32" : "#c62828", fontWeight: 500 }}>
-                            {ok ? "✓" : "✗"} {label}
-                          </span>
-                        ))}
-                      </div>
-                    )}
 
                   <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
@@ -694,8 +745,10 @@ function LoginPage() {
                       onClick={() => termsAccepted && handleRegister()}
                       style={{
                         opacity:
-                          usernameRegister &&
+                          usernameRegister.length >= 3 &&
+                            /^[a-zA-Z0-9_]+$/.test(usernameRegister) &&
                             emailRegister &&
+                            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) &&
                             passwordRegister &&
                             passwordRegister2 &&
                             termsAccepted &&
@@ -719,7 +772,7 @@ function LoginPage() {
                       <span className="signupSpan">
                         <span
                           className="signupLinkSpan"
-                          onClick={() => setPageState("Login")}
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
                           style={{ color: parrotTextDarkBlue }}
                         >
                           Back to Login
@@ -768,7 +821,7 @@ function LoginPage() {
                       >
                         <span
                           className="signupLinkSpan"
-                          onClick={() => setPageState("Login")}
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
                           style={{ color: parrotTextDarkBlue }}
                         >
                           Back to Login
@@ -818,7 +871,7 @@ function LoginPage() {
                     <span className="signupSpan" style={{ marginTop: ".5rem" }}>
                       <span
                         className="signupLinkSpan"
-                        onClick={() => setPageState("Login")}
+                        onClick={() => { resetAllForms(); setPageState("Login"); }}
                         style={{ color: parrotTextDarkBlue }}
                       >
                         Back to Login
@@ -935,7 +988,7 @@ function LoginPage() {
                       <span className="signupSpan">
                         <span
                           className="signupLinkSpan"
-                          onClick={() => setPageState("Login")}
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
                           style={{ color: parrotTextDarkBlue }}
                         >
                           Back to Login
@@ -977,6 +1030,21 @@ const mainContainer = {
   display: "flex",
   justifyContent: "center",
   marginTop: "3rem",
+};
+
+const registerPill = {
+  position: "absolute",
+  top: "50%",
+  left: "calc(100% + 16px)",
+  transform: "translateY(-50%)",
+  backgroundColor: "#1a56b0",
+  borderRadius: "20px",
+  padding: "0.75rem 1.4rem",
+  zIndex: 10,
+  whiteSpace: "nowrap",
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.3rem",
 };
 
 const welcomeStyle = {

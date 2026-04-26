@@ -187,7 +187,7 @@ const cardContainerStyle = (dark) => ({
   width: "24rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: dark ? "#0d2b4e" : "#fff",
+  backgroundColor: dark ? "#174070" : "#fff",
   margin: "1rem",
   boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.1)`,
 });
@@ -218,7 +218,7 @@ const cardContentStyle = {
 const cardTitleStyle = (dark) => ({
   fontSize: "1.3rem",
   fontWeight: "bold",
-  color: dark ? "rgba(255,255,255,0.9)" : "rgba(10, 119, 234,1)",
+  color: dark ? "#2ac898" : "rgba(10, 119, 234,1)",
 });
 
 const cardBriefStyle = (dark) => ({

@@ -183,7 +183,7 @@
   height: calc(100% - 1rem);
   margin: 0.5rem;
   width: 30%;
-  background-color: white;
+  background-color: rgba(0, 119, 234, 0.3);
   display: flex;
   flex-direction: column;
 }
@@ -200,7 +200,8 @@
   margin: 0.5rem;
   width: calc(100% - 30% - 1rem);
   align-items: center;
-  background-color: white;
+  /* background-color: rgba(255, 255, 255, 0.4); */
+  background-color: rgba(0, 119, 234, 0.3);
   display: flex;
   flex-direction: column;
 }
@@ -229,4 +230,21 @@
 
 .dark-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.35);
+}
+
+.light-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.light-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 119, 234, 0.15);
+}
+
+.light-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 119, 234, 0.6);
+  border-radius: 5px;
+}
+
+.light-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 119, 234, 0.85);
 }

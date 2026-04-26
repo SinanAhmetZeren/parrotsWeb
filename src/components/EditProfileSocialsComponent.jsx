@@ -12,6 +12,7 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import { useState } from "react";
 
 export function EditProfileSocialsComponent({
+  isDarkMode = false,
   userData,
   setEmail,
   setDisplayEmail,
@@ -44,25 +45,35 @@ export function EditProfileSocialsComponent({
     linkedin: linkedin,
     tiktok: tiktok,
   };
+  const dark = isDarkMode;
   const [isHovered, setIsHovered] = useState(false);
 
   const socialInputs = [
-    { key: "instagram", state: instagramProfile, setter: setInstagramProfile },
-    { key: "youtube", state: youtubeProfile, setter: setYoutubeProfile },
-    { key: "facebook", state: facebookProfile, setter: setFacebookProfile },
-    { key: "phoneNumber", state: phoneNumber, setter: setPhoneNumber },
-    { key: "twitter", state: twitterProfile, setter: setTwitterProfile },
-    { key: "linkedin", state: linkedinProfile, setter: setLinkedinProfile },
-    { key: "tiktok", state: tiktokProfile, setter: setTiktokProfile },
-    { key: "email", state: displayEmail, setter: setDisplayEmail },
+    { key: "instagram", state: instagramProfile, setter: setInstagramProfile, maxLen: 150, hint: "max 150" },
+    { key: "youtube", state: youtubeProfile, setter: setYoutubeProfile, maxLen: 150, hint: "max 150" },
+    { key: "facebook", state: facebookProfile, setter: setFacebookProfile, maxLen: 150, hint: "max 150" },
+    { key: "phoneNumber", state: phoneNumber, setter: setPhoneNumber, maxLen: 20, hint: "max 20" },
+    { key: "twitter", state: twitterProfile, setter: setTwitterProfile, maxLen: 150, hint: "max 150" },
+    { key: "linkedin", state: linkedinProfile, setter: setLinkedinProfile, maxLen: 150, hint: "max 150" },
+    { key: "tiktok", state: tiktokProfile, setter: setTiktokProfile, maxLen: 150, hint: "max 150" },
+    { key: "email", state: displayEmail, setter: setDisplayEmail, maxLen: 100, hint: "max 100" },
   ];
 
   return (
     <>
-      <div style={{ marginTop: "2rem", width: "100%" }}>
-        {socialInputs.map(({ key, state, setter }) => (
+      <div style={{
+        margin: "auto",
+        marginTop: "2rem", width: "80%",
+        backgroundColor: dark ? "rgba(10,34,64,0.3)" : "rgba(255, 255, 255, 0.08)",
+        paddingTop: "2rem",
+        paddingBottom: "2rem",
+        borderRadius: "1.5rem",
+
+
+      }}>
+        {socialInputs.map(({ key, state, setter, maxLen, hint }) => (
           <div key={key}>
-            <div style={socialRow}>
+            <div style={{ ...socialRow, backgroundColor: dark ? "#0a2240" : "white" }}>
               <div>
                 <img style={socialIcon} src={socialIcons[key]} alt={key} />
               </div>
@@ -70,9 +81,15 @@ export function EditProfileSocialsComponent({
                 <input
                   className="font-bold text-base custom-input"
                   type="text"
-                  placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                  placeholder={`${key.charAt(0).toUpperCase() + key.slice(1)} (${hint})`}
+                  maxLength={maxLen}
                   value={state}
-                  style={inputStyle}
+                  style={{
+                    ...inputStyle,
+                    backgroundColor: dark ? "#0d2b4e" : "#007bff21",
+                    color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+                    border: dark ? "1px solid rgba(255,255,255,0.15)" : "none",
+                  }}
                   onChange={(e) => {
                     setter(e.target.value);
                   }}
@@ -87,7 +104,7 @@ export function EditProfileSocialsComponent({
                     right: "1rem",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    backgroundColor: "white",
+                    backgroundColor: dark ? "#0d2b4e" : "white",
                     borderRadius: "50%",
                     padding: "0.2rem",
                   }}
@@ -119,6 +136,7 @@ export function EditProfileSocialsComponent({
                   <EmailHiddenCheckBox
                     emailHidden={emailHidden}
                     setEmailHidden={setEmailHidden}
+                    dark={dark}
                   />
                 </div>
               </div>
@@ -188,7 +206,7 @@ const messageRow = {
   marginTop: ".2rem",
 };
 
-const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
+const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden, dark }) => {
   return (
     <div
       style={{
@@ -198,7 +216,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
         justifyContent: "center",
         gap: "1rem",
         borderRadius: "1rem",
-        backgroundColor: "white",
+        backgroundColor: dark ? "#0a2240" : "white",
       }}
     >
       <label
@@ -207,7 +225,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden }) => {
           display: "flex",
           alignItems: "center",
           gap: "0.5rem",
-          color: parrotTextDarkBlue,
+          color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
           cursor: "pointer",
           fontSize: "1rem",
           width: "95%",

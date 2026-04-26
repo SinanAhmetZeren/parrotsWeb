@@ -12,7 +12,10 @@ import {
 } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { updateAsLoggedOut } from "../slices/UserSlice";
+import { stopHubConnection } from "../signalr/signalRHub";
+import { apiSlice } from "../api/apiSlice";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
@@ -26,6 +29,16 @@ function ProfilePage() {
   const userId = local_userId !== null ? local_userId : state_userId;
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    stopHubConnection();
+    dispatch(updateAsLoggedOut());
+    dispatch(apiSlice.util.resetApiState());
+    navigate("/login");
+  };
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
   const [isOpen, setIsOpen] = useState(false);
@@ -108,7 +121,12 @@ function ProfilePage() {
             <div className="flex profilePage_BottomLeft">
               <div style={buttonsAndImagesContainer}>
                 <div style={buttonsContainer}>
-                  <TermsOfUseComponent isDarkMode={isDarkMode} />
+                  <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
+                    <TermsOfUseComponent isDarkMode={isDarkMode} />
+                    <div onClick={() => setShowLogoutModal(true)} style={logoutPill}>
+                      <span>Logout</span>
+                    </div>
+                  </div>
                   <div
                     style={{
                       display: "flex",
@@ -288,6 +306,19 @@ function ProfilePage() {
           </div>
         </div>
       </header>
+      {showLogoutModal && (
+        <div style={modalOverlay} onClick={() => setShowLogoutModal(false)}>
+          <div style={modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ color: "rgba(10,119,234,.7)", fontWeight: "bold" }}>
+              Are you sure you want to log out?
+            </h3>
+            <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
+              <button onClick={handleLogout} style={{ ...modalBtn, backgroundColor: "#2ac898" }}>Yes, Logout</button>
+              <button onClick={() => setShowLogoutModal(false)} style={{ ...modalBtn, backgroundColor: "rgba(10,119,234,1)" }}>Stay</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   ) : null;
 }
@@ -375,6 +406,35 @@ const titlesContainer = {
   marginTop: ".5rem",
   alignItems: "center",
 }
+
+const modalOverlay = {
+  position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+  background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
+  alignItems: "center", zIndex: 2000,
+};
+
+const modalContent = {
+  background: "white", padding: "2rem", borderRadius: "8px",
+  textAlign: "center", boxShadow: "0px 4px 10px rgba(0,0,0,0.3)",
+};
+
+const modalBtn = {
+  padding: "0.6rem 1.5rem", borderRadius: "1.5rem", color: "white",
+  fontWeight: "bold", cursor: "pointer", fontSize: "1.2rem", border: "none",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+};
+
+const logoutPill = {
+  borderRadius: "1.5rem",
+  backgroundColor: "white",
+  color: "#e05555",
+  padding: "0.2rem 0.8rem",
+  textAlign: "center",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1.1rem",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+};
 
 const VehiclesVoyagesTitle = {
   width: "100%", // Added quotes around "100%"

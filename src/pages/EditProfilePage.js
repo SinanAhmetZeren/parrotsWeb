@@ -36,6 +36,8 @@ export function EditProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const dark = isDarkMode;
   const dispatch = useDispatch();
   const fileInputRef_ProfileImage = createRef();
   const fileInputRef_BackgroundImage = createRef();
@@ -420,12 +422,13 @@ export function EditProfilePage() {
                 </div>
               </div>
               <div className="flex editprofilePage_BioAndContactDetails">
-                <div className="flex editprofilePage_BioTitleUserName">
+                <div className="flex editprofilePage_BioTitleUserName" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
                   <div className="flex profilePage_UserName">
                     <span className="profilePage_UserName">
                       <UserNameInputComponent
                         userName={userName}
                         setUserName={setUserName}
+                        isDarkMode={isDarkMode}
                       />
                     </span>
                   </div>
@@ -434,6 +437,7 @@ export function EditProfilePage() {
                       <UserTitleInputComponent
                         userTitle={userTitle}
                         setUserTitle={setUserTitle}
+                        isDarkMode={isDarkMode}
                       />
                     </span>
                   </div>
@@ -442,25 +446,25 @@ export function EditProfilePage() {
                       className="custom-quill"
                       value={userBio}
                       onChange={(value) => setUserBio(value)}
-                      placeholder="Tell us about yourself..."
+                      placeholder="Tell us about yourself... (max 500 characters)"
                       modules={{
                         toolbar: false,
                       }}
                       style={{
-                        color: parrotTextDarkBlue,
+                        color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
                         fontFamily: "Nunito, sans-serif",
                         fontWeight: "600",
                         fontSize: "1.2rem",
                         borderRadius: "1.5rem",
                         padding: "0rem",
-                        backgroundColor: "#007bff21",
+                        backgroundColor: dark ? "#0a2240" : "#007bff21",
                         width: "100%",
                       }}
                     />
                     <style>
                       {`
                             .ql-container {
-                              border: none !important; 
+                              border: none !important;
                             }
                             .ql-editor {
                               border: none !important;
@@ -474,10 +478,24 @@ export function EditProfilePage() {
                               letter-spacing: 0.015em;
                             }
                             .custom-quill .ql-editor.ql-blank::before {
-                              // color: red; 
-                              font-size: 1rem; 
+                              // color: red;
+                              font-size: 1rem;
                               font-style: normal;
                               opacity: 0.6;
+                            }
+                            .custom-quill .ql-editor::-webkit-scrollbar {
+                              width: 6px;
+                            }
+                            .custom-quill .ql-editor::-webkit-scrollbar-track {
+                              background: ${dark ? "#0a2240" : "#007bff21"};
+                              border-radius: 3px;
+                            }
+                            .custom-quill .ql-editor::-webkit-scrollbar-thumb {
+                              background-color: ${dark ? "rgba(255,255,255,0.2)" : "rgba(0,123,255,0.3)"};
+                              border-radius: 3px;
+                            }
+                            .custom-quill .ql-editor::-webkit-scrollbar-thumb:hover {
+                              background-color: ${dark ? "rgba(255,255,255,0.35)" : "rgba(0,123,255,0.5)"};
                             }
                           `}
                     </style>
@@ -505,7 +523,7 @@ export function EditProfilePage() {
               >
                 <div
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.08)",
+                    // backgroundColor: dark ? "rgba(10,34,64,0.3)" : "rgba(255, 255, 255, 0.08)",
                     borderRadius: "1.5rem",
                     height: "100%",
                     flexDirection: "column",
@@ -515,6 +533,7 @@ export function EditProfilePage() {
                 >
                   {isSuccessUser ? (
                     <EditProfileSocialsComponent
+                      isDarkMode={isDarkMode}
                       userData={userData}
                       setEmail={setEmail}
                       setDisplayEmail={setDisplayEmail}
@@ -562,7 +581,7 @@ export function EditProfilePage() {
                       onClick={() => handleUpdateChanges()}
                       style={UpdateChangesButton}
                     >
-                      {isUpdatingProfile ? <UpdateProfileSpinner /> : "Update Changes"}
+                      {isUpdatingProfile ? <UpdateProfileSpinner /> : "Save Changes"}
                     </span>
 
 

@@ -84,7 +84,7 @@ const cardContentStyle = {
 
 const cardTitleStyle = (dark) => ({
   fontSize: "1.3rem", fontWeight: "bold",
-  color: dark ? "rgba(255,255,255,0.9)" : "rgba(10,119,234,1)",
+  color: dark ? "#2ac898" : "rgba(10,119,234,1)",
   marginTop: "0.5rem",
 });
 

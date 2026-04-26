@@ -77,7 +77,7 @@ const cardContentStyle = {
 
 const vehicleNameText = (dark) => ({
   fontSize: "1.3rem", fontWeight: "bold",
-  color: dark ? "rgba(255,255,255,0.9)" : parrotBlue,
+  color: dark ? "#2ac898" : parrotBlue,
   borderRadius: "1rem", padding: "0.1rem", paddingLeft: "1rem", paddingRight: "1rem",
 });
 

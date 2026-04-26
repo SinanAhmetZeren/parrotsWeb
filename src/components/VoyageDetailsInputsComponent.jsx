@@ -174,8 +174,9 @@ const CreateVoyagePageNameInput = ({ voyageName, setVoyageName }) => {
           <input
             className="font-bold text-base custom-input"
             type="text"
-            placeholder="Voyage Name"
+            placeholder="Voyage name (max 30)"
             value={voyageName}
+            maxLength={30}
             style={inputStyle}
             onChange={(e) => setVoyageName(e.target.value)}
           />
