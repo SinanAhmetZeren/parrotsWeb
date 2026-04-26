@@ -422,7 +422,7 @@ export function EditProfilePage() {
                 </div>
               </div>
               <div className="flex editprofilePage_BioAndContactDetails">
-                <div className="flex editprofilePage_BioTitleUserName" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                <div className="flex editprofilePage_BioTitleUserName" style={dark ? { backgroundColor: "#011a32" } : {}}>
                   <div className="flex profilePage_UserName">
                     <span className="profilePage_UserName">
                       <UserNameInputComponent
@@ -457,7 +457,7 @@ export function EditProfilePage() {
                         fontSize: "1.2rem",
                         borderRadius: "1.5rem",
                         padding: "0rem",
-                        backgroundColor: dark ? "#0a2240" : "#007bff21",
+                        backgroundColor: dark ? "#0a2745" : "#007bff21",
                         width: "100%",
                       }}
                     />
@@ -487,7 +487,7 @@ export function EditProfilePage() {
                               width: 6px;
                             }
                             .custom-quill .ql-editor::-webkit-scrollbar-track {
-                              background: ${dark ? "#0a2240" : "#007bff21"};
+                              background: ${dark ? "#0a2745" : "#007bff21"};
                               border-radius: 3px;
                             }
                             .custom-quill .ql-editor::-webkit-scrollbar-thumb {

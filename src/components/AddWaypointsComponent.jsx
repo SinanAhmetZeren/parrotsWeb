@@ -17,6 +17,7 @@ import { Pagination } from 'swiper/modules';
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 const tileUrl = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
@@ -59,6 +60,7 @@ export const AddWaypointsPage = ({
     const [deleteWaypoint] = useDeleteWaypointMutation();
     const [confirmVoyage] = useConfirmVoyageMutation();
     const navigate = useNavigate();
+    const dark = useSelector((state) => state.users.isDarkMode);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -152,7 +154,7 @@ export const AddWaypointsPage = ({
         <div style={{ height: "calc(100vh - 3rem)" }}>
             <div style={mainContainer}>
                 <div style={{ width: "35%" }}>
-                    <div style={newWaypointContainer}>
+                    <div style={{ ...newWaypointContainer, backgroundColor: dark ? "#011a32" : "white" }}>
                         <div style={WaypointImageUploaderContainerBox}>
                             <div style={WaypointImageUploaderContainer}>
                                 <WaypointImageUploader
@@ -164,43 +166,25 @@ export const AddWaypointsPage = ({
                             </div>
                             <div style={WaypointDetailsContainer}>
                                 <div style={waypointDetailRow}>
-                                    <span style={titleStyle}>Lat:</span>
-                                    <input
-                                        type="text"
-                                        placeholder="Click on map"
-                                        value={waypointLatitude && waypointLatitude !== 0 ? Number(waypointLatitude.toFixed(6)) : ""}
-                                        style={titleInputStyle}
-                                        readOnly
-                                    />
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lat:</span>
+                                    <input type="text" placeholder="Click on map" value={waypointLatitude && waypointLatitude !== 0 ? Number(waypointLatitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
                                 </div>
                                 <div style={waypointDetailRow}>
-                                    <span style={titleStyle}>Lng:</span>
-                                    <input
-                                        type="text"
-                                        placeholder="Click on map"
-                                        value={waypointLongitude && waypointLongitude !== 0 ? Number(waypointLongitude.toFixed(6)) : ""}
-                                        style={titleInputStyle}
-                                        readOnly
-                                    />
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lng:</span>
+                                    <input type="text" placeholder="Click on map" value={waypointLongitude && waypointLongitude !== 0 ? Number(waypointLongitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
                                 </div>
                                 <div style={waypointDetailRow}>
-                                    <span style={titleStyle}>Title:</span>
-                                    <input
-                                        type="text"
-                                        placeholder="Waypoint title (max 25)"
-                                        value={waypointTitle}
-                                        onChange={(e) => setWaypointTitle(e.target.value)}
-                                        maxLength={25}
-                                        style={titleInputStyle}
-                                    />
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Title:</span>
+                                    <input type="text" placeholder="Waypoint title (max 25)" value={waypointTitle} onChange={(e) => setWaypointTitle(e.target.value)} maxLength={25} style={titleInputStyle(dark)} />
                                 </div>
                             </div>
                         </div>
                         <div style={WaypointDescriptionContainerBox}>
-                            <div style={waypointDesctriptionContainer}>
+                            <div style={{ ...waypointDesctriptionContainer, backgroundColor: dark ? "#011a32" : "white" }}>
                                 <WaypointBriefInput
                                     waypointBrief={waypointBrief}
-                                    setWaypointBrief={setWaypointBrief} />
+                                    setWaypointBrief={setWaypointBrief}
+                                    dark={dark} />
                             </div>
                         </div>
 
@@ -235,13 +219,14 @@ export const AddWaypointsPage = ({
                         marginTop: "1.5rem",
                         marginBottom: "1rem",
                         width: "95%",
-                        backgroundColor: "rgba(255,255,255,0.2)",
+                        backgroundColor: dark ? "#011a32" : "rgba(255,255,255,0.2)",
                         borderRadius: "1.5rem"
                     }}>
                         <AddedWaypointsSlider
                             addedWaypoints={addedWaypoints}
                             setAddedWaypoints={setAddedWaypoints}
                             handleDeleteWaypoint={handleDeleteWaypoint}
+                            dark={dark}
                         />
                     </div>
 
@@ -349,19 +334,18 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, 
     );
 }
 
-const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => (
+const WaypointBriefInput = ({ waypointBrief, setWaypointBrief, dark = false }) => (
     <textarea
         placeholder="Waypoint brief (max 300)"
         maxLength={300}
         value={waypointBrief}
         onChange={(e) => setWaypointBrief(e.target.value)}
         style={{
-            ...titleInputStyle,
+            ...titleInputStyle(dark),
             height: "7rem",
             maxHeight: "7rem",
             resize: "none",
             padding: "1rem",
-            backgroundColor: "white",
             width: "95%",
             marginTop: "0.5rem",
             scrollbarWidth: "none",
@@ -370,7 +354,7 @@ const WaypointBriefInput = ({ waypointBrief, setWaypointBrief }) => (
     />
 );
 
-const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint }) => {
+const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = false }) => {
     const swiperRef = useRef(null);
 
     useEffect(() => {
@@ -412,6 +396,7 @@ const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint }) => {
                                     profileImage={waypoint.waypointImage}
                                     title={waypoint.title}
                                     handleDeleteWaypoint={handleDeleteWaypoint}
+                                    dark={dark}
                                 />
                             </div>
                         </SwiperSlide>
@@ -435,12 +420,14 @@ const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint }) => {
     );
 }
 
-const WaypointComponent = ({ description, profileImage, title, waypointId, handleDeleteWaypoint }) => {
+const WaypointComponent = ({ description, profileImage, title, waypointId, handleDeleteWaypoint, dark = false }) => {
     const [isDeleteHovered, setIsDeleteHovered] = useState(false);
     return (
         <div style={{
-            backgroundColor: "rgba(255,255,255,1)",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+            backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,1)",
+            boxShadow: dark
+                ? "0 0 12px rgba(100,180,255,0.15), 0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)"
+                : "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
             height: "17rem", width: "30rem",
             display: "flex", flexDirection: "row",
             borderRadius: "1.5rem", overflow: "hidden"
@@ -450,12 +437,12 @@ const WaypointComponent = ({ description, profileImage, title, waypointId, handl
                 alt="Uploaded preview"
                 style={{ height: "100%", width: "15rem", objectFit: "cover" }}
             />
-            <div style={{ backgroundColor: "rgba(155,255,255,0)", width: "calc(15rem - .8rem)", margin: ".4rem" }}>
+            <div style={{ width: "calc(15rem - .8rem)", margin: ".4rem" }}>
                 <div style={{ height: "3rem" }}>
-                    <span style={{ color: "#007bff", fontWeight: "700", fontSize: "1.3rem" }}>{title}</span>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.9)" : "#007bff", fontWeight: "700", fontSize: "1.3rem" }}>{title}</span>
                 </div>
                 <div style={{ height: "calc(100% - 3rem)", width: "100%", lineHeight: "1.2rem" }}>
-                    <span style={{ color: "#007bff", fontWeight: "400", fontSize: "1.1rem" }}>{description} {waypointId}</span>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.7)" : "#007bff", fontWeight: "400", fontSize: "1.1rem" }}>{description}</span>
                 </div>
             </div>
             <div
@@ -475,11 +462,14 @@ const titleStyle = {
     fontSize: "1.2rem", color: "#757575", fontWeight: 700,
 }
 
-const titleInputStyle = {
-    borderRadius: "1rem", backgroundColor: "white",
-    border: "1px solid rgba(4,4,4,0.2)", width: "100%",
-    padding: "0.3rem", fontSize: "1.2rem", fontWeight: 700, color: "#007bff",
-}
+const titleInputStyle = (dark) => ({
+    borderRadius: "1rem",
+    backgroundColor: dark ? "#0a2745" : "white",
+    border: dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(4,4,4,0.2)",
+    width: "100%",
+    padding: "0.3rem", fontSize: "1.2rem", fontWeight: 700,
+    color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
+})
 
 const waypointDetailRow = {
     height: "3rem", width: "100%", margin: "auto",

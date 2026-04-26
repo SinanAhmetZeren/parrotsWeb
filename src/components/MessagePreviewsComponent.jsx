@@ -101,7 +101,7 @@ export function MessagePreviewsComponent({
 
 const selectedContainerStyle = (dark) => ({
   boxShadow: "inset 0 0 3px rgba(60, 157, 222,0.5)",
-  backgroundColor: dark ? "#163d6a" : "white",
+  backgroundColor: dark ? "#0a3060" : "white",
 })
 
 const userprofileimg = {
@@ -118,7 +118,7 @@ const userprofileimgHover = {
 
 const containerStyle = (dark) => ({
   fontSize: "1rem",
-  backgroundColor: dark ? "#0a2240" : "rgb(246, 246, 246)",
+  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
   margin: "10px",
   padding: "10px",
   display: "grid",

@@ -25,8 +25,10 @@ import { useNavigate } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 function CreateVehiclePage() {
+  const dark = useSelector((state) => state.users.isDarkMode);
   const [createVehicle] = useCreateVehicleMutation();
   const [confirmVehicle] = useConfirmVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
@@ -688,7 +690,7 @@ function CreateVehiclePage() {
           .swiper {
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: ${dark ? "#011a32" : "rgba(255, 255, 255, 0.3)"};
             border-radius: 1.5rem;
           }
 
@@ -698,7 +700,7 @@ function CreateVehiclePage() {
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: ${dark ? "#0a2745" : "rgba(255, 255, 255, 0.3)"};
             border-radius: 1.5rem;
             filter: none !important;
             opacity: 1 !important;
@@ -712,6 +714,55 @@ function CreateVehiclePage() {
             height: 100%;
             object-fit: cover;
           }
+
+          ${dark ? `
+          .vehiclePage_vehicleContainer { background-color: #011a32; }
+          .vehiclePage_dataContainer { background-color: #011a32; }
+          .vehiclePage_detailsContainer { background-color: #02213d; color: rgba(255,255,255,0.85); box-shadow: none; }
+          .vehiclePage_descriptionContainer { background-color: #0a2745; box-shadow: none; }
+          .createvehiclePage_descriptionContainer_inner { background-color: #011a32; }
+          .vehiclePage_descriptionContainer_descriptionTitle { color: rgba(255,255,255,0.85); }
+          .vehiclePage_descriptionContainer_descriptionContent { color: rgba(255,255,255,0.85); }
+          .vehiclePage_nameContainer,
+          .vehiclePage_typeContainer,
+          .vehiclePage_hostContainer,
+          .vehiclePage_vacancyContainer { background-color: #011a32; border-radius: 0.4rem; }
+          .vehiclePage_nameContainer> :first-child,
+          .vehiclePage_typeContainer> :first-child,
+          .vehiclePage_hostContainer> :first-child,
+          .vehiclePage_vacancyContainer> :first-child {
+            color: rgba(255,255,255,0.85);
+            background-color: #0a2745;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            border-radius: 0.4rem;
+            text-align: start;
+            padding-left: 0.3rem;
+          }
+          .vehiclePage_nameContainer> :nth-child(2),
+          .vehiclePage_typeContainer> :nth-child(2),
+          .vehiclePage_hostContainer> :nth-child(2),
+          .vehiclePage_vacancyContainer> :nth-child(2) {
+            background-color: #0a2745;
+            color: rgba(255,255,255,0.9);
+            border-radius: 0.4rem;
+            text-align: start;
+            padding-left: 0.3rem;
+            border: none;
+            outline: none;
+          }
+          .vehicle_imageContainer { background-color: #011a32; }
+          .vehicle-name-input { background-color: #0a2745; color: rgba(255,255,255,0.9); border: none; outline: none; }
+          .capacity-input { background-color: #0a2745; color: rgba(255,255,255,0.9); border: none; outline: none; }
+          .type-input { background-color: #0a2745; color: rgba(255,255,255,0.9); border: none; outline: none; }
+          .editor-container .ql-editor { background-color: #011a32; color: rgba(255,255,255,0.9); }
+          .editor-container .ql-toolbar { background-color: #0a2745; border-color: rgba(255,255,255,0.15); }
+          .editor-container .ql-toolbar .ql-stroke { stroke: rgba(255,255,255,0.7); }
+          .editor-container .ql-toolbar .ql-fill { fill: rgba(255,255,255,0.7); }
+          .editor-container .ql-toolbar .ql-picker { color: rgba(255,255,255,0.7); }
+          .editor-container .ql-container { border-color: rgba(255,255,255,0.15); }
+          .editor-container .ql-editor.ql-blank::before { color: rgba(255,255,255,0.35); font-style: italic; }
+          ` : ``}
         `}
       </style>
     </div>

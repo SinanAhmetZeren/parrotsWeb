@@ -15,6 +15,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { FreeMode } from "swiper/modules";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 export const VoyageImageUploaderComponent = ({
   voyageImage,
@@ -28,6 +29,7 @@ export const VoyageImageUploaderComponent = ({
   setIsUploadingImage,
   setPageState,
 }) => {
+  const dark = useSelector((state) => state.users.isDarkMode);
   const newImageDeleteIconHover = {
     transform: "scale(1.2)",
   };
@@ -237,7 +239,7 @@ export const VoyageImageUploaderComponent = ({
           style={{
             display: "flex",
             flexDirection: "row",
-            marginTop: "1rem",
+            marginTop: "7rem",
             marginLeft: "1rem",
           }}
         >
@@ -395,17 +397,17 @@ export const VoyageImageUploaderComponent = ({
             .swiper {
               width: 100%;
               height: 100%;
-              background-color: rgba(255, 255, 255, 0.3);
+              background-color: ${dark ? "#011a32" : "rgba(255, 255, 255, 0.3)"};
               border-radius: 1.5rem;
             }
-  
+
             .swiper-slide {
               text-align: center;
               font-size: 18px;
               display: flex;
               justify-content: center;
               align-items: center;
-              background-color: rgba(255, 255, 255, 0.3);
+              background-color: ${dark ? "#0a2745" : "rgba(255, 255, 255, 0.3)"};
               border-radius: 1.5rem;
               filter: none !important;
               opacity: 1 !important;

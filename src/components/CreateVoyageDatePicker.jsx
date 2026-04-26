@@ -5,8 +5,10 @@ import { useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
 import parrotCoin from "../assets/images/parrotcoin.png";
+import { useSelector } from "react-redux";
 
 export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
+  const dark = useSelector((state) => state.users.isDarkMode);
   // .rdrDateDisplayItemActive input  -> i want to change this color with inline code
   const calendarRef = useRef(null);
   const handleDateChange = (item) => {
@@ -37,7 +39,8 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
   return (
     <div
       style={{
-        backgroundColor: "#fff", borderRadius: "1.5rem",
+        backgroundColor: dark ? "#011a32" : "#fff",
+        borderRadius: "1.5rem",
         justifyContent: "center",
         alignItems: "center",
         paddingTop: "3rem",
@@ -67,8 +70,57 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         <style>
           {`
             .custom-date-range .rdrDateDisplayItem input {
-              color: rgb(0, 123, 255);
+              color: ${dark ? "rgba(255,255,255,0.9)" : "rgb(0, 123, 255)"};
             }
+            ${dark ? `
+            .custom-date-range .rdrCalendarWrapper {
+              background-color: #011a32;
+              color: rgba(255,255,255,0.85);
+            }
+            .custom-date-range .rdrDateDisplayWrapper {
+              background-color: #0a2745;
+            }
+            .custom-date-range .rdrDateDisplayItem {
+              background-color: #011a32;
+              border-color: rgba(255,255,255,0.15);
+            }
+            .custom-date-range .rdrDateDisplayItem input {
+              background-color: #011a32;
+              color: rgba(255,255,255,0.9);
+            }
+            .custom-date-range .rdrMonthAndYearWrapper {
+              background-color: #0a2745;
+              color: rgba(255,255,255,0.85);
+            }
+            .custom-date-range .rdrMonthAndYearPickers select {
+              background-color: #0a2745;
+              color: rgba(255,255,255,0.85);
+            }
+            .custom-date-range .rdrMonth {
+              background-color: #011a32;
+            }
+            .custom-date-range .rdrWeekDay {
+              color: rgba(255,255,255,0.5);
+            }
+            .custom-date-range .rdrDayNumber span {
+              color: rgba(255,255,255,0.85);
+            }
+            .custom-date-range .rdrDayPassive .rdrDayNumber span {
+              color: rgba(255,255,255,0.2);
+            }
+            .custom-date-range .rdrDayDisabled {
+              background-color: #011a32 !important;
+            }
+            .custom-date-range .rdrDayDisabled .rdrDayNumber span {
+              color: rgba(255,255,255,0.2) !important;
+            }
+            .custom-date-range .rdrPprevButton, .custom-date-range .rdrNextButton {
+              background-color: #0a2745;
+            }
+            .custom-date-range .rdrPprevButton i, .custom-date-range .rdrNextButton i {
+              border-color: transparent rgba(255,255,255,0.7) transparent transparent;
+            }
+            ` : ``}
           `}
         </style>
       </div>

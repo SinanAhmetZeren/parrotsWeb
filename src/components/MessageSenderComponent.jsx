@@ -1,6 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
-import { parrotBlue } from "../styles/colors";
+import { parrotBlue, parrotCream } from "../styles/colors";
 
 export function MessageSenderComponent({
   conversationUserId,
@@ -53,7 +53,12 @@ export function MessageSenderComponent({
         onClick={() => handleSendMessage()}
         style={{
           ...sendButtonStyle,
-          backgroundColor: !hideSendLabel && (sendButtonDisabled || message.trim() === "") ? "gray" : "#007bff",
+          backgroundColor: hideSendLabel
+            ? (dark ? "#0d2b4e" : "white")
+            : (sendButtonDisabled || message.trim() === "") ? "gray" : "#007bff",
+          border: hideSendLabel
+            ? (dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070")
+            : "none",
           opacity: hideSendLabel ? 0.2 : 1,
         }}
       >
@@ -70,7 +75,7 @@ const inputContainerStyle = (dark) => ({
   alignItems: "center",
   width: "100%",
   padding: "1rem",
-  backgroundColor: dark ? "rgba(10,34,64,0.8)" : "rgba(0,51,102,0.8)",
+  backgroundColor: dark ? "rgba(10,34,64,0.8)" : parrotCream,
 });
 
 const textareaWrapperStyle = {
@@ -117,4 +122,6 @@ const sendButtonStyle = {
   border: "none",
   borderRadius: "2rem",
   cursor: "pointer",
+  alignSelf: "flex-end",
+  marginBottom: "1rem",
 };

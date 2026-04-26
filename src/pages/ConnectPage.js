@@ -323,8 +323,8 @@ function ConnectPage() {
               )}
 
               <div className="flex connectPage_Bottom">
-                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "rgba(13,43,78,0.5)" } : {}}>
-                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "rgba(13,43,78,0.5)" } : SearchBarContainer}>
+                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "#011a32" } : {}}>
+                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
                     <SearchUserComponent
                       inputValue={inputValue}
                       setInputValue={setInputValue}
@@ -364,7 +364,7 @@ function ConnectPage() {
                       />
                     </div>
                   ) : isSuccessmessagePreviews && (
-                    <div style={MessagePreviewsContainer} className={dark ? "dark-scrollbar" : "light-scrollbar"}>
+                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
                       <MessagePreviewsComponent
                         messagesData={safeMessagePreviewsData}
                         userId={currentUserId}
@@ -377,8 +377,8 @@ function ConnectPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "rgba(13,43,78,0)" } : {}}>
-                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "rgba(13,43,78,0.5)" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "light-scrollbar"}>
+                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "#011a32" } : {}}>
+                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#011a32" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
 
                     {!conversationUserId &&
                       <div style={imageWrapperWrapper}>
@@ -445,7 +445,7 @@ const ConversationComponentContainer = {
 };
 
 const SearchBarContainer = {
-  backgroundColor: "#003366",
+  backgroundColor: "#f9f5f1",
   height: "9vh",
 };
 

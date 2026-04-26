@@ -34,6 +34,8 @@ export default function CreateVoyagePage() {
   const userId = localStorage.getItem("storedUserId");
   const dispatch = useDispatch();
   const hasAcknowledgedPublicProfile = useSelector((state) => state.users.hasAcknowledgedPublicProfile);
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const dark = isDarkMode;
   const [showPublicProfileModal, setShowPublicProfileModal] = useState(false);
   const [acknowledgePublicProfile] = useAcknowledgePublicProfileMutation();
   const [voyageImage, setVoyageImage] = useState(null);
@@ -308,10 +310,10 @@ export default function CreateVoyagePage() {
                 <>
                   <div style={{ position: "relative" }}>
                     <ProfileImageandDetailsTitlesComponent />
-                    <div style={profileImageandDetailsContainer}>
+                    <div style={{ ...profileImageandDetailsContainer, backgroundColor: dark ? "#011a32" : "rgba(255,255,255,0.3)" }}>
                       <div
                         style={{
-                          backgroundColor: "rgba(255,255,255,.3)",
+                          backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,.3)",
                           borderRadius: "1.5rem",
                           margin: "auto",
                           padding: "1rem",
@@ -324,7 +326,7 @@ export default function CreateVoyagePage() {
                       </div>
                       <div
                         style={{
-                          backgroundColor: "rgba(255,255,255,0.3)",
+                          backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,0.3)",
                           borderRadius: "1.5rem",
                         }}
                       >
@@ -350,11 +352,12 @@ export default function CreateVoyagePage() {
                           setIsPublicOnMap={setIsPublicOnMap}
                           currency={currency}
                           setCurrency={setCurrency}
+                          isDarkMode={dark}
                         />
                       </div>
                       <div
                         style={{
-                          backgroundColor: "rgba(255,255,255,.31)",
+                          backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,.31)",
                           borderRadius: "1.5rem",
                         }}
                       >
@@ -380,6 +383,7 @@ export default function CreateVoyagePage() {
                       setVoyageDescription={setVoyageDescription}
                       voyageBrief={voyageBrief}
                       setVoyageBrief={setVoyageBrief}
+                      isDarkMode={dark}
                     />
                   </div>
                   <CreateVoyageButton
@@ -515,10 +519,11 @@ const CreateVoyageButton = ({
   );
 };
 
-const VoyageBriefInput = ({ voyageBrief, setVoyageBrief }) => {
+const VoyageBriefInput = ({ voyageBrief, setVoyageBrief, isDarkMode = false }) => {
+  const dark = isDarkMode;
   return (
     <div className="brief-editor-container">
-      <style>{quellStyleBrief}</style>
+      <style>{quellStyleBrief(dark)}</style>
       <ReactQuill
         value={voyageBrief}
         onChange={setVoyageBrief}
@@ -539,10 +544,12 @@ const VoyageBriefInput = ({ voyageBrief, setVoyageBrief }) => {
 const VoyageDescriptionInput = ({
   voyageDescription,
   setVoyageDescription,
+  isDarkMode = false,
 }) => {
+  const dark = isDarkMode;
   return (
     <div className="description-editor-container">
-      <style>{quellStyleDescription}</style>
+      <style>{quellStyleDescription(dark)}</style>
       <ReactQuill
         value={voyageDescription}
         onChange={setVoyageDescription}
@@ -565,24 +572,26 @@ const VoyageBriefAndDescriptionComponent = ({
   setVoyageBrief,
   voyageDescription,
   setVoyageDescription,
+  isDarkMode = false,
 }) => {
+  const dark = isDarkMode;
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "row",
-        backgroundColor: "rgba(255,255,255,.3)",
+        backgroundColor: dark ? "#011a32" : "rgba(255,255,255,.3)",
         marginLeft: "1rem",
         marginRight: "1rem",
         borderRadius: "1.5rem",
         marginBottom: "1rem",
-        alignItems: "flex-start", // Ensures children align to the top
-        justifyContent: "space-around", // Distributes space around children
+        alignItems: "flex-start",
+        justifyContent: "space-around",
       }}
     >
       <div
         style={{
-          backgroundColor: "rgba(255,255,255,.3)", // -- > this item should go to the top
+          backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,.3)",
           padding: "1rem",
           marginTop: "3rem",
           borderRadius: "1.5rem",
@@ -590,16 +599,17 @@ const VoyageBriefAndDescriptionComponent = ({
           marginBottom: "1rem",
         }}
       >
-        <div style={BriefContainer}>
+        <div style={{ ...BriefContainer, backgroundColor: dark ? "#011a32" : "white" }}>
           <VoyageBriefInput
             voyageBrief={voyageBrief}
             setVoyageBrief={setVoyageBrief}
+            isDarkMode={dark}
           />
         </div>
       </div>
       <div
         style={{
-          backgroundColor: "rgba(255,255,255,.3)",
+          backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,.3)",
           padding: "1rem",
           marginBottom: "1.5rem",
           marginTop: "3rem",
@@ -607,10 +617,11 @@ const VoyageBriefAndDescriptionComponent = ({
           width: "62%",
         }}
       >
-        <div style={DescriptionContainer}>
+        <div style={{ ...DescriptionContainer, backgroundColor: dark ? "#011a32" : "white" }}>
           <VoyageDescriptionInput
             voyageDescription={voyageDescription}
             setVoyageDescription={setVoyageDescription}
+            isDarkMode={dark}
           />
         </div>
       </div>
@@ -773,23 +784,43 @@ const publicProfileNote = {
   alignSelf: "center",
 };
 
-const quellStyleBrief = `
-      .brief-editor-container .ql-editor {
-      min-height: calc(1.5em * 15);
-      overflow-y: auto;
-      line-height: 1.5;
-      color: black
-      }
-    `;
-
-const quellStyleDescription = `
-    .description-editor-container .ql-editor {
+const quellStyleBrief = (dark) => `
+  .brief-editor-container .ql-editor {
     min-height: calc(1.5em * 15);
     overflow-y: auto;
     line-height: 1.5;
-    color: black
-    }
-  `;
+    color: ${dark ? "rgba(255,255,255,0.9)" : "black"};
+    background-color: ${dark ? "#011a32" : "white"};
+  }
+  .brief-editor-container .ql-toolbar {
+    background-color: ${dark ? "#0a2745" : "white"};
+    border-color: ${dark ? "rgba(255,255,255,0.15)" : "#ccc"};
+  }
+  .brief-editor-container .ql-toolbar .ql-stroke { stroke: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .brief-editor-container .ql-toolbar .ql-fill { fill: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .brief-editor-container .ql-toolbar .ql-picker { color: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .brief-editor-container .ql-container { border-color: ${dark ? "rgba(255,255,255,0.15)" : "#ccc"}; }
+  .brief-editor-container .ql-editor.ql-blank::before { color: ${dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)"}; font-style: italic; }
+`;
+
+const quellStyleDescription = (dark) => `
+  .description-editor-container .ql-editor {
+    min-height: calc(1.5em * 15);
+    overflow-y: auto;
+    line-height: 1.5;
+    color: ${dark ? "rgba(255,255,255,0.9)" : "black"};
+    background-color: ${dark ? "#011a32" : "white"};
+  }
+  .description-editor-container .ql-toolbar {
+    background-color: ${dark ? "#0a2745" : "white"};
+    border-color: ${dark ? "rgba(255,255,255,0.15)" : "#ccc"};
+  }
+  .description-editor-container .ql-toolbar .ql-stroke { stroke: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .description-editor-container .ql-toolbar .ql-fill { fill: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .description-editor-container .ql-toolbar .ql-picker { color: ${dark ? "rgba(255,255,255,0.7)" : "#444"}; }
+  .description-editor-container .ql-container { border-color: ${dark ? "rgba(255,255,255,0.15)" : "#ccc"}; }
+  .description-editor-container .ql-editor.ql-blank::before { color: ${dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)"}; font-style: italic; }
+`;
 
 const CreateVogageSpinner = () => {
   return (

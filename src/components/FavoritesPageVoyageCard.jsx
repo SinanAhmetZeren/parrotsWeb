@@ -25,7 +25,7 @@ export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) 
       <div className="card-image" style={cardImageContainerStyle(dark)}>
         <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="Boat tour" />
       </div>
-      <div className="card-content" style={cardContentStyle}>
+      <div className="card-content" style={cardContentStyle(dark)}>
         <div style={cardTitleStyle(dark)} title={voyage?.name}>{voyage?.name}</div>
 
         <div style={cardDescriptionStyle}>
@@ -63,9 +63,11 @@ const publicIconStyle = (dark) => ({
 const cardContainer = (dark) => ({
   display: "flex", flexDirection: "row", borderRadius: "2rem", overflow: "hidden",
   width: "40rem", maxWidth: "600px", maxHeight: "700px",
-  backgroundColor: dark ? "#0d2b4e" : "#fff",
+  backgroundColor: dark ? "#011a32" : "#fff",
   margin: "auto", marginBottom: ".5rem",
-  boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -8px 6px rgba(0,0,0,0.1)",
+  boxShadow: dark
+    ? "0 0 12px rgba(100,180,255,0.15), 0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.1)"
+    : "0 4px 6px rgba(0,0,0,0.1), inset 0 -8px 6px rgba(0,0,0,0.1)",
   cursor: "pointer",
 });
 
@@ -76,11 +78,13 @@ const cardImageContainerStyle = (dark) => ({
   borderBottom: dark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #ddd",
 });
 
-const cardContentStyle = {
+const cardContentStyle = (dark) => ({
   display: "flex", height: "14rem", minWidth: "24rem", width: "24rem",
   flexDirection: "column",
-  boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -6px 6px rgba(0,0,0,0.1)",
-};
+  boxShadow: dark
+    ? "inset 0 0 20px rgba(100,180,255,0.08), inset 0 -6px 6px rgba(0,0,0,0.2)"
+    : "0 4px 6px rgba(0,0,0,0.1), inset 0 -6px 6px rgba(0,0,0,0.1)",
+});
 
 const cardTitleStyle = (dark) => ({
   fontSize: "1.3rem", fontWeight: "bold",

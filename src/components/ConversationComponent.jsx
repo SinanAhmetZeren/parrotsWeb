@@ -116,7 +116,7 @@ const containerStyle = (dark) => ({
   width: "auto",
   maxWidth: "80%",
   wordBreak: "break-word",
-  backgroundColor: dark ? "#0a2240" : "rgb(246, 246, 246)",
+  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
 });
 
 

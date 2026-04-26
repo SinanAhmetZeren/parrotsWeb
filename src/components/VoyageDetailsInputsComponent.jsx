@@ -31,10 +31,13 @@ export const VoyageDetailsInputsComponent = ({
   setIsFixedPrice,
   setIsPublicOnMap,
   currency,
-  setCurrency
+  setCurrency,
+  isDarkMode = false,
 }) => {
+  const dark = isDarkMode;
+
   const voyageDetails = {
-    backgroundColor: "rgba(255,255,255,1)",
+    backgroundColor: dark ? "#011a32" : "rgba(255,255,255,1)",
     borderRadius: "1.5rem",
     alignContent: "center",
     padding: ".2rem",
@@ -42,10 +45,9 @@ export const VoyageDetailsInputsComponent = ({
   };
 
   const semiWhiteStyle = {
-    backgroundColor: "rgba(255,255,255,0.7)",
+    backgroundColor: dark ? "transparent" : "rgba(255,255,255,0.7)",
     marginTop: ".5rem",
-  }
-
+  };
 
   return (
     <div style={voyageDetails}>
@@ -53,6 +55,7 @@ export const VoyageDetailsInputsComponent = ({
         <CreateVoyageVacancyPicker
           selectedVacancy={selectedVacancy}
           setSelectedVacancy={setSelectedVacancy}
+          dark={dark}
         />
       </div>
       <div style={semiWhiteStyle}>
@@ -60,13 +63,14 @@ export const VoyageDetailsInputsComponent = ({
           vehicleId={vehicleId}
           setVehicleId={setVehicleId}
           vehiclesList={vehiclesList}
+          dark={dark}
         />
       </div>
       <div style={semiWhiteStyle}>
-
         <CreateVoyagePageNameInput
           voyageName={voyageName}
           setVoyageName={setVoyageName}
+          dark={dark}
         />
       </div>
       <div style={semiWhiteStyle}>
@@ -77,6 +81,7 @@ export const VoyageDetailsInputsComponent = ({
           setMaxPrice={setMaxPrice}
           type={"Min Price"}
           isFixedPrice={isFixedPrice}
+          dark={dark}
         />
       </div>
       <div style={{ ...semiWhiteStyle, position: "relative" }}>
@@ -87,6 +92,7 @@ export const VoyageDetailsInputsComponent = ({
           setMaxPrice={setMaxPrice}
           type={"Max Price"}
           isFixedPrice={isFixedPrice}
+          dark={dark}
         />
         {maxPrice != null && minPrice != null && maxPrice < minPrice && (
           <div style={{
@@ -112,25 +118,11 @@ export const VoyageDetailsInputsComponent = ({
         <CreateVoyageCurrencySelector
           currency={currency}
           setCurrency={setCurrency}
+          dark={dark}
         />
       </div>
 
-      {/* 
-            <div style={semiWhiteStyle}>
-
-        <CreateVoyageLastBidDateInput
-          lastBidDate={lastBidDate}
-          setLastBidDate={setLastBidDate}
-        />
-      </div> */}
-
-
-      <div
-        style={{
-          backgroundColor: "rgba(255,255,255,0.7)",
-          borderRadius: "1.5rem",
-        }}
-      >
+      <div style={{ backgroundColor: dark ? "transparent" : "rgba(255,255,255,0.7)", borderRadius: "1.5rem" }}>
         <IsAuctionAndFixedPrice
           isAuction={isAuction}
           isFixedPrice={isFixedPrice}
@@ -138,38 +130,19 @@ export const VoyageDetailsInputsComponent = ({
           setIsAuction={setIsAuction}
           setIsFixedPrice={setIsFixedPrice}
           setIsPublicOnMap={setIsPublicOnMap}
+          dark={dark}
         />
       </div>
     </div>
   );
 };
 
-const CreateVoyagePageNameInput = ({ voyageName, setVoyageName }) => {
+const CreateVoyagePageNameInput = ({ voyageName, setVoyageName, dark = false }) => {
   return (
-    <div
-      style={{
-        height: "3.5rem",
-      }}
-    >
-      <div
-        style={{
-          margin: ".3rem",
-        }}
-      >
-        <div
-          onClick={() => console.log("hello")}
-          style={{
-            display: "flex",
-            cursor: "pointer",
-            position: "relative",
-
-            marginTop: "0rem",
-          }}
-        >
-          <span className="text-lg font-bold" style={labelStyle}>
-            Name&nbsp;
-          </span>
-
+    <div style={{ height: "3.5rem" }}>
+      <div style={{ margin: ".3rem" }}>
+        <div style={{ display: "flex", cursor: "pointer", position: "relative", marginTop: "0rem" }}>
+          <span className="text-lg font-bold" style={labelStyle(dark)}>Name&nbsp;</span>
           <style>{placeHolderStyle}</style>
           <input
             className="font-bold text-base custom-input"
@@ -177,7 +150,7 @@ const CreateVoyagePageNameInput = ({ voyageName, setVoyageName }) => {
             placeholder="Voyage name (max 30)"
             value={voyageName}
             maxLength={30}
-            style={inputStyle}
+            style={inputStyle(dark)}
             onChange={(e) => setVoyageName(e.target.value)}
           />
         </div>
@@ -190,6 +163,7 @@ const CreateVoyageVehicleSelector = ({
   vehicleId,
   setVehicleId,
   vehiclesList,
+  dark = false,
 }) => {
 
   const [value, setValue] = useState("");
@@ -227,7 +201,7 @@ const CreateVoyageVehicleSelector = ({
             marginTop: "0rem",
           }}
         >
-          <span className="text-lg font-bold" style={labelStyle}>
+          <span className="text-lg font-bold" style={labelStyle(dark)}>
             Vehicle&nbsp;
           </span>
 
@@ -238,7 +212,7 @@ const CreateVoyageVehicleSelector = ({
             readOnly
             value={value}
             placeholder="Select Vehicle"
-            style={inputStyle}
+            style={inputStyle(dark)}
           />
           {open && (
             <div
@@ -306,7 +280,7 @@ const CreateVoyageVehicleSelector = ({
 
 
 
-const CreateVoyageCurrencySelector = ({ currency, setCurrency }) => {
+const CreateVoyageCurrencySelector = ({ currency, setCurrency, dark = false }) => {
   const [open, setOpen] = useState(false); // Dropdown open state
   const dropdownRef = useRef(null);
 
@@ -337,7 +311,7 @@ const CreateVoyageCurrencySelector = ({ currency, setCurrency }) => {
             marginTop: "0rem",
           }}
         >
-          <span className="text-lg font-bold" style={labelStyle}>
+          <span className="text-lg font-bold" style={labelStyle(dark)}>
             Currency&nbsp;
           </span>
           <style>{placeHolderStyle}</style>
@@ -347,7 +321,7 @@ const CreateVoyageCurrencySelector = ({ currency, setCurrency }) => {
             readOnly
             value={currency || ""}
             placeholder="Select Currency"
-            style={inputStyle}
+            style={inputStyle(dark)}
           />
 
           {open && (
@@ -481,7 +455,7 @@ const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
   );
 };
 
-const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
+const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy, dark = false }) => {
   const [open, setOpen] = useState(false); // State to toggle the dropdown visibility
   const dropdownRef = useRef(null); // Ref for the dropdown container
   const vacancies = Array.from({ length: 50 }, (_, index) => index + 1);
@@ -517,7 +491,7 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
             marginTop: "0rem",
           }}
         >
-          <span className="text-lg font-bold" style={labelStyle}>
+          <span className="text-lg font-bold" style={labelStyle(dark)}>
             Vacancy&nbsp;
           </span>
 
@@ -526,9 +500,9 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy }) => {
             className="font-bold text-base custom-input"
             type="text"
             readOnly
-            value={selectedVacancy} // Display the selected vacancy number
+            value={selectedVacancy}
             placeholder="Max number of voyagers"
-            style={inputStyle}
+            style={inputStyle(dark)}
           />
           {open && (
             <div
@@ -601,6 +575,7 @@ const CreateVoyagePriceInput = ({
   setMaxPrice,
   type,
   isFixedPrice,
+  dark = false,
 }) => {
   // console.log("isfixedPrice", isFixedPrice);
   return (
@@ -623,7 +598,7 @@ const CreateVoyagePriceInput = ({
             marginTop: "0rem",
           }}
         >
-          <span className="text-lg font-bold" style={labelStyle}>
+          <span className="text-lg font-bold" style={labelStyle(dark)}>
             {type}&nbsp;
           </span>
           <style>{placeHolderStyle}</style>
@@ -640,7 +615,7 @@ const CreateVoyagePriceInput = ({
                   ? ""
                   : minPrice
             }
-            style={inputStyle}
+            style={inputStyle(dark)}
             onChange={(e) => {
               let newValue = e.target.value;
 
@@ -648,7 +623,7 @@ const CreateVoyagePriceInput = ({
                 newValue = newValue.slice(1);
               }
 
-              if (newValue === "0" || newValue === "" || Number(newValue) < 0) {
+              if (newValue === "" || Number(newValue) < 0) {
                 newValue = null;
               } else {
                 newValue = Number(newValue);
@@ -678,106 +653,50 @@ const IsAuctionAndFixedPrice = ({
   isFixedPrice,
   setIsFixedPrice,
   isPublicOnMap,
-  setIsPublicOnMap
+  setIsPublicOnMap,
+  dark = false,
 }) => {
+  const labelColor = dark ? "rgba(255,255,255,0.85)" : "black";
   return (
-    <div
-      style={{
-        height: "3.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "1rem",
-        borderRadius: "1.5rem",
-      }}
-    >
-      <label
-        className="text-lg font-bold"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          color: "black",
-          cursor: "pointer",
-        }}
-      >
+    <div style={{ height: "3.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", borderRadius: "1.5rem" }}>
+      <label className="text-lg font-bold" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: labelColor, cursor: "pointer" }}>
         Fixed Price
-        <input
-          type="checkbox"
-          checked={isFixedPrice}
-          onChange={() => setIsFixedPrice(!isFixedPrice)}
-          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
-        />
+        <input type="checkbox" checked={isFixedPrice} onChange={() => setIsFixedPrice(!isFixedPrice)} style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }} />
       </label>
-
-      <label
-        className="text-lg font-bold"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          color: "black",
-          cursor: "pointer",
-        }}
-      >
+      <label className="text-lg font-bold" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: labelColor, cursor: "pointer" }}>
         Auction
-        <input
-          type="checkbox"
-          checked={isAuction}
-          onChange={() => setIsAuction(!isAuction)}
-          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
-        />
+        <input type="checkbox" checked={isAuction} onChange={() => setIsAuction(!isAuction)} style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }} />
       </label>
-
-
-      <label
-        className="text-lg font-bold"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          color: "black",
-          cursor: "pointer",
-        }}
-        title="Will be visible on the Homepage map"
-      >
+      <label className="text-lg font-bold" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: labelColor, cursor: "pointer" }} title="Will be visible on the Homepage map">
         Public On Map
-        <input
-          type="checkbox"
-          checked={isPublicOnMap}
-          onChange={() => setIsPublicOnMap(!isPublicOnMap)}
-          style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }}
-        />
+        <input type="checkbox" checked={isPublicOnMap} onChange={() => setIsPublicOnMap(!isPublicOnMap)} style={{ width: "2rem", height: "2rem", accentColor: "#007bff" }} />
       </label>
-
     </div>
   );
 };
 
-const inputStyle = {
+const inputStyle = (dark) => ({
   width: "72%",
   padding: ".3rem",
-  border: "1px solid #ccc",
+  border: dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid #ccc",
   borderRadius: "1.5rem",
   textAlign: "center",
   cursor: "pointer",
-  boxShadow: `
-  0 4px 6px rgba(0, 0, 0, 0.1),
-  inset 0 -4px 6px rgba(0, 0, 0, 0.1)
-  `,
+  boxShadow: `0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -4px 6px rgba(0, 0, 0, 0.1)`,
   height: "3rem",
   fontSize: "1.1rem",
-  color: "#007bff",
-};
+  color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
+  backgroundColor: dark ? "#011a32" : "white",
+});
 
-const labelStyle = {
+const labelStyle = (dark) => ({
   width: "28%",
   display: "inline-block",
   textAlign: "end",
   alignSelf: "center",
-  color: "black",
+  color: dark ? "rgba(255,255,255,0.85)" : "black",
   fontSize: "1.3rem",
-};
+});
 
 const placeHolderStyle = `
         .custom-input::placeholder {

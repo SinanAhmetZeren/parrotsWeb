@@ -64,7 +64,7 @@ export function EditProfileSocialsComponent({
       <div style={{
         margin: "auto",
         marginTop: "2rem", width: "80%",
-        backgroundColor: dark ? "rgba(10,34,64,0.3)" : "rgba(255, 255, 255, 0.08)",
+        backgroundColor: dark ? "#011a32" : "rgba(255, 255, 255, 0.08)",
         paddingTop: "2rem",
         paddingBottom: "2rem",
         borderRadius: "1.5rem",
@@ -73,7 +73,7 @@ export function EditProfileSocialsComponent({
       }}>
         {socialInputs.map(({ key, state, setter, maxLen, hint }) => (
           <div key={key}>
-            <div style={{ ...socialRow, backgroundColor: dark ? "#0a2240" : "white" }}>
+            <div style={{ ...socialRow, backgroundColor: dark ? "#011a32" : "white" }}>
               <div>
                 <img style={socialIcon} src={socialIcons[key]} alt={key} />
               </div>
@@ -86,7 +86,7 @@ export function EditProfileSocialsComponent({
                   value={state}
                   style={{
                     ...inputStyle,
-                    backgroundColor: dark ? "#0d2b4e" : "#007bff21",
+                    backgroundColor: dark ? "#011a32" : "#007bff21",
                     color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
                     border: dark ? "1px solid rgba(255,255,255,0.15)" : "none",
                   }}
@@ -104,7 +104,7 @@ export function EditProfileSocialsComponent({
                     right: "1rem",
                     top: "50%",
                     transform: "translateY(-50%)",
-                    backgroundColor: dark ? "#0d2b4e" : "white",
+                    backgroundColor: dark ? "#011a32" : "white",
                     borderRadius: "50%",
                     padding: "0.2rem",
                   }}
@@ -113,7 +113,7 @@ export function EditProfileSocialsComponent({
                 >
                   <IoMdInformationCircleOutline
                     size="1.5rem"
-                    color={parrotTextDarkBlue}
+                    color={dark ? "white" : parrotTextDarkBlue}
                   />
                 </div>
               )}
@@ -216,7 +216,7 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden, dark }) => {
         justifyContent: "center",
         gap: "1rem",
         borderRadius: "1rem",
-        backgroundColor: dark ? "#0a2240" : "white",
+        backgroundColor: dark ? "#0a2745" : "white",
       }}
     >
       <label

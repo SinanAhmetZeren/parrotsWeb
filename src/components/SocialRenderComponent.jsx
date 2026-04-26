@@ -101,7 +101,7 @@ const socialIconText = (dark) => ({
 });
 
 const socialRow = (dark) => ({
-  backgroundColor: dark ? "#0d2b4e" : "white",
+  backgroundColor: dark ? "#011a32" : "white",
   display: "flex",
   marginBottom: "5px",
   boxShadow: dark

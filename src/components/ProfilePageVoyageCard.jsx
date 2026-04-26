@@ -81,7 +81,7 @@ const cardContainer = (dark) => ({
   width: "40rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: dark ? "#0d2b4e" : "#fff",
+  backgroundColor: dark ? "#011a32" : "#fff",
   margin: "auto",
   marginBottom: ".5rem",
   boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -8px 6px rgba(0,0,0,0.1)",
@@ -103,7 +103,9 @@ const cardContentStyle = (dark) => ({
   minWidth: "24rem",
   width: "24rem",
   flexDirection: "column",
-  boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -6px 6px rgba(0,0,0,0.1)",
+  boxShadow: dark
+    ? "inset 0 0 20px rgba(100,180,255,0.08), inset 0 -6px 6px rgba(0,0,0,0.2)"
+    : "0 4px 6px rgba(0,0,0,0.1), inset 0 -6px 6px rgba(0,0,0,0.1)",
 });
 
 const cardTitleStyle = (dark) => ({

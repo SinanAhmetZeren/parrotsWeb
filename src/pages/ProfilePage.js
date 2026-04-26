@@ -187,7 +187,7 @@ function ProfilePage() {
               <div className="flex profilePage_BioAndContactDetails">
                 <div
                   className="flex profilePage_BioTitleUserName"
-                  style={isDarkMode ? { backgroundColor: "#0d2b4e" } : {}}
+                  style={isDarkMode ? { backgroundColor: "#011a32" } : {}}
                 >
                   <div
                     className="flex profilePage_UserName"

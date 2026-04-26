@@ -187,7 +187,7 @@ const cardContainerStyle = (dark) => ({
   width: "24rem",
   maxWidth: "600px",
   maxHeight: "700px",
-  backgroundColor: dark ? "#0d2b4e" : "#fff",
+  backgroundColor: dark ? "#011a32" : "#fff",
   margin: "1rem",
   boxShadow: `0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.1)`,
 });
