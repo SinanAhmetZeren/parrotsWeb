@@ -357,7 +357,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         }
       },
       transformResponse: (responseData) => responseData.data,
-      refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
     }),
     getSingleUserByUserName: builder.query({

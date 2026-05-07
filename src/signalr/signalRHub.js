@@ -194,8 +194,8 @@ export const invokeHub = async (method, ...args) => {
         try {
             return await hubConnection.invoke(method, ...args);
         } catch (err) {
-            console.error(`❌ Invoke ${method} failed:`, err);
-            throw err;
+            console.warn(`⚠️ Invoke ${method} failed:`, err?.message ?? err);
+            return null;
         }
     }
     console.warn(`⚠️ Cannot invoke ${method}: Hub not ready`);

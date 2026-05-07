@@ -169,7 +169,15 @@ function App() {
           </>
         )}
       </Routes>
-      <ToastContainer position="top-center" style={{ marginTop: "6rem" }} />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={2500}
+        hideProgressBar
+        closeButton={false}
+        icon={false}
+        toastClassName="parrot-pill-toast"
+        bodyClassName="parrot-pill-toast-body"
+      />
 
     </Router>
     </ErrorBoundary>

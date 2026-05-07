@@ -296,3 +296,36 @@ img {
 .mainpage_TopRow {
   background-color: #011a32;
 }
+
+.leaflet-container {
+  background: #0a274555;
+}
+
+/* Pill-shaped toast — matches mobile style */
+.parrot-pill-toast {
+  background: rgba(30, 111, 217, 0.9) !important;
+  color: white !important;
+  border-radius: 20px !important;
+  padding: 10px 20px !important;
+  min-height: unset !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  width: auto !important;
+  max-width: 320px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.parrot-pill-toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+  color: white !important;
+}
+
+.Toastify__toast-container--bottom-center {
+  bottom: 2.5rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+}
