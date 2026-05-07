@@ -10,93 +10,114 @@ const userBaseUrl = `  `;
 export function MessagePreviewsComponent({
   messagesData,
   userId,
-  // selectedUserId,
   setConversationUserId,
   setConversationUserUsername,
+  setActiveGroupId,
   handleGoToUser,
   isDarkMode = false,
 }) {
   const dark = isDarkMode;
   const { conversationUserId: selectedUserId } = useParams();
 
-  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
+  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const [selectedConversationUserId, setSelectedConversationUserId] = React.useState(selectedUserId);
+  const [selectedGroupId, setSelectedGroupId] = React.useState(null);
+
   if (!messagesData || messagesData.length === 0) {
-    return <p
-      style={{
-        color: "#3c9dde66",
-        fontSize: "1.5rem",
-        fontWeight: "500"
-      }}
+    return <p style={{ color: "#3c9dde66", fontSize: "1.5rem", fontWeight: "500" }}
       className="text-gray-500 text-center p-4">No messages yet</p>;
   }
-
 
   const sortedMessages = [...messagesData].sort(
     (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
   );
 
-  return (
-    sortedMessages.map((message, index) => {
-      const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
-      const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
-      const otherUserProfileFull = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
-      const otherUserProfileThumb = message.receiverId === userId ? message.senderProfileThumbnailUrl : message.receiverProfileThumbnailUrl;
-      const otherUserProfile = otherUserProfileThumb || otherUserProfileFull;
-      const otherUserPublicId = message.receiverId === userId ? message.senderPublicId : message.receiverPublicId;
+  return sortedMessages.map((message, index) => {
+    const isGroup = !!message.groupConversationId;
 
-
-      const dateObj = new Date(message.dateTime);
-      const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-      const date = dateObj.toLocaleDateString("en-GB");
-
-      const setUserDetails = () => {
-        setConversationUserId(otherUserUserId);
-        setConversationUserUsername(otherUserUsername);
-        setSelectedConversationUserId(otherUserUserId);
-      }
+    if (isGroup) {
+      const dateObj = message.dateTime ? new Date(message.dateTime) : null;
+      const time = dateObj ? dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) : "";
+      const date = dateObj ? dateObj.toLocaleDateString("en-GB") : "";
+      const isSelected = selectedGroupId === message.groupConversationId;
 
       return (
-        <div key={index}
-          style={{
-            ...containerStyle(dark),
-            ...((otherUserUserId === selectedConversationUserId) && selectedContainerStyle(dark))
-          }}
-          title={message.text} onClick={() => setUserDetails()}>
-          <div style={userprofileimgContainer} title={"Go to profile"} onClick={() => {
-            console.log("going to other user: ", otherUserUserId);
-            handleGoToUser(otherUserUserId, otherUserUsername, otherUserPublicId)
-          }
-          }>
-            <img
-              src={userBaseUrl + otherUserProfile}
-              style={{ ...userprofileimg, ...((hoveredUserImgID === otherUserUserId) ? userprofileimgHover : {}) }}
-              alt="user"
-              onMouseEnter={() => {
-                setHoveredUserImgID(otherUserUserId)
-              }}
-              onMouseLeave={() => setHoveredUserImgID("")}
-            />
+        <div key={`group-${message.groupConversationId}`}
+          style={{ ...containerStyle(dark), ...(isSelected && selectedContainerStyle(dark)) }}
+          onClick={() => {
+            setSelectedGroupId(message.groupConversationId);
+            setSelectedConversationUserId("");
+            setConversationUserId("");
+            if (setActiveGroupId) setActiveGroupId(message.groupConversationId);
+          }}>
+          <div style={groupIconContainer(dark)}>
+            <span style={groupIconText}>
+              {(message.groupName || "")
+                .split(" ")
+                .filter(w => w)
+                .slice(0, 2)
+                .map(w => w[0].toUpperCase())
+                .join("")}
+            </span>
           </div>
           <div style={UsernameAndTextContainer}>
-            <div>
-              <span style={messageUsernameStyle(dark)}>{otherUserUsername}</span>
-            </div>
-            <div>
-              <span style={messageTextStyle(dark)}>{message.text}</span>
-            </div>
+            <span style={messageUsernameStyle(dark)}>{message.groupName}</span>
+            <span style={messageTextStyle(dark)}>{message.text || "No messages yet"}</span>
           </div>
           <div style={timestampContainer}>
-            <div>
-              <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
-            </div>
-            <div>
-              <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span>
-            </div>
+            <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
+            <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span>
           </div>
-        </div>)
-    })
-  );
+        </div>
+      );
+    }
+
+    const otherUserUserId = message.receiverId === userId ? message.senderId : message.receiverId;
+    const otherUserUsername = message.receiverId === userId ? message.senderUsername : message.receiverUsername;
+    const otherUserProfileFull = message.receiverId === userId ? message.senderProfileUrl : message.receiverProfileUrl;
+    const otherUserProfileThumb = message.receiverId === userId ? message.senderProfileThumbnailUrl : message.receiverProfileThumbnailUrl;
+    const otherUserProfile = otherUserProfileThumb || otherUserProfileFull;
+    const otherUserPublicId = message.receiverId === userId ? message.senderPublicId : message.receiverPublicId;
+
+    const dateObj = new Date(message.dateTime);
+    const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    const date = dateObj.toLocaleDateString("en-GB");
+
+    const setUserDetails = () => {
+      setConversationUserId(otherUserUserId);
+      setConversationUserUsername(otherUserUsername);
+      setSelectedConversationUserId(otherUserUserId);
+      setSelectedGroupId(null);
+      if (setActiveGroupId) setActiveGroupId(null);
+    };
+
+    return (
+      <div key={index}
+        style={{ ...containerStyle(dark), ...((otherUserUserId === selectedConversationUserId) && selectedContainerStyle(dark)) }}
+        title={message.text} onClick={() => setUserDetails()}>
+        <div style={userprofileimgContainer} title={"Go to profile"} onClick={(e) => {
+          e.stopPropagation();
+          handleGoToUser(otherUserUserId, otherUserUsername, otherUserPublicId);
+        }}>
+          <img
+            src={userBaseUrl + otherUserProfile}
+            style={{ ...userprofileimg, ...((hoveredUserImgID === otherUserUserId) ? userprofileimgHover : {}) }}
+            alt="user"
+            onMouseEnter={() => setHoveredUserImgID(otherUserUserId)}
+            onMouseLeave={() => setHoveredUserImgID("")}
+          />
+        </div>
+        <div style={UsernameAndTextContainer}>
+          <div><span style={messageUsernameStyle(dark)}>{otherUserUsername}</span></div>
+          <div><span style={messageTextStyle(dark)}>{message.text}</span></div>
+        </div>
+        <div style={timestampContainer}>
+          <div><span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span></div>
+          <div><span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span></div>
+        </div>
+      </div>
+    );
+  });
 }
 
 const selectedContainerStyle = (dark) => ({
@@ -119,7 +140,7 @@ const userprofileimgHover = {
 const containerStyle = (dark) => ({
   fontSize: "1rem",
   backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
-  margin: "10px",
+  margin: "4px 10px",
   padding: "10px",
   display: "grid",
   gridTemplateColumns: "1fr 3fr 1.5fr",
@@ -178,3 +199,25 @@ const messageTimeStyle = {
   WebkitLineClamp: 1,
   textOverflow: "ellipsis",
 }
+
+const groupColors = ["#a020a0","#6a0dad","#1e88e5","#29b6f6","#00bfa5","#ffa726","#e53935"];
+
+const groupColor = () => groupColors[Math.floor(Math.random() * groupColors.length)];
+
+const groupIconContainer = (dark) => ({
+  width: "4rem",
+  height: "4rem",
+  borderRadius: "50%",
+  backgroundColor: groupColor(),
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginRight: "1rem",
+  flexShrink: 0,
+});
+
+const groupIconText = {
+  color: "white",
+  fontSize: "1.6rem",
+  fontWeight: "700",
+};

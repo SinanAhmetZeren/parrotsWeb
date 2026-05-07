@@ -1,30 +1,51 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import { useState, useRef, useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { parrotRed } from "../styles/colors";
 
-export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false, showSaved = false, onToggleSaved }) {
+export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false, showSaved = false, onToggleSaved, onCreateGroup }) {
   const dark = isDarkMode;
   const isEnabled = inputValue.length >= 3;
+  const [showCreate, setShowCreate] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const groupInputRef = useRef(null);
+
+  useEffect(() => {
+    if (showCreate && groupInputRef.current) groupInputRef.current.focus();
+  }, [showCreate]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && isEnabled) onSearch();
   };
 
+  const handleToggleCreate = () => {
+    setShowCreate(s => !s);
+    setGroupName("");
+  };
+
+  const handleCreate = () => {
+    if (!groupName.trim()) return;
+    onCreateGroup(groupName.trim());
+    setGroupName("");
+    setShowCreate(false);
+  };
+
   return (
     <div style={searchMainContainer}>
       <div style={searchUserContainer}>
+        {/* Always-visible search row */}
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          style={inputStyle(dark)}
+          style={{ ...inputStyle(dark), opacity: showCreate ? 0 : 1 }}
           placeholder="Search for users..."
         />
-        <div
-          style={{ ...magnifierContainerStyle, cursor: isEnabled && !isLoading ? "pointer" : "default" }}
+        <div className="nav-icon-wrapper"
+          style={{ ...magnifierContainerStyle, cursor: isEnabled && !isLoading ? "pointer" : "default", opacity: showCreate ? 0 : 1 }}
           onClick={isEnabled && !isLoading ? onSearch : undefined}
         >
           {isLoading ? (
@@ -36,9 +57,10 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
               <IoSearch size="1.3rem" color={isEnabled ? "#3c9dde" : (dark ? "rgba(255,255,255,0.3)" : "#c0c0c0")} />
             </div>
           )}
+          <span className="nav-tooltip tooltip-up">Search</span>
         </div>
-        <div
-          style={{ ...magnifierContainerStyle, cursor: "pointer" }}
+        <div className="nav-icon-wrapper"
+          style={{ ...magnifierContainerStyle, cursor: "pointer", opacity: showCreate ? 0 : 1 }}
           onClick={onToggleSaved}
         >
           <div style={bookmarkButtonStyle(showSaved, dark)}>
@@ -47,7 +69,37 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
               : <BsBookmark size="1.1rem" />
             }
           </div>
+          <span className="nav-tooltip tooltip-up">{showSaved ? "Hide saved" : "Show saved"}</span>
         </div>
+
+        {/* +/× button — always in same position */}
+        {onCreateGroup && (
+          <div className="nav-icon-wrapper"
+            style={{ ...magnifierContainerStyle, cursor: "pointer" }}
+            onClick={handleToggleCreate}
+          >
+            <div style={createGroupButtonStyle(dark, showCreate)}>
+              <span style={{ fontSize: "1.6rem", lineHeight: 1, fontWeight: "300" }}>{showCreate ? "×" : "+"}</span>
+            </div>
+            <span className="nav-tooltip tooltip-up">{showCreate ? "Cancel" : "Create group"}</span>
+          </div>
+        )}
+
+        {/* Create overlay — sits on top of input + 2 icon buttons */}
+        {showCreate && (
+          <div style={createOverlay(dark)}>
+            <input
+              ref={groupInputRef}
+              type="text"
+              value={groupName}
+              onChange={e => setGroupName(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleCreate(); }}
+              style={inputStyle(dark)}
+              placeholder="Group name..."
+            />
+            <button style={createSubmitBtn(dark)} onClick={handleCreate}>Create</button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -79,10 +131,11 @@ const searchUserContainer = {
   height: "5rem",
   width: "100%",
   color: "black",
+  position: "relative",
 };
 
 const inputStyle = (dark) => ({
-  width: "23rem",
+  width: "19rem",
   height: "3rem",
   paddingLeft: "2rem",
   paddingRight: "2rem",
@@ -120,9 +173,67 @@ const bookmarkButtonStyle = (active, dark) => ({
   flexShrink: 0,
 });
 
+const createGroupButtonStyle = (dark, active) => ({
+  borderRadius: "50%",
+  backgroundColor: active ? "#3c9dde" : (dark ? "#0d2b4e" : "white"),
+  color: active ? "white" : (dark ? "rgba(255,255,255,0.7)" : "#3c9dde"),
+  width: "3rem",
+  height: "3rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  flexShrink: 0,
+});
+
+const groupNameInputStyle = (dark) => ({
+  flex: 1,
+  height: "3rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
+  marginTop: "1rem",
+  marginBottom: "1rem",
+  marginLeft: "1rem",
+  borderRadius: "2rem",
+  fontSize: "1.3rem",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+  backgroundColor: dark ? "#0d2b4e" : "white",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  outline: "none",
+});
+
+const createSubmitBtn = (dark) => ({
+  height: "3rem",
+  marginTop: "1rem",
+  marginBottom: "1rem",
+  marginLeft: "0.5rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
+  borderRadius: "2rem",
+  fontSize: "1.2rem",
+  fontWeight: "600",
+  backgroundColor: "#3c9dde",
+  color: "white",
+  border: "none",
+  cursor: "pointer",
+  flexShrink: 0,
+});
+
+const createOverlay = (dark) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: "4rem",
+  height: "100%",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  zIndex: 10,
+});
+
 const searchMainContainer = {
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  height: "93vh",
 };

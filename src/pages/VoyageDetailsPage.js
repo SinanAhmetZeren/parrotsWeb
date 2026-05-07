@@ -531,7 +531,7 @@ export const appLogoStyle = {
 };
 
 export const appHeaderStyle = {
-  backgroundColor: "#282c34",
+  backgroundColor: "transparent",
   minHeight: "100vh",
   display: "flex",
   flexDirection: "column",
@@ -629,6 +629,7 @@ export const mainPageContainerStyle = {
 export const mainPageTopRowStyle = {
   padding: "0.1rem",
   flexDirection: "row",
+  backgroundColor: "#011a32",
 };
 
 export const mainPageTopRightStyle = {

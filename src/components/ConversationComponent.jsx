@@ -99,7 +99,7 @@ const dateAndTimeContainerStyle = {
 
 const messagesContainerStyle = {
   display: "grid",
-  gap: "10px",
+  gap: "4px",
   width: "100%",
   // backgroundColor: "red"
 };
@@ -107,8 +107,8 @@ const messagesContainerStyle = {
 const containerStyle = (dark) => ({
   fontSize: "1rem",
   fontFamily: "Nunito, sans-serif",
-  margin: "10px",
-  padding: "10px",
+  margin: "4px 10px",
+  padding: "4px 10px",
   display: "grid",
   gridTemplateColumns: "3fr 10rem",
   borderRadius: "4rem",

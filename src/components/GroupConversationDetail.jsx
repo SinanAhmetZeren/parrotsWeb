@@ -1,0 +1,470 @@
+import "../assets/css/App.css";
+import * as React from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useGetGroupMessagesQuery, useGetGroupByIdQuery } from "../slices/GroupSlice";
+import { useAddGroupMemberMutation, useRemoveGroupMemberMutation, useExitGroupMutation } from "../slices/GroupSlice";
+import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
+import { invokeHub, isHubReady, register_ReceiveGroupMessageRefetch, unregister_ReceiveGroupMessageRefetch } from "../signalr/signalRHub";
+import { parrotBlue, parrotBlueDarkTransparent2, parrotBlueDarkTransparent, parrotLightBlue, parrotRed } from "../styles/colors";
+import { useNavigate } from "react-router-dom";
+
+const userBaseUrl = "";
+
+export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = false, groupData, refetchPreviews }) {
+  const dark = isDarkMode;
+  const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
+  const sendTimestampsRef = useRef([]);
+
+  const [message, setMessage] = useState("");
+  const [messagesToDisplay, setMessagesToDisplay] = useState([]);
+  const [memberSearch, setMemberSearch] = useState("");
+  const [memberQuery, setMemberQuery] = useState("");
+  const { data: fetchedGroupData } = useGetGroupByIdQuery(
+    { groupId, userId: currentUserId },
+    { skip: !groupId || !currentUserId || !!groupData }
+  );
+
+  const resolvedGroupData = groupData ?? fetchedGroupData;
+  const [members, setMembers] = useState(resolvedGroupData?.members ?? []);
+  const isCreator = resolvedGroupData?.creatorId === currentUserId;
+
+  const { data: groupMessagesData, refetch: refetchMessages } = useGetGroupMessagesQuery(
+    { groupId, userId: currentUserId },
+    { skip: !groupId || !currentUserId }
+  );
+
+  const { data: searchResults } = useGetUsersByUsernameQuery(memberQuery, {
+    skip: memberQuery.length < 3,
+  });
+
+  const [addMember] = useAddGroupMemberMutation();
+  const [removeMember] = useRemoveGroupMemberMutation();
+  const [exitGroup] = useExitGroupMutation();
+
+  useEffect(() => {
+    if (groupMessagesData) setMessagesToDisplay(groupMessagesData);
+  }, [groupMessagesData]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [messagesToDisplay]);
+
+  useEffect(() => {
+    if (resolvedGroupData?.members) setMembers(resolvedGroupData.members);
+  }, [resolvedGroupData]);
+
+  // ReceiveGroupMessageRefetch — refetch messages when a new group message arrives
+  useEffect(() => {
+    if (!groupId) return;
+    const handler = (incomingGroupId) => {
+      if (incomingGroupId === groupId) refetchMessages();
+    };
+    register_ReceiveGroupMessageRefetch(handler);
+    return () => unregister_ReceiveGroupMessageRefetch(handler);
+  }, [groupId, refetchMessages]);
+
+  const handleSend = async () => {
+    if (!message.trim()) return;
+
+    const now = Date.now();
+    sendTimestampsRef.current = sendTimestampsRef.current.filter(t => now - t < 5000);
+    if (sendTimestampsRef.current.length >= 5) return;
+    sendTimestampsRef.current.push(now);
+
+    const optimistic = {
+      senderId: currentUserId,
+      senderUsername: "You",
+      senderProfileThumbnailUrl: "",
+      text: message,
+      dateTime: new Date().toISOString(),
+    };
+    setMessagesToDisplay(prev => [...(prev ?? []), optimistic]);
+    const saved = message;
+    setMessage("");
+
+    try {
+      if (!isHubReady()) { setMessage(saved); return; }
+      await invokeHub("SendGroupMessage", currentUserId, groupId, saved);
+      if (refetchPreviews) refetchPreviews();
+    } catch {
+      setMessagesToDisplay(prev => prev.filter(m => m !== optimistic));
+      setMessage(saved);
+    }
+  };
+
+  const handleAddMember = async (userId, username) => {
+    const result = await addMember({ groupId, userId, requesterId: currentUserId });
+    if (result.data) setMembers(result.data.members ?? []);
+  };
+
+  const handleRemoveMember = async (userId) => {
+    const result = await removeMember({ groupId, userId, requesterId: currentUserId });
+    if (result.data) setMembers(result.data.members ?? []);
+  };
+
+  const handleExitGroup = async () => {
+    await exitGroup({ groupId, userId: currentUserId });
+    if (refetchPreviews) refetchPreviews();
+  };
+
+  const memberUserIds = members.map(m => m.userId);
+
+  return (
+    <div style={outerContainer(dark)}>
+
+      {/* Members panel */}
+      <div style={membersPanel(dark)}>
+        <div style={membersPanelHeader(dark)}>
+          <span style={membersPanelTitle(dark)}>Members</span>
+          {!isCreator && (
+            <button style={exitBtn} onClick={handleExitGroup}>Leave</button>
+          )}
+        </div>
+
+        {/* Add member search — creator only */}
+        {isCreator && (
+          <>
+            <div style={addMemberSection}>
+              <input
+                style={searchInput(dark)}
+                placeholder="Add by username..."
+                value={memberSearch}
+                onChange={e => setMemberSearch(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") setMemberQuery(memberSearch); }}
+              />
+              <button
+                style={{ ...searchBtn, opacity: memberSearch.length < 3 ? 0.4 : 1, cursor: memberSearch.length < 3 ? "default" : "pointer" }}
+                onClick={() => memberSearch.length >= 3 && setMemberQuery(memberSearch)}
+              >Search</button>
+            </div>
+            {searchResults?.length > 0 && (
+              <div style={searchResultsList(dark)}>
+                {searchResults.filter(u => !memberUserIds.includes(u.id)).map(u => (
+                  <div key={u.id} style={searchResultRow(dark)}>
+                    <img src={u.profileImageThumbnailUrl || u.profileImageUrl} alt="" style={memberAvatar} />
+                    <span style={memberName(dark)}>{u.userName}</span>
+                    <button style={addBtn} onClick={() => handleAddMember(u.id, u.userName)}>Add</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Member list — scrollable */}
+        <div style={memberList}>
+          {members.map(m => (
+            <div key={m.userId} style={memberRow(dark)}>
+              <img src={m.profileImageThumbnailUrl || m.profileImageUrl} alt="" style={memberAvatar} />
+              <span
+                style={memberName(dark)}
+                onClick={() => navigate(`/profile-public/${m.publicId}/${m.username}`)}
+                title="Go to profile"
+              >
+                {m.username}
+              </span>
+              {isCreator && m.userId !== currentUserId && (
+                <button style={removeBtn} onClick={() => handleRemoveMember(m.userId)}>✕</button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Messages panel */}
+      <div style={messagesPanel}>
+
+        {/* Message list */}
+        <div style={messageList(dark)} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
+          {messagesToDisplay?.map((msg, index) => {
+            const isMe = msg.senderId === currentUserId;
+            const dateObj = new Date(msg.dateTime);
+            const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+            const date = dateObj.toLocaleDateString("en-GB");
+            return (
+              <div
+                key={index}
+                style={{
+                  ...containerStyle(dark),
+                  justifySelf: isMe ? "end" : "start",
+                }}
+              >
+                <div style={messageTextStyle}>
+                  <div>{msg.text}
+                  </div>
+                </div>
+                <div style={dateAndTimeContainerStyle}>
+                  <div>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
+                      {time}
+                    </span>
+                  </div>
+                  <div>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>
+                      {date}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Send box */}
+        <div style={sendBox(dark)}>
+          <input
+            style={sendInput(dark)}
+            placeholder="Write a message..."
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+          />
+          <button style={sendButton} onClick={handleSend}>Send</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+const messageTextStyle = {
+  textAlign: "justify",
+  display: "flex",         //   Enables flex behavior
+  flexDirection: "column", //   Keeps content in a column
+  wordBreak: "break-word", //   Prevents overflow issues
+  padding: ".5rem",
+  borderRadius: "1rem",
+  fontSize: "1.3rem",
+};
+
+
+const dateAndTimeContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  padding: "4px",
+  borderRadius: "0.5rem",
+  fontSize: "1rem",
+  color: "rgb(60, 157, 222)",
+  fontWeight: "bold"
+};
+
+const messagesContainerStyle = {
+  display: "grid",
+  gap: "4px",
+  width: "100%",
+  // backgroundColor: "red"
+};
+
+const containerStyle = (dark) => ({
+  fontSize: "1rem",
+  fontFamily: "Nunito, sans-serif",
+  margin: "4px 10px",
+  padding: "4px 10px",
+  display: "grid",
+  gridTemplateColumns: "3fr 10rem",
+  borderRadius: "4rem",
+  color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
+  width: "auto",
+  maxWidth: "80%",
+  wordBreak: "break-word",
+  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
+});
+
+
+
+
+
+
+const outerContainer = (dark) => ({
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  height: "100%",
+  backgroundColor: dark ? "#011a32" : "white",
+});
+
+const membersPanel = (dark) => ({
+  width: "22rem",
+  minWidth: "22rem",
+  display: "flex",
+  flexDirection: "column",
+  borderRight: dark ? "1px solid #1a4a7a" : "1px solid #e0eaf5",
+  backgroundColor: dark ? "#0a2745" : "#f9f5f1",
+  padding: "1rem",
+  overflowY: "auto",
+});
+
+const membersPanelHeader = (dark) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "1rem",
+});
+
+const membersPanelTitle = (dark) => ({
+  fontSize: "1.3rem",
+  fontWeight: "700",
+  color: dark ? "white" : parrotBlue,
+});
+
+const memberList = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.5rem",
+  marginTop: "0.5rem",
+  overflowY: "auto",
+  flex: 1,
+};
+
+const memberRow = (dark) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "0.6rem",
+  padding: "0.4rem 0.6rem",
+  borderRadius: "2rem",
+  backgroundColor: dark ? "#0f3460" : "white",
+});
+
+const memberAvatar = {
+  width: "2.4rem",
+  height: "2.4rem",
+  borderRadius: "50%",
+  objectFit: "cover",
+  flexShrink: 0,
+};
+
+const memberName = (dark) => ({
+  flex: 1,
+  fontSize: "1.1rem",
+  color: dark ? "rgba(255,255,255,0.9)" : parrotBlue,
+  cursor: "pointer",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
+const removeBtn = {
+  background: "none",
+  border: "none",
+  color: parrotRed,
+  cursor: "pointer",
+  fontSize: "1rem",
+  padding: "0 0.3rem",
+};
+
+const exitBtn = {
+  backgroundColor: parrotRed,
+  color: "white",
+  border: "none",
+  borderRadius: "1rem",
+  padding: "0.3rem 0.8rem",
+  cursor: "pointer",
+  fontSize: "1rem",
+};
+
+const addMemberSection = {
+  display: "flex",
+  gap: "0.5rem",
+  marginTop: "0.5rem",
+};
+
+const searchInput = (dark) => ({
+  flex: 1,
+  padding: "0.4rem 0.8rem",
+  borderRadius: "1rem",
+  border: dark ? "1px solid #1a4a7a" : "1px solid #cce0f5",
+  backgroundColor: dark ? "#011a32" : "white",
+  color: dark ? "white" : "black",
+  fontSize: "1rem",
+  outline: "none",
+});
+
+const searchBtn = {
+  backgroundColor: parrotBlue,
+  color: "white",
+  border: "none",
+  borderRadius: "1rem",
+  padding: "0.4rem 0.8rem",
+  cursor: "pointer",
+  fontSize: "1rem",
+};
+
+const searchResultsList = (dark) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.4rem",
+  marginTop: "0.5rem",
+});
+
+const searchResultRow = (dark) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "0.6rem",
+  padding: "0.4rem 0.6rem",
+  borderRadius: "2rem",
+  backgroundColor: dark ? "#0f3460" : "white",
+});
+
+const addBtn = {
+  backgroundColor: parrotBlue,
+  color: "white",
+  border: "none",
+  borderRadius: "1rem",
+  padding: "0.3rem 0.8rem",
+  cursor: "pointer",
+  fontSize: "1rem",
+};
+
+const messagesPanel = {
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  height: "100%",
+};
+
+const messageList = (dark) => ({
+  flex: 1,
+  overflowY: "scroll",
+  display: "grid",
+  padding: "1rem",
+  gap: "4px",
+  height: `calc(100vh - 14rem)`,
+  alignContent: "start",
+});
+
+
+
+const sendBox = (dark) => ({
+  display: "flex",
+  gap: "0.8rem",
+  padding: "0.8rem 1rem",
+  borderTop: dark ? "1px solid #1a4a7a" : "1px solid #e0eaf5",
+  backgroundColor: dark ? "#0a2745" : "#f9f5f1",
+});
+
+const sendInput = (dark) => ({
+  flex: 1,
+  padding: "0.6rem 1.2rem",
+  borderRadius: "2rem",
+  border: dark ? "1px solid #1a4a7a" : "1px solid #cce0f5",
+  backgroundColor: dark ? "#011a32" : "white",
+  color: dark ? "white" : "black",
+  fontSize: "1.2rem",
+  outline: "none",
+});
+
+const sendButton = {
+  backgroundColor: parrotBlue,
+  color: "white",
+  border: "none",
+  borderRadius: "2rem",
+  padding: "0.6rem 1.6rem",
+  cursor: "pointer",
+  fontSize: "1.2rem",
+  fontWeight: "600",
+};

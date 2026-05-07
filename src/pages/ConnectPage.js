@@ -17,6 +17,8 @@ import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
 import { MessageSenderComponent } from "../components/MessageSenderComponent";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
+import { GroupConversationDetail } from "../components/GroupConversationDetail";
+import { useCreateGroupMutation } from "../slices/GroupSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { toast } from "react-toastify";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
@@ -29,6 +31,8 @@ import {
   unregister_ReceiveMessage,
   register_ReceiveMessageRefetch,
   unregister_ReceiveMessageRefetch,
+  register_ReceiveGroupMessageRefetch,
+  unregister_ReceiveGroupMessageRefetch,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, useGetBookmarksQuery } from "../slices/UserSlice";
@@ -59,6 +63,9 @@ function ConnectPage() {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
   const [hubState, setHubState] = useState("connected");
+  const [activeGroupId, setActiveGroupId] = useState(null);
+  const [activeGroupData, setActiveGroupData] = useState(null);
+  const [createGroup] = useCreateGroupMutation();
 
   useEffect(() => {
     // Delay before showing disconnect state to avoid false banner on initial load
@@ -89,6 +96,15 @@ function ConnectPage() {
     { refetchOnMountOrArgChange: true }
   );
 
+  // const dummyGroups = [
+  //   { groupConversationId: 101, groupName: "Emei Voyage", text: "See you at the dock!", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 102, groupName: "Island Trip", text: "Who's bringing snacks?", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 103, groupName: "Crew Chat", text: "Departure at 08:00", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 104, groupName: "Mediterranean Adventure", text: "Weather looks great!", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 105, groupName: "Black Sea", text: "Route confirmed", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 106, groupName: "Sailing Club", text: "Next meetup Friday", dateTime: new Date().toISOString() },
+  //   { groupConversationId: 107, groupName: "Summer Voyage", text: "Spots available", dateTime: new Date().toISOString() },
+  // ];
   const safeMessagePreviewsData = messagePreviewsData ?? [];
   const [isPageReady, setIsPageReady] = useState(false);
 
@@ -155,6 +171,26 @@ function ConnectPage() {
       refetchMessagePreviews();
     }
   }, [users, triggerGetMessages, refetchMessagePreviews]);
+
+  const handleCreateGroup = async (groupName) => {
+    const result = await createGroup({ name: groupName, creatorId: currentUserId });
+    if (result.data) {
+      setActiveGroupData(result.data);
+      setActiveGroupId(result.data.id);
+      setConversationUserId("");
+      setConversationUserUsername("");
+      refetchMessagePreviews();
+    }
+  };
+
+  const handleSetActiveGroupId = (groupId) => {
+    setActiveGroupId(groupId);
+    setActiveGroupData(null);
+    if (groupId) {
+      setConversationUserId("");
+      setConversationUserUsername("");
+    }
+  };
 
   // Reset query when input is cleared
   useEffect(() => {
@@ -235,6 +271,17 @@ function ConnectPage() {
     };
   }, [conversationUserId, refreshMessages]);
 
+
+  // Always refetch previews on any incoming message or group message
+  useEffect(() => {
+    const handler = () => refetchMessagePreviews();
+    register_ReceiveMessageRefetch(handler);
+    register_ReceiveGroupMessageRefetch(handler);
+    return () => {
+      unregister_ReceiveMessageRefetch(handler);
+      unregister_ReceiveGroupMessageRefetch(handler);
+    };
+  }, [refetchMessagePreviews]);
 
   // Refresh messages when users IDs change
   useEffect(() => {
@@ -333,6 +380,7 @@ function ConnectPage() {
                       isDarkMode={isDarkMode}
                       showSaved={showSaved}
                       onToggleSaved={() => { setShowSaved(s => !s); setQuery(""); setInputValue(""); }}
+                      onCreateGroup={handleCreateGroup}
                     />
                   </div>
                   {showSaved ? (
@@ -341,7 +389,7 @@ function ConnectPage() {
                         query=""
                         setQuery={() => {}}
                         userId={currentUserId}
-                        setConversationUserId={(id) => { setConversationUserId(id); setShowSaved(false); }}
+                        setConversationUserId={(id) => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
                         setConversationUserUsername={setConversationUserUsername}
                         handleGoToUser={handleGoToUser}
                         setInputValue={setInputValue}
@@ -355,7 +403,7 @@ function ConnectPage() {
                         query={query}
                         setQuery={setQuery}
                         userId={currentUserId}
-                        setConversationUserId={setConversationUserId}
+                        setConversationUserId={(id) => { setConversationUserId(id); setActiveGroupId(null); setActiveGroupData(null); }}
                         setConversationUserUsername={setConversationUserUsername}
                         handleGoToUser={handleGoToUser}
                         setInputValue={setInputValue}
@@ -371,6 +419,7 @@ function ConnectPage() {
                         selectedUserId={conversationUserId}
                         setConversationUserId={setConversationUserId}
                         setConversationUserUsername={setConversationUserUsername}
+                        setActiveGroupId={handleSetActiveGroupId}
                         handleGoToUser={handleGoToUser}
                         isDarkMode={isDarkMode}
                       />
@@ -378,44 +427,48 @@ function ConnectPage() {
                   )}
                 </div>
                 <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "#011a32" } : {}}>
-                  <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#011a32" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
-
-                    {!conversationUserId &&
-                      <div style={imageWrapperWrapper}>
-                        <div style={imageWrapper}>
-
-                          <img
-                            src={parrotsLogo}
-                            alt="logo"
-                            style={image}
-                          />
-                        </div>
+                  {activeGroupId ? (
+                    <GroupConversationDetail
+                      groupId={activeGroupId}
+                      currentUserId={currentUserId}
+                      isDarkMode={isDarkMode}
+                      groupData={activeGroupData}
+                      refetchPreviews={refetchMessagePreviews}
+                    />
+                  ) : (
+                    <>
+                      <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#011a32" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
+                        {!conversationUserId &&
+                          <div style={imageWrapperWrapper}>
+                            <div style={imageWrapper}>
+                              <img src={parrotsLogo} alt="logo" style={image} />
+                            </div>
+                          </div>
+                        }
+                        <ConversationComponent
+                          conversationData={conversationData}
+                          messagesToDisplay={messagesToDisplay}
+                          currentUserId={currentUserId}
+                          conversationUserId={conversationUserId}
+                          isDarkMode={isDarkMode}
+                        />
                       </div>
-                    }
-
-                    <ConversationComponent
-                      conversationData={conversationData}
-                      messagesToDisplay={messagesToDisplay}
-                      currentUserId={currentUserId}
-                      conversationUserId={conversationUserId}
-                      isDarkMode={isDarkMode}
-                    />
-                  </div>
-
-                  <div style={{ width: "100%" }}>
-                    <MessageSenderComponent
-                      conversationUserId={conversationUserId}
-                      conversationUserUsername={conversationUserUsername}
-                      currentUserId={currentUserId}
-                      message={message}
-                      setMessage={setMessage}
-                      handleSendMessage={handleSendMessage}
-                      sendButtonDisabled={!conversationUserId || sendButtonDisabled}
-                      isDarkMode={isDarkMode}
-                      placeholder={conversationUserId ? `Write a message to ${conversationUserUsername}` : ""}
-                      hideSendLabel={!conversationUserId}
-                    />
-                  </div>
+                      <div style={{ width: "100%" }}>
+                        <MessageSenderComponent
+                          conversationUserId={conversationUserId}
+                          conversationUserUsername={conversationUserUsername}
+                          currentUserId={currentUserId}
+                          message={message}
+                          setMessage={setMessage}
+                          handleSendMessage={handleSendMessage}
+                          sendButtonDisabled={!conversationUserId || sendButtonDisabled}
+                          isDarkMode={isDarkMode}
+                          placeholder={conversationUserId ? `Write a message to ${conversationUserUsername}` : ""}
+                          hideSendLabel={!conversationUserId}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -477,3 +530,15 @@ const subText = {
   color: parrotTextDarkBlue,
   marginBottom: "20px",
 }
+
+const createGroupBtn = (dark) => ({
+  background: "none",
+  border: "none",
+  fontSize: "2rem",
+  color: dark ? "rgba(255,255,255,0.7)" : "#3c9dde",
+  cursor: "pointer",
+  padding: "0 0.8rem",
+  lineHeight: 1,
+  alignSelf: "center",
+});
+

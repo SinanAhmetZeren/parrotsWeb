@@ -5,6 +5,7 @@ let hubConnection = null;
 let chatReadyRef = { current: false };
 let messageHandlers = [];
 let refetchHandlers = [];
+let groupRefetchHandlers = [];
 let connectionUserId = null;
 let currentApiUrl = null;
 let initRetryCount = 0;
@@ -116,6 +117,10 @@ function setupInternalListeners() {
         refetchHandlers.forEach(h => h(data));
     });
 
+    hubConnection.on("ReceiveGroupMessageRefetch", (groupConversationId) => {
+        groupRefetchHandlers.forEach(h => h(groupConversationId));
+    });
+
     hubConnection.onclose(() => {
         chatReadyRef.current = false;
         // Schedule re-init if user is still logged in (permanent disconnect recovery)
@@ -137,6 +142,7 @@ export const stopHubConnection = async () => {
         // Remove SignalR internal subscriptions
         hubConnection.off("ReceiveMessage");
         hubConnection.off("ReceiveMessageRefetch");
+        hubConnection.off("ReceiveGroupMessageRefetch");
         hubConnection.off("ParrotsChatHubInitialized");
 
         await hubConnection.stop();
@@ -147,6 +153,7 @@ export const stopHubConnection = async () => {
         hubConnection = null;
         messageHandlers = [];
         refetchHandlers = [];
+        groupRefetchHandlers = [];
         chatReadyRef.current = false;
         connectionUserId = null;
     }
@@ -168,6 +175,14 @@ export const register_ReceiveMessageRefetch = (handler) => {
 
 export const unregister_ReceiveMessageRefetch = (handler) => {
     refetchHandlers = refetchHandlers.filter(h => h !== handler);
+};
+
+export const register_ReceiveGroupMessageRefetch = (handler) => {
+    if (!groupRefetchHandlers.includes(handler)) groupRefetchHandlers.push(handler);
+};
+
+export const unregister_ReceiveGroupMessageRefetch = (handler) => {
+    groupRefetchHandlers = groupRefetchHandlers.filter(h => h !== handler);
 };
 
 export const register_ReceiveUnreadNotification = (handler) => {

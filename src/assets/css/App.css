@@ -85,6 +85,10 @@
   opacity: 1;
 }
 
+.nav-tooltip.tooltip-up {
+  bottom: -1.4rem;
+}
+
 .place-tooltip {
   background: #003366;
   border: none;
