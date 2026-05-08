@@ -241,3 +241,7 @@
   padding: 0.3rem;
   padding-top: 0%;
 }
+.broadcast-sent::placeholder {
+  color: #2ac898;
+  font-weight: 600;
+}

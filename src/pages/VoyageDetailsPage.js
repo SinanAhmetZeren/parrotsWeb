@@ -7,6 +7,7 @@ import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useGetVoyageByIdQuery } from "../slices/VoyageSlice";
+import { invokeHub } from "../signalr/signalRHub";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -59,6 +60,9 @@ function VoyageDetailsPage() {
 
   const [userBid, setUserBid] = useState("");
   const [userBidAccepted, setUserBidAccepted] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [broadcastPlaceholder, setBroadcastPlaceholder] = useState("Message accepted users...");
   const mapRef = useRef();
   const [targetLocation, setTargetLocation] = useState({});
   const [latLngBoundsLiteral, setLatLngBoundsLiteral] = useState({
@@ -227,6 +231,30 @@ function VoyageDetailsPage() {
     setTargetLocation({ lat, lng });
   };
 
+  const handleBroadcast = async () => {
+    const acceptedUserIds = (VoyageData?.bids || []).filter((b) => b.accepted).map((b) => b.userId);
+    console.log("[Broadcast] message:", broadcastMessage.trim());
+    console.log("[Broadcast] acceptedUserIds:", acceptedUserIds);
+    console.log("[Broadcast] senderId (userId):", userId);
+    if (!broadcastMessage.trim() || acceptedUserIds.length === 0) {
+      console.warn("[Broadcast] Aborted — empty message or no accepted users");
+      return;
+    }
+    setIsBroadcasting(true);
+    try {
+      console.log("[Broadcast] Calling invokeHub BroadcastMessage...");
+      await invokeHub("BroadcastMessage", userId, acceptedUserIds, broadcastMessage.trim());
+      console.log("[Broadcast] Success");
+      setBroadcastMessage("");
+      setBroadcastPlaceholder(`Message sent to ${acceptedUserIds.length} user${acceptedUserIds.length !== 1 ? "s" : ""}!`);
+      setTimeout(() => setBroadcastPlaceholder("Message accepted users..."), 2000);
+    } catch (error) {
+      console.error("[Broadcast] Failed:", error);
+    } finally {
+      setIsBroadcasting(false);
+    }
+  };
+
   const { data: healthCheckData, isError: isHealthCheckError } =
     useHealthCheckQuery();
 
@@ -270,6 +298,34 @@ function VoyageDetailsPage() {
                   : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                 }
               </div>
+              {userId === VoyageData.userId && (VoyageData?.bids || []).some((b) => b.accepted) && (
+                <div style={broadcastCardStyle(isDarkMode)}>
+                  <input
+                    style={broadcastInputStyle(isDarkMode)}
+                    className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
+                    placeholder={broadcastPlaceholder}
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
+                  />
+                  <button
+                    style={{ ...broadcastBtnStyle, opacity: (!broadcastMessage.trim() || isBroadcasting) ? 0.5 : 1 }}
+                    onClick={handleBroadcast}
+                    disabled={!broadcastMessage.trim() || isBroadcasting}
+                  >
+                    {isBroadcasting ? (
+                      <span style={{
+                        display: "inline-block",
+                        width: "1rem", height: "1rem",
+                        border: "2px solid rgba(255,255,255,0.4)",
+                        borderTopColor: "white",
+                        borderRadius: "50%",
+                        animation: "spin 0.7s linear infinite",
+                      }} />
+                    ) : "Send"}
+                  </button>
+                </div>
+              )}
 
             </div>
 
@@ -715,8 +771,7 @@ export const voyageDetailsBidsStyle = {
   // flex: "0 0 45vh",
   // width: "calc(100% - 2rem)",
   // height: "65vh",
-  margin: "1rem",
-  marginTop: 0,
+  margin: "0 1rem 0 1rem",
   padding: "0.3rem",
   paddingTop: 0,
   // backgroundColor: "red"
@@ -742,4 +797,47 @@ export const voyageDetailsBottomLeftStyleNew = {
 export const voyageDetailsBottomRightStyleNew = {
   height: "calc(100vh - 3.5rem)",
   width: "50%",
+};
+
+const broadcastCardStyle = (dark) => ({
+  display: "flex",
+  flexDirection: "row",
+  gap: "0.6rem",
+  alignItems: "center",
+  margin: "0.5rem 1.3rem",
+  padding: "0.7rem 1rem",
+  backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
+  borderRadius: "1rem",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  boxShadow: dark ? "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)" : "none",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+});
+
+const broadcastInputStyle = (dark) => ({
+  flex: 1,
+  minWidth: 0,
+  height: "2.8rem",
+  padding: "0.4rem 1rem",
+  fontSize: "1rem",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+  backgroundColor: dark ? "#0d2b4e" : "white",
+  overflowY: "hidden",
+  resize: "none",
+  borderRadius: "2rem",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  outline: "none",
+  fontFamily: "inherit",
+});
+
+const broadcastBtnStyle = {
+  width: "5rem",
+  height: "2.8rem",
+  fontSize: "0.9rem",
+  fontWeight: "bold",
+  backgroundColor: "#007bff",
+  color: "white",
+  border: "none",
+  borderRadius: "2rem",
+  cursor: "pointer",
 };

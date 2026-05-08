@@ -36,7 +36,7 @@ import {
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, useGetBookmarksQuery } from "../slices/UserSlice";
-import parrotsLogo from "../assets/images/ParrotsLogo.png";
+import parrotsLogo from "../assets/images/placeholderparrots.png";
 import { parrotTextDarkBlue } from "../styles/colors";
 
 
@@ -387,7 +387,7 @@ function ConnectPage() {
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">
                       <SearchUserResultsComponent
                         query=""
-                        setQuery={() => {}}
+                        setQuery={() => { }}
                         userId={currentUserId}
                         setConversationUserId={(id) => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
                         setConversationUserUsername={setConversationUserUsername}
@@ -441,7 +441,9 @@ function ConnectPage() {
                         {!conversationUserId &&
                           <div style={imageWrapperWrapper}>
                             <div style={imageWrapper}>
-                              <img src={parrotsLogo} alt="logo" style={image} />
+                              <div style={imageCircle}>
+                                <img src={parrotsLogo} alt="logo" style={image} />
+                              </div>
                             </div>
                           </div>
                         }
@@ -509,20 +511,32 @@ const imageWrapper = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  // backgroundColor: "pink",
+}
+
+const imageCircle = {
+  borderRadius: "50%",
+  // backgroundColor: "orange",
+  height: "22rem",
+  width: "22rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "1.5rem",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
 }
 
 const imageWrapperWrapper = {
   width: "100%",
   height: "100%",
+  // backgroundColor: "red"
 }
 
 const image = {
-  width: "20rem",
-  height: "20rem",
-  margin: "auto",
+  width: "19rem",
+  height: "19rem",
+  // margin: "auto",
   alignSelf: "center",
-  margintop: "15rem",
-  borderRadius: "11rem",
 }
 
 const subText = {

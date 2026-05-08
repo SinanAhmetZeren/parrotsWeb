@@ -41,11 +41,11 @@ export function VoyageDetailBids({
   const [deleteBid] = useDeleteBidMutation();
   const username = localStorage.getItem("storedUserName");
   const [loadingBidId, setLoadingBidId] = React.useState(null);
-  const [bidsData, setBidsData] = React.useState(voyageData.bids);
+  const [bidsData, setBidsData] = React.useState([...voyageData.bids]);
 
   // Synchronize bidsData with voyageData.bids
   useEffect(() => {
-    setBidsData(voyageData.bids);
+    setBidsData([...voyageData.bids]);
   }, [voyageData.bids]);
 
   const makeRefetch = useCallback(() => {
@@ -278,7 +278,7 @@ function RenderBid({
         onMouseLeave={() => setIsHoveredBid(false)}
       >
         {ownVoyage ? <span style={bidMessage}>{message}</span> : " "}
-        {ownVoyage && <CustomToolTipBidMessage isHovered={isHoveredBid} message={message} />}
+        {ownVoyage && message && <CustomToolTipBidMessage isHovered={isHoveredBid} message={message} />}
       </div>
       <div style={rightItem}>
         <span
@@ -383,7 +383,7 @@ const cardContainerStyle = {
   color: "rgba(255,255,255,0.9)",
   padding: "1rem",
   fontSize: "1.15rem",
-  maxHeight: "55vh",
+  height: "52vh",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
   boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)",

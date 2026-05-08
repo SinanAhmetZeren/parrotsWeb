@@ -19,9 +19,9 @@ export function VoyageDetailBidsLight({
   const [deleteBid] = useDeleteBidMutation();
   const username = localStorage.getItem("storedUserName");
   const [loadingBidId, setLoadingBidId] = React.useState(null);
-  const [bidsData, setBidsData] = React.useState(voyageData.bids);
+  const [bidsData, setBidsData] = React.useState([...voyageData.bids]);
 
-  useEffect(() => { setBidsData(voyageData.bids); }, [voyageData.bids]);
+  useEffect(() => { setBidsData([...voyageData.bids]); }, [voyageData.bids]);
   const makeRefetch = useCallback(() => { refetch(); }, [refetch]);
 
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
@@ -106,7 +106,7 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
       </div>
       <div style={middleBottomItem} onMouseEnter={() => setIsHoveredBid(true)} onMouseLeave={() => setIsHoveredBid(false)}>
         {ownVoyage ? <span style={bidMessage}>{message}</span> : " "}
-        {ownVoyage && <CustomToolTipBidMessage isHovered={isHoveredBid} message={message} />}
+        {ownVoyage && message && <CustomToolTipBidMessage isHovered={isHoveredBid} message={message} />}
       </div>
       <div style={rightItem}>
         <span
@@ -135,7 +135,7 @@ const imgWrapper = { transition: "transform 0.3s ease-in-out", cursor: "pointer"
 const cardContainerStyle = {
   display: "flex", flexDirection: "column", borderRadius: "1rem", width: "100%",
   backgroundColor: "#ffffff", margin: "0rem", color: parrotTextDarkBlue,
-  padding: "1rem", fontSize: "1.15rem", maxHeight: "55vh",
+  padding: "1rem", fontSize: "1.15rem", height: "52vh",
   scrollbarWidth: "none", msOverflowStyle: "none",
   boxShadow: "0 4px 6px rgba(0,0,0,0.15)",
 };
