@@ -50,7 +50,7 @@ export function MessagePreviewsComponent({
             setConversationUserId("");
             if (setActiveGroupId) setActiveGroupId(message.groupConversationId);
           }}>
-          <div style={groupIconContainer(dark)}>
+          <div style={groupIconContainer(dark, message.groupConversationId)}>
             <span style={groupIconText}>
               {(message.groupName || "")
                 .split(" ")
@@ -202,13 +202,25 @@ const messageTimeStyle = {
 
 const groupColors = ["#a020a0","#6a0dad","#1e88e5","#29b6f6","#00bfa5","#ffa726","#e53935"];
 
-const groupColor = () => groupColors[Math.floor(Math.random() * groupColors.length)];
+const groupColorMap = new Map();
+let colorPool = [];
+let lastUsedColor = null;
+const groupColor = (id) => {
+  if (!groupColorMap.has(id)) {
+    if (colorPool.length === 0) {
+      do { colorPool = [...groupColors].sort(() => Math.random() - 0.5); } while (colorPool[colorPool.length - 1] === lastUsedColor);
+    }
+    lastUsedColor = colorPool.pop();
+    groupColorMap.set(id, lastUsedColor);
+  }
+  return groupColorMap.get(id);
+};
 
-const groupIconContainer = (dark) => ({
+const groupIconContainer = (dark, id) => ({
   width: "4rem",
   height: "4rem",
   borderRadius: "50%",
-  backgroundColor: groupColor(),
+  backgroundColor: groupColor(id),
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
