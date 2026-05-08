@@ -82,7 +82,7 @@ const messageTextStyle = {
   wordBreak: "break-word", //   Prevents overflow issues
   padding: ".5rem",
   borderRadius: "1rem",
-  fontSize: "1.3rem",
+  fontSize: "1.15rem",
 };
 
 
@@ -92,7 +92,7 @@ const dateAndTimeContainerStyle = {
   justifyContent: "flex-end",
   padding: "4px",
   borderRadius: "0.5rem",
-  fontSize: "1rem",
+  fontSize: "0.85rem",
   color: "rgb(60, 157, 222)",
   fontWeight: "bold"
 };

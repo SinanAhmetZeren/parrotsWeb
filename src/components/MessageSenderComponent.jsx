@@ -86,7 +86,7 @@ const textareaWrapperStyle = {
 const labelStyle = (dark) => ({
   position: "absolute",
   top: "40%",
-  transform: "translateY(-50%)",
+  transform: "translateY(-30%)",
   left: "2rem",
   fontSize: "1.3rem",
   color: dark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",

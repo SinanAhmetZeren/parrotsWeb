@@ -111,6 +111,8 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   };
 
   const memberUserIds = members.map(m => m.userId);
+  const myMember = members.find(m => m.userId === currentUserId);
+  const myAvatar = myMember?.profileImageThumbnailUrl || myMember?.profileImageUrl || "";
 
   return (
     <div style={outerContainer(dark)}>
@@ -184,30 +186,30 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
             const dateObj = new Date(msg.dateTime);
             const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
             const date = dateObj.toLocaleDateString("en-GB");
+            const avatarSrc = isMe ? myAvatar : (msg.senderProfileThumbnailUrl || msg.senderProfileImageUrl || "");
+            const displayName = isMe ? "You" : (msg.senderUsername || "");
+
+            const avatarEl = (
+              <img
+                src={avatarSrc}
+                alt=""
+                style={msgAvatar}
+                onError={e => { e.target.style.visibility = "hidden"; }}
+              />
+            );
+
+            const textGrid = (
+              <div style={msgTextGrid(dark, isMe)}>
+                <span style={msgUsername(dark)}>{displayName}</span>
+                <span style={msgTime(dark)}>{time}</span>
+                <span style={msgText(dark)}>{msg.text}</span>
+                <span style={msgDate(dark)}>{date}</span>
+              </div>
+            );
+
             return (
-              <div
-                key={index}
-                style={{
-                  ...containerStyle(dark),
-                  justifySelf: isMe ? "end" : "start",
-                }}
-              >
-                <div style={messageTextStyle}>
-                  <div>{msg.text}
-                  </div>
-                </div>
-                <div style={dateAndTimeContainerStyle}>
-                  <div>
-                    <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
-                      {time}
-                    </span>
-                  </div>
-                  <div>
-                    <span style={{ color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>
-                      {date}
-                    </span>
-                  </div>
-                </div>
+              <div key={index} style={msgBubble(dark, isMe)}>
+                {isMe ? (<>{textGrid}{avatarEl}</>) : (<>{avatarEl}{textGrid}</>)}
               </div>
             );
           })}
@@ -231,48 +233,72 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
 }
 
 
-const messageTextStyle = {
-  textAlign: "justify",
-  display: "flex",         //   Enables flex behavior
-  flexDirection: "column", //   Keeps content in a column
-  wordBreak: "break-word", //   Prevents overflow issues
-  padding: ".5rem",
-  borderRadius: "1rem",
-  fontSize: "1.3rem",
-};
-
-
-const dateAndTimeContainerStyle = {
+const msgBubble = (dark, isMe) => ({
   display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-end",
-  padding: "4px",
-  borderRadius: "0.5rem",
-  fontSize: "1rem",
-  color: "rgb(60, 157, 222)",
-  fontWeight: "bold"
-};
-
-const messagesContainerStyle = {
-  display: "grid",
-  gap: "4px",
-  width: "100%",
-  // backgroundColor: "red"
-};
-
-const containerStyle = (dark) => ({
-  fontSize: "1rem",
-  fontFamily: "Nunito, sans-serif",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: "0.6rem",
   margin: "4px 10px",
-  padding: "4px 10px",
-  display: "grid",
-  gridTemplateColumns: "3fr 10rem",
-  borderRadius: "4rem",
-  color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
-  width: "auto",
+  justifySelf: isMe ? "end" : "start",
   maxWidth: "80%",
+});
+
+const msgAvatar = {
+  width: "2.6rem",
+  height: "2.6rem",
+  borderRadius: "50%",
+  objectFit: "cover",
+  flexShrink: 0,
+  alignSelf: "center",
+};
+
+const msgTextGrid = (dark, isMe) => ({
+  display: "grid",
+  gridTemplateColumns: "1fr 7rem",
+  gridTemplateRows: "auto auto",
+  gap: "0 0.4rem",
+  padding: "0.5rem 0.9rem",
+  borderRadius: "1.5rem",
+  backgroundColor: dark ? "#0a2745" : "rgb(246,246,246)",
+  color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
   wordBreak: "break-word",
-  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
+  textAlign: isMe ? "right" : "left",
+});
+
+const msgUsername = (dark) => ({
+  gridColumn: "1",
+  gridRow: "1",
+  fontSize: "0.85rem",
+  fontWeight: "700",
+  color: dark ? parrotLightBlue : parrotBlue,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
+
+const msgTime = (dark) => ({
+  gridColumn: "2",
+  gridRow: "1",
+  fontSize: "0.85rem",
+  fontWeight: "700",
+  color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2,
+  textAlign: "right",
+  whiteSpace: "nowrap",
+});
+
+const msgText = (dark) => ({
+  gridColumn: "1",
+  gridRow: "2",
+  fontSize: "1.15rem",
+});
+
+const msgDate = (dark) => ({
+  gridColumn: "2",
+  gridRow: "2",
+  fontSize: "0.8rem",
+  color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent,
+  textAlign: "right",
+  whiteSpace: "nowrap",
 });
 
 

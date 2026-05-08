@@ -430,7 +430,7 @@ function VoyageDetailsPage() {
           <div style={{ ...mainPageBottomRowStyle }} className="flex">
             <div style={voyageDetailsBottomLeftStyleNew}
 
-              className="flex voyageDetailsBottomLeft custom-scrollbar"
+              className="flex voyageDetailsBottomLeft hide-scrollbar"
 
             >
               <div style={voyageDetailsImagesStyle} className="flex">
@@ -463,6 +463,34 @@ function VoyageDetailsPage() {
                   : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                 }
               </div>
+              {userId === VoyageData.userId && (VoyageData?.bids || []).some((b) => b.accepted) && (
+                <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
+                  <input
+                    style={{ ...broadcastInputStyle(isDarkMode), height: "3.5rem" }}
+                    className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
+                    placeholder={broadcastPlaceholder}
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
+                  />
+                  <button
+                    style={{ ...broadcastBtnStyle, height: "3.5rem", opacity: (!broadcastMessage.trim() || isBroadcasting) ? 0.5 : 1 }}
+                    onClick={handleBroadcast}
+                    disabled={!broadcastMessage.trim() || isBroadcasting}
+                  >
+                    {isBroadcasting ? (
+                      <span style={{
+                        display: "inline-block",
+                        width: "1rem", height: "1rem",
+                        border: "2px solid rgba(255,255,255,0.4)",
+                        borderTopColor: "white",
+                        borderRadius: "50%",
+                        animation: "spin 0.7s linear infinite",
+                      }} />
+                    ) : "Send"}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div style={{ ...voyageDetailsBottomRightStyleNew, display: "flex", flexDirection: "column" }}>
@@ -791,7 +819,8 @@ export const voyageDetailsBottomLeftStyleNew = {
   width: "50%",
   flexDirection: "column",
   overflowY: "auto",
-
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
 };
 
 export const voyageDetailsBottomRightStyleNew = {
