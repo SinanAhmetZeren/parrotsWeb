@@ -1,7 +1,7 @@
 import "../assets/css/date-range-custom.css";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { DefaultSpinner } from "./DefaultSpinner";
+import { PulsatingParrotLogo } from "./PulsatingParrotLogo";
 
 export function ConnectPagePlaceHolder() {
   return (
@@ -31,10 +31,10 @@ export function ConnectPagePlaceHolder() {
                 marginTop: "1rem",
                 width: "calc(100% - 1.5rem)",
                 marginLeft: "1rem",
-                borderRadius: "1.5rem"
+                borderRadius: "1.5rem",
+                display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <DefaultSpinner />
-
+                <PulsatingParrotLogo size={120} />
               </div>
             </div>
             <div className="flex connectPage_BottomRight_placeHolder">
@@ -44,10 +44,9 @@ export function ConnectPagePlaceHolder() {
                 overflow: "hidden",
                 borderRadius: "1.5rem",
                 height: `calc(100vh - 12rem)`,
-
+                display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <DefaultSpinner />
-
+                <PulsatingParrotLogo size={120} />
               </div>
               <div style={{
                 width: "100%",

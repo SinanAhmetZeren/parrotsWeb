@@ -30,7 +30,6 @@ import { useAcknowledgePublicProfileMutation } from "../slices/UserSlice";
 import { setAcknowledgedPublicProfile } from "../slices/UserSlice";
 
 export default function CreateVoyagePage() {
-  // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
   const userId = localStorage.getItem("storedUserId");
   const dispatch = useDispatch();
   const hasAcknowledgedPublicProfile = useSelector((state) => state.users.hasAcknowledgedPublicProfile);
@@ -44,7 +43,7 @@ export default function CreateVoyagePage() {
   const [pageState, setPageState] = useState(1);
   const [voyageBrief, setVoyageBrief] = useState("");
   const [voyageDescription, setVoyageDescription] = useState("");
-  const [selectedVacancy, setSelectedVacancy] = useState(1);
+  const [selectedVacancy, setSelectedVacancy] = useState("");
   const [voyageName, setVoyageName] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
@@ -526,8 +525,11 @@ const VoyageBriefInput = ({ voyageBrief, setVoyageBrief, isDarkMode = false }) =
       <style>{quellStyleBrief(dark)}</style>
       <ReactQuill
         value={voyageBrief}
-        onChange={setVoyageBrief}
-        placeholder="Voyage brief - 300 characters"
+        onChange={(val) => {
+          const text = val.replace(/<[^>]+>/g, "");
+          if (text.length <= 300) setVoyageBrief(val);
+        }}
+        placeholder="Brief (max 300 characters)"
         modules={{
           toolbar: [
             [{ header: [1, 2, false] }],
@@ -552,8 +554,11 @@ const VoyageDescriptionInput = ({
       <style>{quellStyleDescription(dark)}</style>
       <ReactQuill
         value={voyageDescription}
-        onChange={setVoyageDescription}
-        placeholder="Voyage description - 300 characters"
+        onChange={(val) => {
+          const text = val.replace(/<[^>]+>/g, "");
+          if (text.length <= 10000) setVoyageDescription(val);
+        }}
+        placeholder="Description (max 10,000 characters)"
         modules={{
           toolbar: [
             [{ header: [1, 2, false] }],

@@ -1,5 +1,5 @@
 import React from "react";
-import { DefaultSpinner } from "./DefaultSpinner";
+import { PulsatingParrotLogo } from "./PulsatingParrotLogo";
 
 export const FavoritesPlaceHolderComponent = () => {
     return (
@@ -9,12 +9,14 @@ export const FavoritesPlaceHolderComponent = () => {
                     backgroundColor: "rgba(255, 255, 255, 0.2)",
                     height: "45rem",
                     borderRadius: "2rem",
-                    overflow: "hidden",
                     width: "40rem",
                     maxWidth: "600px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                 }}
             >
-                <DefaultSpinner />
+                <PulsatingParrotLogo size={120} />
             </div>
         </div>
 

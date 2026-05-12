@@ -495,6 +495,23 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                                                 Parrots reserves the right to delete messages or conversations at its discretion, including for policy enforcement, storage management purposes, or upon account deletion. Messages may be deleted after a retention period of up to 2 years.
                                             </div>
                                         </div>
+
+                                        <div style={{ marginTop: "1rem" }}>
+                                            <div style={styles.sectionTitle2}>
+                                                <strong>e. Group Conversations</strong>
+                                            </div>
+                                            <div style={styles.paragraph}>
+                                                Parrots supports group conversations that allow multiple users to communicate within a shared chat. The following terms apply to group conversations:
+                                            </div>
+                                            <ul style={{ ...styles.paragraph, marginTop: 0, paddingLeft: "1.5rem", listStyleType: "disc" }}>
+                                                <li>Group conversations can be created by any registered user.</li>
+                                                <li>The creator of a group conversation is designated as the group administrator and may add or remove members at any time.</li>
+                                                <li>All members of a group conversation, including those added after the conversation has begun, have access to the full message history of that group from its creation.</li>
+                                                <li>By accepting an invitation to join a group conversation, users acknowledge and consent to viewing messages sent before their membership.</li>
+                                                <li>Group administrators are responsible for managing membership and ensuring appropriate use of the group conversation feature.</li>
+                                                <li>Parrots does not monitor group conversations but reserves the right to remove content or terminate group conversations that violate our policies.</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

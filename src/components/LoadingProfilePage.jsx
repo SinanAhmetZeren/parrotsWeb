@@ -1,7 +1,7 @@
 import React from "react";
 import { TopBarMenu } from "./TopBarMenu";
 import { TopLeftComponent } from "./TopLeftComponent";
-import { DefaultSpinner } from "./DefaultSpinner";
+import { PulsatingParrotLogo } from "./PulsatingParrotLogo";
 
 export const LoadingProfilePage = () => {
     return (
@@ -18,23 +18,22 @@ export const LoadingProfilePage = () => {
                         <div className="flex profilePage_BottomLeft">
                             <div className="flex profilePage_CoverAndProfile">
                                 <div className="flex profilePage_CoverImage"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 >
-                                    <DefaultSpinner />
+                                    <PulsatingParrotLogo size={120} />
                                 </div>
                             </div>
                             <div className="flex profilePage_BioAndContactDetails"
                             >
                                 <div className="flex profilePage_BioTitleUserName"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 >
-                                    <DefaultSpinner />
-
+                                    <PulsatingParrotLogo size={100} />
                                 </div>
                                 <div className="flex profilePage_ContactDetails"
-                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem", borderRadius: "1.5rem" }}
+                                    style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", padding: "1rem", borderRadius: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 >
-                                    <DefaultSpinner />
+                                    <PulsatingParrotLogo size={100} />
                                 </div>
                             </div>
                         </div>
@@ -54,10 +53,12 @@ export const LoadingProfilePage = () => {
                                     borderRadius: "1.5rem",
                                     height: "100%",
                                     flexDirection: "column",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                 }}
                             >
-
-                                <DefaultSpinner />
+                                <PulsatingParrotLogo size={120} />
                             </div>
                         </div>
                     </div>

@@ -28,6 +28,7 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { MapTypeButton } from "../components/MapTypeButton";
 import { MainPageRefreshButtonNew } from "../components/MainPageRefreshButtonNew";
+import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
 
 const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
 
@@ -101,6 +102,43 @@ function MainPage() {
     setTargetLocation({ lat, lng });
   };
 
+  const FALLBACK_LAT = 52.20551962389507;
+  const FALLBACK_LNG = 0.11798991656591876;
+
+  const applyFallbackLocation = () => {
+    setInitialLatitude(FALLBACK_LAT);
+    setInitialLongitude(FALLBACK_LNG);
+    handlePanToLocation(FALLBACK_LAT, FALLBACK_LNG);
+  };
+
+  const [locationBlocked, setLocationBlocked] = useState(false);
+
+  const retryGeolocation = async () => {
+    if (!navigator.geolocation) return;
+    try {
+      const permission = await navigator.permissions.query({ name: "geolocation" });
+      if (permission.state === "denied") {
+        setLocationBlocked(true);
+        setLocationError("Location blocked — reset it in browser settings.");
+        return;
+      }
+    } catch (_) {}
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setInitialLatitude(latitude);
+        setInitialLongitude(longitude);
+        setLocationError(null);
+        setLocationBlocked(false);
+        handlePanToLocation(latitude, longitude);
+      },
+      () => {
+        setLocationBlocked(true);
+        setLocationError("Location blocked — reset it in browser settings.");
+      }
+    );
+  };
+
   // Get location from browser
   useEffect(() => {
     if (navigator.geolocation) {
@@ -114,7 +152,8 @@ function MainPage() {
         },
         (error) => {
           console.error(error.message);
-          setLocationError("Unable to retrieve your location.");
+          setLocationError("Using default location.");
+          applyFallbackLocation();
           setTimeout(() => {
             navigator.geolocation.getCurrentPosition(
               (position) => {
@@ -126,14 +165,15 @@ function MainPage() {
               },
               (err) => {
                 console.error("Retry failed:", err.message);
-                setLocationError("Still unable to retrieve your location.");
+                setLocationError("Using default location.");
               }
             );
           }, 5000);
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by your browser.");
+      setLocationError("Using default location.");
+      applyFallbackLocation();
     }
   }, []);
 
@@ -259,6 +299,11 @@ function MainPage() {
                     <div style={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }}>
                       <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
                     </div>
+                    {locationError && (
+                      <div onClick={e => e.stopPropagation()} style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", zIndex: 1000, pointerEvents: "all", backgroundColor: "rgba(0,0,0,0.6)", color: "white", borderRadius: 20, padding: "6px 14px", display: "flex", alignItems: "center", gap: 10, fontSize: 13, whiteSpace: "nowrap" }}>
+                        <span>📍 Using default location, enable location access to see nearby results.</span>
+                      </div>
+                    )}
                     <div style={{ position: "absolute", bottom: 0, left: 0, zIndex: 1000, width: "100%" }}>
                       <MainPageRefreshButtonNew applyFilter={applyFilter} />
                     </div>
@@ -278,14 +323,11 @@ export default MainPage;
 const CardSwiperSpinner = () => (
   <div style={{
     backgroundColor: "rgba(255,255,255,.05)", height: "100%", width: "92%",
-    padding: "1vh", borderRadius: "1.5rem", position: "relative",
+    padding: "1vh", borderRadius: "1.5rem",
     margin: "auto", marginTop: "1rem",
+    display: "flex", alignItems: "center", justifyContent: "center",
   }}>
-    <div className="spinner" style={{
-      position: "absolute", top: "40%", left: "50%",
-      height: "5rem", width: "5rem",
-      border: "8px solid rgba(173,216,230,0.3)", borderTop: "8px solid #1e90ff",
-    }}></div>
+    <PulsatingParrotLogo size={120} />
   </div>
 );
 

@@ -2,7 +2,7 @@ import React from "react";
 import { TopBarMenu } from "./TopBarMenu";
 import { TopLeftComponent } from "./TopLeftComponent";
 import { VehiclesVoyagesTitle } from "../pages/FavoritesPage";
-import { DefaultSpinner } from "./DefaultSpinner";
+import { PulsatingParrotLogo } from "./PulsatingParrotLogo";
 
 export const VehicleDetailPlaceHolderComponent = () => {
     return (
@@ -22,14 +22,14 @@ export const VehicleDetailPlaceHolderComponent = () => {
                             <div className="vehiclePage1_descriptionContainer" style={{
                                 height: "30rem",
                                 backgroundColor: "transparent",
-                                boxShadow: "none"
+                                boxShadow: "none",
+                                display: "flex", alignItems: "center", justifyContent: "center"
                             }}>
-                                <DefaultSpinner />
-
+                                <PulsatingParrotLogo size={200} />
                             </div>
                         </div>
-                        <div className="vehiclePage1_swiperContainer">
-                            <DefaultSpinner />
+                        <div className="vehiclePage1_swiperContainer" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PulsatingParrotLogo size={200} />
                         </div>
                     </div>
                 </div>

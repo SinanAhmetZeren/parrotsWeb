@@ -456,20 +456,9 @@ const CreateVoyageLastBidDateInput = ({ lastBidDate, setLastBidDate }) => {
 };
 
 const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy, dark = false }) => {
-  const [open, setOpen] = useState(false); // State to toggle the dropdown visibility
-  const dropdownRef = useRef(null); // Ref for the dropdown container
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const vacancies = Array.from({ length: 50 }, (_, index) => index + 1);
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setOpen(false);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside); // Add event listener
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // Cleanup event listener
-    };
-  }, []);
 
   return (
     <div
@@ -483,7 +472,9 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy, dark =
         }}
       >
         <div
-          onClick={() => setOpen(!open)}
+          ref={dropdownRef}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
           style={{
             display: "flex",
             cursor: "pointer",
@@ -498,15 +489,22 @@ const CreateVoyageVacancyPicker = ({ selectedVacancy, setSelectedVacancy, dark =
           <style>{placeHolderStyle}</style>
           <input
             className="font-bold text-base custom-input"
-            type="text"
-            readOnly
+            type="number"
+            min={1}
+            max={1000000}
             value={selectedVacancy}
-            placeholder="Max number of voyagers"
+            placeholder="Type or select vacancy"
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "") { setSelectedVacancy(""); return; }
+              const val = Math.min(1000000, Math.max(1, parseInt(raw) || 1));
+              setSelectedVacancy(val);
+            }}
+            onClick={(e) => e.stopPropagation()}
             style={inputStyle(dark)}
           />
           {open && (
             <div
-              ref={dropdownRef}
               style={{
                 position: "absolute",
                 zIndex: 1000,

@@ -25,8 +25,9 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
     top: "-0.5rem",
     right: "-0.5rem",
     borderRadius: "2rem",
-    alignContent: "center",
-    justifyItems: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     cursor: "pointer",
     transition: "transform 0.3s ease-in-out",
   };

@@ -1,5 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.png";
 import { VoyageDetailBidButton } from "../components/VoyageDetailBidButton";
 import { IoPersonOutline, IoPeopleOutline, IoCloseCircleOutline, IoCheckmarkCircleOutline } from "react-icons/io5";
 import { useAcceptBidMutation, useDeleteBidMutation } from "../slices/VoyageSlice";
@@ -67,6 +68,13 @@ export function VoyageDetailBidsNewLight({
 }
 
 function BidsList({ bidsData, ownVoyage, handleAcceptBid, handleDeleteBid, loadingBidId }) {
+  if (bidsData.length === 0) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", opacity: 0.3 }}>
+        <img src={parrotLogo} alt="No bids" style={{ width: "12rem", height: "12rem", objectFit: "contain", marginTop: "1rem" }} />
+      </div>
+    );
+  }
   return bidsData.map((bid, i) => (
     <RenderBid
       key={`bid-${i}`}

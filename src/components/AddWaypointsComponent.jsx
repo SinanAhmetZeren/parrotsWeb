@@ -71,8 +71,8 @@ export const AddWaypointsPage = ({
                 },
                 (error) => {
                     console.error("Error getting location", error);
-                    setInitialLatitude(37.7749);
-                    setInitialLongitude(-122.4194);
+                    setInitialLatitude(52.20551962389507);
+                    setInitialLongitude(0.11798991656591876);
                 }
             );
         } else {
@@ -544,7 +544,7 @@ const imageStyle = {
 const deleteImageIcon = {
     backgroundColor: "rgba(211,1,1,0.4)", width: "3rem", height: "3rem",
     position: "absolute", top: "-0.5rem", right: "-0.5rem",
-    borderRadius: "2rem", alignContent: "center", justifyItems: "center",
+    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
     cursor: "pointer", transition: "transform 0.3s ease-in-out",
 }
 
@@ -553,7 +553,7 @@ const deleteImageIconHover = { transform: "scale(1.2)" }
 const waypointDeleteIcon = {
     backgroundColor: "#3e99", width: "3rem", height: "3rem",
     position: "absolute", top: ".5rem", right: "1.5rem",
-    borderRadius: "2rem", alignContent: "center", justifyItems: "center",
+    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
     cursor: "pointer", transition: "transform 0.3s ease-in-out", zIndex: "200"
 }
 

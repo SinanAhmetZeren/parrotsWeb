@@ -1,5 +1,6 @@
 import "../assets/css/App.css";
 import * as React from "react";
+import { RiCloseLine, RiAddLine } from "react-icons/ri";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useGetGroupMessagesQuery, useGetGroupByIdQuery } from "../slices/GroupSlice";
 import { useAddGroupMemberMutation, useRemoveGroupMemberMutation, useExitGroupMutation } from "../slices/GroupSlice";
@@ -20,9 +21,11 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
   const [memberSearch, setMemberSearch] = useState("");
   const [memberQuery, setMemberQuery] = useState("");
+  const [addingUserId, setAddingUserId] = useState(null);
+  const [removingUserId, setRemovingUserId] = useState(null);
   const { data: fetchedGroupData } = useGetGroupByIdQuery(
     { groupId, userId: currentUserId },
-    { skip: !groupId || !currentUserId || !!groupData }
+    { skip: !groupId || !currentUserId, refetchOnMountOrArgChange: true }
   );
 
   const resolvedGroupData = groupData ?? fetchedGroupData;
@@ -96,13 +99,23 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   };
 
   const handleAddMember = async (userId, username) => {
-    const result = await addMember({ groupId, userId, requesterId: currentUserId });
-    if (result.data) setMembers(result.data.members ?? []);
+    setAddingUserId(userId);
+    try {
+      const result = await addMember({ groupId, userId, requesterId: currentUserId });
+      if (result.data) setMembers(result.data.members ?? []);
+    } finally {
+      setAddingUserId(null);
+    }
   };
 
   const handleRemoveMember = async (userId) => {
-    const result = await removeMember({ groupId, userId, requesterId: currentUserId });
-    if (result.data) setMembers(result.data.members ?? []);
+    setRemovingUserId(userId);
+    try {
+      const result = await removeMember({ groupId, userId, requesterId: currentUserId });
+      if (result.data) setMembers(result.data.members ?? []);
+    } finally {
+      setRemovingUserId(null);
+    }
   };
 
   const handleExitGroup = async () => {
@@ -148,7 +161,14 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
                   <div key={u.id} style={searchResultRow(dark)}>
                     <img src={u.profileImageThumbnailUrl || u.profileImageUrl} alt="" style={memberAvatar} />
                     <span style={memberName(dark)}>{u.userName}</span>
-                    <button style={addBtn} onClick={() => handleAddMember(u.id, u.userName)}>Add</button>
+                    <button
+                      style={{ ...addBtn, opacity: addingUserId === u.id ? 0.6 : 1, cursor: addingUserId === u.id ? "default" : "pointer" }}
+                      onClick={() => !addingUserId && handleAddMember(u.id, u.userName)}
+                    >
+                      {addingUserId === u.id
+                        ? <div className="spinner" style={{ width: "0.9rem", height: "0.9rem", border: "2px solid rgba(0,119,234,0.3)", borderTop: `2px solid ${parrotBlue}` }} />
+                        : <RiAddLine size={16} color={parrotBlue} />}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -169,7 +189,11 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
                 {m.username}
               </span>
               {isCreator && m.userId !== currentUserId && (
-                <button style={removeBtn} onClick={() => handleRemoveMember(m.userId)}>✕</button>
+                <span style={{ ...removeBtn, opacity: removingUserId === m.userId ? 0.6 : 1, cursor: removingUserId === m.userId ? "default" : "pointer" }} onClick={() => !removingUserId && handleRemoveMember(m.userId)}>
+                  {removingUserId === m.userId
+                    ? <div className="spinner" style={{ width: "0.9rem", height: "0.9rem", border: "2px solid rgba(220,50,50,0.3)", borderTop: "2px solid rgb(220,50,50)" }} />
+                    : <RiCloseLine size={16} color={parrotRed} />}
+                </span>
               )}
             </div>
           ))}
@@ -375,12 +399,15 @@ const memberName = (dark) => ({
 });
 
 const removeBtn = {
-  background: "none",
-  border: "none",
-  color: parrotRed,
   cursor: "pointer",
-  fontSize: "1rem",
-  padding: "0 0.3rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "1.6rem",
+  height: "1.6rem",
+  borderRadius: "50%",
+  backgroundColor: "rgba(220,50,50,0.12)",
+  flexShrink: 0,
 };
 
 const exitBtn = {
@@ -437,13 +464,16 @@ const searchResultRow = (dark) => ({
 });
 
 const addBtn = {
-  backgroundColor: parrotBlue,
-  color: "white",
-  border: "none",
-  borderRadius: "1rem",
-  padding: "0.3rem 0.8rem",
   cursor: "pointer",
-  fontSize: "1rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "1.6rem",
+  height: "1.6rem",
+  borderRadius: "50%",
+  backgroundColor: "rgba(0,119,234,0.12)",
+  border: "none",
+  flexShrink: 0,
 };
 
 const messagesPanel = {

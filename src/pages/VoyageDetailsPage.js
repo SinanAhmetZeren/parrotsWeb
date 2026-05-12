@@ -49,6 +49,7 @@ import { VoyageDetailPageDescriptionNewLight } from "../components/VoyageDetailP
 import { VoyageDetailBidsLight } from "../components/VoyageDetailPageBidsLight";
 import { VoyageDetailBidsNewLight } from "../components/VoyageDetailPageBidsNewLight";
 import { VoyageDetailWaypointCardLight } from "../components/VoyageDetailWaypointCardLight";
+import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
 
 function VoyageDetailsPage() {
   const dispatch = useDispatch();
@@ -270,7 +271,7 @@ function VoyageDetailsPage() {
 
   return isLoadingVoyage ? (
     <div style={spinnerContainer}>
-      <div className="spinner"></div>
+      <PulsatingParrotLogo size={150} />
     </div>
   ) : isSuccessVoyage ? isLegacyView ? (
 
@@ -563,6 +564,8 @@ export default VoyageDetailsPage;
 
 const spinnerContainer = {
   marginTop: "20%",
+  display: "flex",
+  justifyContent: "center",
 };
 
 const heartIconRed = {

@@ -432,7 +432,6 @@ function ConnectPage() {
                       groupId={activeGroupId}
                       currentUserId={currentUserId}
                       isDarkMode={isDarkMode}
-                      groupData={activeGroupData}
                       refetchPreviews={refetchMessagePreviews}
                     />
                   ) : (
