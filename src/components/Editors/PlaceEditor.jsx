@@ -4,7 +4,7 @@ import L from "leaflet";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import parrotMarker1 from "../../assets/images/parrotMarker1.png";
-import uploadImage from "../../assets/images/ParrotsLogoPlus.png";
+import uploadImage from "../../assets/images/ParrotsLogoPlus.jpg";
 import whiteegg from "../../assets/images/whiteegg.png";
 import silveregg from "../../assets/images/silveregg.png";
 import goldenegg from "../../assets/images/goldenegg.png";

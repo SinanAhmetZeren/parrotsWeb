@@ -4,7 +4,7 @@ import silveregg from "../../assets/images/silveregg.png";
 import goldenegg from "../../assets/images/goldenegg.png";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
-import uploadImage from "../../assets/images/ParrotsLogoPlus.png";
+import uploadImage from "../../assets/images/ParrotsLogoPlus.jpg";
 import {
   useLazyGetVoyageByIdAdminQuery,
   usePatchVoyageAdminMutation,

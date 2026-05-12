@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import "../assets/css/CreateVehicle.css"
 import "react-quill/dist/quill.snow.css";
 import { IoRemoveCircleOutline } from "react-icons/io5";
-import uploadImage from "../assets/images/ParrotsLogoPlus.png"
+import uploadImage from "../assets/images/ParrotsLogoPlus.jpg"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";

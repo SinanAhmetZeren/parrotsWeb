@@ -7,7 +7,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
 // import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
-import uploadImage from "../assets/images/ParrotsLogoPlus.png";
+import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
 import placeHolder from "../assets/images/placeholder.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";

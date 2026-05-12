@@ -58,7 +58,7 @@ function App() {
 
   useEffect(() => {
     const image = bgImageVariant === "new"
-      ? require("./assets/images/seafromabove1.png")
+      ? require("./assets/images/seafromabove1.jpg")
       : require("./assets/images/seafromsky.jpg");
     document.body.style.backgroundImage = `url(${image})`;
     document.body.style.backgroundSize = "cover";
