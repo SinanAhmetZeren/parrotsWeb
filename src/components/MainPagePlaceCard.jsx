@@ -156,5 +156,5 @@ const buttonStyle = {
   cursor: "pointer",
   fontSize: "1rem",
   border: "none",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  boxShadow: "none",
 };
