@@ -214,12 +214,12 @@ export const AddWaypointsPage = ({
                     </div>
 
                     <div style={{
-                        height: "19rem",
+                        height: "18rem",
                         margin: "auto",
-                        marginTop: "1.5rem",
-                        marginBottom: "1rem",
+                        marginTop: "0.5rem",
+                        marginBottom: "0rem",
                         width: "95%",
-                        backgroundColor: dark ? "#011a32" : "rgba(255,255,255,0.2)",
+                        backgroundColor: "transparent",
                         borderRadius: "1.5rem"
                     }}>
                         <AddedWaypointsSlider
@@ -233,6 +233,7 @@ export const AddWaypointsPage = ({
                     <div
                         style={{
                             ...addWaypointButton,
+                            marginTop: "0rem",
                             opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
                             pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none'
                         }}
@@ -307,7 +308,7 @@ const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, 
             />
             <div style={{ position: "relative" }}>
                 {imagePreview ? (
-                    <img src={imagePreview} alt="Uploaded preview" style={imageStyle} />
+                    <img src={imagePreview} alt="" style={imageStyle} />
                 ) : (
                     <img
                         src={uploadImage}
@@ -387,7 +388,7 @@ const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = fal
                 >
                     {addedWaypoints.map((waypoint, index) => (
                         <SwiperSlide key={index}>
-                            <div style={{ marginTop: "1rem" }}>
+                            <div style={{ marginTop: "0.5rem" }}>
                                 <WaypointComponent
                                     waypointId={waypoint.waypointId}
                                     description={waypoint.description}
@@ -434,7 +435,7 @@ const WaypointComponent = ({ description, profileImage, title, waypointId, handl
         }}>
             <img
                 src={profileImage instanceof File ? URL.createObjectURL(profileImage) : parrotsLogo}
-                alt="Uploaded preview"
+                alt=""
                 style={{ height: "100%", width: "15rem", objectFit: "cover" }}
             />
             <div style={{ width: "calc(15rem - .8rem)", margin: ".4rem" }}>
@@ -485,7 +486,7 @@ const mainContainer = {
 const newWaypointContainer = {
     display: "flex", flexDirection: "column",
     height: "calc(50vh - 1.5rem)", backgroundColor: "white",
-    padding: ".5rem", margin: "3rem", marginBottom: "0", marginTop: "0.5rem",
+    padding: ".5rem", margin: "3rem", marginBottom: "0", marginTop: "0rem",
     borderRadius: "1.5rem",
     boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
 }
@@ -498,7 +499,7 @@ const waypointDesctriptionContainer = {
 
 const mapContainerBox = {
     display: "flex", flexDirection: "column",
-    width: "64%", height: "calc(100vh - 3rem)", marginTop: "0rem"
+    width: "64%", height: "calc(100vh - 7rem)", marginTop: "0rem"
 }
 
 const mapContainer = {
@@ -534,6 +535,7 @@ const addWaypointButton = {
     transition: "transform 0.3s ease-in-out", fontSize: "1.3rem", fontWeight: "800",
     width: "40%", marginLeft: "50%", transform: "translateX(-50%)",
     padding: "0.3rem", paddingRight: "1rem", paddingLeft: "1rem",
+    marginTop: "1rem"
 }
 
 const imageStyle = {

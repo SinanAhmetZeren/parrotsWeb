@@ -485,7 +485,7 @@ function EditVehiclePage() {
                         <div className="image-preview">
                           <img
                             src={imagePreview}
-                            alt="Uploaded preview"
+                            alt=""
                             style={{
                               width: "35rem",
                               height: "35rem",
@@ -609,7 +609,7 @@ function EditVehiclePage() {
                         <div className="image-preview">
                           <img
                             src={galleryImagePreview}
-                            alt="Uploaded preview"
+                            alt=""
                             style={galleryImageUploadStyle}
                           />
                         </div>

@@ -93,7 +93,7 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
               <div>
                 <img
                   src={imagePreview}
-                  alt="Uploaded preview"
+                  alt=""
                   style={{
                     width: "28rem",
                     height: "28rem",

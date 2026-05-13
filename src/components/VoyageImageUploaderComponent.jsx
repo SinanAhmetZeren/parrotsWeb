@@ -268,7 +268,7 @@ export const VoyageImageUploaderComponent = ({
                 <div className="image-preview">
                   <img
                     src={newImagePreview}
-                    alt="Uploaded preview"
+                    alt=""
                     style={uploadImage2}
                   />
                 </div>

@@ -157,7 +157,7 @@ function ProfilePage() {
                       <div className="profilePage_ProfileImage_Img">
                         <img
                           src={userBaseUrl + userData?.profileImageUrl}
-                          alt="Uploaded preview"
+                          alt=""
                           style={profileImg}
                         />
                       </div>
@@ -170,7 +170,7 @@ function ProfilePage() {
                 >
                   <img
                     src={parrotCoin}
-                    alt="Uploaded preview"
+                    alt=""
                     style={{
                       ...parrotCoinImg,
                       transform: isParrotCoinHovered ? "scale(1.3)" : "scale(1)",

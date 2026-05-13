@@ -303,7 +303,7 @@ export function EditProfilePage() {
                     >
                       <img
                         src={backGroundImagePreview}
-                        alt="Uploaded preview"
+                        alt=""
                         style={{
                           width: "100%",
                           height: "100%",
@@ -368,7 +368,7 @@ export function EditProfilePage() {
                         <div className="profilePage_ProfileImage_Img">
                           <img
                             src={profileImagePreview}
-                            alt="Uploaded preview"
+                            alt=""
                             style={{
                               width: "100%",
                               height: "100%",

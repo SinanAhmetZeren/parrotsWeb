@@ -129,7 +129,7 @@ function ProfilePagePublic() {
                   <div>
                     <div className="profilePage_ProfileImage_Img_Container">
                       <div className="profilePage_ProfileImage_Img">
-                        <img src={userBaseUrl + userData?.profileImageUrl} alt="Uploaded preview" style={profileImg} />
+                        <img src={userBaseUrl + userData?.profileImageUrl} alt="" style={profileImg} />
                       </div>
                     </div>
                   </div>

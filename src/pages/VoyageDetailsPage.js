@@ -299,20 +299,21 @@ function VoyageDetailsPage() {
                   : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                 }
               </div>
-              {userId === VoyageData.userId && (VoyageData?.bids || []).some((b) => b.accepted) && (
+              {userId === VoyageData.userId && (
                 <div style={broadcastCardStyle(isDarkMode)}>
                   <input
                     style={broadcastInputStyle(isDarkMode)}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
-                    placeholder={broadcastPlaceholder}
+                    placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
                     value={broadcastMessage}
+                    disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
-                    style={{ ...broadcastBtnStyle, opacity: (!broadcastMessage.trim() || isBroadcasting) ? 0.5 : 1 }}
+                    style={{ ...broadcastBtnStyle, opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
                     onClick={handleBroadcast}
-                    disabled={!broadcastMessage.trim() || isBroadcasting}
+                    disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
                   >
                     {isBroadcasting ? (
                       <span style={{
@@ -464,20 +465,21 @@ function VoyageDetailsPage() {
                   : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                 }
               </div>
-              {userId === VoyageData.userId && (VoyageData?.bids || []).some((b) => b.accepted) && (
+              {userId === VoyageData.userId && (
                 <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
                   <input
                     style={{ ...broadcastInputStyle(isDarkMode), height: "3.5rem" }}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
-                    placeholder={broadcastPlaceholder}
+                    placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
                     value={broadcastMessage}
+                    disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
-                    style={{ ...broadcastBtnStyle, height: "3.5rem", opacity: (!broadcastMessage.trim() || isBroadcasting) ? 0.5 : 1 }}
+                    style={{ ...broadcastBtnStyle, height: "3.5rem", opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
                     onClick={handleBroadcast}
-                    disabled={!broadcastMessage.trim() || isBroadcasting}
+                    disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
                   >
                     {isBroadcasting ? (
                       <span style={{
@@ -795,7 +797,8 @@ export const voyageDetailsImagesStyle = {
   width: "80%",
   height: "35vh",
   margin: "auto",
-  marginBottom: "2rem",
+  marginTop: "6.5rem",
+  marginBottom: "1rem",
 };
 
 export const voyageDetailsBidsStyle = {
@@ -836,7 +839,7 @@ const broadcastCardStyle = (dark) => ({
   flexDirection: "row",
   gap: "0.6rem",
   alignItems: "center",
-  margin: "0.5rem 1.3rem",
+  margin: "0rem 1.3rem",
   padding: "0.7rem 1rem",
   backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
   borderRadius: "1rem",

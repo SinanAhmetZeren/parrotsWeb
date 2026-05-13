@@ -303,6 +303,15 @@ export default function CreateVoyagePage() {
               </div>
             </div>
 
+            <div style={{
+              display: "flex", flexDirection: "row", width: "40%", margin: "auto",
+              justifyContent: "space-between", alignSelf: "flex-start", marginTop: "0rem", marginBottom: "0.5rem"
+            }}>
+              <span style={{ ...voyageStepTitle, ...(pageState === 1 ? voyageStepActive : {}) }}>Voyage Details</span>
+              <span style={{ ...voyageStepTitle, ...(pageState === 2 ? voyageStepActive : {}) }}>Voyage Images</span>
+              <span style={{ ...voyageStepTitle, ...(pageState === 3 ? voyageStepActive : {}) }}>Waypoints</span>
+            </div>
+
             {
               // false &&
               pageState === 1 && (
@@ -418,24 +427,20 @@ export default function CreateVoyagePage() {
               // false &&
               pageState === 2 && (
                 <>
-                  <VoyageImageUploaderComponent
-                    voyageImage={voyageImage}
-                    setVoyageImage={setVoyageImage}
-                    addedVoyageImages={addedVoyageImages}
-                    setAddedVoyageImages={setAddedVoyageImages}
-                    voyageId={voyageId}
-                    addVoyageImage={addVoyageImage}
-                    deleteVoyageImage={deleteVoyageImage}
-                    isUploadingImage={isUploadingImage}
-                    setIsUploadingImage={setIsUploadingImage}
-                    setPageState={setPageState}
-                  />
-                  {/* <div style={addWaypointButton}
-                  onClick={() => setPageState(1)}
-                >Back</div> */}
-                  {/* <div style={addWaypointButton}
-                  onClick={() => handlePrintState()}
-                >Print States</div> */}
+                  <div style={{ width: "100%", alignSelf: "flex-start" }}>
+                    <VoyageImageUploaderComponent
+                      voyageImage={voyageImage}
+                      setVoyageImage={setVoyageImage}
+                      addedVoyageImages={addedVoyageImages}
+                      setAddedVoyageImages={setAddedVoyageImages}
+                      voyageId={voyageId}
+                      addVoyageImage={addVoyageImage}
+                      deleteVoyageImage={deleteVoyageImage}
+                      isUploadingImage={isUploadingImage}
+                      setIsUploadingImage={setIsUploadingImage}
+                      setPageState={setPageState}
+                    />
+                  </div>
                 </>
               )
             }
@@ -851,4 +856,20 @@ const CreateVogageSpinner = () => {
       ></div>
     </div>
   );
+};
+
+const voyageStepTitle = {
+  fontSize: "1.6rem",
+  fontWeight: 800,
+  color: "#ffffff55",
+  backgroundColor: "#a4f4f411",
+  padding: ".3rem",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+  borderRadius: "1.5rem",
+};
+
+const voyageStepActive = {
+  color: "white",
+  backgroundColor: "#a4f4f433",
 };

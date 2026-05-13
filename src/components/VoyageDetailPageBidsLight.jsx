@@ -68,7 +68,7 @@ export function VoyageDetailBidsLight({
 function BidsList({ bidsData, ownVoyage, handleAcceptBid, handleDeleteBid, loadingBidId }) {
   if (bidsData.length === 0) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", opacity: 0.3 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "4rem", opacity: 0.3 }}>
         <img src={parrotLogo} alt="No bids" style={{ width: "12rem", height: "12rem", objectFit: "contain", marginTop: "1rem" }} />
       </div>
     );
