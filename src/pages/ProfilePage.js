@@ -45,7 +45,7 @@ function ProfilePage() {
   const [isParrotCoinHovered, setIsParrotCoinHovered] = useState(false);
 
   const handleGoToPublicPage = () => {
-    navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
+    navigate(`/profile-public/${userData?.publicId}/${userData?.userName}`);
   };
 
   const handleGoToEditProfilePage = () => {
@@ -197,17 +197,17 @@ function ProfilePage() {
                       className="profilePage_UserName"
                       style={{ color: isDarkMode ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue }}
                     >
-                      {userData.userName}
+                      {userData?.userName}
                     </span>
                   </div>
                   <div
                     className="flex profilePage_Title"
                     style={{ color: isDarkMode ? "rgba(255,255,255,0.75)" : parrotTextDarkBlue }}
                   >
-                    <span className="profilePage_Title">{userData.title}</span>
+                    <span className="profilePage_Title">{userData?.title}</span>
                   </div>
                   <div className="flex profilePage_Bio">
-                    <BlueHashtagText originalText={userData.bio} isDarkMode={isDarkMode} />
+                    <BlueHashtagText originalText={userData?.bio} isDarkMode={isDarkMode} />
                   </div>
                 </div>
                 <div className="flex profilePage_ContactDetails">

@@ -34,9 +34,9 @@ export function MainPageCardSwiper({
   const dark = isDarkMode;
 
 
-  // console.log(voyagesData.length);
+  // console.log(voyagesData?.length);
   return (
-    voyagesData.length === 0 ?
+    voyagesData?.length === 0 ?
       <div style={{
         backgroundColor: dark ? "rgba(1,26,50,0.85)" : "rgba(255, 255, 255, 0.3)",
         height: "100%",

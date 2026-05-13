@@ -40,12 +40,12 @@ export function VoyageDetailBidsNew({
   const [deleteBid] = useDeleteBidMutation();
   const username = localStorage.getItem("storedUserName");
   const [loadingBidId, setLoadingBidId] = React.useState(null);
-  const [bidsData, setBidsData] = React.useState(voyageData.bids);
+  const [bidsData, setBidsData] = React.useState(voyageData?.bids);
 
-  // Synchronize bidsData with voyageData.bids
+  // Synchronize bidsData with voyageData?.bids
   useEffect(() => {
-    setBidsData(voyageData.bids);
-  }, [voyageData.bids]);
+    setBidsData(voyageData?.bids);
+  }, [voyageData?.bids]);
 
   const makeRefetch = useCallback(() => {
     refetch();
@@ -123,8 +123,8 @@ export function VoyageDetailBidsNew({
       <VoyageDetailBidButton
         ownVoyage={ownVoyage}
         userBid={userBid}
-        userProfileImage={voyageData.user.profileImageUrl}
-        userName={voyageData.user.userName}
+        userProfileImage={voyageData?.user?.profileImageUrl}
+        userName={voyageData?.user?.userName}
         userBidAccepted={userBidAccepted}
         setOpacity={setOpacity}
         userId={userId}

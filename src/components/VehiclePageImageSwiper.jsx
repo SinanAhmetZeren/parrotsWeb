@@ -14,7 +14,7 @@ export function VehiclePageImageSwiper({ vehicleData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUrl = `${apiUrl}/Uploads/VehicleImages/`;
 
-  const images = [vehicleData.profileImageUrl, ...vehicleData.vehicleImages.map(image => image.vehicleImagePath)
+  const images = [vehicleData?.profileImageUrl, ...vehicleData?.vehicleImages?.map(image => image.vehicleImagePath)
   ]
 
   return (

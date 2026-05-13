@@ -14,7 +14,7 @@ export function VoyageDetailPageImageSwiperNew({ voyageData }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUrl = ``;
 
-  const images = [voyageData.profileImage, ...voyageData.voyageImages.map(image => image.voyageImagePath)
+  const images = [voyageData?.profileImage, ...voyageData?.voyageImages?.map(image => image.voyageImagePath)
   ]
 
   return (

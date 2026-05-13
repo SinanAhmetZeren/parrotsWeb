@@ -166,7 +166,7 @@ function VoyageDetailsPage() {
       let tempMinLng = Infinity;
 
 
-      VoyageData.waypoints.forEach((waypoint) => {
+      VoyageData?.waypoints?.forEach((waypoint) => {
         const { latitude, longitude } = waypoint;
 
         if (latitude > tempMaxLat) tempMaxLat = latitude;
@@ -208,16 +208,16 @@ function VoyageDetailsPage() {
     }
 
     if (VoyageData) {
-      setUserBid(VoyageData.bids.find((bid) => bid.userId === userId));
+      setUserBid(VoyageData?.bids?.find((bid) => bid.userId === userId));
       setUserBidAccepted(
-        VoyageData.bids.find((bid) => bid.userId === userId)?.accepted ?? false
+        VoyageData?.bids?.find((bid) => bid.userId === userId)?.accepted ?? false
       );
       setIsPublicOnMap(VoyageData.publicOnMap);
       console.log("----", VoyageData);
 
       console.log(
         "user bid: -->",
-        VoyageData.bids.find((bid) => bid.userId === userId)
+        VoyageData?.bids?.find((bid) => bid.userId === userId)
       );
     }
   }, [isSuccessVoyage, VoyageData, userId]);

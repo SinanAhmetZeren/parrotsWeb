@@ -136,7 +136,7 @@ function VehicleDetailsPage() {
 
   useEffect(() => {
     if (isSuccessVehicle) {
-      // console.log("VehicleData", VehicleData.user.id);
+      // console.log("VehicleData", VehicleData?.user?.id);
       console.log("--> VehicleData -->", VehicleData);
 
     }
@@ -236,9 +236,9 @@ function VehicleDetailsPage() {
                       style={dark ? cellValueDark : {}}
                       onClick={() =>
                         handleGoToUser({
-                          userId: VehicleData.user.id,
-                          userName: VehicleData.user.userName,
-                          userPublicId: VehicleData.user.publicId,
+                          userId: VehicleData?.user?.id,
+                          userName: VehicleData?.user?.userName,
+                          userPublicId: VehicleData?.user?.publicId,
                         })
                       }
                     >
@@ -250,7 +250,7 @@ function VehicleDetailsPage() {
                       >
                         <img
                           src={
-                            VehicleData.user.profileImageUrl
+                            VehicleData?.user?.profileImageUrl
                           }
                           style={{
                             ...userImageStyle,
@@ -263,14 +263,14 @@ function VehicleDetailsPage() {
                           alt="User"
                           onClick={() =>
                             handleGoToUser({
-                              userId: VehicleData.user.id,
-                              userName: VehicleData.user.userName,
-                              userPublicId: VehicleData.user.publicId,
+                              userId: VehicleData?.user?.id,
+                              userName: VehicleData?.user?.userName,
+                              userPublicId: VehicleData?.user?.publicId,
                             })
                           }
                         />
                         <span style={userNameTextStyle}>
-                          {VehicleData.user.userName}
+                          {VehicleData?.user?.userName}
                         </span>
                       </div>
                     </div>

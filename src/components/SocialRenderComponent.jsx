@@ -20,10 +20,10 @@ export function SocialRenderComponent({ userData, isDarkMode = false }) {
     setItemsWithValue(itemsWithValue.length);
   }, []);
 
-  if (userData.displayEmail !== null && userData.emailVisible === true) {
-    contactDataArray.push({ key: "email", value: userData.displayEmail });
+  if (userData?.displayEmail !== null && userData?.emailVisible === true) {
+    contactDataArray.push({ key: "email", value: userData?.displayEmail });
   }
-  if (userData.instagram !== null) contactDataArray.push({ key: "instagram", value: userData.instagram });
+  if (userData?.instagram !== null) contactDataArray.push({ key: "instagram", value: userData?.instagram });
   if (userData.youtube !== null) contactDataArray.push({ key: "youtube", value: userData.youtube });
   if (userData.facebook !== null) contactDataArray.push({ key: "facebook", value: userData.facebook });
   if (userData.phoneNumber !== null) contactDataArray.push({ key: "phoneNumber", value: userData.phoneNumber });
