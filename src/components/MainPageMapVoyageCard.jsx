@@ -5,7 +5,7 @@ export function MainPageMapVoyageCard({ cardData }) {
   return (
     <div className="" style={cardContainerStyle}>
       <div className="" style={cardImageStyle}>
-        <img src={parrot1} style={imageStyle} alt="Boat tour" />
+        <img src={parrot1} style={imageStyle} alt="" />
       </div>
       <div className="" style={cardContentStyle}>
         <div style={cardTitleStyle}>{cardData.name}</div>

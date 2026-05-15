@@ -148,7 +148,7 @@ function ProfilePage() {
                   <img
                     src={userBaseUrl + userData?.backgroundImageUrl}
                     className=" profilePage_CoverImage_Img"
-                    alt="a"
+                    alt=""
                   />
                 </div>
                 <div className="flex profilePage_ProfileImage">

@@ -102,7 +102,7 @@ export function MessagePreviewsComponent({
           <img
             src={userBaseUrl + otherUserProfile}
             style={{ ...userprofileimg, ...((hoveredUserImgID === otherUserUserId) ? userprofileimgHover : {}) }}
-            alt="user"
+            alt=""
             onMouseEnter={() => setHoveredUserImgID(otherUserUserId)}
             onMouseLeave={() => setHoveredUserImgID("")}
           />

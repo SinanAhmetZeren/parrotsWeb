@@ -122,7 +122,7 @@ function ProfilePagePublic() {
                 </div>
 
                 <div className="flex profilePage_CoverImage">
-                  <img src={userBaseUrl + userData?.backgroundImageUrl} className="profilePage_CoverImage_Img" alt="a" />
+                  <img src={userBaseUrl + userData?.backgroundImageUrl} className="profilePage_CoverImage_Img" alt="" />
                 </div>
 
                 <div className="flex profilePage_ProfileImage">

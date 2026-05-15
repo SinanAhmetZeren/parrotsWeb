@@ -24,7 +24,7 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
     <div style={cardContainerStyle(dark)}>
       {/* egg badge */}
       <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
-        <img src={egg.image} alt="egg" style={eggBadgeImg} />
+        <img src={egg.image} alt="" style={eggBadgeImg} />
       </div>
 
       {/* image */}

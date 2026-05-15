@@ -38,14 +38,14 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
     <div className="card" style={cardContainerStyle(dark)}>
       {egg && (
         <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
-          <img src={egg.image} alt="egg" style={eggBadgeImg} />
+          <img src={egg.image} alt="" style={eggBadgeImg} />
         </div>
       )}
       <div style={markerBadgeClip}>
-        <img src={markerImage} alt="marker" style={markerBadgeImg} />
+        <img src={markerImage} alt="" style={markerBadgeImg} />
       </div>
       <div className="card-image" style={cardImageStyle}>
-        <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="" />
       </div>
       <div className="card-content" style={cardContentStyle}>
         <div style={cardTitleStyle(dark)}>{cardData.name}</div>

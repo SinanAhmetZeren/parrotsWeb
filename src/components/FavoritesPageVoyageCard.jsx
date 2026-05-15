@@ -23,7 +23,7 @@ export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) 
       )}
 
       <div className="card-image" style={cardImageContainerStyle(dark)}>
-        <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="Boat tour" />
+        <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="" />
       </div>
       <div className="card-content" style={cardContentStyle(dark)}>
         <div style={cardTitleStyle(dark)} title={voyage?.name}>{voyage?.name}</div>

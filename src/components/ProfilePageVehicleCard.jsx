@@ -16,7 +16,7 @@ export function ProfilePageVehicleCard({ vehicle, index, userFavoriteVehicles, i
   return (
     <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(vehicle?.id)}>
       <div className="card-image" style={cardImageContainerStyle(dark)}>
-        <img src={vehicleBaseUrl + (vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl)} style={cardImageStyle} alt="Boat tour" />
+        <img src={vehicleBaseUrl + (vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl)} style={cardImageStyle} alt="" />
       </div>
       <div className="card-content" style={cardContentStyle(dark)}>
         <div style={{ display: "flex", flexDirection: "row" }}>

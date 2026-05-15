@@ -251,7 +251,7 @@ function RenderBid({
               setHoveredUserImgID(bidUserId);
             }}
             onMouseLeave={() => setHoveredUserImgID("")}
-            alt="User"
+            alt=""
             onClick={() => handleGoToUser(bidUserId, username)}
           />
         </div>

@@ -260,7 +260,7 @@ function VehicleDetailsPage() {
                             setHoveredUserImg(true);
                           }}
                           onMouseLeave={() => setHoveredUserImg(false)}
-                          alt="User"
+                          alt=""
                           onClick={() =>
                             handleGoToUser({
                               userId: VehicleData?.user?.id,

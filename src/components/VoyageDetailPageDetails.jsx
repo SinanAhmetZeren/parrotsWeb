@@ -57,7 +57,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
           <img
             src={baseUserImageUrl + (voyageData.user.profileImageThumbnailUrl || voyageData.user.profileImageUrl)}
             style={{ ...avatarImg, transform: hoveredUser ? "scale(1.15)" : "scale(1)" }}
-            alt="host"
+            alt=""
           />
           <span style={pillText}>{voyageData.user.userName}</span>
         </div>
@@ -74,7 +74,7 @@ export function VoyageDetailPageDetails({ voyageData }) {
             <img
               src={specialImage || (baseVehicleImageUrl + voyageData.vehicle.profileImageUrl)}
               style={{ ...avatarImg, transform: hoveredVehicle ? "scale(1.15)" : "scale(1)" }}
-              alt="vehicle"
+              alt=""
             />
           )}
           <span style={pillText}>{voyageData.vehicle?.name}</span>

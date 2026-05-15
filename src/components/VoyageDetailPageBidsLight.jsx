@@ -99,7 +99,7 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
             style={{ ...userImageStyle, ...(hoveredUserImgID === bidUserId ? { transform: "scale(1.2)" } : {}) }}
             onMouseEnter={() => setHoveredUserImgID(bidUserId)}
             onMouseLeave={() => setHoveredUserImgID("")}
-            alt="User"
+            alt=""
             onClick={() => navigate(`/profile-public/${bidUserPublicId}/${username}`)}
           />
         </div>

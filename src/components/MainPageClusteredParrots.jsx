@@ -77,7 +77,7 @@ function VoyageMarker({ voyage, icon, onGoToVoyage }) {
       <Popup maxWidth={540} autoPan={false} className="parrot-popup">
         <div style={cardContainerStyle}>
           <div style={cardImageStyle}>
-            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="Voyage" />
+            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="" />
           </div>
           <div style={cardContentStyle}>
             <div style={cardTitleStyle}>{voyage.name}</div>
@@ -139,7 +139,7 @@ function PlaceMarker({ voyage, icon }) {
       <Popup maxWidth={540} autoPan={false} className="parrot-popup">
         <div style={cardContainerStyle}>
           <div style={cardImageStyle}>
-            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="Place" />
+            <img src={voyage.profileImageThumbnail || voyage.profileImage} style={imageStyle} alt="" />
           </div>
           <div style={cardContentStyle}>
             <div style={cardTitleStyle}>{voyage.name}</div>

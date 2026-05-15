@@ -109,7 +109,7 @@ function RenderSearchResults({ users, userId, setConversationUserId, setConversa
           onMouseEnter={() => { setHoveredUserImgID3(user.id) }}
           onMouseLeave={() => setHoveredUserImgID3("")}
           onClick={() => { handleGoToUser(user.userId, user.userName, user.publicId); }}
-          src={userBaseUrl + (user.profileImageThumbnailUrl || user.profileImageUrl)} alt="profile" />
+          src={userBaseUrl + (user.profileImageThumbnailUrl || user.profileImageUrl)} alt="" />
 
         <div style={userNameText(dark)}>{user.userName}</div>
         <div title={`Send Message to ${user.userName}`}
