@@ -62,7 +62,7 @@ export function MessagePreviewsComponent({
           </div>
           <div style={UsernameAndTextContainer}>
             <span style={messageUsernameStyle(dark)}>{message.groupName}</span>
-            <span style={messageTextStyle(dark)}>{message.text || "No messages yet"}</span>
+            <span style={messageTextStyle(dark)}>{message.text ? `${message.senderUsername}: ${message.text}` : "No messages yet"}</span>
           </div>
           <div style={timestampContainer}>
             <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
@@ -155,6 +155,8 @@ const userprofileimgContainer = {
 }
 
 const UsernameAndTextContainer = {
+  minWidth: 0,
+  overflow: "hidden",
 }
 
 const timestampContainer = {
@@ -166,11 +168,10 @@ const messageTextStyle = (dark) => ({
   fontSize: "1.3rem",
   textAlign: "left",
   color: dark ? "rgba(255,255,255,0.7)" : "darkblue",
-  display: "-webkit-box",
-  WebkitBoxOrient: "vertical",
   overflow: "hidden",
-  WebkitLineClamp: 1,
+  whiteSpace: "nowrap",
   textOverflow: "ellipsis",
+  display: "block",
 })
 
 

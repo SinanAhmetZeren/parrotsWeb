@@ -23,6 +23,7 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   const [memberQuery, setMemberQuery] = useState("");
   const [addingUserId, setAddingUserId] = useState(null);
   const [removingUserId, setRemovingUserId] = useState(null);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const { data: fetchedGroupData } = useGetGroupByIdQuery(
     { groupId, userId: currentUserId },
     { skip: !groupId || !currentUserId, refetchOnMountOrArgChange: true }
@@ -133,9 +134,17 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
       {/* Members panel */}
       <div style={membersPanel(dark)}>
         <div style={membersPanelHeader(dark)}>
-          <span style={membersPanelTitle(dark)}>Members</span>
+          {!confirmLeave && <span style={membersPanelTitle(dark)}>Members</span>}
           {!isCreator && (
-            <button style={exitBtn} onClick={handleExitGroup}>Leave</button>
+            confirmLeave ? (
+              <div style={confirmLeaveRow}>
+                <span style={confirmLeaveText}>Are you sure?</span>
+                <button style={noStayBtn} onClick={() => setConfirmLeave(false)}>No, Stay</button>
+                <button style={exitBtn} onClick={handleExitGroup}>Yes, Leave</button>
+              </div>
+            ) : (
+              <button style={leaveBtn} onClick={() => setConfirmLeave(true)}>Leave</button>
+            )
           )}
         </div>
 
@@ -410,6 +419,16 @@ const removeBtn = {
   flexShrink: 0,
 };
 
+const leaveBtn = {
+  backgroundColor: "#F5A623",
+  color: "white",
+  border: "none",
+  borderRadius: "1rem",
+  padding: "0.3rem 0.8rem",
+  cursor: "pointer",
+  fontSize: "1rem",
+};
+
 const exitBtn = {
   backgroundColor: parrotRed,
   color: "white",
@@ -418,6 +437,29 @@ const exitBtn = {
   padding: "0.3rem 0.8rem",
   cursor: "pointer",
   fontSize: "1rem",
+};
+
+const noStayBtn = {
+  backgroundColor: "#3c9dde",
+  color: "white",
+  border: "none",
+  borderRadius: "1rem",
+  padding: "0.3rem 0.8rem",
+  cursor: "pointer",
+  fontSize: "1rem",
+};
+
+const confirmLeaveRow = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+  marginLeft: "auto",
+};
+
+const confirmLeaveText = {
+  fontSize: "1rem",
+  fontWeight: "600",
+  color: "#3c9dde",
 };
 
 const addMemberSection = {
