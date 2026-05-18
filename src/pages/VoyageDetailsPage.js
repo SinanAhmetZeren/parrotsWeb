@@ -78,14 +78,7 @@ function VoyageDetailsPage() {
   const isDarkMode = useSelector((state) => state.users.isDarkMode)
 
 
-  let favoriteVoyages;
-  try {
-    favoriteVoyages = JSON.parse(
-      localStorage.getItem("storedFavoriteVoyages")
-    );
-  } catch (err) {
-    console.log(err);
-  }
+  const favoriteVoyages = useSelector((state) => state.users.userFavoriteVoyages);
   const isInFavorites = favoriteVoyages?.includes(Number(voyageId));
   const [isFavorited, setIsFavorited] = useState(isInFavorites);
   const { data: favoriteVoyagesData } =

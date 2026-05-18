@@ -47,15 +47,7 @@ function VehicleDetailsPage() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(0);
 
-  let favoriteVehicles;
-  try {
-    favoriteVehicles = JSON.parse(
-      localStorage.getItem("storedFavoriteVehicles")
-    );
-  } catch (err) {
-    console.log(err);
-  }
-
+  const favoriteVehicles = useSelector((state) => state.users.userFavoriteVehicles);
   const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
   const { data: favoriteVehiclesData } =
     useGetFavoriteVehicleIdsByUserIdQuery(userId);
