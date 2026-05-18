@@ -5,10 +5,7 @@ import {
   useGoogleLoginInternalMutation,
   updateAsLoggedIn,
   updateUserFavorites,
-} from "../slices/UserSlice";
-import {
-  useLazyGetFavoriteVoyageIdsByUserIdQuery,
-  useLazyGetFavoriteVehicleIdsByUserIdQuery,
+  setBookmarkedUserIds,
 } from "../slices/UserSlice";
 import "../assets/css/GoogleButton.css"; // Assuming you have a CSS file for styles
 
@@ -16,11 +13,6 @@ export default function GoogleLoginButton() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [googleLoginInternal] = useGoogleLoginInternalMutation();
-
-  const [getFavoriteVehicleIdsByUserId] =
-    useLazyGetFavoriteVehicleIdsByUserIdQuery();
-  const [getFavoriteVoyageIdsByUserId] =
-    useLazyGetFavoriteVoyageIdsByUserIdQuery();
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -34,18 +26,6 @@ export default function GoogleLoginButton() {
         const res = await googleLoginInternal(AccessToken).unwrap();
         console.log("Login internal response--->", res);
 
-        const favoriteVehicles = await getFavoriteVehicleIdsByUserId(
-          res.userId
-        );
-        const favoriteVoyages = await getFavoriteVoyageIdsByUserId(res.userId);
-
-        dispatch(
-          updateUserFavorites({
-            favoriteVehicles: favoriteVehicles.data,
-            favoriteVoyages: favoriteVoyages.data,
-          })
-        );
-
         dispatch(
           updateAsLoggedIn({
             userId: res.userId,
@@ -53,8 +33,16 @@ export default function GoogleLoginButton() {
             refreshToken: res.refreshToken,
             userName: res.userName,
             profileImageUrl: res.profileImageUrl,
+            isAdmin: res.isAdmin,
+            hasAcknowledgedPublicProfile: res.hasAcknowledgedPublicProfile ?? false,
           })
         );
+
+        dispatch(updateUserFavorites({
+          favoriteVehicles: res.favoriteVehicleIds,
+          favoriteVoyages: res.favoriteVoyageIds,
+        }));
+        dispatch(setBookmarkedUserIds(res.bookmarkedUserIds || []));
 
         navigate("/");
       } catch (err) {

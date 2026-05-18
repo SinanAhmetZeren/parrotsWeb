@@ -12,9 +12,6 @@ import {
   useAcceptTermsMutation,
   useRequestCodeMutation,
   useResetPasswordMutation,
-  useLazyGetFavoriteVoyageIdsByUserIdQuery,
-  useLazyGetFavoriteVehicleIdsByUserIdQuery,
-  useLazyGetBookmarkedUserIdsQuery,
   updateUserFavorites,
   setBookmarkedUserIds,
 } from "../slices/UserSlice";
@@ -80,12 +77,6 @@ function LoginPage() {
     registerUser,
     { isLoading: isLoadingRegisterUser, isSuccess: isSuccessRegisterUser },
   ] = useRegisterUserMutation();
-
-  const [getFavoriteVehicleIdsByUserId] =
-    useLazyGetFavoriteVehicleIdsByUserIdQuery();
-  const [getFavoriteVoyageIdsByUserId] =
-    useLazyGetFavoriteVoyageIdsByUserIdQuery();
-  const [getBookmarkedUserIds] = useLazyGetBookmarkedUserIdsQuery();
 
   const [
     confirmUser,
@@ -166,6 +157,11 @@ function LoginPage() {
             hasAcknowledgedPublicProfile: confirmResponse.hasAcknowledgedPublicProfile ?? false,
           })
         );
+        dispatch(updateUserFavorites({
+          favoriteVehicles: confirmResponse.favoriteVehicleIds,
+          favoriteVoyages: confirmResponse.favoriteVoyageIds,
+        }));
+        dispatch(setBookmarkedUserIds(confirmResponse.bookmarkedUserIds || []));
       }
       setIsConfirmingUser(false);
       setConfirmationCode("");
@@ -204,18 +200,11 @@ function LoginPage() {
       localStorage.setItem("storedToken", loginResponse.token);
       localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
 
-      // Get user favorites and bookmarks
-      const [favoriteVehicles, favoriteVoyages, bookmarkedIds] = await Promise.all([
-        getFavoriteVehicleIdsByUserId(loginResponse.userId).unwrap(),
-        getFavoriteVoyageIdsByUserId(loginResponse.userId).unwrap(),
-        getBookmarkedUserIds().unwrap(),
-      ]);
-
       dispatch(updateUserFavorites({
-        favoriteVehicles: favoriteVehicles.data,
-        favoriteVoyages: favoriteVoyages.data,
+        favoriteVehicles: loginResponse.favoriteVehicleIds,
+        favoriteVoyages: loginResponse.favoriteVoyageIds,
       }));
-      dispatch(setBookmarkedUserIds(bookmarkedIds || []));
+      dispatch(setBookmarkedUserIds(loginResponse.bookmarkedUserIds || []));
 
       if (loginResponse.requiresTermsAcceptance) {
         setPendingLoginData(loginResponse);
@@ -232,7 +221,7 @@ function LoginPage() {
           userName: loginResponse.userName,
           profileImageUrl: loginResponse.profileImageUrl,
           isAdmin: loginResponse.isAdmin,
-          hasAcknowledgedPublicProfile: loginResponse.hasAcknowledgedPublicProfile,
+          hasAcknowledgedPublicProfile: loginResponse.hasAcknowledgedPublicProfile ?? false,
         })
       );
 
@@ -265,6 +254,11 @@ function LoginPage() {
           hasAcknowledgedPublicProfile: pendingLoginData.hasAcknowledgedPublicProfile ?? false,
         })
       );
+      dispatch(updateUserFavorites({
+        favoriteVehicles: pendingLoginData.favoriteVehicleIds,
+        favoriteVoyages: pendingLoginData.favoriteVoyageIds,
+      }));
+      dispatch(setBookmarkedUserIds(pendingLoginData.bookmarkedUserIds || []));
       setRequiresTermsReAcceptance(false);
       setPendingLoginData(null);
       setUsername("");
@@ -365,7 +359,6 @@ function LoginPage() {
       setPasswordUpdate2("");
       setSixDigitCode("");
       if (resetPasswordResponse.token) {
-        // await
         dispatch(
           updateAsLoggedIn({
             userId: resetPasswordResponse.userId,
@@ -375,9 +368,13 @@ function LoginPage() {
             profileImageUrl: resetPasswordResponse.profileImageUrl,
             isAdmin: resetPasswordResponse.isAdmin,
             hasAcknowledgedPublicProfile: resetPasswordResponse.hasAcknowledgedPublicProfile ?? false,
-
           })
         );
+        dispatch(updateUserFavorites({
+          favoriteVehicles: resetPasswordResponse.favoriteVehicleIds,
+          favoriteVoyages: resetPasswordResponse.favoriteVoyageIds,
+        }));
+        dispatch(setBookmarkedUserIds(resetPasswordResponse.bookmarkedUserIds || []));
       }
       setIsUpdatingPassword(false);
 
