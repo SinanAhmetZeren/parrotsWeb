@@ -1,18 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue, vehicleColors } from "../styles/colors";
 import DOMPurify from "dompurify";
 import whiteegg from "../assets/images/whiteegg.png";
 import silveregg from "../assets/images/silveregg.png";
 import goldenegg from "../assets/images/goldenegg.png";
-import circleparrot1 from "../assets/images/circleparrot1.png";
-import circleparrot2 from "../assets/images/circleparrot2.png";
-import circleparrot3 from "../assets/images/circleparrot3.png";
-import circleparrot4 from "../assets/images/circleparrot4.png";
-import circleparrot5 from "../assets/images/circleparrot5.png";
-import circleparrot6 from "../assets/images/circleparrot6.png";
-
-const markerImages = [circleparrot1, circleparrot2, circleparrot3, circleparrot4, circleparrot5, circleparrot6];
 
 const eggConfig = {
   1: { image: whiteegg, background: "#e8e8e8" },
@@ -32,7 +24,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
   };
 
   const egg = cardData.placeType > 0 ? eggConfig[cardData.placeType] : null;
-  const markerImage = markerImages[(cardIndex ?? 0) % markerImages.length];
+  const vehicleColor = vehicleColors[cardData.vehicleType] ?? parrotBlue;
 
   return (
     <div className="card" style={cardContainerStyle(dark)}>
@@ -41,9 +33,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
           <img src={egg.image} alt="" style={eggBadgeImg} />
         </div>
       )}
-      <div style={markerBadgeClip}>
-        <img src={markerImage} alt="" style={markerBadgeImg} />
-      </div>
+      {!egg && <div style={{ ...vehicleColorCircle, backgroundColor: vehicleColor }} />}
       <div className="card-image" style={cardImageStyle}>
         <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="" />
       </div>
@@ -140,22 +130,14 @@ const voyageDetailSpan = (dark) => ({
   paddingRight: "1rem",
 });
 
-const markerBadgeClip = {
+const vehicleColorCircle = {
   position: "absolute",
-  top: "16rem",
-  right: 8,
+  top: "0.5rem",
+  right: "0.5rem",
+  width: 18,
+  height: 18,
+  borderRadius: "50%",
   zIndex: 10,
-  backgroundColor: "rgba(0, 119, 234, 0.30)",
-  borderRadius: 30,
-  width: 35,
-  height: 35
-};
-
-const markerBadgeImg = {
-  marginTop: 2,
-  marginLeft: 1,
-  width: 34,
-  height: 38,
 };
 
 const eggBadgeClip = {

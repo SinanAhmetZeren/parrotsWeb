@@ -3,12 +3,6 @@ import { Marker, Popup, Tooltip } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import * as d3 from "d3";
-import parrotMarker1 from "../assets/images/parrotMarker1.png";
-import parrotMarker2 from "../assets/images/parrotMarker2.png";
-import parrotMarker3 from "../assets/images/parrotMarker3.png";
-import parrotMarker4 from "../assets/images/parrotMarker4.png";
-import parrotMarker5 from "../assets/images/parrotMarker5.png";
-import parrotMarker6 from "../assets/images/parrotMarker6.png";
 import whiteegg from "../assets/images/whiteegg.png";
 import crackedwhiteegg from "../assets/images/crackedwhiteegg.png";
 import silveregg from "../assets/images/silveregg.png";
@@ -16,7 +10,7 @@ import crackedsilveregg from "../assets/images/crackedsilveregg.png";
 import goldenegg from "../assets/images/goldenegg.png";
 import crackedgoldenegg from "../assets/images/crackedgoldenegg.png";
 import { useNavigate } from "react-router-dom";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotTextDarkBlue, vehicleColors } from "../styles/colors";
 import DOMPurify from "dompurify";
 
 
@@ -27,10 +21,15 @@ const placeIcons = {
 };
 
 
-const markerImages = [
-  parrotMarker1, parrotMarker2, parrotMarker3,
-  parrotMarker4, parrotMarker5, parrotMarker6,
-];
+const createColorIcon = (color) => {
+  const svg = encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41"><path d="M12.5 0C5.596 0 0 5.596 0 12.5C0 21.875 12.5 41 12.5 41C12.5 41 25 21.875 25 12.5C25 5.596 19.404 0 12.5 0z" fill="${color}"/><circle cx="12.5" cy="12.5" r="5" fill="white" fill-opacity="0.5"/></svg>`);
+  return L.icon({
+    iconUrl: `data:image/svg+xml,${svg}`,
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
+    popupAnchor: [0, -53],
+  });
+};
 
 const palette = (ratio) => d3.interpolateRgb("blue", "#26b170")(ratio);
 
@@ -181,12 +180,9 @@ export const ClusteredVoyageMarkers = ({ voyages }) => {
         const isPlace = voyage.placeType > 0;
         const eggSet = placeIcons[voyage.placeType];
 
-        const icon = L.icon({
-          iconUrl: isPlace ? eggSet.normal : markerImages[index % 6],
-          iconSize: [50, 60],
-          iconAnchor: [25, 60],
-          popupAnchor: isPlace ? [0, -41] : [0, -62],
-        });
+        const icon = isPlace
+          ? L.icon({ iconUrl: eggSet.normal, iconSize: [50, 60], iconAnchor: [25, 60], popupAnchor: [0, -41] })
+          : createColorIcon(vehicleColors[voyage.vehicleType] ?? "#0a77ea");
 
         if (isPlace) {
           return <PlaceMarker key={`place-${voyage.id}`} voyage={voyage} icon={icon} />;

@@ -17,3 +17,29 @@ export const parrotLightBlue = "#3c9dde";
 export const parrotPistachioGreen = "#9Bd35A"
 export const parrotBananaLeafGreen = "#689F38";
 export const parrotCream = "#f9f5f1";
+
+export const parrotBoatPurple = "#3b2697";
+export const parrotCarRed = "#D53E4F";
+export const parrotCaravanOrangeRed = "#F46D43";
+export const parrotBusLightOrange = "#FDAE61";
+export const parrotWalkLightYellow = "#FEE08B";
+export const parrotRunYellowGreen = "#E6F598";
+export const parrotMotorcycleLightGreen = "#ABDDA4";
+export const parrotBicycleTealGreen = "#66C2A5";
+export const parrotTinyHouseBlue = "#3288BD";
+export const parrotAirplaneDarkRed = "#9E0142";
+export const parrotTrainPink = "#F781BF";
+
+export const vehicleColors = {
+  0: "#3b2697",
+  1: "#D53E4F",
+  2: "#F46D43",
+  3: "#FDAE61",
+  4: "#FEE08B",
+  5: "#E6F598",
+  6: "#ABDDA4",
+  7: "#66C2A5",
+  8: "#3288BD",
+  9: "#9E0142",
+  10: "#F781BF",
+};
