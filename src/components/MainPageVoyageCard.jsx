@@ -1,5 +1,7 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, FaMotorcycle, FaBicycle, FaHouse, FaPlane, FaTrain } from "react-icons/fa6";
 import { parrotBlue, parrotDarkBlue, parrotGreen, parrotGreyTransparent, parrotTextDarkBlue, vehicleColors } from "../styles/colors";
 import DOMPurify from "dompurify";
 import whiteegg from "../assets/images/whiteegg.png";
@@ -15,6 +17,19 @@ const eggConfig = {
 const apiUrl = process.env.REACT_APP_API_URL;
 const voyageBaseUrl = ``;
 
+const dotIcons = {
+  0: <FaSailboat />,
+  1: <FaCar />,
+  2: <FaCaravan />,
+  3: <FaBus />,
+  4: <FaPersonWalking />,
+  5: <FaPersonRunning />,
+  6: <FaMotorcycle />,
+  7: <FaBicycle />,
+  8: <FaHouse />,
+  9: <FaPlane />,
+  10: <FaTrain />,
+};
 
 export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
   const dark = useSelector((state) => state.users.isDarkMode);
@@ -33,11 +48,17 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
           <img src={egg.image} alt="" style={eggBadgeImg} />
         </div>
       )}
-      {!egg && <div style={{ ...vehicleColorCircle, backgroundColor: vehicleColor }} />}
       <div className="card-image" style={cardImageStyle}>
         <img src={voyageBaseUrl + (cardData.profileImageThumbnail || cardData.profileImage)} style={imageStyle} alt="" />
       </div>
-      <div className="card-content" style={cardContentStyle}>
+      <div className="card-content" style={{ ...cardContentStyle, position: "relative" }}>
+        {!egg && (
+          <div style={{ ...vehicleColorCircle, backgroundColor: vehicleColor }}>
+            <span style={{ color: "white", opacity: 0.5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>
+              {dotIcons[cardData.vehicleType]}
+            </span>
+          </div>
+        )}
         <div style={cardTitleStyle(dark)}>{cardData.name}</div>
 
         {/* DETAILS */}
@@ -68,7 +89,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
         <div
           style={cardBriefStyle(dark)}
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(cardData.brief)
+            __html: DOMPurify.sanitize((cardData.brief || "").replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, " ").trim())
           }}
         />
 
@@ -134,10 +155,13 @@ const vehicleColorCircle = {
   position: "absolute",
   top: "0.5rem",
   right: "0.5rem",
-  width: 18,
-  height: 18,
+  width: 21,
+  height: 21,
   borderRadius: "50%",
   zIndex: 10,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 const eggBadgeClip = {

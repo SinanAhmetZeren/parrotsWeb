@@ -25,8 +25,8 @@ export function VoyageDetailPageDetailsLegacy({ voyageData }) {
 
   const handleGoToVehicle = (voyageData) =>
     voyageData.vehicle?.name === "Run" ||
-    voyageData.vehicle?.name === "Walk" ||
-    voyageData.vehicle?.name === "Train"
+      voyageData.vehicle?.name === "Walk" ||
+      voyageData.vehicle?.name === "Train"
       ? null
       : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
 
@@ -198,7 +198,10 @@ const tooltipStyle = {
   padding: "0.3rem 0.7rem",
   fontSize: "0.85rem",
   fontWeight: "500",
-  whiteSpace: "nowrap",
+  whiteSpace: "normal",
+  minWidth: "150px",
+  maxWidth: "200px",
+  textAlign: "center",
   zIndex: 100,
   pointerEvents: "none",
 };

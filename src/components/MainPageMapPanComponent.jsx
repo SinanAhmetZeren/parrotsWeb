@@ -45,7 +45,7 @@ export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, setIn
   // Pan to target location
   useEffect(() => {
     if (map && targetLat != null && targetLng != null) {
-      map.flyTo([targetLat, targetLng], 16);
+      map.flyTo([targetLat, targetLng], map.getZoom());
     }
   }, [map, targetLat, targetLng]);
 

@@ -122,7 +122,7 @@ function MainPage() {
         setLocationError("Location blocked — reset it in browser settings.");
         return;
       }
-    } catch (_) {}
+    } catch (_) { }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;

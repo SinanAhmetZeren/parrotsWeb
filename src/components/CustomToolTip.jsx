@@ -7,9 +7,9 @@ export function CustomToolTip({ isHovered, message }) {
             <div
                 style={{
                     position: "absolute",
-                    bottom: "120%",
-                    left: "100%",
-                    transform: "translateX(-100%)",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
                     backgroundColor: "white",
                     color: parrotTextDarkBlue,
                     padding: "6px 10px",

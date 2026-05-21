@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { toast } from "react-toastify";
+import { resizeImage } from "../utils/resizeImage";
 import { useSelector } from "react-redux";
 
 function CreateVehiclePage() {
@@ -83,38 +84,21 @@ function CreateVehiclePage() {
     console.log("useffect added images: ", addedVehicleImages);
   }, [addedVehicleImages]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-      setProfileImageFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      const resized = await resizeImage(files[0]);
+      setProfileImageFile(resized);
+      setImagePreview(URL.createObjectURL(resized));
     }
   };
 
-  const handleImageChange2 = (e) => {
+  const handleImageChange2 = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-
-      setVehicleImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setGalleryImagePreview(previewUrl);
+      const resized = await resizeImage(files[0]);
+      setVehicleImage(resized);
+      setGalleryImagePreview(URL.createObjectURL(resized));
     }
   };
 

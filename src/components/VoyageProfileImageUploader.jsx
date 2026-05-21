@@ -14,6 +14,7 @@ import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
 import "swiper/css";
 import "swiper/css/pagination";
 import { toast } from "react-toastify";
+import { resizeImage } from "../utils/resizeImage";
 // import '../assets/css/VehicleImagesSwiper.css';
 
 export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
@@ -40,21 +41,12 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [hoveredUserImg, setHoveredUserImg] = useState(false);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-
-      setVoyageImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      const resized = await resizeImage(files[0]);
+      setVoyageImage(resized);
+      setImagePreview(URL.createObjectURL(resized));
     }
   };
 

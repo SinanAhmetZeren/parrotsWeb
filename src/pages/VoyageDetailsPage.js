@@ -113,6 +113,10 @@ function VoyageDetailsPage() {
     refetchOnReconnect: true,
   });
 
+  const sortedWaypoints = VoyageData?.waypoints
+    ? [...VoyageData.waypoints].sort((a, b) => a.order - b.order)
+    : [];
+
   const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
   const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
 
@@ -365,11 +369,12 @@ function VoyageDetailsPage() {
                         attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                       />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
-                      <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
-                      {VoyageData.waypoints.map((waypoint, index) => (
+                      <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
+                      {sortedWaypoints.map((waypoint, index) => (
                         <VoyageDetailMarkerWithInfoWindow
                           key={`${waypoint.id}`}
                           index={index}
+                          total={sortedWaypoints.length}
                           waypointTitle={waypoint.title}
                           position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
                         />
@@ -382,7 +387,7 @@ function VoyageDetailsPage() {
 
               <div style={voyageDetailsWaypointsContainerStyle}>
                 <VoyageDetailWaypointSwiper
-                  waypoints={VoyageData.waypoints}
+                  waypoints={sortedWaypoints}
                   handlePanToLocation={handlePanToLocation}
                   opacity={opacity}
                   voyageImage={VoyageData.profileImage}
@@ -506,11 +511,12 @@ function VoyageDetailsPage() {
                         attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                       />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
-                      <VoyageDetailMapPolyLineComponent waypoints={VoyageData.waypoints} />
-                      {VoyageData.waypoints.map((waypoint, index) => (
+                      <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
+                      {sortedWaypoints.map((waypoint, index) => (
                         <VoyageDetailMarkerWithInfoWindow
                           key={`${waypoint.id}`}
                           index={index}
+                          total={sortedWaypoints.length}
                           waypointTitle={waypoint.title}
                           position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
                         />
@@ -522,7 +528,7 @@ function VoyageDetailsPage() {
 
               <div style={voyageDetailsWaypointsContainerStyle}>
                 <VoyageDetailWaypointSwiper
-                  waypoints={VoyageData.waypoints}
+                  waypoints={sortedWaypoints}
                   handlePanToLocation={handlePanToLocation}
                   opacity={opacity}
                   voyageImage={VoyageData.profileImage}

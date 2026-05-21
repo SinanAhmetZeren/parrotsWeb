@@ -81,7 +81,7 @@ function VoyageMarker({ voyage, icon, onGoToVoyage }) {
           <div style={cardContentStyle}>
             <div style={cardTitleStyle}>{voyage.name}</div>
             <div style={cardDescriptionStyle}>
-              <div style={{ marginTop: "0.2rem", marginBottom: "0.2rem" }}>
+              <div style={{ marginTop: "0.2rem", marginBottom: "0.4rem" }}>
                 <span style={{ ...voyageDetailSpan, marginRight: "0.5rem" }}>
                   <VehicleIcon vehicleType={voyage.vehicleType} />
                   {voyage.vehicle?.name}
@@ -96,7 +96,7 @@ function VoyageMarker({ voyage, icon, onGoToVoyage }) {
             </div>
             <div
               style={cardBriefStyle}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyage.brief) }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((voyage.brief || "").replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, " ").trim()) }}
             />
             <div
               style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
@@ -232,16 +232,18 @@ const voyageDetailSpan = {
   backgroundColor: "rgba(0, 119, 234,0.1)",
   color: "#007bff",
   borderRadius: "1rem",
-  padding: "0.1rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
+  padding: "0.1rem 1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: "700",
+  fontSize: "1rem",
 };
 
 const imageStyle = { width: "100%", height: "100%", objectFit: "cover" };
 
 const cardTitleStyle = {
   fontSize: "1.3rem",
-  fontWeight: "bold",
+  fontWeight: "900",
+  fontFamily: "Nunito, sans-serif",
   color: "rgba(10, 119, 234,1)",
 };
 

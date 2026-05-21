@@ -16,6 +16,7 @@ import "swiper/css/pagination";
 import { FreeMode } from "swiper/modules";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { resizeImage } from "../utils/resizeImage";
 
 export const VoyageImageUploaderComponent = ({
   voyageImage,
@@ -198,24 +199,12 @@ export const VoyageImageUploaderComponent = ({
   const [isNewImageDeleteHovered, setIsNewImageDeleteHovered] = useState(false);
 
 
-  const handleImageChange2 = (e) => {
+  const handleImageChange2 = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-      if (file.size > maxSizeBytes) {
-        toast.error(`File size must be ${maxSizeMB}MB or less.`);
-        if (newImageInputRef.current) {
-          newImageInputRef.current.value = "";
-        }
-        return;
-      }
-
-      setVoyageImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setNewImagePreview(previewUrl);
+      const resized = await resizeImage(files[0]);
+      setVoyageImage(resized);
+      setNewImagePreview(URL.createObjectURL(resized));
     }
   };
 
