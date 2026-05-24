@@ -2,7 +2,7 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2 } from "../styles/colors";
+import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlue, parrotDarkBlue, parrotYellow } from "../styles/colors";
 
 
 const userBaseUrl = `  `;
@@ -61,11 +61,14 @@ export function MessagePreviewsComponent({
             </span>
           </div>
           <div style={UsernameAndTextContainer}>
-            <span style={messageUsernameStyle(dark)}>{message.groupName}</span>
-            <span style={messageTextStyle(dark)}>{message.text ? `${message.senderUsername}: ${message.text}` : "No messages yet"}</span>
+            <span style={messageUsernameStyle(dark, message.unreadCount > 0)}>{message.groupName}</span>
+            <span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text ? `${message.senderUsername}: ${message.text}` : "No messages yet"}</span>
           </div>
           <div style={timestampContainer}>
-            <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
+              {message.unreadCount > 0 && <div style={unreadDot}>{message.unreadCount}</div>}
+            </div>
             <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span>
           </div>
         </div>
@@ -108,11 +111,14 @@ export function MessagePreviewsComponent({
           />
         </div>
         <div style={UsernameAndTextContainer}>
-          <div><span style={messageUsernameStyle(dark)}>{otherUserUsername}</span></div>
-          <div><span style={messageTextStyle(dark)}>{message.text}</span></div>
+          <div><span style={messageUsernameStyle(dark, message.unreadCount > 0)}>{otherUserUsername}</span></div>
+          <div><span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text}</span></div>
         </div>
         <div style={timestampContainer}>
-          <div><span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
+            {message.unreadCount > 0 && <div style={unreadDot}>{message.unreadCount}</div>}
+          </div>
           <div><span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span></div>
         </div>
       </div>
@@ -162,9 +168,27 @@ const UsernameAndTextContainer = {
 const timestampContainer = {
 }
 
+const unreadDot = {
+  minWidth: "18px",
+  height: "18px",
+  borderRadius: "9px",
+  backgroundColor: "#3c9dde",
+  backgroundColor: parrotYellow,
+  marginLeft: "5px",
+  marginBottom: "5px",
+  flexShrink: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "0.75rem",
+  fontWeight: "900",
+  color: parrotDarkBlue,
+  padding: "0 4px",
+}
 
 
-const messageTextStyle = (dark) => ({
+
+const messageTextStyle = (dark, hasUnread = false) => ({
   fontSize: "1.3rem",
   textAlign: "left",
   color: dark ? "rgba(255,255,255,0.7)" : "darkblue",
@@ -172,15 +196,16 @@ const messageTextStyle = (dark) => ({
   whiteSpace: "nowrap",
   textOverflow: "ellipsis",
   display: "block",
+  fontWeight: hasUnread ? "700" : "400",
 })
 
 
 
-const messageUsernameStyle = (dark) => ({
+const messageUsernameStyle = (dark, hasUnread = false) => ({
   fontSize: "1.3rem",
   textAlign: "left",
-  color: dark ? "rgba(255,255,255,0.9)" : "#3c9dde",
-  fontWeight: "bold",
+  color: hasUnread ? (dark ? "white" : "#1a6ab5") : (dark ? "rgba(255,255,255,0.9)" : "#3c9dde"),
+  fontWeight: hasUnread ? "900" : "bold",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
@@ -201,7 +226,7 @@ const messageTimeStyle = {
   textOverflow: "ellipsis",
 }
 
-const groupColors = ["#a020a0","#6a0dad","#1e88e5","#29b6f6","#00bfa5","#ffa726","#e53935"];
+const groupColors = ["#a020a0", "#6a0dad", "#1e88e5", "#29b6f6", "#00bfa5", "#ffa726", "#e53935"];
 
 const groupColorMap = new Map();
 let colorPool = [];
