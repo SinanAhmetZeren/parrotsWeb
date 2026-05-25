@@ -405,7 +405,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                                         <div>
                                             <div style={styles.sectionTitle2}><strong>Message Notifications, Badge, and Read Status (mobile app)</strong></div>
                                             <div style={styles.paragraph}>
-                                                Our app includes an in-app notification badge designed to inform users about new messages. This badge appears only within the app interface and is not a device-level or operating system notification.
+                                                Our app includes notification features designed to inform users about new messages. This includes an in-app badge as well as device-level push notifications when the app is in the background or inactive.
                                             </div>
                                             <div style={styles.paragraph}>
                                                 We process message status information (read/unread) to operate messaging features and notification badges.
@@ -417,10 +417,10 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                                                 • When the app is launched, if there are unread messages.
                                             </div>
                                             <div style={{ ...styles.paragraph, textIndent: "2rem" }}>
-                                                • When a new message is received while using screens other than the Messages screen.
+                                                • When a new message is received while not actively viewing that conversation.
                                             </div>
                                             <div style={{ ...styles.paragraph, textIndent: "2rem" }}>
-                                                • When the Messages screen is opened, messages may be automatically marked as read and the badge cleared.
+                                                • When the app is reconnected or resumed after being inactive.
                                             </div>
                                             <div style={styles.paragraph}>
                                                 The badge is provided for informational purposes only and may not always reflect exact real-time status. Users are solely responsible for monitoring and reviewing their messages. Parrots does not guarantee that the badge will accurately reflect message status at all times and shall not be held responsible or liable for missed messages, unread messages, delayed badge updates, or any consequences arising from a user’s failure to review their messages.
