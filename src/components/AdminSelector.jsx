@@ -12,6 +12,7 @@ const sections = [
             { key: "placeEditorEdit", label: "Places" },
             { key: "termsEditor", label: "Terms of Use" },
             { key: "logViewer", label: "Logs" },
+            { key: "docsViewer", label: "Docs" },
         ]
     },
     {

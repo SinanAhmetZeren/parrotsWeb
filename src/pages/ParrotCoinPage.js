@@ -9,10 +9,11 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import parrotcoin from "../assets/images/parrotcoin.png";
 import {
-  usePurchaseCoinsMutation, useLazyGetParrotCoinBalanceQuery,
+  useCreatePaymentIntentMutation, useLazyGetParrotCoinBalanceQuery,
   useLazyGetUsersByUsernameQuery, useSendParrotCoinsMutation,
   useClaimFreeCoinsMutation
 } from "../slices/UserSlice";
+import { StripePaymentModal } from "../components/StripePaymentModal";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotDarkerBlue, parrotGreen, parrotPlaceholderGrey } from "../styles/colors";
 import { toast } from "react-toastify";
 import { IoSearch } from "react-icons/io5";
@@ -22,7 +23,9 @@ export function ParrotCoinPage() {
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
   const navigate = useNavigate();
-  const [purchaseCoins] = usePurchaseCoinsMutation();
+  const [createPaymentIntent] = useCreatePaymentIntentMutation();
+  const [stripeClientSecret, setStripeClientSecret] = useState(null);
+  const [stripeCoins, setStripeCoins] = useState(0);
   const [claimFreeCoins] = useClaimFreeCoinsMutation();
   const [sendParrotCoins] = useSendParrotCoinsMutation();
   const [getParrotCoinBalance] = useLazyGetParrotCoinBalanceQuery();
@@ -89,40 +92,19 @@ export function ParrotCoinPage() {
     }
   };
 
-  const handleConfirmPurchase = async () => {
-    if (selectedAmounts.length === 0 || isProcessing) return;
-    setIsProcessing(true);
-    const totalCoins = selectedAmounts.reduce((acc, val) => acc + val, 0);
-    try {
-      // 1. Deposit coins and wait for completion
-      await purchaseCoins({
-        userId: userId,
-        coins: totalCoins,
-        eurAmount: totalPayment,
-        paymentProviderId: "parrotsVirtual"
-      }).unwrap();
-      // 2. Refetch the latest balance & purchases from server
+
+  const handlePaymentSuccess = async () => {
+    setStripeClientSecret(null);
+    setSelectedAmounts([]);
+    setTotalPayment(0);
+    toast.success("Payment successful! Coins will be credited shortly.");
+    setTimeout(async () => {
       const response = await getParrotCoinBalance(userId).unwrap();
-      console.log("-->>>", response);
       setCurrentBalance(response.balance);
       setPurchases(response.purchases);
       setTransactions(response.transactions);
       setNewBalance(response.balance);
-
-      // 3. Clear basket
-      setSelectedAmounts([]);
-      setTotalPayment(0);
-
-      console.log(
-        "Purchased coins:", totalCoins,
-        "for €", totalPayment.toFixed(2)
-      );
-
-    } catch (err) {
-      console.error("Error purchasing coins:", err);
-    } finally {
-      setIsProcessing(false);
-    }
+    }, 3000);
   };
 
   const handleSendAmount = async () => {
@@ -212,6 +194,14 @@ export function ParrotCoinPage() {
 
   return (
     <div className="App">
+      {stripeClientSecret && (
+        <StripePaymentModal
+          clientSecret={stripeClientSecret}
+          coins={stripeCoins}
+          onSuccess={handlePaymentSuccess}
+          onClose={() => setStripeClientSecret(null)}
+        />
+      )}
       <header className="App-header">
         <div className="flex mainpage_Container" style={{ backgroundColor: "rgba(1, 1, 88, 0.87)" }}>
           <div className="flex mainpage_TopRow">
@@ -260,7 +250,7 @@ export function ParrotCoinPage() {
               </div>
             </div>
             {/* FREE COINS BANNER */}
-            <div style={wrapperWrapper}>
+            <div style={{ ...wrapperWrapper, display: "none" }}>
               <div style={{ ...wrapper, borderRadius: "1rem", backgroundColor: "rgba(0, 180, 120, 0.08)", paddingTop: "0.8rem", paddingBottom: "0.8rem" }}>
                 <div style={{ ...boxSend, gridColumn: "1 / 4", flexDirection: "row", alignItems: "center", gap: "1rem" }}>
                   <span style={textStyle}>🎁 Claim 100 Free ParrotCoins</span>
@@ -290,104 +280,42 @@ export function ParrotCoinPage() {
               </div>
             </div>
 
-            <div style={{ ...wrapperWrapper, display: "none" }}>
-              <div style={wrapper}>
-                {/* 1ST ROW: Get Parrot Coins & AMOUNT BUTTONS */}
-                <div style={box3}>
-                  <span style={textStyle}>Get ParrotCoins</span>
-                </div>
-                {purchaseOptions.map((amt, index) => (
-                  <div
-                    key={index}
-                    style={boxClickable(index, hovered === index)}
-                    onMouseEnter={() => setHovered(index)}
-                    onMouseLeave={() => setHovered(null)}
-                    onClick={() => handleAddToBasket(amt)}
-                  >
-                    <span style={textStylePrice}>€{amt.priceEUR.toFixed(2)}  </span>
-                    <span style={textStyle}>{amt.coins.toLocaleString()}</span>
-                    <div style={coinContainer}>
-                      <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+            <div style={{ ...wrapperWrapper, marginTop: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%" }}>
+                <span style={textStyle}>Get ParrotCoins</span>
+                {purchaseOptions.map((opt, index) => (
+                  <div key={index} style={coinTierRow}>
+                    <div style={coinTierInfo}>
+                      <span style={textStylePrice}>€{opt.priceEUR.toFixed(2)}</span>
+                      <span style={{ ...textStyle, marginLeft: "1rem" }}>{opt.coins.toLocaleString()}</span>
+                      <div style={{ ...coinContainer, marginLeft: "0.5rem" }}>
+                        <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+                      </div>
                     </div>
-
+                    <button
+                      style={isProcessing ? confirmButtonDisabled : confirmButton}
+                      disabled={isProcessing}
+                      onClick={async () => {
+                        setIsProcessing(true);
+                        try {
+                          const { clientSecret } = await createPaymentIntent({ userId, coins: opt.coins }).unwrap();
+                          setStripeCoins(opt.coins);
+                          setStripeClientSecret(clientSecret);
+                        } catch (err) {
+                          toast.error("Could not initiate payment. Please try again.");
+                        } finally {
+                          setIsProcessing(false);
+                        }
+                      }}
+                    >
+                      {isProcessing ? "..." : "Buy"}
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
-            <div style={{ ...wrapperWrapper2, display: "none" }}>
-              <div style={wrapper2}>
-                {/* BASKET Row */}
-                <div style={boxBasketLeft}>
-                  <span style={textStyle}>
-                    Basket Total:
-                  </span>
-                </div>
-                <div style={boxBasketRight}>
-                  <span style={{ ...textStylePrice, color: "red", textDecoration: 'line-through' }}
-                    title="it's discounted at the moment"
-                  >€{totalPayment}  </span>
-                  {(
-                    <>
-                      <span style={textStyle}>
-                        {basketTotal.toLocaleString() || "0"}
-                      </span>
-                      <div style={coinContainer}>
-                        <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+
             <div style={{ ...wrapperWrapper, display: "none" }}>
-              <div style={wrapper}>
-
-                {/* New Balance AFTER PURCHASE AND CONFIRM BUTTON */}
-                <div style={box7}>
-                  <span style={textStyle}>New Balance</span>
-                </div>
-                <div style={box8}>
-                  <span style={{ ...amountStyle, color: (currentBalance !== newBalance) ? "yellow" : "white" }}>{newBalance.toLocaleString()}</span>
-                  <div style={coinContainer}>
-                    <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
-                  </div>
-                </div>
-                <div style={{ ...boxConfirm, gridColumn: "3" }}>
-                  <button
-                    style={selectedAmounts.length === 0 || isProcessing ? clearButtonDisabled : clearButton} // or create a new style for "clear"
-                    disabled={selectedAmounts.length === 0 || isProcessing}
-                    onClick={handleClearBasket}>
-                    Clear Basket
-                  </button>
-                </div>
-                <div style={boxConfirm}>
-                  <button
-                    style={
-                      basketTotal === 0 || isProcessing
-                        ? confirmButtonDisabled
-                        : confirmButton}
-                    disabled={basketTotal === 0 || isProcessing}
-                    onClick={() => handleConfirmPurchase()}>
-                    <div style={{ width: "100%", textAlign: "center", position: "relative" }}>
-                      {isProcessing ? (
-                        <>
-                          {/* Spinner centered in button */}
-                          <div style={spinnerContainer}>
-                            <div className="spinner" style={spinnerInner}></div>
-                          </div>
-                          {/* Invisible text to maintain button size */}
-                          <span style={{ opacity: 0 }}>Confirm Purchase</span>
-                        </>
-                      ) : (
-                        "Confirm Purchase"
-                      )}
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div style={wrapperWrapper}>
               <div style={wrapper}>
                 {/* FIRST DIV: "SEND" TEXT */}
                 <div style={boxSend}>
@@ -862,6 +790,20 @@ const coinImg2 = {
 };
 
 
+
+const coinTierRow = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  backgroundColor: "rgba(255,255,255,0.05)",
+  borderRadius: "0.75rem",
+  padding: "0.75rem 1rem",
+};
+
+const coinTierInfo = {
+  display: "flex",
+  alignItems: "center",
+};
 
 const confirmButton = {
   padding: "0.4rem 2rem",

@@ -24,6 +24,7 @@ import { WeeklyMessagesMetrics } from "../components/Metrics/MessagesMetrics";
 import { LogViewer } from "../components/Editors/LogViewer";
 import { PlaceEditor } from "../components/Editors/PlaceEditor";
 import { PlaceEditorEdit } from "../components/Editors/PlaceEditorEdit";
+import { DocsViewer } from "../components/Editors/DocsViewer";
 
 
 function AdminPage() {
@@ -103,6 +104,7 @@ function AdminPage() {
                 {adminView === "logViewer" && <LogViewer />}
                 {adminView === "placeEditor" && <PlaceEditor />}
                 {adminView === "placeEditorEdit" && <PlaceEditorEdit />}
+                {adminView === "docsViewer" && <DocsViewer />}
               </div>
             </div>
 

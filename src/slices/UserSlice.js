@@ -16,7 +16,7 @@ const usersSlice = createSlice({
     userFavoriteVehicles: JSON.parse(localStorage.getItem("storedFavoriteVehicles")) || [0],
     bookmarkedUserIds: JSON.parse(localStorage.getItem("storedBookmarkedUserIds")) || [],
     unreadMessages: false,
-    isAdmin: false,
+    isAdmin: localStorage.getItem("storedIsAdmin") === "true",
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
@@ -34,6 +34,7 @@ const usersSlice = createSlice({
         state.isAdmin = action.payload.isAdmin;
         state.hasAcknowledgedPublicProfile = action.payload.hasAcknowledgedPublicProfile ?? false;
         localStorage.setItem("storedAcknowledgedPublicProfile", String(action.payload.hasAcknowledgedPublicProfile ?? false));
+        localStorage.setItem("storedIsAdmin", String(action.payload.isAdmin ?? false));
 
         localStorage.setItem("storedToken", action.payload.token);
         localStorage.setItem("storedRefreshToken", action.payload.refreshToken);
@@ -70,6 +71,7 @@ const usersSlice = createSlice({
         localStorage.removeItem("storedFavoriteVoyages");
         localStorage.removeItem("storedBookmarkedUserIds");
         localStorage.removeItem("storedAcknowledgedPublicProfile");
+        localStorage.removeItem("storedIsAdmin");
         state.bookmarkedUserIds = [];
       } catch (err) {
         console.error("Error setting localStorage:", err);
@@ -411,6 +413,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    createPaymentIntent: builder.mutation({
+      query: ({ userId, coins }) => ({
+        url: `/api/payment/create-intent`,
+        method: "POST",
+        body: { userId, coins },
+      }),
+    }),
     claimFreeCoins: builder.mutation({
       query: () => ({
         url: `/api/User/ClaimFreeCoins`,
@@ -518,6 +527,7 @@ export const {
   useUpdateBackgroundImageMutation,
   usePatchUserMutation,
   usePatchUserAdminMutation,
+  useCreatePaymentIntentMutation,
   usePurchaseCoinsMutation,
   useClaimFreeCoinsMutation,
   useSendParrotCoinsMutation,
