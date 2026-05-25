@@ -35,7 +35,7 @@ import {
   unregister_ReceiveGroupMessageRefetch,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
-import { setUnreadMessages, useGetBookmarksQuery } from "../slices/UserSlice";
+import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
 import parrotsLogo from "../assets/images/placeholderparrots.png";
 import { parrotTextDarkBlue } from "../styles/colors";
 
@@ -148,7 +148,6 @@ function ConnectPage() {
     // Enter 
     if (isHubReady()) {
       invokeHub("EnterMessagesScreen", currentUserId);
-      dispatch(setUnreadMessages(false)); // Mark messages as read in global state
       console.log("--> entered messages page");
     }
     // Cleanup function: leave 
@@ -283,13 +282,14 @@ function ConnectPage() {
     };
   }, [refetchMessagePreviews]);
 
-  // Refresh messages when users IDs change
+  // Refresh messages and previews when conversation changes
   useEffect(() => {
     const { currentUserId, conversationUserId } = users;
     if (currentUserId && conversationUserId) {
       triggerGetMessages({ currentUserId, conversationUserId });
+      refetchMessagePreviews();
     }
-  }, [users, triggerGetMessages]);
+  }, [users, triggerGetMessages, refetchMessagePreviews]);
 
   // Update messages to display when new conversation data arrives
   useEffect(() => {
@@ -297,6 +297,14 @@ function ConnectPage() {
       setMessagesToDisplay(conversationData.data);
     }
   }, [conversationData]);
+
+  // Update top bar badge based on preview unread counts
+  useEffect(() => {
+    if (!messagePreviewsData) return;
+    const hasUnread = messagePreviewsData.some(m => m.unreadCount > 0);
+    if (hasUnread) dispatch(setUnreadMessages(true));
+    else dispatch(markMessagesRead());
+  }, [messagePreviewsData, dispatch]);
 
   // Refresh messages if conversationUserId changes
   useEffect(() => {

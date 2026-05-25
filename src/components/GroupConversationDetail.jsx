@@ -60,6 +60,18 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
     if (resolvedGroupData?.members) setMembers(resolvedGroupData.members);
   }, [resolvedGroupData]);
 
+  useEffect(() => {
+    if (!groupId || !currentUserId) return;
+    const enter = async () => {
+      while (!isHubReady()) await new Promise(res => setTimeout(res, 50));
+      invokeHub("EnterGroupConversationPage", currentUserId, groupId.toString());
+    };
+    enter();
+    return () => {
+      if (isHubReady()) invokeHub("LeaveGroupConversationPage", currentUserId);
+    };
+  }, [groupId, currentUserId]);
+
   // ReceiveGroupMessageRefetch — refetch messages when a new group message arrives
   useEffect(() => {
     if (!groupId) return;

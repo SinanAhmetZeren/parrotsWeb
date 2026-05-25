@@ -25,8 +25,7 @@ import CreateVoyagePage from "./pages/CreateVoyagePage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
-import { initHubConnection, invokeHub, isHubReady, register_ReceiveUnreadNotification, unregister_ReceiveUnreadNotification } from "./signalr/signalRHub";
-import { markMessagesRead, setUnreadMessages } from "./slices/UserSlice";
+import { initHubConnection } from "./signalr/signalRHub";
 import { ParrotCoinPage } from "./pages/ParrotCoinPage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,7 +38,6 @@ function App() {
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const bgImageVariant = useSelector((state) => state.users.bgImageVariant);
   const currentUserId = useSelector((state) => state.users.userId);
-  const unreadMessagesFromState = useSelector((state) => state.users.unreadMessages);
   const userName = useSelector((state) => state.users.userName);
   const dispatch = useDispatch()
 
@@ -71,48 +69,22 @@ function App() {
 
     if (!currentUserId) return; // <- guard against null
 
-    let unreadHandlerTrue;
     console.log("unread message useEffect");
     const InitHub = async () => {
       try {
         // Start SignalR
         await initHubConnection(currentUserId, API_URL);
-        // Initial unread check
-        try {
-          console.log("-> checking unread ");
-          // Wait until hub is marked ready
-          while (!isHubReady()) {
-            await new Promise((res) => setTimeout(res, 50));
-          }
-          console.log("Hub is:", isHubReady() ? "ready" : "not ready");
-          const hasUnread = await invokeHub("CheckUnreadMessages", currentUserId);
-          console.log("-->>checked unread during init hub:-> ", hasUnread);
-          if (hasUnread)
-            dispatch(setUnreadMessages(true));
-        } catch (err) {
-          console.error("invokeHub CheckUnreadMessages failed:", err);
-        }
-        // Listen for unread   event only
-        unreadHandlerTrue = () => {
-          dispatch(setUnreadMessages(true)); // ReceiveUnreadNotification
-        };
-        register_ReceiveUnreadNotification(unreadHandlerTrue);
       } catch (error) {
         console.log(error);
       }
     };
     InitHub();
     return () => {
-      unregister_ReceiveUnreadNotification(unreadHandlerTrue);
       // stopHubConnection();
     };
   }, [currentUserId]);
 
 
-
-  useEffect(() => {
-    console.log("unread from state: ", unreadMessagesFromState);
-  }, [unreadMessagesFromState]);
 
   useEffect(() => {
     const handleOffline = () => toast.error("You are offline. Check your connection.", { toastId: "offline", autoClose: false });

@@ -15,10 +15,12 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
     if (!conversationUserId || !currentUserId) return;
 
     // Enter conversation
-    if (isHubReady()) {
+    const enter = async () => {
+      while (!isHubReady()) await new Promise(res => setTimeout(res, 50));
       invokeHub("EnterConversationPage", currentUserId, conversationUserId);
       console.log("--> entered conversation page:---", conversationUserId.slice(0, 5));
-    }
+    };
+    enter();
 
     // Cleanup function: leave conversation
     return () => {

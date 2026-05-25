@@ -17,6 +17,7 @@ export const parrotLightBlue = "#3c9dde";
 export const parrotPistachioGreen = "#9Bd35A"
 export const parrotBananaLeafGreen = "#689F38";
 export const parrotCream = "#f9f5f1";
+export const parrotYellow = "#FFB800";
 
 export const parrotBoatPurple = "#3b2697";
 export const parrotCarRed = "#D53E4F";

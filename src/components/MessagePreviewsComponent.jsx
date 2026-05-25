@@ -2,7 +2,7 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlue, parrotDarkBlue, parrotYellow } from "../styles/colors";
+import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlue, parrotDarkBlue, parrotYellow, parrotGreen } from "../styles/colors";
 
 
 const userBaseUrl = `  `;
@@ -67,7 +67,7 @@ export function MessagePreviewsComponent({
           <div style={timestampContainer}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
-              {message.unreadCount > 0 && <div style={unreadDot}>{message.unreadCount}</div>}
+              {message.unreadCount > 0 && <div style={unreadDot(dark)}>{message.unreadCount}</div>}
             </div>
             <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span>
           </div>
@@ -117,7 +117,7 @@ export function MessagePreviewsComponent({
         <div style={timestampContainer}>
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
             <span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>{time}</span>
-            {message.unreadCount > 0 && <div style={unreadDot}>{message.unreadCount}</div>}
+            {message.unreadCount > 0 && <div style={unreadDot(dark)}>{message.unreadCount}</div>}
           </div>
           <div><span style={{ ...messageTimeStyle, color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>{date}</span></div>
         </div>
@@ -168,23 +168,22 @@ const UsernameAndTextContainer = {
 const timestampContainer = {
 }
 
-const unreadDot = {
+const unreadDot = (dark) => ({
   minWidth: "18px",
   height: "18px",
   borderRadius: "9px",
-  backgroundColor: "#3c9dde",
-  backgroundColor: parrotYellow,
+  backgroundColor: parrotGreen,
   marginLeft: "5px",
   marginBottom: "5px",
   flexShrink: 0,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: "0.75rem",
+  fontSize: "0.9rem",
   fontWeight: "900",
-  color: parrotDarkBlue,
+  color: !dark ? "white" : parrotDarkBlue,
   padding: "0 4px",
-}
+})
 
 
 
