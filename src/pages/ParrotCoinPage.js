@@ -38,7 +38,8 @@ export function ParrotCoinPage() {
   const [newBalance, setNewBalance] = useState(0);
   const [balanceLoaded, setBalanceLoaded] = useState(false)
   const [isProcessingFree, setIsProcessingFree] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [processingIndex, setProcessingIndex] = useState(null)
+  const [showClaimModal, setShowClaimModal] = useState(false)
   const [isProcessingSend, setIsProcessingSend] = useState(false)
   const [hovered, setHovered] = useState(null);
   const [hoveredSearch, setHoveredSearch] = useState(null);
@@ -211,25 +212,10 @@ export function ParrotCoinPage() {
             </div>
           </div>
           {/* EXPLANATION OF PARROT COINS */}
-          <div style={wrapperWrapper3}>
-            <div>
-              <span style={accountBalanceTitle}>ParrotCoins  </span>
-            </div>
-            <div style={{ marginTop: "1rem" }}>
-              <span style={{}}>
-                Featuring your voyage on the main map costs ParrotCoins
-                <div style={{ ...coinContainer2, display: "inline-grid", marginLeft: "4px" }}>
-                  <img src={parrotcoin} alt="Parrot Coin" style={coinImg2} />
-                </div>.
-                {"\u00A0\u00A0"}This is a one-time deduction based on the number of days between your
-                posting date and the start of your voyage—at which point it is no longer visible on the map.
-                {"\u00A0\u00A0"}For example, a voyage starting in 10 days will cost 10 ParrotCoins.
-              </span>
-            </div>
-          </div>
+
           {/* BALANCE, PURCHASE AND BUTTONS */}
           <div style={accountDataWrapper}>
-            <div>
+            <div style={{ marginBottom: "1rem" }}>
               <span style={accountBalanceTitle}>Account and Purchase   </span>
             </div>
             <div style={{ ...wrapperWrapper2, marginTop: "1rem" }}>
@@ -246,6 +232,18 @@ export function ParrotCoinPage() {
                   <div style={coinContainer}>
                     <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
                   </div>
+                </div>
+                {/* 2ND ROW: Get ParrotCoins */}
+                <div style={{ ...box1, gridRow: "2", justifyContent: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span style={textStyle}>100</span>
+                    <div style={coinContainer}>
+                      <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
+                    </div>
+                  </div>
+                </div>
+                <div style={{ ...box2, gridRow: "2", justifyContent: "center" }}>
+                  <button style={confirmButton} onClick={() => setShowClaimModal(true)}>Get ParrotCoins</button>
                 </div>
               </div>
             </div>
@@ -280,9 +278,49 @@ export function ParrotCoinPage() {
               </div>
             </div>
 
-            <div style={{ ...wrapperWrapper, marginTop: "1rem" }}>
+            {/* CLAIM MODAL */}
+            {showClaimModal && (
+              <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                <div style={{ backgroundColor: "#0f2a47", borderRadius: "1rem", padding: "2rem", width: "20rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.2rem", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+                  <img src={parrotcoin} alt="ParrotCoin" style={{ width: "3.5rem", height: "3.5rem" }} />
+                  <span style={{ color: "white", fontSize: "1.3rem", fontWeight: 800, textAlign: "center" }}>100 ParrotCoins</span>
+                  <span style={{ color: "#aac4e0", fontSize: "0.9rem", textAlign: "center" }}>
+                    {currentBalance >= 200
+                      ? "Your balance is too high to claim free coins. Spend some first!"
+                      : "Claim 100 free ParrotCoins to get started."}
+                  </span>
+                  <button
+                    style={currentBalance >= 200 || isProcessingFree ? { ...freeClaimButtonDisabled, width: "100%", justifyContent: "center" } : { ...freeClaimButton, width: "100%", justifyContent: "center" }}
+                    disabled={currentBalance >= 200 || isProcessingFree}
+                    onClick={async () => {
+                      setIsProcessingFree(true);
+                      try {
+                        await claimFreeCoins().unwrap();
+                        const response = await getParrotCoinBalance(userId).unwrap();
+                        setCurrentBalance(response.balance);
+                        setPurchases(response.purchases);
+                        setTransactions(response.transactions);
+                        setNewBalance(response.balance);
+                        setShowClaimModal(false);
+                        toast.success("100 ParrotCoins added to your balance!");
+                      } catch (err) {
+                        toast.error("Could not claim coins. Please try again.");
+                      } finally {
+                        setIsProcessingFree(false);
+                      }
+                    }}
+                  >
+                    {isProcessingFree ? (
+                      <div className="spinner" style={{ height: "1rem", width: "1rem", border: "3px solid rgba(255,255,255,0.3)", borderTop: "3px solid white" }} />
+                    ) : "Claim"}
+                  </button>
+                  <button onClick={() => setShowClaimModal(false)} style={{ background: "none", border: "none", color: "#aac4e0", cursor: "pointer", fontSize: "0.85rem" }}>Cancel</button>
+                </div>
+              </div>
+            )}
+            <div style={{ display: "none" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%" }}>
-                <span style={textStyle}>Get ParrotCoins</span>
+                <span style={textStyle}>Get ParrotCoins (hidden)</span>
                 {purchaseOptions.map((opt, index) => (
                   <div key={index} style={coinTierRow}>
                     <div style={coinTierInfo}>
@@ -293,10 +331,10 @@ export function ParrotCoinPage() {
                       </div>
                     </div>
                     <button
-                      style={isProcessing ? confirmButtonDisabled : confirmButton}
-                      disabled={isProcessing}
+                      style={processingIndex === index ? confirmButtonDisabled : confirmButton}
+                      disabled={processingIndex !== null}
                       onClick={async () => {
-                        setIsProcessing(true);
+                        setProcessingIndex(index);
                         try {
                           const { clientSecret } = await createPaymentIntent({ userId, coins: opt.coins }).unwrap();
                           setStripeCoins(opt.coins);
@@ -304,149 +342,22 @@ export function ParrotCoinPage() {
                         } catch (err) {
                           toast.error("Could not initiate payment. Please try again.");
                         } finally {
-                          setIsProcessing(false);
+                          setProcessingIndex(null);
                         }
                       }}
                     >
-                      {isProcessing ? "..." : "Buy"}
+                      {processingIndex === index ? (
+                        <div style={{ width: "2rem", height: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div className="spinner" style={{ height: "1rem", width: "1rem", border: "3px solid rgba(255,255,255,0.3)", borderTop: "3px solid white" }} />
+                        </div>
+                      ) : "Buy"}
                     </button>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div style={{ ...wrapperWrapper, display: "none" }}>
-              <div style={wrapper}>
-                {/* FIRST DIV: "SEND" TEXT */}
-                <div style={boxSend}>
-                  <span style={textStyle}>Send ParrotCoins</span>
-                </div>
-
-                {/* SECOND DIV: RECIPIENT INPUT (TEXT) */}
-                <div style={{ ...boxSend, gridColumn: "2", justifyContent: "flex-end", position: "relative" }}>
-                  <input
-                    type="text"
-                    placeholder="send to"
-                    value={recipient}
-                    onChange={(e) => setRecipient(e.target.value)}
-                    className="send-input"
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "white",
-                      textAlign: "right",
-                      outline: "none",
-                      width: "100%",
-                      fontWeight: "800"
-                    }}
-                  />
-
-                  <style>
-                    {`
-              .send-input::placeholder {
-                color: rgba(160,160,200,0.2); 
-                opacity: 1;
-                font-size: 1.5rem;
-                font-weight: 800;
-              }
-            `}
-                  </style>
-                  <div style={magnifierContainerStyle} onClick={() => handleSearch()}>
-                    <IoSearch style={magnifierStyle} /> {/* search */}
-                  </div>
-
-
-                  {showResults && (
-                    <div style={{
-                      position: "absolute",
-                      bottom: "0%",
-                      right: "0rem",
-                      background: "#0b1e2d",
-                      border: "1px solid gold",
-                      borderRadius: "1rem",
-                      width: "20rem",
-                      zIndex: 10,
-                      transform: "translateX(100%)"
-                    }}>
-                      {searchResults.map((user, index) => (
-                        <div
-                          key={user.id}
-                          onClick={() => handleSelectUser(user)}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "8px",
-                            cursor: "pointer",
-                            background: index === hoveredSearch ? "linear-gradient(-90deg, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, .050) 50%)" : null
-                          }}
-                          onMouseEnter={() => { setHoveredSearch(index); }}
-                          onMouseLeave={() => { setHoveredSearch(null); }}
-                        >
-                          <img
-                            src={user.profileImageThumbnailUrl || user.profileImageUrl}
-                            alt="recipient profile"
-                            style={{ width: "3rem", height: "3rem", borderRadius: "50%", marginRight: 8 }}
-                          />
-                          <span>{user.userName}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                </div>
-
-
-
-                {/* THIRD DIV: AMOUNT INPUT (NUMBER ONLY) */}
-                <div style={{ ...boxSend, gridColumn: "3", justifyContent: "flex-end" }}>
-                  <input
-                    type="text"
-                    placeholder="0"
-                    value={displayValue}
-                    onChange={handleAmountChange}
-                    style={{
-                      ...amountStyle,
-                      background: "transparent",
-                      border: "none",
-                      width: "10rem",
-                      textAlign: "right",
-                      color: (currentBalance !== newBalance) ? "yellow" : "white"
-                    }}
-                    className="send-input"
-
-                  />
-                  <div style={coinContainer}>
-                    <img src={parrotcoin} alt="Parrot Coin" style={coinImg} />
-                  </div>
-                </div>
-
-
-                {/* FOURTH DIV: "SEND" TEXT */}
-                <div style={{ ...boxSend, gridColumn: "4", justifyContent: "center" }}>
-                  <button
-                    style={
-                      amount === 0 || recipient === "" || isProcessingSend
-                        ? sendButtonDisabled
-                        : sendButton}
-                    disabled={amount === 0 || isProcessingSend}
-                    onClick={() => handleSendAmount()}>
-                    <div style={{ width: "100%", textAlign: "center", position: "relative" }}>
-                      {isProcessingSend ? (
-                        <>
-                          {/* Spinner centered in button */}
-                          <div style={spinnerContainer}>
-                            <div className="spinner" style={spinnerInner}></div>
-                          </div>
-                          {/* Invisible text to maintain button size */}
-                          <span style={{ opacity: 0 }}>Send ParrotCoins</span>
-                        </>
-                      ) : (
-                        "Send ParrotCoins"
-                      )}
-                    </div>
-                  </button>
-                </div>
-              </div>
+            <div style={{ fontSize: "1.2rem" }}>
+              Featuring a voyage on the map costs 1 ParrotCoin per day until its end date.
             </div>
           </div>
 
@@ -646,12 +557,11 @@ const spinnerInner = {
 const accountDataWrapper = {
   backgroundColor: parrotDarkerBlue,
   // backgroundColor: "red",
-  width: "80vw",
+  width: "50vw",
   margin: "auto",
   marginTop: 0,
   border: "1px solid gold",
   borderColor: parrotGreen,
-
   padding: "1rem",
   borderRadius: "1rem",
 }
@@ -667,7 +577,7 @@ const wrapperWrapper = {
 }
 const wrapperWrapper2 = {
   ...wrapperWrapper,
-  width: "39.5vw",
+  // width: "39.5vw",
   marginLeft: "0",
 
 }
@@ -737,8 +647,8 @@ const boxClickable = (index, hovered) => ({
 
 
 
-const box1 = { ...boxBase, gridRow: "1", gridColumn: "1" };
-const box2 = { ...boxBase, gridRow: "1", gridColumn: "2", justifyContent: "flex-end" };
+const box1 = { ...boxBase, gridRow: "1", gridColumn: "1", justifyContent: "center" };
+const box2 = { ...boxBase, gridRow: "1", gridColumn: "2", justifyContent: "center" };
 const box3 = { ...boxBase, gridRow: "1", gridColumn: "1" };
 const boxBasketLeft = { ...boxBase, gridRow: "1", gridColumn: "1", };
 const boxBasketRight = { ...boxBase, gridRow: "1", gridColumn: "2", justifyContent: "flex-end" };
@@ -806,7 +716,8 @@ const coinTierInfo = {
 };
 
 const confirmButton = {
-  padding: "0.4rem 2rem",
+  padding: "0 2rem",
+  height: "2.2rem",
   fontSize: "1rem",
   fontWeight: 800,
   borderRadius: "8px",
@@ -815,6 +726,9 @@ const confirmButton = {
   backgroundColor: "#ffcc00",
   color: "#0f2a47",
   display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minWidth: "5rem",
 };
 
 const confirmButtonDisabled = {
