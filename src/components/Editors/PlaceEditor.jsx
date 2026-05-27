@@ -98,6 +98,21 @@ export function PlaceEditor() {
 
   const canSubmit = name && brief && latitude && longitude;
 
+  const compressImage = (file) =>
+    new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 1200;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: "image/jpeg" })), "image/jpeg", 0.82);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSaving(true);
@@ -110,7 +125,8 @@ export function PlaceEditor() {
       const placeId = result.data?.id;
 
       if (imageFile && placeId) {
-        await updateVoyageProfileImage({ voyageId: placeId, imageFile }).unwrap();
+        const compressed = await compressImage(imageFile);
+        await updateVoyageProfileImage({ voyageId: placeId, imageFile: compressed }).unwrap();
       }
 
       toast.success("Place created!");

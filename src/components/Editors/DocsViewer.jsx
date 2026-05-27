@@ -6,7 +6,7 @@ import { parrotDarkerBlue } from "../../styles/colors";
 const GROUP_LABELS = {
   "docs": "Docs",
   "docs/parrotsId": "Parrots ID",
-  "Tests": "Tests",
+  "docs/termsOfUse": "Terms of Use",
 };
 
 function groupFiles(files) {
