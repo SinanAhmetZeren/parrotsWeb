@@ -120,7 +120,7 @@ export function VoyageDetailPageDetailsLegacyLight({ voyageData }) {
         >
           <span style={pillText}>Fixed Price</span>
           {hoveredFixedPrice && (
-            <div style={tooltipStyle}>
+            <div style={{ ...tooltipStyle, left: "auto", right: 0, transform: "none" }}>
               {voyageData.fixedPrice ? "This voyage has a fixed price" : "This voyage does not have a fixed price"}
             </div>
           )}

@@ -8,80 +8,25 @@ import { parrotTextDarkBlue } from "../styles/colors";
 import DOMPurify from "dompurify";
 
 export function VoyageDetailPageDescription({ voyageDescription, voyageName }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [isDescriptionLong, setIsDescriptionLong] = React.useState(false);
-  const descriptionRef = React.useRef(null);
-  const visibleLines = 11;
-  React.useEffect(() => {
-    const el = descriptionRef.current;
-    if (el) {
-      // Temporarily force clamp to 7 lines to check if it overflows
-      el.style.WebkitLineClamp = visibleLines;
-      el.style.display = "-webkit-box";
-      el.style.WebkitBoxOrient = "vertical";
-      el.style.overflow = "hidden";
-
-      // Let the browser render the clamped version and check scroll height
-      requestAnimationFrame(() => {
-        if (el.scrollHeight > el.clientHeight + 1) {
-          setIsDescriptionLong(true);
-        }
-      });
-    }
-  }, [voyageDescription]);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <div style={cardContainerStyle} className="flex row">
+    <div style={cardContainerStyle} className="flex row desc-scrollbar">
+      <style>{`
+        .desc-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.25) transparent; }
+        .desc-scrollbar::-webkit-scrollbar { width: 6px; border-radius: 1rem; }
+        .desc-scrollbar::-webkit-scrollbar-track { background: transparent; border-radius: 1rem; }
+        .desc-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 10px; }
+      `}</style>
       <div style={userVehicleInfoRow}>
         <span style={voyageNameStyle}>{voyageName.name}</span>
       </div>
-      <div style={{ position: "relative" }}>
-        <div className={"flex"} style={dataRowItem}>
-          <div style={{
-            ...infoBox,
-            maxHeight: isExpanded ? "38vh" : "18rem",
-            overflowY: isExpanded ? "auto" : "hidden",
-          }
-          }
-            className={"custom-scrollbar"}
-
-          >
-            <span
-              ref={descriptionRef}
-              style={{
-                ...descriptionTextStyle,
-                WebkitLineClamp: isExpanded ? "unset" : visibleLines,
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-              }}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyageDescription) }}
-            />
-          </div>
+      <div className={"flex"} style={dataRowItem}>
+        <div style={infoBox} className={"custom-scrollbar"}>
+          <span
+            style={descriptionTextStyle}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(voyageDescription) }}
+          />
         </div>
-        {isDescriptionLong && !isExpanded && (
-          <span onClick={toggleExpand} style={readMore}>
-            Read More
-          </span>
-        )}
       </div>
-      <style>
-        {`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        background-color: #091b46;
-                        background-color: transparent;
-                        width: 10px;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background-color: #1a3a8a;
-                        background-color: transparent;
-                        border-radius: 10px;
-                    }
-                `}
-      </style>
     </div>
   );
 }
@@ -90,7 +35,7 @@ const cardContainerStyle = {
   display: "flex",
   flexDirection: "column",
   borderRadius: "1rem",
-  overflow: "hidden",
+  overflowY: "auto",
   width: "100%",
   margin: "0rem",
   boxShadow: `
@@ -130,7 +75,7 @@ const dataRowItem = {
 
 const infoBox = {
   marginLeft: "0.5rem",
-  marginBottom: "2rem",
+  marginBottom: "0.5rem",
   textAlign: "justify",
 };
 

@@ -126,7 +126,7 @@ export function VoyageDetailPageDetailsLegacy({ voyageData }) {
         >
           <span style={pillText}>Fixed Price</span>
           {hoveredFixedPrice && (
-            <div style={tooltipStyle}>
+            <div style={{ ...tooltipStyle, left: "auto", right: 0, transform: "none" }}>
               {voyageData.fixedPrice ? "This voyage has a fixed price set by the host" : "This voyage does not have a fixed price set by the host"}
             </div>
           )}
@@ -192,16 +192,13 @@ const tooltipStyle = {
   bottom: "110%",
   left: "50%",
   transform: "translateX(-50%)",
-  backgroundColor: "rgba(0,0,0,0.75)",
-  color: "white",
+  backgroundColor: "white",
+  color: "#1a1a2e",
   borderRadius: "0.5rem",
   padding: "0.3rem 0.7rem",
   fontSize: "0.85rem",
   fontWeight: "500",
-  whiteSpace: "normal",
-  minWidth: "150px",
-  maxWidth: "200px",
-  textAlign: "center",
+  whiteSpace: "nowrap",
   zIndex: 100,
   pointerEvents: "none",
 };

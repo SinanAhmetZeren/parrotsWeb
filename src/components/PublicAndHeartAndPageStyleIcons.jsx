@@ -25,7 +25,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onClick={() => handleDeleteVoyageFromFavorites()}
                     onMouseEnter={() => setIsHoveredHeart(true)}
                     onMouseLeave={() => setIsHoveredHeart(false)}
-                    style={heartIconStyle("red")} >
+                    style={{ ...heartIconStyle("red"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="red" />
                     <CustomToolTip isHovered={isHoveredHeart} message={"In Favorites"} />
                 </div>
@@ -34,7 +34,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onClick={() => handleAddVoyageToFavorites()}
                     onMouseEnter={() => setIsHoveredHeart(true)}
                     onMouseLeave={() => setIsHoveredHeart(false)}
-                    style={heartIconStyle("orange")} >
+                    style={{ ...heartIconStyle("orange"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="orange" />
                     <CustomToolTip isHovered={isHoveredHeart} message={"Add to Favorites"} />
                 </div>
@@ -44,7 +44,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                 <div
                     onMouseEnter={() => setIsHoveredPublicOnMap(true)}
                     onMouseLeave={() => setIsHoveredPublicOnMap(false)}
-                    style={publicIconStyle(parrotDarkBlue, "white")} >
+                    style={{ ...publicIconStyle(parrotDarkBlue, "white"), zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
                     <MdPublic size="1.5rem" color={parrotDarkBlue} />
                     <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Visible on Map"} />
                 </div>
@@ -52,7 +52,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                 <div
                     onMouseEnter={() => setIsHoveredPublicOnMap(true)}
                     onMouseLeave={() => setIsHoveredPublicOnMap(false)}
-                    style={publicIconStyle(parrotBlueDarkTransparent2, "white")} >
+                    style={{ ...publicIconStyle(parrotBlueDarkTransparent2, "white"), zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
                     <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
                     <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Not Visible Globally"} />
                 </div>
@@ -96,6 +96,7 @@ const publicIconStyle = (borderColor, backgroundColor) => ({
     borderWidth: "2px",
     borderColor: borderColor,
     borderStyle: "solid",
+
 });
 
 const heartIconStyle = (borderColor) => ({
