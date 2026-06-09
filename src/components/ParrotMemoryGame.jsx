@@ -97,9 +97,11 @@ export function ParrotMemoryGame({ onClose }) {
   const [locked, setLocked] = useState(false);
   const [won, setWon] = useState(false);
   const flipTimer = useRef(null);
+  const wonTimer = useRef(null);
 
   const startGame = (m) => {
     if (flipTimer.current) clearTimeout(flipTimer.current);
+    if (wonTimer.current) clearTimeout(wonTimer.current);
     setMode(m);
     setDeck(buildDeck(m));
     setFlipped([]);
@@ -136,7 +138,7 @@ export function ParrotMemoryGame({ onClose }) {
         setFlipped([]);
         setLocked(false);
         if (newMatched.length === MODES[mode].pairs) {
-          setTimeout(() => setWon(true), 5000);
+          wonTimer.current = setTimeout(() => setWon(true), 5000);
         }
       } else {
         flipTimer.current = setTimeout(() => {
