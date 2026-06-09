@@ -1,7 +1,7 @@
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "../assets/css/date-range-custom.css";
-import parrotsLogo from "../assets/images/ParrotLogoHead.png";
+import parrotsLogo from "../assets/images/parrotsreallife.jpg";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useRef, useEffect } from "react";
@@ -9,6 +9,7 @@ import { updateAsLoggedOut } from "../slices/UserSlice";
 import { stopHubConnection } from "../signalr/signalRHub";
 import { apiSlice } from "../api/apiSlice";
 import { store } from "../store/store";
+import { ParrotMemoryGame } from "./ParrotMemoryGame";
 
 export const TopLeftComponent = () => {
   const storedUserName = useSelector((state) => state.users.userName);
@@ -16,6 +17,7 @@ export const TopLeftComponent = () => {
   const dispatch = useDispatch();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showGame, setShowGame] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleCardClick = () => {
@@ -56,7 +58,7 @@ export const TopLeftComponent = () => {
         alt="Logo"
         className="w-10 h-10 mr-4"
         style={{ borderRadius: "10rem", cursor: "pointer" }}
-        onClick={handleCardClick}
+        onClick={() => setShowGame(true)}
       />
       <div
         style={{ cursor: "pointer", position: "relative" }}
@@ -86,6 +88,8 @@ export const TopLeftComponent = () => {
           </div>
         )}
       </div>
+
+      {showGame && <ParrotMemoryGame onClose={() => setShowGame(false)} />}
 
       {showModal && (
         <div style={modalOverlay} onClick={() => setShowModal(false)}>
