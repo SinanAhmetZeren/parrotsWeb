@@ -7,7 +7,10 @@ import { parrotBlue, parrotDarkBlue, parrotCream } from "../styles/colors";
 import {
   useSendBidMutation,
   useChangeBidMutation,
+  useAddVoyageToFavoritesMutation,
 } from "../slices/VoyageSlice";
+import { useDispatch } from "react-redux";
+import { addVoyageToUserFavorites } from "../slices/UserSlice";
 
 Modal.setAppElement("#root"); // Replace '#root' with the ID of your app's root element
 
@@ -69,8 +72,10 @@ export const VoyageDetailBidButton = ({
   const incrementPrice = () => setPrice(price + 1);
   const decrementPrice = () => setPrice(Math.max(0, price - 1));
 
+  const dispatch = useDispatch();
   const [sendBid] = useSendBidMutation();
   const [changeBid] = useChangeBidMutation();
+  const [addVoyageToFavorites] = useAddVoyageToFavoritesMutation();
 
   const handleSendBid = async (userProfileImage, userName) => {
     let bidData = {
@@ -85,6 +90,8 @@ export const VoyageDetailBidButton = ({
     };
     setChangingBidState(true);
     await sendBid(bidData);
+    addVoyageToFavorites({ userId, voyageId });
+    dispatch(addVoyageToUserFavorites({ favoriteVoyage: voyageId }));
     closeNewBidModal();
     await refetch();
     setChangingBidState(false);

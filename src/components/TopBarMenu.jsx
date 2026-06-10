@@ -35,6 +35,8 @@ export function TopBarMenu() {
               }
               style={({ isActive }) => ({
                 color: !isActive ? parrotGreen : parrotPistachioGreen,
+                display: "flex",
+                alignItems: "center",
               })}
             >
               Admin

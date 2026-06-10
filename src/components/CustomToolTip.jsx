@@ -1,14 +1,14 @@
 import { parrotTextDarkBlue } from "../styles/colors";
 
 
-export function CustomToolTip({ isHovered, message }) {
+export function CustomToolTip({ isHovered, message, offsetLeft = "50%" }) {
     return (
         isHovered && (
             <div
                 style={{
                     position: "absolute",
                     top: "50%",
-                    left: "50%",
+                    left: offsetLeft,
                     transform: "translate(-50%, -50%)",
                     backgroundColor: "white",
                     color: parrotTextDarkBlue,

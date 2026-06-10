@@ -27,7 +27,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onMouseLeave={() => setIsHoveredHeart(false)}
                     style={{ ...heartIconStyle("red"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="red" />
-                    <CustomToolTip isHovered={isHoveredHeart} message={"In Favorites"} />
+                    <CustomToolTip isHovered={isHoveredHeart} message={"In Favorites"} offsetLeft="-50%" />
                 </div>
             ) : (
                 <div
@@ -36,7 +36,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onMouseLeave={() => setIsHoveredHeart(false)}
                     style={{ ...heartIconStyle("orange"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="orange" />
-                    <CustomToolTip isHovered={isHoveredHeart} message={"Add to Favorites"} />
+                    <CustomToolTip isHovered={isHoveredHeart} message={"Add to Favorites"} offsetLeft="-50%" />
                 </div>
             )}
 
