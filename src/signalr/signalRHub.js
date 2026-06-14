@@ -6,6 +6,7 @@ let chatReadyRef = { current: false };
 let messageHandlers = [];
 let refetchHandlers = [];
 let groupRefetchHandlers = [];
+let groupMessageHandlers = [];
 let connectionUserId = null;
 let currentApiUrl = null;
 let initRetryCount = 0;
@@ -121,6 +122,10 @@ function setupInternalListeners() {
         groupRefetchHandlers.forEach(h => h(groupConversationId));
     });
 
+    hubConnection.on("ReceiveGroupMessage", (payload) => {
+        groupMessageHandlers.forEach(h => h(payload));
+    });
+
     hubConnection.onclose(() => {
         chatReadyRef.current = false;
         // Schedule re-init if user is still logged in (permanent disconnect recovery)
@@ -143,6 +148,7 @@ export const stopHubConnection = async () => {
         hubConnection.off("ReceiveMessage");
         hubConnection.off("ReceiveMessageRefetch");
         hubConnection.off("ReceiveGroupMessageRefetch");
+        hubConnection.off("ReceiveGroupMessage");
         hubConnection.off("ParrotsChatHubInitialized");
 
         await hubConnection.stop();
@@ -154,6 +160,7 @@ export const stopHubConnection = async () => {
         messageHandlers = [];
         refetchHandlers = [];
         groupRefetchHandlers = [];
+        groupMessageHandlers = [];
         chatReadyRef.current = false;
         connectionUserId = null;
     }
@@ -183,6 +190,14 @@ export const register_ReceiveGroupMessageRefetch = (handler) => {
 
 export const unregister_ReceiveGroupMessageRefetch = (handler) => {
     groupRefetchHandlers = groupRefetchHandlers.filter(h => h !== handler);
+};
+
+export const register_ReceiveGroupMessage = (handler) => {
+    if (!groupMessageHandlers.includes(handler)) groupMessageHandlers.push(handler);
+};
+
+export const unregister_ReceiveGroupMessage = (handler) => {
+    groupMessageHandlers = groupMessageHandlers.filter(h => h !== handler);
 };
 
 export const register_ReceiveUnreadNotification = (handler) => {

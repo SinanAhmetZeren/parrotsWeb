@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useGetGroupMessagesQuery, useGetGroupByIdQuery } from "../slices/GroupSlice";
 import { useAddGroupMemberMutation, useRemoveGroupMemberMutation, useExitGroupMutation } from "../slices/GroupSlice";
 import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
-import { invokeHub, isHubReady, register_ReceiveGroupMessageRefetch, unregister_ReceiveGroupMessageRefetch } from "../signalr/signalRHub";
+import { invokeHub, isHubReady, register_ReceiveGroupMessageRefetch, unregister_ReceiveGroupMessageRefetch, register_ReceiveGroupMessage, unregister_ReceiveGroupMessage } from "../signalr/signalRHub";
 import { parrotBlue, parrotBlueDarkTransparent2, parrotBlueDarkTransparent, parrotLightBlue, parrotRed } from "../styles/colors";
 import { useNavigate } from "react-router-dom";
 
@@ -80,6 +80,17 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
     };
     register_ReceiveGroupMessageRefetch(handler);
     return () => unregister_ReceiveGroupMessageRefetch(handler);
+  }, [groupId, refetchMessages]);
+
+  // ReceiveGroupMessage — real-time update from mobile or other clients
+  useEffect(() => {
+    if (!groupId) return;
+    const handler = (payload) => {
+      if (!payload || payload.groupConversationId !== groupId) return;
+      refetchMessages();
+    };
+    register_ReceiveGroupMessage(handler);
+    return () => unregister_ReceiveGroupMessage(handler);
   }, [groupId, refetchMessages]);
 
   const handleSend = async () => {
@@ -263,13 +274,21 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
 
         {/* Send box */}
         <div style={sendBox(dark)}>
-          <input
-            style={sendInput(dark)}
-            placeholder="Write a message..."
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-          />
+          <div style={{ flex: 1, position: "relative", display: "flex", alignItems: "center" }}>
+            <input
+              style={{ ...sendInput(dark), width: "100%", boxSizing: "border-box" }}
+              placeholder=""
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+            />
+            {!message && (
+              <span style={{ position: "absolute", left: "1.2rem", pointerEvents: "none", fontSize: "1.2rem", color: dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)", whiteSpace: "nowrap", overflow: "hidden", maxWidth: "calc(100% - 2.4rem)" }}>
+                Write a message to{" "}
+                <span style={{ color: parrotBlue, fontWeight: 600 }}>{resolvedGroupData?.name ?? ""}</span>
+              </span>
+            )}
+          </div>
           <button style={sendButton} onClick={handleSend}>Send</button>
         </div>
       </div>
