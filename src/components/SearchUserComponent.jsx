@@ -5,7 +5,7 @@ import { IoSearch } from "react-icons/io5";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { parrotRed } from "../styles/colors";
 
-export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false, showSaved = false, onToggleSaved, onCreateGroup }) {
+export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoading, isDarkMode = false, showSaved = false, onToggleSaved, onCreateGroup, hideSearch = false }) {
   const dark = isDarkMode;
   const isEnabled = inputValue.length >= 3;
   const [showCreate, setShowCreate] = useState(false);
@@ -36,30 +36,22 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
     <div style={searchMainContainer}>
       <div style={searchUserContainer}>
         {/* Always-visible search row */}
-        <input
+        {!hideSearch && <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           style={{ ...inputStyle(dark), opacity: showCreate ? 0 : 1 }}
           placeholder="Search for users..."
-        />
-        <div className="nav-icon-wrapper"
-          style={{ ...magnifierContainerStyle, cursor: isEnabled && !isLoading ? "pointer" : "default", opacity: showCreate ? 0 : 1 }}
+        />}
+        {!hideSearch && <button
+          style={searchBtnStyle(isEnabled)}
+          disabled={!isEnabled || isLoading}
           onClick={isEnabled && !isLoading ? onSearch : undefined}
         >
-          {isLoading ? (
-            <div style={magnifierStyle(dark)}>
-              <div style={spinnerStyle} />
-            </div>
-          ) : (
-            <div style={magnifierStyle(dark)}>
-              <IoSearch size="1.3rem" color={isEnabled ? "#3c9dde" : (dark ? "rgba(255,255,255,0.3)" : "#c0c0c0")} />
-            </div>
-          )}
-          <span className="nav-tooltip tooltip-up">Search</span>
-        </div>
-        <div className="nav-icon-wrapper"
+          {isLoading ? <div style={spinnerStyle} /> : "Search"}
+        </button>}
+        {!hideSearch && onToggleSaved && <div className="nav-icon-wrapper"
           style={{ ...magnifierContainerStyle, cursor: "pointer", opacity: showCreate ? 0 : 1 }}
           onClick={onToggleSaved}
         >
@@ -70,7 +62,7 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
             }
           </div>
           <span className="nav-tooltip tooltip-up">{showSaved ? "Hide saved" : "Show saved"}</span>
-        </div>
+        </div>}
 
         {/* +/× button — always in same position */}
         {onCreateGroup && (
@@ -135,18 +127,19 @@ const searchUserContainer = {
 };
 
 const inputStyle = (dark) => ({
-  width: "19rem",
+  flex: 1,
   height: "3rem",
-  paddingLeft: "2rem",
-  paddingRight: "2rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
   marginTop: "1rem",
   marginBottom: "1rem",
   marginLeft: "1rem",
   borderRadius: "2rem",
-  fontSize: "1.3rem",
+  fontSize: "1.2rem",
   color: dark ? "rgba(255,255,255,0.9)" : "black",
   backgroundColor: dark ? "#0d2b4e" : "white",
   border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  outline: "none",
 });
 
 const spinnerStyle = {
@@ -201,6 +194,28 @@ const groupNameInputStyle = (dark) => ({
   backgroundColor: dark ? "#0d2b4e" : "white",
   border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
   outline: "none",
+});
+
+const searchBtnStyle = (enabled) => ({
+  height: "3rem",
+  minWidth: "6rem",
+  marginTop: "1rem",
+  marginBottom: "1rem",
+  marginLeft: "0.5rem",
+  marginRight: "1rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
+  borderRadius: "2rem",
+  fontSize: "1.2rem",
+  fontWeight: "600",
+  backgroundColor: enabled ? "#0077ea" : "#c0c0c0",
+  color: "white",
+  border: "none",
+  cursor: enabled ? "pointer" : "default",
+  flexShrink: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 });
 
 const createSubmitBtn = (dark) => ({

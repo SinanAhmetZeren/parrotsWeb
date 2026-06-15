@@ -388,6 +388,10 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: { name, brief, description, latitude, longitude },
       }),
     }),
+    getMyBids: builder.query({
+      query: () => "/api/Bid/myBids",
+      transformResponse: (responseData) => responseData.data,
+    }),
     updateVoyageProfileImage: builder.mutation({
       query: ({ voyageId, imageFile }) => {
         const formData = new FormData();
@@ -436,4 +440,5 @@ export const {
   useDeleteVoyageFromFavoritesMutation,
   useAddPlaceMutation,
   useUpdateVoyageProfileImageMutation,
+  useGetMyBidsQuery,
 } = extendedApiSlice;

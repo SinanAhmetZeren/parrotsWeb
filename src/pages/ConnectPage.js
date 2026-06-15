@@ -36,8 +36,10 @@ import {
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
+import { useGetMyBidsQuery } from "../slices/VoyageSlice";
+import { BidPillList } from "../components/BidPill";
 import parrotsLogo from "../assets/images/placeholderparrots.png";
-import { parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 
 
 //const API_URL = process.env.REACT_APP_API_URL;
@@ -65,6 +67,9 @@ function ConnectPage() {
   const [hubState, setHubState] = useState("connected");
   const [activeGroupId, setActiveGroupId] = useState(null);
   const [activeGroupData, setActiveGroupData] = useState(null);
+  const [activeTab, setActiveTab] = useState("Chats");
+  const [newGroupName, setNewGroupName] = useState("");
+  const { data: myBids } = useGetMyBidsQuery(undefined, { skip: activeTab !== "Bids" });
   const [createGroup] = useCreateGroupMutation();
 
   useEffect(() => {
@@ -379,19 +384,48 @@ function ConnectPage() {
 
               <div className="flex connectPage_Bottom">
                 <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "#011a32" } : {}}>
-                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
-                    <SearchUserComponent
-                      inputValue={inputValue}
-                      setInputValue={setInputValue}
-                      onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
-                      isLoading={isSearchLoading}
-                      isDarkMode={isDarkMode}
-                      showSaved={showSaved}
-                      onToggleSaved={() => { setShowSaved(s => !s); setQuery(""); setInputValue(""); }}
-                      onCreateGroup={handleCreateGroup}
-                    />
+                  <div style={tabRowStyle}>
+                    {["Chats", "Find", "Bookmarks", "Bids"].map((tab) => (
+                      <span key={tab} style={tabItemStyle(dark, activeTab === tab)} onClick={() => { setActiveTab(tab); if (tab === "Bookmarks") setShowSaved(true); else setShowSaved(false); if (tab === "Chats") { setQuery(""); setInputValue(""); } }}>{tab}</span>
+                    ))}
                   </div>
-                  {showSaved ? (
+                  {activeTab !== "Bookmarks" && activeTab !== "Bids" && (
+                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
+                    {activeTab === "Chats" ? (
+                      <div style={createGroupRowStyle}>
+                        <input
+                          type="text"
+                          value={newGroupName}
+                          onChange={e => setNewGroupName(e.target.value)}
+                          onKeyDown={e => { if (e.key === "Enter" && newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                          style={createGroupInputStyle(dark)}
+                          placeholder="Group name..."
+                        />
+                        <button
+                          style={createGroupBtnStyle(!!newGroupName.trim())}
+                          disabled={!newGroupName.trim()}
+                          onClick={() => { if (newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                        >Create</button>
+                      </div>
+                    ) : (
+                      <SearchUserComponent
+                        inputValue={inputValue}
+                        setInputValue={setInputValue}
+                        onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
+                        isLoading={isSearchLoading}
+                        isDarkMode={isDarkMode}
+                        showSaved={showSaved}
+                        onToggleSaved={activeTab !== "Find" ? () => { setShowSaved(s => !s); setQuery(""); setInputValue(""); } : undefined}
+                        onCreateGroup={activeTab !== "Find" ? handleCreateGroup : undefined}
+                      />
+                    )}
+                  </div>
+                  )}
+                  {activeTab === "Bids" ? (
+                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
+                      <BidPillList bids={myBids} />
+                    </div>
+                  ) : showSaved ? (
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">
                       <SearchUserResultsComponent
                         query=""
@@ -419,7 +453,7 @@ function ConnectPage() {
                         isDarkMode={isDarkMode}
                       />
                     </div>
-                  ) : isSuccessmessagePreviews && (
+                  ) : isSuccessmessagePreviews && activeTab === "Chats" && (
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">
                       <MessagePreviewsComponent
                         messagesData={safeMessagePreviewsData}
@@ -546,11 +580,63 @@ const image = {
   alignSelf: "center",
 }
 
+const tabRowStyle = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  gap: "2rem",
+  padding: "0.6rem 0 0.4rem",
+};
+
+const tabItemStyle = (dark, active) => ({
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 800,
+  fontSize: "1.5rem",
+  color: active ? (dark ? "rgba(255,255,255,0.9)" : "#0077ea") : (dark ? "rgba(255,255,255,0.35)" : "rgba(0, 119, 234, 0.35)"),
+  cursor: "pointer",
+  userSelect: "none",
+});
+
 const subText = {
   fontSize: "24px",
   color: parrotTextDarkBlue,
   marginBottom: "20px",
 }
+
+const createGroupRowStyle = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  padding: "1rem 1rem",
+  gap: "0.5rem",
+};
+
+const createGroupInputStyle = (dark) => ({
+  flex: 1,
+  height: "3rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
+  borderRadius: "2rem",
+  fontSize: "1.2rem",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+  backgroundColor: dark ? "#0d2b4e" : "white",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  outline: "none",
+});
+
+const createGroupBtnStyle = (enabled) => ({
+  height: "3rem",
+  paddingLeft: "1.2rem",
+  paddingRight: "1.2rem",
+  borderRadius: "2rem",
+  fontSize: "1.2rem",
+  fontWeight: "600",
+  backgroundColor: enabled ? "#0077ea" : "#c0c0c0",
+  color: "white",
+  border: "none",
+  cursor: enabled ? "pointer" : "default",
+  flexShrink: 0,
+});
 
 const createGroupBtn = (dark) => ({
   background: "none",

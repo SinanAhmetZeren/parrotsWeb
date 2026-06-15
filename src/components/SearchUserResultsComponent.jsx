@@ -137,12 +137,19 @@ const actionButtonHover = {
 };
 
 const actionButtonStyle = (dark) => ({
-  backgroundColor: dark ? "#0d2b4e" : "white",
+  backgroundColor: dark ? "rgba(0,119,234,0.15)" : "rgba(0, 119, 234, 0.08)",
   alignSelf: "center",
   color: "#3c9dde",
-  borderRadius: "2rem",
-  padding: ".5rem",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #3c9dee42",
+  borderRadius: "50%",
+  width: "2.4rem",
+  height: "2.4rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "1.45rem",
+  border: "none",
+  transition: "transform 0.2s",
+  marginRight: "0.3rem",
 })
 
 const searchResults = {
@@ -163,19 +170,20 @@ const searchResultsContainer = (_dark) => ({
 
 const singleSearchResult = (dark) => ({
   width: "100%",
-  backgroundColor: dark ? "#0a2240" : "#f6f6f6",
-  marginBottom: "1rem",
+  backgroundColor: dark ? "#0a2240" : "rgba(0, 119, 234, 0.03)",
+  marginBottom: "0.6rem",
   display: "grid",
-  gridTemplateColumns: "4rem 6fr 1fr 1fr",
+  gridTemplateColumns: "4rem 1fr auto auto",
   alignItems: "center",
   borderRadius: "4rem",
   padding: ".5rem",
+  gap: "0.5rem",
   cursor: "pointer",
 });
 
 const userProfileImg = {
-  height: "4rem",
-  width: "4rem",
+  height: "3.4rem",
+  width: "3.4rem",
   borderRadius: "50%",
   marginRight: "1rem",
   transition: "transform 0.3s ease-in-out",
@@ -186,10 +194,11 @@ const userprofileimgHover = {
 };
 
 const userNameText = (dark) => ({
-  fontSize: "1.3rem",
-  fontWeight: "bold",
-  textAlign: "center",
-  alignItems: "center",
+  fontSize: "1.1rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 800,
+  textAlign: "left",
   alignSelf: "center",
+  paddingLeft: "0.6rem",
   color: dark ? "rgba(255,255,255,0.9)" : "#3c9dde",
 })
