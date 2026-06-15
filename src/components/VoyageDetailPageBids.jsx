@@ -291,6 +291,8 @@ function RenderBid({
           style={{
             ...(accepted ? acceptedBidStyle : acceptBidStyle),
             cursor: ownVoyage && !accepted ? "pointer" : "default",
+            paddingLeft: "0.4rem",
+            paddingRight: "0.4rem"
           }}
         >
           {loadingBidId === bidId && !accepted ? (

@@ -119,7 +119,12 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
       <div style={rightItem}>
         <span
           onClick={() => ownVoyage && !accepted && !loadingBidId && handleAcceptBid({ bidId, bidUserId })}
-          style={{ ...(accepted ? acceptedBidStyle : acceptBidStyle), cursor: ownVoyage && !accepted ? "pointer" : "default" }}
+          style={{
+            ...(accepted ? acceptedBidStyle : acceptBidStyle),
+            cursor: ownVoyage && !accepted ? "pointer" : "default",
+            paddingLeft: "0.4rem",
+            paddingRight: "0.4rem"
+          }}
         >
           {loadingBidId === bidId && !accepted ? <AcceptBidSpinner /> : accepted ? "Accepted" : ownVoyage ? "Accept" : "Pending"}
         </span>

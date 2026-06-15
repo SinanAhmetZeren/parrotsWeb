@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { CiCircleCheck, CiClock2 } from "react-icons/ci";
 import { MdLocationPin } from "react-icons/md";
 import { parrotBlue, parrotGreen, parrotLightBlue } from "../styles/colors";
@@ -8,9 +9,9 @@ const formatDate = (dateStr) => {
   return new Date(dateStr).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 };
 
-export function BidPill({ bid }) {
+export function BidPill({ bid, onNavigate }) {
   return (
-    <div style={pillWrapper}>
+    <div style={pillWrapper} onClick={onNavigate}>
       <img src={bid.profileImageThumbnail} alt={bid.voyageName} style={thumbnail} />
       <div style={info}>
         <div style={voyageName}>{bid.voyageName}</div>
@@ -32,12 +33,15 @@ export function BidPill({ bid }) {
 }
 
 export function BidPillList({ bids }) {
+  const navigate = useNavigate();
   if (!bids || bids.length === 0) {
     return <div style={empty}>No bids yet</div>;
   }
   return (
     <div style={list}>
-      {bids.map((bid) => <BidPill key={bid.bidId} bid={bid} />)}
+      {bids.map((bid) => (
+        <BidPill key={bid.bidId} bid={bid} onNavigate={() => navigate(`/voyage-details/${bid.voyageId}`)} />
+      ))}
     </div>
   );
 }
