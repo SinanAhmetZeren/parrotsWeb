@@ -145,7 +145,7 @@ const userprofileimgHover = {
 
 const containerStyle = (dark) => ({
   fontSize: "1rem",
-  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
+  backgroundColor: dark ? "#0a2745" : "rgba(0, 119, 234, 0.04)",
   margin: "4px 10px",
   padding: "10px",
   display: "grid",

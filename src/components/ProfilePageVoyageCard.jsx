@@ -1,14 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import { parrotBlue, parrotBlueDarkTransparent, parrotBlueTransparent, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotBlueTransparent, parrotTextDarkBlue, parrotBananaLeafGreen } from "../styles/colors";
 import he from "he";
 import DOMPurify from "dompurify";
 import { MdPublic } from "react-icons/md";
+import { FaCheck, FaPencil } from "react-icons/fa6";
+import { useGetBidsByVoyageIdQuery } from "../slices/VoyageSlice";
 
 const voyageBaseUrl = ``;
 
 export function ProfilePageVoyageCard({ voyage, index, isDarkMode = false }) {
   const navigate = useNavigate();
   const dark = isDarkMode;
+  const { data: bids } = useGetBidsByVoyageIdQuery(voyage?.id, { skip: !voyage?.id });
+  const bidCount = bids?.length ?? 0;
+  const acceptedBidCount = bids?.filter(b => b.accepted).length ?? 0;
 
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
@@ -23,8 +28,20 @@ export function ProfilePageVoyageCard({ voyage, index, isDarkMode = false }) {
         </div>
       )}
 
-      <div className="card-image" style={cardImageContainerStyle(dark)}>
+      <div className="card-image" style={{ ...cardImageContainerStyle(dark), position: "relative" }}>
         <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="" />
+        {bidCount > 0 && (
+          <div style={bidPillStyle}>
+            <div style={bidCircleStyle(parrotBananaLeafGreen)}>
+              <FaCheck size="0.55rem" color="white" />
+              <span style={bidPillTextStyle}>{acceptedBidCount}</span>
+            </div>
+            <div style={bidCircleStyle(parrotBlue)}>
+              <FaPencil size="0.55rem" color="white" />
+              <span style={bidPillTextStyle}>{bidCount}</span>
+            </div>
+          </div>
+        )}
       </div>
       <div className="card-content" style={cardContentStyle(dark)}>
         <div style={cardTitleStyle(dark)} title={voyage?.name}>{voyage?.name}</div>
@@ -62,6 +79,41 @@ export function ProfilePageVoyageCard({ voyage, index, isDarkMode = false }) {
     </div>
   );
 }
+
+const bidPillStyle = {
+  position: "absolute",
+  bottom: "0.5rem",
+  left: "0.5rem",
+  backgroundColor: "rgba(222,222,222,0.85)",
+  borderRadius: "2rem",
+  paddingLeft: "0.3rem",
+  paddingRight: "0.3rem",
+  paddingTop: "0.2rem",
+  paddingBottom: "0.2rem",
+  display: "flex",
+  flexDirection: "row",
+  gap: "0.2rem",
+};
+
+const bidCircleStyle = (color) => ({
+  backgroundColor: color,
+  borderRadius: "1rem",
+  paddingLeft: "0.4rem",
+  paddingRight: "0.4rem",
+  paddingTop: "0.15rem",
+  paddingBottom: "0.15rem",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: "0.25rem",
+});
+
+const bidPillTextStyle = {
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 700,
+  fontSize: "0.7rem",
+  color: "white",
+};
 
 const publicIconStyle = (dark) => ({
   position: "absolute",

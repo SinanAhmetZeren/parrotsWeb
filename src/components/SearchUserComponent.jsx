@@ -113,7 +113,7 @@ const magnifierStyle = (dark) => ({
   justifyContent: "center",
   height: "3rem",
   width: "3rem",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
 });
 
@@ -138,7 +138,7 @@ const inputStyle = (dark) => ({
   fontSize: "1.2rem",
   color: dark ? "rgba(255,255,255,0.9)" : "black",
   backgroundColor: dark ? "#0d2b4e" : "white",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   outline: "none",
 });
 
@@ -160,7 +160,7 @@ const bookmarkButtonStyle = (active, dark) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
   transition: "background-color 0.2s ease",
   flexShrink: 0,
@@ -175,7 +175,7 @@ const createGroupButtonStyle = (dark, active) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
   flexShrink: 0,
 });
@@ -192,7 +192,7 @@ const groupNameInputStyle = (dark) => ({
   fontSize: "1.3rem",
   color: dark ? "rgba(255,255,255,0.9)" : "black",
   backgroundColor: dark ? "#0d2b4e" : "white",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   outline: "none",
 });
 
@@ -208,7 +208,7 @@ const searchBtnStyle = (enabled) => ({
   borderRadius: "2rem",
   fontSize: "1.2rem",
   fontWeight: "600",
-  backgroundColor: enabled ? "#0077ea" : "#c0c0c0",
+  backgroundColor: enabled ? "#0077ea" : "rgba(0, 119, 234, 0.25)",
   color: "white",
   border: "none",
   cursor: enabled ? "pointer" : "default",

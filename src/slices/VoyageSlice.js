@@ -391,6 +391,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     getMyBids: builder.query({
       query: () => "/api/Bid/myBids",
       transformResponse: (responseData) => responseData.data,
+      keepUnusedDataFor: 0,
     }),
     updateVoyageProfileImage: builder.mutation({
       query: ({ voyageId, imageFile }) => {

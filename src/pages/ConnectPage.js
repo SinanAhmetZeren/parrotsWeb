@@ -390,36 +390,36 @@ function ConnectPage() {
                     ))}
                   </div>
                   {activeTab !== "Bookmarks" && activeTab !== "Bids" && (
-                  <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
-                    {activeTab === "Chats" ? (
-                      <div style={createGroupRowStyle}>
-                        <input
-                          type="text"
-                          value={newGroupName}
-                          onChange={e => setNewGroupName(e.target.value)}
-                          onKeyDown={e => { if (e.key === "Enter" && newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
-                          style={createGroupInputStyle(dark)}
-                          placeholder="Group name..."
+                    <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
+                      {activeTab === "Chats" ? (
+                        <div style={createGroupRowStyle}>
+                          <input
+                            type="text"
+                            value={newGroupName}
+                            onChange={e => setNewGroupName(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter" && newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                            style={createGroupInputStyle(dark)}
+                            placeholder="Group name..."
+                          />
+                          <button
+                            style={createGroupBtnStyle(!!newGroupName.trim())}
+                            disabled={!newGroupName.trim()}
+                            onClick={() => { if (newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                          >Create</button>
+                        </div>
+                      ) : (
+                        <SearchUserComponent
+                          inputValue={inputValue}
+                          setInputValue={setInputValue}
+                          onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
+                          isLoading={isSearchLoading}
+                          isDarkMode={isDarkMode}
+                          showSaved={showSaved}
+                          onToggleSaved={activeTab !== "Find" ? () => { setShowSaved(s => !s); setQuery(""); setInputValue(""); } : undefined}
+                          onCreateGroup={activeTab !== "Find" ? handleCreateGroup : undefined}
                         />
-                        <button
-                          style={createGroupBtnStyle(!!newGroupName.trim())}
-                          disabled={!newGroupName.trim()}
-                          onClick={() => { if (newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
-                        >Create</button>
-                      </div>
-                    ) : (
-                      <SearchUserComponent
-                        inputValue={inputValue}
-                        setInputValue={setInputValue}
-                        onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
-                        isLoading={isSearchLoading}
-                        isDarkMode={isDarkMode}
-                        showSaved={showSaved}
-                        onToggleSaved={activeTab !== "Find" ? () => { setShowSaved(s => !s); setQuery(""); setInputValue(""); } : undefined}
-                        onCreateGroup={activeTab !== "Find" ? handleCreateGroup : undefined}
-                      />
-                    )}
-                  </div>
+                      )}
+                    </div>
                   )}
                   {activeTab === "Bids" ? (
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">
@@ -541,7 +541,8 @@ const ConversationComponentContainer = {
 };
 
 const SearchBarContainer = {
-  backgroundColor: "#f9f5f1",
+  // backgroundColor: "#f9f5f1",
+  backgroundColor: "rgba(0, 119, 234, 0.04)",
   height: "9vh",
 };
 
@@ -620,7 +621,7 @@ const createGroupInputStyle = (dark) => ({
   fontSize: "1.2rem",
   color: dark ? "rgba(255,255,255,0.9)" : "black",
   backgroundColor: dark ? "#0d2b4e" : "white",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
   outline: "none",
 });
 
@@ -631,7 +632,7 @@ const createGroupBtnStyle = (enabled) => ({
   borderRadius: "2rem",
   fontSize: "1.2rem",
   fontWeight: "600",
-  backgroundColor: enabled ? "#0077ea" : "#c0c0c0",
+  backgroundColor: enabled ? "#0077ea" : "rgba(0, 119, 234, 0.25)",
   color: "white",
   border: "none",
   cursor: enabled ? "pointer" : "default",

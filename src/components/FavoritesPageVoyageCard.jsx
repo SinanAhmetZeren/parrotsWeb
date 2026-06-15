@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { parrotBlue, parrotBlueDarkTransparent, parrotBlueTransparent, parrotTextDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotBlueTransparent, parrotTextDarkBlue, parrotGreen } from "../styles/colors";
 import he from "he";
 import DOMPurify from "dompurify";
 import { MdPublic } from "react-icons/md";
+import { CiCircleCheck, CiClock2 } from "react-icons/ci";
+import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 
 const voyageBaseUrl = ``;
 
 export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) {
   const navigate = useNavigate();
   const dark = isDarkMode;
+  const { data: myBids } = useGetMyBidsQuery();
+  const userBid = myBids?.find(b => b.voyageId === voyage?.id);
 
   const handleCardClick = (voyageId) => {
     navigate(`/voyage-details/${voyageId}`);
@@ -22,8 +26,15 @@ export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) 
         </div>
       )}
 
-      <div className="card-image" style={cardImageContainerStyle(dark)}>
+      <div className="card-image" style={{ ...cardImageContainerStyle(dark), position: "relative" }}>
         <img src={voyageBaseUrl + (voyage?.profileImageThumbnail || voyage?.profileImage)} style={cardImageStyle} alt="" />
+        {userBid && (
+          <div style={bidBadgeStyle(userBid.accepted)}>
+            {userBid.accepted
+              ? <CiCircleCheck size="1.5rem" color="white" />
+              : <CiClock2 size="1.5rem" color="white" />}
+          </div>
+        )}
       </div>
       <div className="card-content" style={cardContentStyle(dark)}>
         <div style={cardTitleStyle(dark)} title={voyage?.name}>{voyage?.name}</div>
@@ -53,6 +64,19 @@ export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) 
     </div>
   );
 }
+
+const bidBadgeStyle = (accepted) => ({
+  position: "absolute",
+  bottom: "0.5rem",
+  left: "0.5rem",
+  backgroundColor: accepted ? parrotGreen : parrotBlue,
+  borderRadius: "50%",
+  width: "2rem",
+  height: "2rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
 
 const publicIconStyle = (dark) => ({
   position: "absolute",
@@ -117,6 +141,6 @@ function formatCustomDate(dateString) {
 }
 
 export default function VehicleIcon({ vehicleType }) {
-  const vehicles = ["⛵","🚗","🚐","🚌","🚶","🏃","🏍️","🚲","🏠","✈️","🚄"];
+  const vehicles = ["⛵", "🚗", "🚐", "🚌", "🚶", "🏃", "🏍️", "🚲", "🏠", "✈️", "🚄"];
   return <span style={{ textAlign: "center" }}>{vehicles[vehicleType] || "❓"}</span>;
 }
