@@ -88,6 +88,7 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
               onKeyDown={e => { if (e.key === "Enter") handleCreate(); }}
               style={inputStyle(dark)}
               placeholder="Group name..."
+              maxLength={30}
             />
             <button style={createSubmitBtn(dark)} onClick={handleCreate}>Create</button>
           </div>
