@@ -46,10 +46,11 @@ export function DirectMessageSenderComponent({
       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
         <button
           onClick={() => setEmojiOpen(o => !o)}
-          style={emojiBtnStyle(dark, emojiOpen)}
+          style={{ ...emojiBtnStyle(dark, emojiOpen || focused), opacity: hideSendLabel ? 0.2 : 1, pointerEvents: hideSendLabel ? "none" : "auto" }}
           title=""
+          disabled={hideSendLabel}
         >
-          <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 50, height: 50, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+          <img src={emojiOpen || focused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 50, height: 50, objectFit: "cover", opacity: emojiOpen || focused ? (dark ? 0.35 : 1) : 0.2 }} />
         </button>
         {emojiOpen && (
           <div style={emojiPanelStyle(dark)}>
@@ -99,7 +100,7 @@ export function DirectMessageSenderComponent({
         <textarea
           value={message}
           placeholder=""
-          style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1 }}
+          style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1, border: (emojiOpen || focused) ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070" }}
           maxLength={500}
           disabled={!conversationUserId}
           onFocus={() => { setFocused(true); setEmojiOpen(false); }}
@@ -193,7 +194,7 @@ const sendButtonStyle = {
 
 const emojiBtnStyle = (dark, active) => ({
   background: "none",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: active ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
   cursor: "pointer",
   padding: 0,
   borderRadius: "50%",

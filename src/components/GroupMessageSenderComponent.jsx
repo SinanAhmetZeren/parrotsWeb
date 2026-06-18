@@ -10,6 +10,7 @@ export function GroupMessageSenderComponent({ message, setMessage, handleSend, g
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [emojiCategory, setEmojiCategory] = useState("smileys");
   const [emojiSearch, setEmojiSearch] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
   const emojiRef = useRef(null);
 
   useEffect(() => {
@@ -26,8 +27,8 @@ export function GroupMessageSenderComponent({ message, setMessage, handleSend, g
 
       {/* Emoji button + panel */}
       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
-        <button onClick={() => setEmojiOpen(o => !o)} style={emojiBtnStyle(dark)}>
-          <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 50, height: 50, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+        <button onClick={() => setEmojiOpen(o => !o)} style={emojiBtnStyle(dark, emojiOpen || inputFocused)}>
+          <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 50, height: 50, objectFit: "cover", opacity: emojiOpen || inputFocused ? (dark ? 0.35 : 1) : 0.2 }} />
         </button>
         {emojiOpen && (
           <div style={emojiPanelStyle(dark)}>
@@ -66,11 +67,12 @@ export function GroupMessageSenderComponent({ message, setMessage, handleSend, g
       {/* Input */}
       <div style={{ flex: 1, position: "relative", display: "flex", alignItems: "center" }}>
         <input
-          style={{ ...inputStyle(dark), width: "100%", boxSizing: "border-box" }}
+          style={{ ...inputStyle(dark), width: "100%", boxSizing: "border-box", border: (emojiOpen || inputFocused) ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070" }}
           placeholder=""
           value={message}
           onChange={e => setMessage(e.target.value)}
-          onFocus={() => setEmojiOpen(false)}
+          onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
+          onBlur={() => setInputFocused(false)}
           onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
         />
         {!message && (
@@ -95,9 +97,9 @@ const containerStyle = (dark) => ({
   alignItems: "center",
 });
 
-const emojiBtnStyle = (dark) => ({
+const emojiBtnStyle = (dark, active) => ({
   background: "none",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: active ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
   cursor: "pointer",
   padding: 0,
   borderRadius: "50%",

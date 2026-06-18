@@ -68,6 +68,7 @@ function VoyageDetailsPage() {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [broadcastPlaceholder, setBroadcastPlaceholder] = useState("Message accepted users...");
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
   const [emojiCategory, setEmojiCategory] = useState("smileys");
   const [emojiSearch, setEmojiSearch] = useState("");
   const emojiRef = useRef(null);
@@ -317,8 +318,8 @@ function VoyageDetailsPage() {
 
                   {/* Emoji button + panel */}
                   <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
-                    <button onClick={() => setEmojiOpen(o => !o)} style={broadcastEmojiBtnStyle(isDarkMode)} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
-                      <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 42, height: 42, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+                    <button onClick={() => setEmojiOpen(o => !o)} style={broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused)} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                      <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 42, height: 42, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
                     </button>
                     {emojiOpen && (
                       <div style={broadcastEmojiPanelStyle(isDarkMode)}>
@@ -357,13 +358,14 @@ function VoyageDetailsPage() {
                   </div>
 
                   <input
-                    style={broadcastInputStyle(isDarkMode)}
+                    style={broadcastInputStyle(isDarkMode, emojiOpen || inputFocused)}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
                     placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
                     value={broadcastMessage}
                     disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
-                    onFocus={() => setEmojiOpen(false)}
+                    onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
+                    onBlur={() => setInputFocused(false)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
@@ -520,8 +522,8 @@ function VoyageDetailsPage() {
 
                   {/* Emoji button + panel */}
                   <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
-                    <button onClick={() => setEmojiOpen(o => !o)} style={{ ...broadcastEmojiBtnStyle(isDarkMode), width: 44, height: 44 }} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
-                      <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 46, height: 46, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+                    <button onClick={() => setEmojiOpen(o => !o)} style={{ ...broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused), width: 44, height: 44 }} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                      <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 46, height: 46, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
                     </button>
                     {emojiOpen && (
                       <div style={broadcastEmojiPanelStyle(isDarkMode)}>
@@ -559,13 +561,14 @@ function VoyageDetailsPage() {
                   </div>
 
                   <input
-                    style={{ ...broadcastInputStyle(isDarkMode), height: "3.5rem" }}
+                    style={{ ...broadcastInputStyle(isDarkMode, emojiOpen || inputFocused), height: "3.5rem" }}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
                     placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
                     value={broadcastMessage}
                     disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
-                    onFocus={() => setEmojiOpen(false)}
+                    onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
+                    onBlur={() => setInputFocused(false)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
@@ -942,7 +945,7 @@ const broadcastCardStyle = (dark) => ({
   color: dark ? "rgba(255,255,255,0.9)" : "black",
 });
 
-const broadcastInputStyle = (dark) => ({
+const broadcastInputStyle = (dark, active) => ({
   flex: 1,
   minWidth: 0,
   height: "2.8rem",
@@ -953,7 +956,7 @@ const broadcastInputStyle = (dark) => ({
   overflowY: "hidden",
   resize: "none",
   borderRadius: "2rem",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: active ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
   outline: "none",
   fontFamily: "inherit",
 });
@@ -970,9 +973,9 @@ const broadcastBtnStyle = {
   cursor: "pointer",
 };
 
-const broadcastEmojiBtnStyle = (dark) => ({
+const broadcastEmojiBtnStyle = (dark, active) => ({
   background: "none",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  border: active ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
   cursor: "pointer",
   padding: 0,
   borderRadius: "50%",
