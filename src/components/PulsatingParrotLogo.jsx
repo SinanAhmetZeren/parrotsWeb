@@ -1,5 +1,5 @@
 import React from "react";
-import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.png";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 
 const pulseStyle = `
 @keyframes parrotPulse {

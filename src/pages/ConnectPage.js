@@ -38,7 +38,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
-import parrotsLogo from "../assets/images/placeholderparrots.png";
+import parrotsLogo from "../assets/images/placeholderparrots.webp";
 import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 
 
