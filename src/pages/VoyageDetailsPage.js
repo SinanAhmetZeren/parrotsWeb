@@ -31,6 +31,9 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { IoHeartSharp } from "react-icons/io5";
 import { MdPublic } from "react-icons/md";
+import parrotEmojiIcon from "../assets/images/emojipickerparrot.jpg";
+import parrotEmojiIconBlue from "../assets/images/emojipickerblueparrot.jpg";
+import { EMOJI_CATEGORIES, EMOJIS_BY_CATEGORY, EMOJI_NAMES } from "../constants/emojiData";
 
 
 import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
@@ -64,6 +67,10 @@ function VoyageDetailsPage() {
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [broadcastPlaceholder, setBroadcastPlaceholder] = useState("Message accepted users...");
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [emojiCategory, setEmojiCategory] = useState("smileys");
+  const [emojiSearch, setEmojiSearch] = useState("");
+  const emojiRef = useRef(null);
   const mapRef = useRef();
   const [targetLocation, setTargetLocation] = useState({});
   const [latLngBoundsLiteral, setLatLngBoundsLiteral] = useState({
@@ -225,6 +232,15 @@ function VoyageDetailsPage() {
     }
   }, [isSuccessVoyage, VoyageData, navigate]);
 
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const handler = (e) => {
+      if (emojiRef.current && !emojiRef.current.contains(e.target)) { setEmojiOpen(false); setEmojiSearch(""); }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [emojiOpen]);
+
   const handlePanToLocation = (lat, lng) => {
     setTargetLocation({ lat, lng });
   };
@@ -298,6 +314,48 @@ function VoyageDetailsPage() {
               </div>
               {userId === VoyageData.userId && (
                 <div style={broadcastCardStyle(isDarkMode)}>
+
+                  {/* Emoji button + panel */}
+                  <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
+                    <button onClick={() => setEmojiOpen(o => !o)} style={broadcastEmojiBtnStyle(isDarkMode)} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                      <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 42, height: 42, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+                    </button>
+                    {emojiOpen && (
+                      <div style={broadcastEmojiPanelStyle(isDarkMode)}>
+                        <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
+                          <input
+                            style={broadcastEmojiSearchInputStyle(isDarkMode)}
+                            placeholder="Search emoji..."
+                            value={emojiSearch}
+                            onChange={e => setEmojiSearch(e.target.value)}
+                            autoFocus
+                          />
+                        </div>
+                        {!emojiSearch && (
+                          <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
+                            {EMOJI_CATEGORIES.map(cat => (
+                              <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
+                                style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}>
+                                {cat.icon}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
+                          {(emojiSearch
+                            ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
+                            : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
+                          ).map((emoji, i) => (
+                            <button key={i}
+                              style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
+                              onClick={() => setBroadcastMessage(prev => prev + emoji)}
+                            >{emoji}</button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <input
                     style={broadcastInputStyle(isDarkMode)}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
@@ -305,6 +363,7 @@ function VoyageDetailsPage() {
                     value={broadcastMessage}
                     disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
+                    onFocus={() => setEmojiOpen(false)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
@@ -313,14 +372,7 @@ function VoyageDetailsPage() {
                     disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
                   >
                     {isBroadcasting ? (
-                      <span style={{
-                        display: "inline-block",
-                        width: "1rem", height: "1rem",
-                        border: "2px solid rgba(255,255,255,0.4)",
-                        borderTopColor: "white",
-                        borderRadius: "50%",
-                        animation: "spin 0.7s linear infinite",
-                      }} />
+                      <span style={{ display: "inline-block", width: "1rem", height: "1rem", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
                     ) : "Send"}
                   </button>
                 </div>
@@ -465,6 +517,47 @@ function VoyageDetailsPage() {
               </div>
               {userId === VoyageData.userId && (
                 <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
+
+                  {/* Emoji button + panel */}
+                  <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
+                    <button onClick={() => setEmojiOpen(o => !o)} style={{ ...broadcastEmojiBtnStyle(isDarkMode), width: 44, height: 44 }} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                      <img src={emojiOpen ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 46, height: 46, objectFit: "cover", opacity: emojiOpen ? 1 : 0.2 }} />
+                    </button>
+                    {emojiOpen && (
+                      <div style={broadcastEmojiPanelStyle(isDarkMode)}>
+                        <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
+                          <input
+                            style={broadcastEmojiSearchInputStyle(isDarkMode)}
+                            placeholder="Search emoji..."
+                            value={emojiSearch}
+                            onChange={e => setEmojiSearch(e.target.value)}
+                            autoFocus
+                          />
+                        </div>
+                        {!emojiSearch && (
+                          <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
+                            {EMOJI_CATEGORIES.map(cat => (
+                              <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
+                                style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}
+                              >{cat.icon}</button>
+                            ))}
+                          </div>
+                        )}
+                        <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
+                          {(emojiSearch
+                            ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
+                            : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
+                          ).map((emoji, i) => (
+                            <button key={i}
+                              style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
+                              onClick={() => setBroadcastMessage(prev => prev + emoji)}
+                            >{emoji}</button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <input
                     style={{ ...broadcastInputStyle(isDarkMode), height: "3.5rem" }}
                     className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
@@ -472,6 +565,7 @@ function VoyageDetailsPage() {
                     value={broadcastMessage}
                     disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
                     onChange={(e) => setBroadcastMessage(e.target.value)}
+                    onFocus={() => setEmojiOpen(false)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                   />
                   <button
@@ -843,7 +937,7 @@ const broadcastCardStyle = (dark) => ({
   backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
   borderRadius: "1rem",
   boxSizing: "border-box",
-  overflow: "hidden",
+  position: "relative",
   boxShadow: dark ? "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)" : "none",
   color: dark ? "rgba(255,255,255,0.9)" : "black",
 });
@@ -875,3 +969,46 @@ const broadcastBtnStyle = {
   borderRadius: "2rem",
   cursor: "pointer",
 };
+
+const broadcastEmojiBtnStyle = (dark) => ({
+  background: "none",
+  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
+  cursor: "pointer",
+  padding: 0,
+  borderRadius: "50%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 40,
+  height: 40,
+  overflow: "hidden",
+  flexShrink: 0,
+});
+
+const broadcastEmojiPanelStyle = (dark) => ({
+  position: "absolute",
+  bottom: "calc(100% + 8px + 2vh)",
+  left: "-1vw",
+  width: "calc(30vw - 2.6rem)",
+  height: "30rem",
+  display: "flex",
+  flexDirection: "column",
+  backgroundColor: dark ? "#0a2745" : "white",
+  border: dark ? "1px solid #1a4a7a" : "1px solid #dde8f5",
+  borderRadius: "1rem",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+  zIndex: 999,
+  overflow: "hidden",
+});
+
+const broadcastEmojiSearchInputStyle = (dark) => ({
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "0.4rem 0.9rem",
+  borderRadius: "2rem",
+  border: dark ? "1px solid #1a4a7a" : "1px solid #cce0f5",
+  backgroundColor: dark ? "#011a32" : "#f5f8ff",
+  color: dark ? "white" : "black",
+  fontSize: "1.1rem",
+  outline: "none",
+});

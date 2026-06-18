@@ -8,6 +8,7 @@ import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
 import { invokeHub, isHubReady, register_ReceiveGroupMessageRefetch, unregister_ReceiveGroupMessageRefetch, register_ReceiveGroupMessage, unregister_ReceiveGroupMessage } from "../signalr/signalRHub";
 import { parrotBlue, parrotBlueDarkTransparent2, parrotBlueDarkTransparent, parrotLightBlue, parrotRed } from "../styles/colors";
 import { useNavigate } from "react-router-dom";
+import { GroupMessageSenderComponent } from "./GroupMessageSenderComponent";
 
 const userBaseUrl = "";
 
@@ -272,25 +273,13 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Send box */}
-        <div style={sendBox(dark)}>
-          <div style={{ flex: 1, position: "relative", display: "flex", alignItems: "center" }}>
-            <input
-              style={{ ...sendInput(dark), width: "100%", boxSizing: "border-box" }}
-              placeholder=""
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-            />
-            {!message && (
-              <span style={{ position: "absolute", left: "1.2rem", pointerEvents: "none", fontSize: "1.2rem", color: dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)", whiteSpace: "nowrap", overflow: "hidden", maxWidth: "calc(100% - 2.4rem)" }}>
-                Write a message to{" "}
-                <span style={{ color: parrotBlue, fontWeight: 600 }}>{resolvedGroupData?.name ?? ""}</span>
-              </span>
-            )}
-          </div>
-          <button style={sendButton} onClick={handleSend}>Send</button>
-        </div>
+        <GroupMessageSenderComponent
+          message={message}
+          setMessage={setMessage}
+          handleSend={handleSend}
+          groupName={resolvedGroupData?.name}
+          isDarkMode={dark}
+        />
       </div>
     </div>
   );
@@ -568,32 +557,3 @@ const messageList = (dark) => ({
 
 
 
-const sendBox = (dark) => ({
-  display: "flex",
-  gap: "0.8rem",
-  padding: "0.8rem 1rem",
-  borderTop: dark ? "1px solid #1a4a7a" : "1px solid #e0eaf5",
-  backgroundColor: dark ? "#0a2745" : "#f9f5f1",
-});
-
-const sendInput = (dark) => ({
-  flex: 1,
-  padding: "0.6rem 1.2rem",
-  borderRadius: "2rem",
-  border: dark ? "1px solid #1a4a7a" : "1px solid #cce0f5",
-  backgroundColor: dark ? "#011a32" : "white",
-  color: dark ? "white" : "black",
-  fontSize: "1.2rem",
-  outline: "none",
-});
-
-const sendButton = {
-  backgroundColor: parrotBlue,
-  color: "white",
-  border: "none",
-  borderRadius: "2rem",
-  padding: "0.6rem 1.6rem",
-  cursor: "pointer",
-  fontSize: "1.2rem",
-  fontWeight: "600",
-};

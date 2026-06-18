@@ -15,7 +15,7 @@ import {
 import { MessagePreviewsComponent } from "../components/MessagePreviewsComponent";
 import { SearchUserComponent } from "../components/SearchUserComponent";
 import { ConversationComponent } from "../components/ConversationComponent";
-import { MessageSenderComponent } from "../components/MessageSenderComponent";
+import { DirectMessageSenderComponent } from "../components/DirectMessageSenderComponent";
 import { SearchUserResultsComponent } from "../components/SearchUserResultsComponent";
 import { GroupConversationDetail } from "../components/GroupConversationDetail";
 import { useCreateGroupMutation } from "../slices/GroupSlice";
@@ -497,7 +497,7 @@ function ConnectPage() {
                         />
                       </div>
                       <div style={{ width: "100%" }}>
-                        <MessageSenderComponent
+                        <DirectMessageSenderComponent
                           conversationUserId={conversationUserId}
                           conversationUserUsername={conversationUserUsername}
                           currentUserId={currentUserId}
