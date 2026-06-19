@@ -33,6 +33,8 @@ import {
   unregister_ReceiveMessageRefetch,
   register_ReceiveGroupMessageRefetch,
   unregister_ReceiveGroupMessageRefetch,
+  register_ReceiveGroupMessage,
+  unregister_ReceiveGroupMessage,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
@@ -281,9 +283,11 @@ function ConnectPage() {
     const handler = () => refetchMessagePreviews();
     register_ReceiveMessageRefetch(handler);
     register_ReceiveGroupMessageRefetch(handler);
+    register_ReceiveGroupMessage(handler);
     return () => {
       unregister_ReceiveMessageRefetch(handler);
       unregister_ReceiveGroupMessageRefetch(handler);
+      unregister_ReceiveGroupMessage(handler);
     };
   }, [refetchMessagePreviews]);
 

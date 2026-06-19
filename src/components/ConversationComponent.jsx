@@ -44,32 +44,32 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
         const dateObj = new Date(message.dateTime);
         const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
         const date = dateObj.toLocaleDateString("en-GB");
+        const prevDate = index > 0 ? new Date(messagesToDisplay[index - 1].dateTime).toLocaleDateString("en-GB") : null;
+        const showDateSeparator = date !== prevDate;
         const isCurrentUser = message.senderId === currentUserId;
         return (
-          <div
-            key={index}
-            style={{
-              ...containerStyle(dark),
-              justifySelf: isCurrentUser ? "end" : "start",
-            }}
-          >
-            <div style={messageTextStyle}>
-              <div>{message.text}
+          <React.Fragment key={index}>
+            {showDateSeparator && (
+              <div style={dateSeparatorStyle}>
+                <span style={dateSeparatorTextStyle(dark)}>{date}</span>
               </div>
-            </div>
-            <div style={dateAndTimeContainerStyle}>
-              <div>
+            )}
+            <div
+              style={{
+                ...containerStyle(dark),
+                justifySelf: isCurrentUser ? "end" : "start",
+              }}
+            >
+              <div style={messageTextStyle}>
+                <div>{message.text}</div>
+              </div>
+              <div style={dateAndTimeContainerStyle}>
                 <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
                   {time}
                 </span>
               </div>
-              <div>
-                <span style={{ color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent }}>
-                  {date}
-                </span>
-              </div>
             </div>
-          </div>
+          </React.Fragment>
         );
       })}
       <div ref={messagesEndRef} />
@@ -90,14 +90,28 @@ const messageTextStyle = {
 
 const dateAndTimeContainerStyle = {
   display: "flex",
-  flexDirection: "column",
+  alignItems: "flex-end",
   justifyContent: "flex-end",
   padding: "4px",
   borderRadius: "0.5rem",
   fontSize: "0.85rem",
-  color: "rgb(60, 157, 222)",
-  fontWeight: "bold"
+  fontWeight: "bold",
 };
+
+const dateSeparatorStyle = {
+  display: "flex",
+  justifyContent: "center",
+  margin: "0.8rem 0 0.4rem",
+};
+
+const dateSeparatorTextStyle = (dark) => ({
+  backgroundColor: dark ? "rgba(0,119,234,0.08)" : "rgba(0,119,234,0.06)",
+  color: "rgba(0,119,234,0.5)",
+  borderRadius: "2rem",
+  padding: "0.2rem 1rem",
+  fontSize: "0.8rem",
+  fontWeight: "bold",
+});
 
 const messagesContainerStyle = {
   display: "grid",
@@ -111,11 +125,12 @@ const containerStyle = (dark) => ({
   fontFamily: "Nunito, sans-serif",
   margin: "4px 10px",
   padding: "4px 10px",
-  display: "grid",
-  gridTemplateColumns: "3fr 10rem",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "flex-end",
+  gap: "0.6rem",
   borderRadius: "4rem",
   color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
-  width: "auto",
   maxWidth: "80%",
   wordBreak: "break-word",
   backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",

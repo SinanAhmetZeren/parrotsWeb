@@ -65,7 +65,8 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
     if (!groupId || !currentUserId) return;
     const enter = async () => {
       while (!isHubReady()) await new Promise(res => setTimeout(res, 50));
-      invokeHub("EnterGroupConversationPage", currentUserId, groupId.toString());
+      await invokeHub("EnterGroupConversationPage", currentUserId, groupId.toString());
+      if (refetchPreviews) refetchPreviews();
     };
     enter();
     return () => {
@@ -243,8 +244,10 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
             const dateObj = new Date(msg.dateTime);
             const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
             const date = dateObj.toLocaleDateString("en-GB");
+            const prevDate = index > 0 ? new Date(messagesToDisplay[index - 1].dateTime).toLocaleDateString("en-GB") : null;
+            const showDateSeparator = date !== prevDate;
             const avatarSrc = isMe ? myAvatar : (msg.senderProfileThumbnailUrl || msg.senderProfileImageUrl || "");
-            const displayName = isMe ? "You" : (msg.senderUsername || "");
+            const displayName = isMe ? "" : (msg.senderUsername || "");
 
             const avatarEl = (
               <img
@@ -258,16 +261,23 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
             const textGrid = (
               <div style={msgTextGrid(dark, isMe)}>
                 <span style={msgUsername(dark)}>{displayName}</span>
-                <span style={msgTime(dark)}>{time}</span>
+                <span style={{ ...msgTime(dark), backgroundColor: "blue" }}>{time}</span>
                 <span style={msgText(dark)}>{msg.text}</span>
-                <span style={msgDate(dark)}>{date}</span>
+                <span style={msgDate(dark)}>{time}</span>
               </div>
             );
 
             return (
-              <div key={index} style={msgBubble(dark, isMe)}>
-                {isMe ? (<>{textGrid}{avatarEl}</>) : (<>{avatarEl}{textGrid}</>)}
-              </div>
+              <React.Fragment key={index}>
+                {showDateSeparator && (
+                  <div style={dateSeparatorStyle}>
+                    <span style={dateSeparatorTextStyle(dark)}>{date}</span>
+                  </div>
+                )}
+                <div style={msgBubble(dark, isMe)}>
+                  {isMe ? (<>{textGrid}{avatarEl}</>) : (<>{avatarEl}{textGrid}</>)}
+                </div>
+              </React.Fragment>
             );
           })}
           <div ref={messagesEndRef} />
@@ -307,7 +317,7 @@ const msgAvatar = {
 
 const msgTextGrid = (dark, isMe) => ({
   display: "grid",
-  gridTemplateColumns: "1fr 7rem",
+  gridTemplateColumns: "1fr 3rem",
   gridTemplateRows: "auto auto",
   gap: "0 0.4rem",
   padding: "0.5rem 0.9rem",
@@ -329,15 +339,7 @@ const msgUsername = (dark) => ({
   textOverflow: "ellipsis",
 });
 
-const msgTime = (dark) => ({
-  gridColumn: "2",
-  gridRow: "1",
-  fontSize: "0.85rem",
-  fontWeight: "700",
-  color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2,
-  textAlign: "right",
-  whiteSpace: "nowrap",
-});
+const msgTime = () => ({ display: "none" });
 
 const msgText = (dark) => ({
   gridColumn: "1",
@@ -352,6 +354,23 @@ const msgDate = (dark) => ({
   color: dark ? "rgba(255,255,255,0.4)" : parrotBlueDarkTransparent,
   textAlign: "right",
   whiteSpace: "nowrap",
+  alignSelf: "end",
+});
+
+const dateSeparatorStyle = {
+  display: "flex",
+  justifyContent: "center",
+  gridColumn: "1 / -1",
+  margin: "0.8rem 0 0.4rem",
+};
+
+const dateSeparatorTextStyle = (dark) => ({
+  backgroundColor: dark ? "rgba(0,119,234,0.08)" : "rgba(0,119,234,0.06)",
+  color: "rgba(0,119,234,0.5)",
+  borderRadius: "2rem",
+  padding: "0.2rem 1rem",
+  fontSize: "0.8rem",
+  fontWeight: "bold",
 });
 
 
