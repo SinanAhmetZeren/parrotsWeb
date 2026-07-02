@@ -27,6 +27,7 @@ import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection } from "./signalr/signalRHub";
 import { ParrotCoinPage } from "./pages/ParrotCoinPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminPage from "./pages/AdminPage";
@@ -104,6 +105,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
         {!isLoggedIn ? (
           <Route path="*" element={<Navigate to="/login" />} />
         ) : (
