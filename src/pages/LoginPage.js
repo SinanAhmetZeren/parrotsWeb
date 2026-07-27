@@ -309,7 +309,6 @@ function LoginPage() {
         setUsernameRegister("");
         setPasswordRegister("");
         setPasswordRegister2("");
-        resetAllForms();
         setPageState("Register2");
         setIsRegistering(false);
       } else {
@@ -788,7 +787,6 @@ function LoginPage() {
                   />
 
                   <div style={{ width: "80%", margin: "auto" }}>
-                    <div style={welcomeStyle}> Welcome To Parrots! </div>
                     <div className="username-wrapper-confirmationCode">
                       <input
                         type="text"

@@ -199,7 +199,7 @@ export function ParrotMemoryGame({ onClose }) {
                 {matched.length}/{MODES[mode].pairs} matched
               </span>
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                <button style={restartBtnStyle} onClick={() => { if (flipTimer.current) clearTimeout(flipTimer.current); setMode(null); setWon(false); }}>Restart</button>
+                <button style={restartBtnStyle} onClick={() => { if (flipTimer.current) clearTimeout(flipTimer.current); if (wonTimer.current) clearTimeout(wonTimer.current); setMode(null); setWon(false); }}>Restart</button>
               </div>
             </div>
 
