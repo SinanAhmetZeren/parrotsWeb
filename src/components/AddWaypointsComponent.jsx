@@ -13,7 +13,9 @@ import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css/navigation';
+import rightOrangeArrow from "../assets/images/arrow-right-orange.png";
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
@@ -357,12 +359,23 @@ const WaypointBriefInput = ({ waypointBrief, setWaypointBrief, dark = false }) =
 
 const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = false }) => {
     const swiperRef = useRef(null);
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
 
     useEffect(() => {
         if (swiperRef.current && addedWaypoints.length > 0) {
             swiperRef.current.slideTo(addedWaypoints.length - 1);
         }
     }, [addedWaypoints]);
+
+    useEffect(() => {
+        if (swiperRef.current && prevRef.current && nextRef.current) {
+            swiperRef.current.params.navigation.prevEl = prevRef.current;
+            swiperRef.current.params.navigation.nextEl = nextRef.current;
+            swiperRef.current.navigation.init();
+            swiperRef.current.navigation.update();
+        }
+    }, []);
 
     return (
         <div style={{
@@ -374,35 +387,54 @@ const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = fal
             paddingLeft: "2rem",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            height: "100%"
+            height: "100%",
+            position: "relative",
         }}>
             {addedWaypoints?.length > 0 ? (
-                <Swiper
-                    slidesPerView={1}
-                    centeredSlides={true}
-                    spaceBetween={30}
-                    pagination={{ clickable: true }}
-                    modules={[Pagination]}
-                    className="mySwiper"
-                    onSwiper={(swiper) => (swiperRef.current = swiper)}
-                >
-                    {addedWaypoints.map((waypoint, index) => (
-                        <SwiperSlide key={index}>
-                            <div style={{ marginTop: "0.5rem" }}>
-                                <WaypointComponent
-                                    waypointId={waypoint.waypointId}
-                                    description={waypoint.description}
-                                    latitude={waypoint.latitude}
-                                    longitude={waypoint.longitude}
-                                    profileImage={waypoint.waypointImage}
-                                    title={waypoint.title}
-                                    handleDeleteWaypoint={handleDeleteWaypoint}
-                                    dark={dark}
-                                />
-                            </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                <>
+                    <Swiper
+                        slidesPerView={1}
+                        centeredSlides={true}
+                        spaceBetween={30}
+                        pagination={{ clickable: true }}
+                        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                        onSwiper={(swiper) => { swiperRef.current = swiper; }}
+                    >
+                        {addedWaypoints.map((waypoint, index) => (
+                            <SwiperSlide key={index}>
+                                <div style={{ marginTop: "0.5rem" }}>
+                                    <WaypointComponent
+                                        waypointId={waypoint.waypointId}
+                                        description={waypoint.description}
+                                        latitude={waypoint.latitude}
+                                        longitude={waypoint.longitude}
+                                        profileImage={waypoint.waypointImage}
+                                        title={waypoint.title}
+                                        handleDeleteWaypoint={handleDeleteWaypoint}
+                                        dark={dark}
+                                    />
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                    <div ref={prevRef}
+                        style={{
+                            position: "absolute", top: "50%",
+                            left: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
+                        }}>
+                        <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
+                    </div>
+                    <div ref={nextRef}
+                        style={{
+                            position: "absolute", top: "50%",
+                            right: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
+                        }}>
+                        <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
+                    </div>
+                    <style>{`.swiper-button-disabled { opacity: 0 !important; }`}</style>
+                </>
             ) : (
                 <div style={{ height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <span style={{
@@ -443,7 +475,7 @@ const WaypointComponent = ({ description, profileImage, title, waypointId, handl
                     <span style={{ color: dark ? "rgba(255,255,255,0.9)" : "#007bff", fontWeight: "700", fontSize: "1.3rem" }}>{title}</span>
                 </div>
                 <div style={{ height: "calc(100% - 3rem)", width: "100%", lineHeight: "1.2rem" }}>
-                    <span style={{ color: dark ? "rgba(255,255,255,0.7)" : "#007bff", fontWeight: "400", fontSize: "1.1rem" }}>{description}</span>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.7)" : "#007bff", fontWeight: "400", fontSize: "1.1rem", textAlign: "left", display: "block" }}>{description}</span>
                 </div>
             </div>
             <div

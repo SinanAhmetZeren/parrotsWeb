@@ -1,6 +1,7 @@
-
+import rightOrangeArrow from "../assets/images/arrow-right-orange.png";
 import "../assets/css/App.css";
 import * as React from "react";
+import { useRef } from "react";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -13,6 +14,8 @@ import { Navigation, EffectCoverflow } from "swiper/modules";
 export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
   const apiUrl = process.env.REACT_APP_API_URL;
   const baseUrl = ``;
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   const images = [voyageData?.profileImage, ...voyageData?.voyageImages?.map(image => image.voyageImagePath)
   ]
@@ -39,7 +42,16 @@ export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
             modifier: 1,
             slideShadows: false,
           }}
-          navigation={true}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onSwiper={(swiper) => {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+            swiper.navigation.init();
+            swiper.navigation.update();
+          }}
           modules={[Navigation]}
         >
           {images.map((url, index) => (
@@ -62,25 +74,42 @@ export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
             </SwiperSlide>
           ))}
         </Swiper>
-
-        <style>
-          {`
-        .swiper-button-prev::after,
-        .swiper-button-next::after {
-          font-size: 20px;
-          font-weight: 900;
-          color: gold
-        }
-
-        .swiper-button-prev,
-        .swiper-button-next {
-          width: 10px;
-          height: 30px;
-        }
-        
-      `}
-        </style>
-
+        <div
+          ref={prevRef}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "-1%",
+            zIndex: 10,
+            height: "2.5rem",
+            width: "2.5rem",
+            cursor: "pointer",
+            transform: "translateY(-50%)",
+          }}
+        >
+          <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
+        </div>
+        <div
+          ref={nextRef}
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "-1%",
+            zIndex: 10,
+            height: "2.5rem",
+            width: "2.5rem",
+            cursor: "pointer",
+            transform: "translateY(-50%)",
+          }}
+        >
+          <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
+        </div>
+        <style>{`
+          .swiper-button-disabled {
+            opacity: 0.5 !important;
+            cursor: default !important;
+          }
+        `}</style>
       </div>
     </div>
   );

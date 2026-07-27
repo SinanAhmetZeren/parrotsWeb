@@ -1,5 +1,4 @@
-import leftArrow from "../assets/images/mainPageArrow.png";
-import rightArrow from "../assets/images/mainPageArrow.png";
+import rightOrangeArrow from "../assets/images/arrow-right-orange.png";
 import "../assets/css/App.css";
 import * as React from "react";
 import "swiper/css/pagination";
@@ -127,11 +126,10 @@ export function MainPageCardSwiper({
             height: "2.5rem",
             width: "2.5rem",
             cursor: "pointer",
-            transform: "scaleX(-1)", // Flipping horizontally
-            marginTop: "-4rem",
+            marginTop: "0rem",
           }}
         >
-          <img src={leftArrow} alt="Previous" />
+          <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
         </div>
         <div
           className="custom-next"
@@ -143,10 +141,10 @@ export function MainPageCardSwiper({
             height: "3rem",
             width: "3rem",
             cursor: "pointer",
-            marginTop: "-4rem",
+            marginTop: "0rem",
           }}
         >
-          <img src={rightArrow} alt="Next" />
+          <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
         </div>
       </div>
 
