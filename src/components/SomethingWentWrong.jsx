@@ -37,11 +37,9 @@ export const SomethingWentWrong = ({ onRetry }) => {
               We couldn’t connect to Parrots. Please check your connection and
               try again.
             </p>
-            {onRetry && (
-              <button style={styles.retryButton} onClick={onRetry}>
-                Retry
-              </button>
-            )}
+            <button style={styles.retryButton} onClick={onRetry || (() => window.location.reload())}>
+              Reload
+            </button>
           </div>
         </div>
       </header>
@@ -85,12 +83,14 @@ const styles = {
     marginBottom: "20px",
   },
   retryButton: {
-    padding: "10px 20px",
+    padding: "12px 40px",
     fontSize: "16px",
-    backgroundColor: "#007bff",
+    fontWeight: "600",
+    backgroundColor: "#1a2f5a",
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "50px",
     cursor: "pointer",
+    letterSpacing: "0.03em",
   },
 };
