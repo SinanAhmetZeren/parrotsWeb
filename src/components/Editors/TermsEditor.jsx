@@ -192,7 +192,7 @@ export function TermsEditor() {
               : "pointer",
         }}
       >
-        {isUpdating ? "Saving..." : "Publish New Terms Version"}
+        {isUpdating ? "Saving..." : "Update Database"}
       </button>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { parrotDarkerBlue } from "../styles/colors";
+import { parrotBlue } from "../styles/colors";
 
 const sections = [
     {
@@ -38,17 +38,16 @@ const sections = [
 export default function AdminSelector({ selected, setSelected }) {
     return (
         <div style={{
-            width: "13rem",
-            padding: "0.75rem 0.5rem",
+            width: "9rem",
+            padding: "0.75rem 0.25rem",
             display: "flex",
             flexDirection: "column",
             gap: "1.25rem",
-            borderRight: "1px solid rgba(255,255,255,0.1)",
-            backgroundColor: parrotDarkerBlue,
+            backgroundColor: parrotBlue,
             height: "100%",
         }}>
             {sections.map(section => (
-                <div key={section.label}>
+                <div key={section.label} >
                     <div style={{
                         fontSize: "0.65rem",
                         fontWeight: 700,

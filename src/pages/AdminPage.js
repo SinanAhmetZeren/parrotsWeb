@@ -54,11 +54,12 @@ function AdminPage() {
               style={{
                 display: "flex",
                 width: "100%",
-                height: "100%"
+                height: "100%",
+                gap: 0
               }}
             >
               {/* LEFT SELECTOR */}
-              <div style={{ width: "14rem" }}>
+              <div style={{ width: "9rem" }}>
                 <AdminSelector selected={adminView} setSelected={setAdminView} />
               </div>
 
@@ -67,11 +68,12 @@ function AdminPage() {
               <div
                 style={{
                   flex: 1,
-                  padding: "1rem",
+                  padding: 0,
                   overflowY: "scroll",
-                  height: "94vh",
-                  scrollbarWidth: "none",     // Firefox
-                  msOverflowStyle: "none"     // IE / Edge
+                  height: "92vh",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+
                 }}
                 className="hide-scrollbar"
               >

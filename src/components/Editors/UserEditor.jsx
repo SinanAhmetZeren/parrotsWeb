@@ -57,7 +57,7 @@ export function UserEditor() {
   const handleSearchByUserName = async () => {
     setSearchingByUsername(true);
     if (!searchUserName?.trim()) { setSearchingByUsername(false); return; }
-    const result = await triggerGetUserByUserName(searchUserName);
+    const result = await triggerGetUserByUserName(searchUserName.trim().toLowerCase());
     if (result?.data) { setSearchUserId(result.data.id); populateUserFields(result.data); }
     setSearchingByUsername(false);
   };

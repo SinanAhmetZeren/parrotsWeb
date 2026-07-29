@@ -141,40 +141,7 @@ function MainPage() {
 
   // Get location from browser
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setInitialLatitude(latitude);
-          setInitialLongitude(longitude);
-          setLocationError(null);
-          handlePanToLocation(latitude, longitude);
-        },
-        (error) => {
-          console.error(error.message);
-          setLocationError("Using default location.");
-          applyFallbackLocation();
-          setTimeout(() => {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                setInitialLatitude(latitude);
-                setInitialLongitude(longitude);
-                setLocationError(null);
-                handlePanToLocation(latitude, longitude);
-              },
-              (err) => {
-                console.error("Retry failed:", err.message);
-                setLocationError("Using default location.");
-              }
-            );
-          }, 5000);
-        }
-      );
-    } else {
-      setLocationError("Using default location.");
-      applyFallbackLocation();
-    }
+    applyFallbackLocation();
   }, []);
 
   // Fetch initial voyages once map bounds are set
