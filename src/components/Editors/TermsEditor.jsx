@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { parrotBlue, parrotDarkBlue } from "../../styles/colors";
 import {
   useGetCurrentTermsAdminQuery,
   useUpdateTermsAdminMutation,
 } from "../../slices/TermsSlice";
+import { adminBtnPrimary } from "../../styles/adminStyles";
 
 export function TermsEditor() {
   const [version, setVersion] = useState("");
@@ -26,174 +26,115 @@ export function TermsEditor() {
     try {
       await updateTerms({ version: version.trim(), content: content.trim() }).unwrap();
       setSubmitted(true);
-      setVersion("");
-      setContent("");
+      setTimeout(() => setSubmitted(false), 2500);
     } catch {}
   };
 
-  return (
-    <div style={{ maxWidth: "860px", padding: "1rem" }}>
-      <h2 style={{ color: parrotDarkBlue, marginBottom: "1.5rem" }}>
-        Terms of Use Editor
-      </h2>
+  const disabled = isUpdating || !version.trim() || !content.trim();
 
-      {/* Admin notice */}
+  return (
+    <div style={{ padding: "1rem", height: "100%", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+
+      {/* Notice */}
       <div style={{
-        backgroundColor: "#fffbeb",
-        border: "1px solid #f59e0b",
+        backgroundColor: "rgba(245,158,11,0.1)",
+        border: "1px solid rgba(245,158,11,0.3)",
         borderRadius: "8px",
-        padding: "0.75rem 1rem",
-        marginBottom: "1.25rem",
-        fontSize: "0.85rem",
-        color: "#92400e",
+        padding: "0.65rem 1rem",
+        fontSize: "0.8rem",
+        color: "#fbbf24",
       }}>
-        ⚠ <strong>Note:</strong> This editor updates the database version record only. The terms text displayed to users in the app is hardcoded in the frontend and is not affected by changes made here. Use this to keep the version identifier in sync with any frontend updates you deploy. Publishing a new version name will prompt all users to read and accept the updated terms before continuing.
+        ⚠ Updates the database version record only. Changing the version name will prompt all users to re-accept terms.
       </div>
 
-      {/* Current version info */}
-      <div
-        style={{
-          backgroundColor: parrotBlue,
-          color: "white",
-          borderRadius: "8px",
-          padding: "0.75rem 1rem",
-          marginBottom: "2rem",
-          fontSize: "0.9rem",
-        }}
-      >
-        {isLoading ? (
-          "Loading current version..."
-        ) : current ? (
+      {/* Current version */}
+      <div style={{
+        backgroundColor: "#0f172a",
+        borderRadius: "8px",
+        padding: "0.65rem 1rem",
+        fontSize: "0.85rem",
+        color: "#94a3b8",
+      }}>
+        {isLoading ? "Loading..." : current ? (
           <>
-            <strong>Current version:</strong> {current.version} &nbsp;|&nbsp;
-            <strong>Published:</strong>{" "}
+            <span style={{ color: "#e2e8f0", fontWeight: 700 }}>Current version:</span>{" "}
+            <span style={{ color: "#f97316" }}>{current.version}</span>
+            <span style={{ color: "#475569", margin: "0 0.5rem" }}>|</span>
+            <span style={{ color: "#e2e8f0", fontWeight: 700 }}>Published:</span>{" "}
             {new Date(current.publishedAt).toLocaleDateString()}
           </>
-        ) : (
-          "No terms version found in database."
-        )}
+        ) : "No version found in database."}
       </div>
 
-      {/* Version name */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label
-          style={{
-            display: "block",
-            color: parrotDarkBlue,
-            fontWeight: 700,
-            marginBottom: "0.4rem",
-          }}
-        >
+      {/* Version input */}
+      <div>
+        <label style={{ display: "block", color: "#94a3b8", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>
           New Version Name
         </label>
         <input
           type="text"
-          placeholder="e.g. 2026-04"
+          placeholder="e.g. 2026-07"
           value={version}
           onChange={(e) => setVersion(e.target.value)}
           style={{
             width: "100%",
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            fontSize: "1rem",
-            color: parrotDarkBlue,
+            padding: "0.5rem 0.75rem",
+            borderRadius: "6px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backgroundColor: "#0f172a",
+            color: "#e2e8f0",
+            fontSize: "0.9rem",
             fontWeight: 600,
+            outline: "none",
+            boxSizing: "border-box",
           }}
         />
       </div>
 
       {/* Content textarea */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label
-          style={{
-            display: "block",
-            color: parrotDarkBlue,
-            fontWeight: 700,
-            marginBottom: "0.4rem",
-          }}
-        >
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <label style={{ display: "block", color: "#94a3b8", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>
           Terms Content
         </label>
         <textarea
           placeholder="Paste the full terms of use text here..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          rows={20}
+          spellCheck={false}
           style={{
-            width: "100%",
+            flex: 1,
+            minHeight: "60vh",
             padding: "0.75rem 1rem",
             borderRadius: "8px",
-            border: "1px solid #ccc",
-            fontSize: "0.95rem",
-            color: parrotDarkBlue,
-            fontWeight: 500,
-            resize: "vertical",
-            fontFamily: "inherit",
-            lineHeight: "1.5",
+            border: "none",
+            backgroundColor: "#0f172a",
+            color: "#e2e8f0",
+            fontSize: "0.85rem",
+            fontWeight: 400,
+            resize: "none",
+            fontFamily: "monospace",
+            lineHeight: "1.6",
+            outline: "none",
+            boxSizing: "border-box",
           }}
         />
-        <div
-          style={{
-            fontSize: "0.8rem",
-            color: "#888",
-            marginTop: "0.3rem",
-            textAlign: "right",
-          }}
-        >
+        <div style={{ fontSize: "0.75rem", color: "#475569", marginTop: "0.25rem", textAlign: "right" }}>
           {content.length.toLocaleString()} characters
         </div>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div
-          style={{
-            color: "#c62828",
-            fontWeight: 600,
-            marginBottom: "0.75rem",
-          }}
+      {/* Actions row */}
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <button
+          onClick={handleSubmit}
+          disabled={disabled}
+          style={{ ...adminBtnPrimary, opacity: disabled ? 0.45 : 1, cursor: disabled ? "not-allowed" : "pointer" }}
         >
-          {error?.data || "Failed to update terms."}
-        </div>
-      )}
-
-      {/* Success */}
-      {submitted && (
-        <div
-          style={{
-            color: "#2e7d32",
-            fontWeight: 600,
-            marginBottom: "0.75rem",
-          }}
-        >
-          ✓ Terms updated successfully.
-        </div>
-      )}
-
-      {/* Submit button */}
-      <button
-        onClick={handleSubmit}
-        disabled={isUpdating || !version.trim() || !content.trim()}
-        style={{
-          backgroundColor:
-            isUpdating || !version.trim() || !content.trim()
-              ? "#aaa"
-              : parrotBlue,
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          padding: "0.6rem 2rem",
-          fontSize: "1rem",
-          fontWeight: 700,
-          cursor:
-            isUpdating || !version.trim() || !content.trim()
-              ? "not-allowed"
-              : "pointer",
-        }}
-      >
-        {isUpdating ? "Saving..." : "Update Database"}
-      </button>
+          {isUpdating ? "Saving..." : "Update Database"}
+        </button>
+        {submitted && <span style={{ fontSize: "0.78rem", color: "#4ade80" }}>✓ Updated successfully.</span>}
+        {error && <span style={{ fontSize: "0.78rem", color: "#f87171" }}>{error?.data || "Failed to update."}</span>}
+      </div>
     </div>
   );
 }
