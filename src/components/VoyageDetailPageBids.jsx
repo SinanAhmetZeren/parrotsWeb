@@ -224,6 +224,7 @@ function RenderBid({
 }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const [isHoveredBid, setIsHoveredBid] = React.useState(false)
+  const [isHoveredUsername, setIsHoveredUsername] = React.useState(false)
 
   const navigate = useNavigate();
   const handleGoToUser = (bidUserId, username) => {
@@ -260,8 +261,13 @@ function RenderBid({
         ...middleTopItem,
         gridRow: ownVoyage ? "1" : "1 / span 2"
       }}>
-        <span style={userNameStyle} >
+        <span
+          style={userNameStyle}
+          onMouseEnter={() => setIsHoveredUsername(true)}
+          onMouseLeave={() => setIsHoveredUsername(false)}
+        >
           {username}
+          <CustomToolTipBidMessage isHovered={isHoveredUsername} message={username} />
         </span>
         <span style={personCountStyle} >
           {personCount === 1 ? (
@@ -425,7 +431,7 @@ const middleTopItem = {
   // backgroundColor: "lightgreen",
   display: "grid",
   // gridTemplateColumns: "4fr 1fr 1fr", // 4 : 1 : 1 ratio
-  gridTemplateColumns: "minmax(0,1fr) 5rem 5rem"
+  gridTemplateColumns: "minmax(0,1fr) 3.5rem 3.5rem"
 };
 
 const middleBottomItem = {
@@ -454,11 +460,10 @@ const rightItem = {
 const userNameStyle = {
   width: "100%",
   whiteSpace: "nowrap",
-  // overflow: "hidden",
-  // textOverflow: "ellipsis",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   fontWeight: "500",
   paddingLeft: "0.2rem",
-  // backgroundColor: "yellow"
   textAlign: "left"
 };
 

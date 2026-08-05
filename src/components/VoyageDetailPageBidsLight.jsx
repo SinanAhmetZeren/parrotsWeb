@@ -88,6 +88,7 @@ function BidsList({ bidsData, ownVoyage, handleAcceptBid, handleDeleteBid, loadi
 function RenderBid({ username, userImage, message, price, accepted, personCount, ownVoyage, handleAcceptBid, bidId, bidUserId, bidUserPublicId, loadingBidId, handleDeleteBid }) {
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const [isHoveredBid, setIsHoveredBid] = React.useState(false);
+  const [isHoveredUsername, setIsHoveredUsername] = React.useState(false);
   const navigate = useNavigate();
 
   return (
@@ -105,7 +106,14 @@ function RenderBid({ username, userImage, message, price, accepted, personCount,
         </div>
       </div>
       <div style={{ ...middleTopItem, gridRow: ownVoyage ? "1" : "1 / span 2" }}>
-        <span style={userNameStyle}>{username}</span>
+        <span
+          style={userNameStyle}
+          onMouseEnter={() => setIsHoveredUsername(true)}
+          onMouseLeave={() => setIsHoveredUsername(false)}
+        >
+          {username}
+          <CustomToolTipBidMessage isHovered={isHoveredUsername} message={username} />
+        </span>
         <span style={personCountStyle}>
           {personCount === 1 ? <IoPersonOutline size="1rem" style={{ marginRight: "0.15rem" }} /> : <IoPeopleOutline size="1rem" style={{ marginRight: "0.15rem" }} />}
           {personCount}
@@ -164,14 +172,16 @@ const leftItem = { gridRow: "1 / span 2", gridColumn: "1", display: "flex", just
 
 const middleTopItem = {
   gridColumn: "2", justifyContent: "center", alignItems: "center", display: "grid",
-  gridTemplateColumns: "minmax(0,1fr) 5rem 5rem",
+  gridTemplateColumns: "minmax(0,1fr) 3.5rem 3.5rem",
 };
+
+
 
 const middleBottomItem = { gridRow: "2", gridColumn: "2", display: "flex", justifyContent: "center", width: "100%" };
 
 const rightItem = { gridRow: "1 / span 2", gridColumn: "3", justifyContent: "center", alignItems: "center", display: "grid", gridTemplateColumns: "2fr 1fr" };
 
-const userNameStyle = { width: "100%", whiteSpace: "nowrap", fontWeight: "500", paddingLeft: "0.2rem", textAlign: "left", color: parrotTextDarkBlue };
+const userNameStyle = { width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontWeight: "500", paddingLeft: "0.2rem", textAlign: "left", color: parrotTextDarkBlue };
 
 const personCountStyle = { width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: "700", color: parrotTextDarkBlue };
 
