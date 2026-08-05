@@ -418,8 +418,8 @@ function VoyageDetailsPage() {
                     >
                       <TileLayer
                         url={mapTypeId === "roadmap"
-                          ? `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`
-                          : `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`}
+                          ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
+                          : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
                         attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                       />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
@@ -603,8 +603,8 @@ function VoyageDetailsPage() {
                     >
                       <TileLayer
                         url={mapTypeId === "roadmap"
-                          ? `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${maptilerKey}`
-                          : `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`}
+                          ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
+                          : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
                         attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                       />
                       <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
