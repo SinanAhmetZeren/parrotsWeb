@@ -141,7 +141,23 @@ function MainPage() {
 
   // Get location from browser
   useEffect(() => {
-    applyFallbackLocation();
+    if (!navigator.geolocation) {
+      applyFallbackLocation();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setInitialLatitude(latitude);
+        setInitialLongitude(longitude);
+        handlePanToLocation(latitude, longitude);
+      },
+      () => {
+        applyFallbackLocation();
+        setLocationBlocked(true);
+        setLocationError("Location blocked — reset it in browser settings.");
+      }
+    );
   }, []);
 
   // Fetch initial voyages once map bounds are set
