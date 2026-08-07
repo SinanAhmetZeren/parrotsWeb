@@ -2,16 +2,19 @@ import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import "../assets/css/date-range-custom.css";
 import { useNavigate } from "react-router-dom";
-import { parrotButtonDarkBlue, parrotDarkBlue } from "../styles/colors";
+import { useSelector } from "react-redux";
+import { parrotDarkBlue, parrotWalkTurquoise } from "../styles/colors";
 
 export const MainPageNewVoyageButton = () => {
   const navigate = useNavigate();
+  const bgImageVariant = useSelector((state) => state.users.bgImageVariant);
+  // const btnColor = bgImageVariant !== "new" ? parrotWalkTurquoise : parrotDarkBlue;
+  const btnColor = parrotDarkBlue;
 
   const buttonStyle = {
-    width: "40%",
+    width: "36%",
     backgroundColor: "#007bff",
     padding: "0.6rem",
-    marginTop: "3.5rem",
     borderRadius: "1.5rem",
     textAlign: "center",
     color: "white",
@@ -31,15 +34,22 @@ export const MainPageNewVoyageButton = () => {
       style={{
         display: "flex",
         justifyContent: "center",
+        gap: "0.6rem",
+        marginTop: "3.5rem",
+        width: "100%",
       }}
     >
       <button
-        onClick={() => {
-          navigate("/NewVoyage");
-        }}
-        style={{ ...buttonStyle, backgroundColor: "#005187", backgroundColor: parrotDarkBlue }}
+        onClick={() => navigate("/NewVoyage")}
+        style={{ ...buttonStyle, backgroundColor: btnColor }}
       >
         New Voyage
+      </button>
+      <button
+        onClick={() => navigate("/AskParrots")}
+        style={{ ...buttonStyle, backgroundColor: btnColor }}
+      >
+        Ask Parrots
       </button>
     </div>
   );

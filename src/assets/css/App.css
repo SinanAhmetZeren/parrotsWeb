@@ -333,3 +333,9 @@ img {
   transform: translateX(-50%) !important;
   width: auto !important;
 }
+
+.custom-prev.swiper-button-disabled,
+.custom-next.swiper-button-disabled {
+  opacity: 0;
+  pointer-events: none;
+}

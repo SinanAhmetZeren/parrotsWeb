@@ -76,7 +76,7 @@ export function MainPageCardSwiper({
           }
         }}
       >
-        <div style={{ width: "90%" }}>
+        <div style={{ width: "90%", margin: "0 0.5rem" }}>
           <Swiper
             effect="coverflow"
             onSlideChangeTransitionEnd={(swiper) => {

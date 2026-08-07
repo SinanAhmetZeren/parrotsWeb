@@ -22,6 +22,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import LoginPage from "./pages/LoginPage";
 import CreateVehiclePage from "./pages/CreateVehiclePage";
 import CreateVoyagePage from "./pages/CreateVoyagePage";
+import AskParrotsPage from "./pages/AskParrotsPage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
@@ -118,6 +119,7 @@ function App() {
             <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/newVehicle" element={<CreateVehiclePage />} />
             <Route path="/newVoyage" element={<CreateVoyagePage />} />
+            <Route path="/AskParrots" element={<AskParrotsPage />} />
             <Route
               path="/profile-public/:userId/:userName" // using publicId for userId
               element={<ProfilePagePublic />}
