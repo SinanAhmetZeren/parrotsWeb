@@ -279,14 +279,19 @@ export default function AskParrotsPage() {
               <div style={{
                 backgroundColor: isDark ? "#011a32" : "white",
                 borderRadius: "0.875rem", padding: "0.75rem 1rem",
-                display: "flex", alignItems: "center", gap: "0.75rem",
+                display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem",
                 boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
                 marginBottom: "0.75rem",
               }}>
                 <span style={{ fontSize: "1.1rem", fontWeight: 800, color: isDark ? "white" : "#003366" }}>Ask Parrots</span>
-                <span style={{ fontSize: "0.85rem", color: isDark ? "rgba(255,255,255,0.7)" : parrotPlaceholderGrey }}>
-                  Tell me what kind of voyage you're after.
-                </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", alignItems: "flex-start", paddingLeft: "1.5rem" }}>
+                  <span style={{ fontSize: "0.85rem", color: isDark ? "rgba(255,255,255,0.7)" : parrotPlaceholderGrey }}>
+                    Tell me what kind of voyage you're after.
+                  </span>
+                  <span style={{ fontSize: "0.72rem", color: parrotPlaceholderGrey, fontStyle: "italic" }}>
+                    AI-generated suggestions — always verify before you go.
+                  </span>
+                </div>
               </div>
               <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark}>
                 <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
