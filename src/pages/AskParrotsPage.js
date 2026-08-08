@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, CircleMarker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -6,8 +7,11 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { useAskParrotsMutation } from "../slices/AiSlice";
 import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
+import { FaAngleDoubleDown } from "react-icons/fa";
 import { invokeHub } from "../signalr/signalRHub";
 import { useSelector } from "react-redux";
+import { useLazyGetUserByIdQuery } from "../slices/UserSlice";
+import parrotCracker from "../assets/images/parrotCookie.png";
 import {
   parrotBoatPurple, parrotCarRed, parrotCaravanOrangeRed, parrotBusYellowGreen,
   parrotWalkTurquoise, parrotRunLightOrange, parrotMotorcycleDarkRed,
@@ -187,6 +191,18 @@ export default function AskParrotsPage() {
   const [mapCenter, setMapCenter] = useState([52.2053, 0.1218]); // Cambridge UK fallback
   const [userLocation, setUserLocation] = useState(null);
   const [askParrots, { isLoading }] = useAskParrotsMutation();
+  const navigate = useNavigate();
+  const [coinBalance, setCoinBalance] = useState(null);
+  const [isCoinHovered, setIsCoinHovered] = useState(false);
+  const [triggerGetUser] = useLazyGetUserByIdQuery();
+
+  React.useEffect(() => {
+    if (currentUserId) {
+      triggerGetUser(currentUserId).then((res) => {
+        if (res?.data) setCoinBalance(res.data.parrotCoinBalance ?? 0);
+      });
+    }
+  }, [currentUserId]);
 
   React.useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -215,8 +231,14 @@ export default function AskParrotsPage() {
         longitude: pin.lng,
       }).unwrap();
       setResponse(result.response);
-    } catch {
-      setResponse("Something went wrong. Please try again.");
+      if (result.remainingBalance !== undefined) setCoinBalance(result.remainingBalance);
+    } catch (err) {
+      if (err?.status === 402) {
+        setCoinBalance(0);
+        setResponse(null);
+      } else {
+        setResponse("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -276,23 +298,42 @@ export default function AskParrotsPage() {
 
             {/* Left panel — 2 parts */}
             <div style={{ flex: 2, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-              <div style={{
-                backgroundColor: isDark ? "#011a32" : "white",
-                borderRadius: "0.875rem", padding: "0.75rem 1rem",
-                display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem",
-                boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
-                marginBottom: "0.75rem",
-              }}>
-                <span style={{ fontSize: "1.1rem", fontWeight: 800, color: isDark ? "white" : "#003366" }}>Ask Parrots</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", alignItems: "flex-start", paddingLeft: "1.5rem" }}>
-                  <span style={{ fontSize: "0.85rem", color: isDark ? "rgba(255,255,255,0.7)" : parrotPlaceholderGrey }}>
-                    Tell me what kind of voyage you're after.
-                  </span>
-                  <span style={{ fontSize: "0.72rem", color: parrotPlaceholderGrey, fontStyle: "italic" }}>
-                    AI-generated suggestions — always verify before you go.
-                  </span>
+              {coinBalance === 0 ? (
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  backgroundColor: isDark ? "#011a32" : "white",
+                  borderRadius: "0.875rem", padding: "0.75rem 1rem", marginBottom: "0.75rem",
+                  boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
+                  gap: "1rem",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <img src={parrotCracker} alt="coin" style={{ width: "3rem", height: "3rem" }} />
+                    <span style={{ fontWeight: 700, fontSize: "0.9rem", color: isDark ? "rgba(255,255,255,0.9)" : "#003366", textAlign: "left", paddingLeft: "1.5rem" }}>
+                      You're out of ParrotCrackers.<br />Get more before you configure your voyage.
+                    </span>
+                  </div>
+                  <style>{`@keyframes parrotPulse { 0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.5;transform:scale(1.5)} }`}</style>
+                  <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
                 </div>
-              </div>
+              ) : (
+                <div style={{
+                  backgroundColor: isDark ? "#011a32" : "white",
+                  borderRadius: "0.875rem", padding: "0.75rem 1rem",
+                  display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem",
+                  boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
+                  marginBottom: "0.75rem",
+                }}>
+                  <span style={{ fontSize: "1.1rem", fontWeight: 800, color: isDark ? "white" : "#003366", width: "4rem", lineHeight: 1.2 }}>Ask Parrots</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", alignItems: "flex-start" }}>
+                    <span style={{ fontSize: "0.85rem", color: isDark ? "rgba(255,255,255,0.7)" : parrotPlaceholderGrey }}>
+                      Tell me what kind of voyage you're after.
+                    </span>
+                    <span style={{ fontSize: "0.78rem", color: parrotPlaceholderGrey, fontStyle: "italic" }}>
+                      These recommendations are for inspiration, so please verify before you go.
+                    </span>
+                  </div>
+                </div>
+              )}
               <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark}>
                 <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
               </SectionCard>
@@ -309,20 +350,66 @@ export default function AskParrotsPage() {
                 <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} radius={radius} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ flex: 1 }} />
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem", gap: "0.75rem" }}>
+                {coinBalance !== null && (
+                  <div style={{ position: "relative" }}>
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => navigate("/parrotCoinPage")}>
+                      <div style={{
+                        width: "3.75rem", height: "3.75rem", borderRadius: "4rem",
+                        backgroundColor: "#cad8ec5d", display: "flex", alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <img
+                          src={parrotCracker}
+                          alt="coin"
+                          style={{
+                            width: "3.5rem", height: "3.5rem", transform: isCoinHovered ? "scale(1.3)" : "scale(1)", transition: "transform 0.3s ease-in-out", display: "block", marginTop: "1px"
+                          }}
+                          onMouseEnter={() => setIsCoinHovered(true)}
+                          onMouseLeave={() => setIsCoinHovered(false)}
+                        />
+                      </div>
+                    </div>
+                    {isCoinHovered && (
+                      <div style={{
+                        position: "absolute", bottom: "4.5rem", left: "0",
+                        backgroundColor: isDark ? "#0d2a45" : "#faf7f2",
+                        color: isDark ? "rgba(255,245,220,0.9)" : "#003366",
+                        borderRadius: "0.75rem", padding: "0.75rem 1rem",
+                        boxShadow: "0 0.25rem 1rem rgba(0,0,0,0.2)",
+                        fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap",
+                        zIndex: 100,
+                      }}>
+                        {coinBalance === 0 ? (
+                          <>
+                            You have no ParrotCrackers left.<br />
+                            You need at least 1 ParrotCracker to ask the Parrots.<br />
+                            <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to top up your ParrotCrackers.</span>
+                          </>
+                        ) : (
+                          <>
+                            You have {coinBalance} ParrotCracker{coinBalance !== 1 ? "s" : ""}.<br />
+                            1 ParrotCracker will be deducted per query.<br />
+                            <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to manage your ParrotCrackers.</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <button
-                  onClick={handleAsk}
-                  disabled={!canAsk || isLoading}
+                  onClick={coinBalance === 0 ? () => navigate("/parrotCoinPage") : handleAsk}
+                  disabled={coinBalance !== 0 && (!canAsk || isLoading)}
                   style={{
                     width: "60%", padding: "0.75rem",
-                    backgroundColor: canAsk && !isLoading ? parrotDarkBlue : isDark ? "#555" : "#ccc",
+                    backgroundColor: coinBalance === 0 ? parrotCaravanOrangeRed : canAsk && !isLoading ? parrotDarkBlue : isDark ? "#555" : "#ccc",
                     color: "white", fontWeight: 800, fontSize: "1rem",
-                    border: "none", borderRadius: "999rem", cursor: canAsk && !isLoading ? "pointer" : "not-allowed",
+                    border: "none", borderRadius: "999rem", cursor: coinBalance === 0 ? "pointer" : canAsk && !isLoading ? "pointer" : "not-allowed",
                     boxShadow: canAsk ? "0 0.25rem 0.625rem rgba(0,0,0,0.15)" : "none",
                     transition: "all 0.2s ease",
                   }}
                 >
-                  {isLoading ? "Asking Parrots..." : "Ask Parrots"}
+                  {isLoading ? "Asking Parrots..." : coinBalance === 0 ? "Get ParrotCrackers" : "Ask Parrots"}
                 </button>
               </div>
             </div>
@@ -398,7 +485,7 @@ export default function AskParrotsPage() {
                   </div>
                 ) : (
                   <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1 }}>
-                    <PulsatingParrotLogo size={192} />
+                    <PulsatingParrotLogo size={192} style={{ animation: "none", opacity: 0.2 }} />
                   </div>
                 )}
               </SectionCard>

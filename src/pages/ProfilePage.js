@@ -21,7 +21,7 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { parrotButtonDarkBlue, parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
-import parrotCoin from "../assets/images/parrotcoin.png"
+import parrotCoin from "../assets/images/parrotCookie.png"
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -179,8 +179,21 @@ function ProfilePage() {
                     }}
                     onMouseEnter={() => setIsParrotCoinHovered(true)}
                     onMouseLeave={() => setIsParrotCoinHovered(false)}
-
                   />
+                  {isParrotCoinHovered && (
+                    <div style={{
+                      position: "absolute", bottom: "5.5rem", left: "50%", transform: "translateX(-50%)",
+                      backgroundColor: isDarkMode ? "#0d2a45" : "#faf7f2",
+                      color: isDarkMode ? "rgba(255,245,220,0.9)" : "#003366",
+                      borderRadius: "0.75rem", padding: "0.75rem 1rem",
+                      boxShadow: "0 0.25rem 1rem rgba(0,0,0,0.2)",
+                      fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap",
+                      zIndex: 100, pointerEvents: "none",
+                    }}>
+                      You have {userData?.parrotCoinBalance ?? "..."} ParrotCracker{userData?.parrotCoinBalance !== 1 ? "s" : ""}.<br />
+                      <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to top up your Crackers.</span>
+                    </div>
+                  )}
                 </div>
 
               </div>

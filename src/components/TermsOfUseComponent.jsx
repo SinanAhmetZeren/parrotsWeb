@@ -229,13 +229,14 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                                     { num: "9.", text: "Intellectual Property", id: "ip" },
                                     { num: "10.", text: "Limitation of Liability", id: "liability" },
                                     { num: "11.", text: "Disclaimers", id: "disclaimers" },
-                                    { num: "12.", text: "Modifications", id: "modifications" },
-                                    { num: "13.", text: "Privacy Policy", id: "privacy" },
-                                    { num: "14.", text: "Dispute Resolution", id: "dispute" },
-                                    { num: "15.", text: "Governing Law", id: "law" },
-                                    { num: "16.", text: "Service Termination and Discontinuation", id: "termination" },
-                                    { num: "17.", text: "Refund Policy", id: "refund" },
-                                    { num: "18.", text: "Contact", id: "contact" },
+                                    { num: "12.", text: "AI-Generated Content (Ask Parrots)", id: "ai-content" },
+                                    { num: "13.", text: "Modifications", id: "modifications" },
+                                    { num: "14.", text: "Privacy Policy", id: "privacy" },
+                                    { num: "15.", text: "Dispute Resolution", id: "dispute" },
+                                    { num: "16.", text: "Governing Law", id: "law" },
+                                    { num: "17.", text: "Service Termination and Discontinuation", id: "termination" },
+                                    { num: "18.", text: "Refund Policy", id: "refund" },
+                                    { num: "19.", text: "Contact", id: "contact" },
                                 ].map((item) => (
                                     <div
                                         key={item.id}
@@ -594,14 +595,38 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                                 </div>
                             </div>
                             <div style={transparentWrapper}>
-                                <div id="modifications" style={styles.sectionTitle}>12. Modifications</div>
+                                <div id="ai-content" style={styles.sectionTitle}>12. AI-Generated Content (Ask Parrots)</div>
+                                <div style={styles.sectionTitle2}>1. Nature of AI Suggestions</div>
+                                <div style={styles.paragraph}>
+                                    "Ask Parrots" features AI-generated travel suggestions powered by third-party technology (Google Gemini). Responses are generated automatically and may contain inaccuracies, outdated information, or incomplete routing, regardless of mode of travel (e.g., walking, driving, boating, cycling or other modes of travel supported by the app). Suggested routes, services, or transport options may no longer be available or may not exist. Suggestions do not constitute professional, safety, or travel planning advice.
+                                </div>
+                                <div style={styles.sectionTitle2}>2. Location & Query Data</div>
+                                <div style={styles.paragraph}>
+                                    By using Ask Parrots, your location coordinates, selected vehicle type, voyage duration, and vibe preferences are transmitted to Parrots servers and forwarded to Google Gemini (or alternative AI providers we may use in future) solely to process and generate your request. This data is handled in accordance with our Privacy Policy and applicable third-party terms. Parrots does not control third-party processing.
+                                </div>
+                                <div style={styles.sectionTitle2}>3. Travel Safety & Independent Verification</div>
+                                <div style={styles.paragraph}>
+                                    You are solely responsible for your personal safety, compliance with local traffic laws, and adherence to physical road or path conditions, weather, or temporary closures. Always independently verify route feasibility, venue operating hours, local regulations, and safety conditions before embarking on any suggested voyage. Where suggestions involve public or paid transport (such as flights, ferries, or taxis), Parrots accepts no responsibility for cancellations, delays, no-shows, or pricing changes. Always confirm availability and book through official channels.
+                                </div>
+                                <div style={styles.sectionTitle2}>4. No Liability & Disclaimer of Warranties</div>
+                                <div style={styles.paragraph}>
+                                    Ask Parrots is provided on an "AS IS" and "AS AVAILABLE" basis. To the maximum extent permitted by law, Parrots accepts no liability for any direct, indirect, incidental, or consequential loss, injury, delay, fine, or expense arising from reliance on AI-generated suggestions or service interruptions.
+                                </div>
+                                <div style={styles.sectionTitle2}>5. Usage Limits & Service Availability</div>
+                                <div style={styles.paragraph}>
+                                    To ensure fair access for all users, usage of Ask Parrots may be subject to rate limits, quotas, or temporary suspensions at Parrots' sole discretion and without prior notice. Each Ask Parrots query consumes 1 ParrotCracker. Parrots reserves the right to adjust this rate at any time. Parrots reserves the right to modify or discontinue Ask Parrots at any time, consistent with Section 17.
+                                </div>
+                            </div>
+
+                            <div style={transparentWrapper}>
+                                <div id="modifications" style={styles.sectionTitle}>13. Modifications</div>
                                 <div style={styles.paragraph}>
                                     Parrots may update these Terms at any time. Where changes are material, Parrots will make reasonable efforts to notify users, such as by displaying a notice within the app or sending an email to the registered address. Continued use of the platform after changes take effect constitutes acceptance of the updated Terms. Users who do not agree to updated Terms should stop using the platform and may request account deletion.
                                 </div>
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="privacy" style={styles.sectionTitle}>13. Privacy Policy</div>
+                                <div id="privacy" style={styles.sectionTitle}>14. Privacy Policy</div>
 
                                 <div style={styles.paragraph}>
                                     Parrots respects your privacy and is committed to protecting your personal data. This section explains how information is collected, used, stored, and protected when you use the platform.
@@ -681,7 +706,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
 
 
                             <div style={transparentWrapper}>
-                                <div id="dispute" style={styles.sectionTitle}>14. Dispute Resolution</div>
+                                <div id="dispute" style={styles.sectionTitle}>15. Dispute Resolution</div>
                                 <div style={styles.paragraph}>
                                     In the event of a dispute, users are encouraged to contact Parrots at parrotsapp@gmail.com in the first instance to seek an informal resolution.
                                 </div>
@@ -691,14 +716,14 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="law" style={styles.sectionTitle}>15. Governing Law</div>
+                                <div id="law" style={styles.sectionTitle}>16. Governing Law</div>
                                 <div style={styles.paragraph}>
                                     These Terms are governed by the laws of the United Kingdom. Disputes shall be subject to UK courts.
                                 </div>
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="termination" style={styles.sectionTitle}>16. Service Termination and Discontinuation</div>
+                                <div id="termination" style={styles.sectionTitle}>17. Service Termination and Discontinuation</div>
                                 <div style={styles.paragraph}>
                                     Parrots reserves the right to modify, suspend, or permanently discontinue the Service, or any part thereof, at any time and for any reason, with or without prior notice. We shall not be liable to you or any third party for any such modification, suspension, or discontinuation.
                                 </div>
@@ -711,7 +736,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="refund" style={styles.sectionTitle}>17. Refund Policy</div>
+                                <div id="refund" style={styles.sectionTitle}>18. Refund Policy</div>
                                 <div style={styles.sectionTitle2}>ParrotCoins and Paid Credits</div>
                                 <div style={styles.paragraph}>
                                     ParrotCoins are virtual credits within the Parrot Voyages application used to access premium features, such as displaying voyages on the public map.
@@ -742,7 +767,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                             </div>
 
                             <div style={transparentWrapper}>
-                                <div id="contact" style={styles.sectionTitle}>18. Contact</div>
+                                <div id="contact" style={styles.sectionTitle}>19. Contact</div>
                                 <div style={styles.paragraph}>
                                     For questions regarding these Terms:
                                     <br />
