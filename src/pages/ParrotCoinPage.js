@@ -14,6 +14,7 @@ import {
 import { StripePaymentModal } from "../components/StripePaymentModal";
 import { parrotCaravanOrangeRed, parrotDarkBlue, parrotGreen } from "../styles/colors";
 import { toast } from "react-toastify";
+import { ParrotCoinPageMobile } from "./ParrotCoinPageMobile";
 
 const PURCHASE_OPTIONS = [
   { coins: 25, priceEUR: 1.99, label: "NEST PACK" },
@@ -44,6 +45,13 @@ export function ParrotCoinPage() {
   const [isProcessingFree, setIsProcessingFree] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [displayState, setDisplayState] = useState("purchases");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const bg = isDark ? "#0a1a2e" : "#f5f0e8";
   const cardBg = isDark ? "#011a32" : "white";
@@ -116,6 +124,21 @@ export function ParrotCoinPage() {
             </div>
           </div>
 
+          {isMobile ? (
+            <ParrotCoinPageMobile
+              isDark={isDark}
+              currentBalance={currentBalance}
+              purchases={purchases}
+              transactions={transactions}
+              processingIndex={processingIndex}
+              isProcessingFree={isProcessingFree}
+              showClaimModal={showClaimModal}
+              displayState={displayState}
+              setDisplayState={setDisplayState}
+              setShowClaimModal={setShowClaimModal}
+              handleClaimFree={handleClaimFree}
+            />
+          ) : (
           <div style={{ width: "100%", maxWidth: "72rem", margin: "0 auto", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
 
             {/* ROW 1: 2 columns */}
@@ -267,9 +290,10 @@ export function ParrotCoinPage() {
             </div>
 
           </div>
+          )}
 
-          {/* CLAIM MODAL */}
-          {showClaimModal && (
+          {/* CLAIM MODAL — desktop only, mobile has its own */}
+          {!isMobile && showClaimModal && (
             <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
               <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "2rem", width: "20rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.2rem", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
                 <img src={parrotCracker} alt="cracker" style={{ width: "4rem", height: "4rem" }} />
