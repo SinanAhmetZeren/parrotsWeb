@@ -53,7 +53,7 @@ export function ParrotCoinPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const bg = isDark ? "#0a1a2e" : "#f5f0e8";
+  const bg = isDark ? "transparent" : "transparent";
   const cardBg = isDark ? "#011a32" : "white";
   const textPrimary = isDark ? "rgba(255,255,255,0.9)" : "#003366";
   const textSecondary = isDark ? "rgba(255,255,255,0.55)" : "#888";
@@ -139,157 +139,157 @@ export function ParrotCoinPage() {
               handleClaimFree={handleClaimFree}
             />
           ) : (
-          <div style={{ width: "100%", maxWidth: "72rem", margin: "0 auto", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ width: "100%", maxWidth: "72rem", margin: "0 auto", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
 
-            {/* ROW 1: 2 columns */}
-            <div style={{ display: "grid", gridTemplateColumns: "22rem 1fr", gap: "1rem", alignItems: "stretch" }}>
+              {/* ROW 1: 2 columns */}
+              <div style={{ display: "grid", gridTemplateColumns: "22rem 1fr", gap: "1rem", alignItems: "stretch" }}>
 
-            {/* HEADER CARD */}
-            <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "2.5rem 2rem 2rem", boxShadow: shadow, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "1.25rem" }}>
-                You have
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                <img src={parrotCracker} alt="cracker" style={{ width: "3.5rem", height: "3.5rem" }} />
-                <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary, lineHeight: 1 }}>{currentBalance}</span>
-              </div>
-              <p style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "2rem" }}>
-                ParrotCrackers in your jar
-              </p>
-              <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
-                <button
-                  onClick={() => setShowClaimModal(true)}
-                  style={{ backgroundColor: parrotCaravanOrangeRed, color: "white", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "999rem", padding: "0.75rem 2rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
-                >
-                  <img src={parrotCracker} alt="cracker" style={{ width: "1.4rem", height: "1.4rem" }} />
-                  Get Free ParrotCrackers
-                </button>
-              </div>
-            </div>{/* end HEADER CARD */}
-
-            {/* RIGHT COLUMN */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-
-            {/* PRICING CARDS */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
-              {PURCHASE_OPTIONS.map((opt, i) => (
-                <div
-                  key={i}
-                  // onClick={async () => {
-                  //   setProcessingIndex(i);
-                  //   try {
-                  //     const { clientSecret } = await createPaymentIntent({ userId, coins: opt.coins }).unwrap();
-                  //     setStripeCoins(opt.coins);
-                  //     setStripeClientSecret(clientSecret);
-                  //   } catch {
-                  //     toast.error("Could not initiate payment. Please try again.");
-                  //   } finally {
-                  //     setProcessingIndex(null);
-                  //   }
-                  // }}
-                  style={{
-                    backgroundColor: cardBg, borderRadius: "1rem", padding: "1.5rem 1rem",
-                    boxShadow: opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow,
-                    textAlign: "center", cursor: "pointer", position: "relative",
-                    transition: "transform 0.15s ease", opacity: 0.5,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.03)"; if (!opt.best) e.currentTarget.style.boxShadow = `0 0 0 1px ${parrotGreen}, ${shadow}`; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow; }}
-                >
-                  {opt.best && (
-                    <div style={{ position: "absolute", top: "-0.75rem", left: "50%", transform: "translateX(-50%)", backgroundColor: "#c8a84b", color: "white", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.08em", padding: "0.2rem 0.75rem", borderRadius: "999rem" }}>
-                      BEST VALUE
-                    </div>
-                  )}
-                  {opt.label && (
-                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: opt.best ? "#c8a84b" : textSecondary, letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{opt.label}</div>
-                  )}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", marginBottom: "0.4rem" }}>
-                    <img src={parrotCracker} alt="cracker" style={{ width: "1.6rem", height: "1.6rem" }} />
-                    <span style={{ fontSize: "2rem", fontWeight: 900, color: textPrimary }}>{opt.coins}</span>
+                {/* HEADER CARD */}
+                <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "2.5rem 2rem 2rem", boxShadow: shadow, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "1.25rem" }}>
+                    You have
                   </div>
-                  <div style={{ fontSize: "0.85rem", color: textSecondary, fontWeight: 600 }}>€{opt.priceEUR.toFixed(2)}</div>
-                  {processingIndex === i && (
-                    <div style={{ marginTop: "0.5rem" }}>
-                      <div className="spinner" style={{ height: "1rem", width: "1rem", margin: "auto", border: "3px solid rgba(0,0,0,0.1)", borderTop: `3px solid ${parrotCaravanOrangeRed}` }} />
-                    </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                    <img src={parrotCracker} alt="cracker" style={{ width: "3.5rem", height: "3.5rem" }} />
+                    <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary, lineHeight: 1 }}>{currentBalance}</span>
+                  </div>
+                  <p style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "2rem" }}>
+                    ParrotCrackers in your jar
+                  </p>
+                  <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+                    <button
+                      onClick={() => setShowClaimModal(true)}
+                      style={{ backgroundColor: parrotCaravanOrangeRed, color: "white", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "999rem", padding: "0.75rem 2rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    >
+                      <img src={parrotCracker} alt="cracker" style={{ width: "1.4rem", height: "1.4rem" }} />
+                      Get Free ParrotCrackers
+                    </button>
+                  </div>
+                </div>{/* end HEADER CARD */}
+
+                {/* RIGHT COLUMN */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+
+                  {/* PRICING CARDS */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                    {PURCHASE_OPTIONS.map((opt, i) => (
+                      <div
+                        key={i}
+                        // onClick={async () => {
+                        //   setProcessingIndex(i);
+                        //   try {
+                        //     const { clientSecret } = await createPaymentIntent({ userId, coins: opt.coins }).unwrap();
+                        //     setStripeCoins(opt.coins);
+                        //     setStripeClientSecret(clientSecret);
+                        //   } catch {
+                        //     toast.error("Could not initiate payment. Please try again.");
+                        //   } finally {
+                        //     setProcessingIndex(null);
+                        //   }
+                        // }}
+                        style={{
+                          backgroundColor: cardBg, borderRadius: "1rem", padding: "1.5rem 1rem",
+                          boxShadow: opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow,
+                          textAlign: "center", cursor: "pointer", position: "relative",
+                          transition: "transform 0.15s ease", opacity: 0.5,
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.03)"; if (!opt.best) e.currentTarget.style.boxShadow = `0 0 0 1px ${parrotGreen}, ${shadow}`; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow; }}
+                      >
+                        {opt.best && (
+                          <div style={{ position: "absolute", top: "-0.75rem", left: "50%", transform: "translateX(-50%)", backgroundColor: "#c8a84b", color: "white", fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.08em", padding: "0.2rem 0.75rem", borderRadius: "999rem" }}>
+                            BEST VALUE
+                          </div>
+                        )}
+                        {opt.label && (
+                          <div style={{ fontSize: "0.75rem", fontWeight: 800, color: opt.best ? "#c8a84b" : textSecondary, letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{opt.label}</div>
+                        )}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", marginBottom: "0.4rem" }}>
+                          <img src={parrotCracker} alt="cracker" style={{ width: "1.6rem", height: "1.6rem" }} />
+                          <span style={{ fontSize: "2rem", fontWeight: 900, color: textPrimary }}>{opt.coins}</span>
+                        </div>
+                        <div style={{ fontSize: "0.85rem", color: textSecondary, fontWeight: 600 }}>€{opt.priceEUR.toFixed(2)}</div>
+                        {processingIndex === i && (
+                          <div style={{ marginTop: "0.5rem" }}>
+                            <div className="spinner" style={{ height: "1rem", width: "1rem", margin: "auto", border: "3px solid rgba(0,0,0,0.1)", borderTop: `3px solid ${parrotCaravanOrangeRed}` }} />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* WHAT CRACKERS FEED */}
+                  <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
+                    <div style={{ fontSize: "1.1rem", fontWeight: 800, color: textPrimary, marginBottom: "1rem" }}>What ParrotCrackers feed</div>
+                    {WHAT_CRACKERS_FEED.map((item, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 0", borderBottom: i < WHAT_CRACKERS_FEED.length - 1 ? `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#f0ebe0"}` : "none" }}>
+                        <span style={{ fontWeight: 600, color: textPrimary, fontSize: "0.95rem" }}>{item.action}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                          <img src={parrotCracker} alt="cracker" style={{ width: "1.2rem", height: "1.2rem" }} />
+                          <span style={{ fontWeight: 800, color: "#c8a84b", fontSize: "1rem" }}>{item.cost}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>{/* end WHAT CRACKERS */}
+                </div>{/* end RIGHT COLUMN */}
+              </div>{/* end ROW 1 */}
+
+              {/* HISTORY */}
+              <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
+                <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e8e2d8"}` }}>
+                  {["purchases", "transactions"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setDisplayState(tab)}
+                      style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "0.95rem", color: displayState === tab ? textPrimary : textSecondary, paddingBottom: "0.5rem", borderBottom: displayState === tab ? `2px solid ${parrotGreen}` : "2px solid transparent", marginBottom: "-2px" }}
+                    >
+                      {tab === "purchases" ? "Purchase History" : "ParrotCracker Log"}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Rows */}
+                <div style={{ maxHeight: "16rem", overflowY: "auto" }}>
+
+                  {/* Table header */}
+                  <div style={{ display: "grid", gridTemplateColumns: displayState === "purchases" ? "1fr 1fr 1fr 1fr" : "1fr 2fr 1fr", padding: "0.5rem 0", marginBottom: "0.25rem", position: "sticky", top: 0, backgroundColor: cardBg, zIndex: 1 }}>
+                    {(displayState === "purchases"
+                      ? ["CRACKERS", "PAID", "DATE", "STATUS"]
+                      : ["CRACKERS", "DESCRIPTION", "DATE"]
+                    ).map((h, idx) => (
+                      <span key={h} style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.08em", color: textSecondary, paddingLeft: "0.75rem", borderLeft: idx > 0 ? `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` : "none" }}>{h}</span>
+                    ))}
+                  </div>
+                  {displayState === "purchases" ? (
+                    purchases.length > 0 ? purchases.map((p, i) => (
+                      <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
+                          <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
+                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{p.coinsAmount.toLocaleString()}</span>
+                        </div>
+                        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: p.eurAmount === 0 ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>
+                          {p.eurAmount === 0 ? "Free" : `€${p.eurAmount.toFixed(2)}`}
+                        </span>
+                        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{new Date(p.createdAt).toLocaleDateString()}</span>
+                        <span style={{ fontWeight: 700, fontSize: "0.9rem", color: p.status === "completed" ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+                      </div>
+                    )) : <div style={{ color: textSecondary, padding: "1rem 0", fontSize: "0.9rem" }}>No purchases yet.</div>
+                  ) : (
+                    transactions.length > 0 ? transactions.map((t, i) => (
+                      <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
+                          <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
+                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{t.coinsAmount.toLocaleString()}</span>
+                        </div>
+                        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{t.description}</span>
+                        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{new Date(t.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    )) : <div style={{ color: textSecondary, padding: "1rem 0", fontSize: "0.9rem" }}>No transactions yet.</div>
                   )}
                 </div>
-              ))}
+              </div>
+
             </div>
-
-            {/* WHAT CRACKERS FEED */}
-            <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
-                <div style={{ fontSize: "1.1rem", fontWeight: 800, color: textPrimary, marginBottom: "1rem" }}>What ParrotCrackers feed</div>
-                {WHAT_CRACKERS_FEED.map((item, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 0", borderBottom: i < WHAT_CRACKERS_FEED.length - 1 ? `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#f0ebe0"}` : "none" }}>
-                    <span style={{ fontWeight: 600, color: textPrimary, fontSize: "0.95rem" }}>{item.action}</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                      <img src={parrotCracker} alt="cracker" style={{ width: "1.2rem", height: "1.2rem" }} />
-                      <span style={{ fontWeight: 800, color: "#c8a84b", fontSize: "1rem" }}>{item.cost}</span>
-                    </div>
-                  </div>
-                ))}
-            </div>{/* end WHAT CRACKERS */}
-            </div>{/* end RIGHT COLUMN */}
-            </div>{/* end ROW 1 */}
-
-            {/* HISTORY */}
-            <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
-              <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem", borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e8e2d8"}` }}>
-                {["purchases", "transactions"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setDisplayState(tab)}
-                    style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "0.95rem", color: displayState === tab ? textPrimary : textSecondary, paddingBottom: "0.5rem", borderBottom: displayState === tab ? `2px solid ${parrotGreen}` : "2px solid transparent", marginBottom: "-2px" }}
-                  >
-                    {tab === "purchases" ? "Purchase History" : "ParrotCracker Log"}
-                  </button>
-                ))}
-              </div>
-
-              {/* Rows */}
-              <div style={{ maxHeight: "16rem", overflowY: "auto" }}>
-
-              {/* Table header */}
-              <div style={{ display: "grid", gridTemplateColumns: displayState === "purchases" ? "1fr 1fr 1fr 1fr" : "1fr 2fr 1fr", padding: "0.5rem 0", marginBottom: "0.25rem", position: "sticky", top: 0, backgroundColor: cardBg, zIndex: 1 }}>
-                {(displayState === "purchases"
-                  ? ["CRACKERS", "PAID", "DATE", "STATUS"]
-                  : ["CRACKERS", "DESCRIPTION", "DATE"]
-                ).map((h, idx) => (
-                  <span key={h} style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.08em", color: textSecondary, paddingLeft: "0.75rem", borderLeft: idx > 0 ? `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` : "none" }}>{h}</span>
-                ))}
-              </div>
-                {displayState === "purchases" ? (
-                  purchases.length > 0 ? purchases.map((p, i) => (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
-                        <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                        <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{p.coinsAmount.toLocaleString()}</span>
-                      </div>
-                      <span style={{ fontWeight: 600, fontSize: "0.9rem", color: p.eurAmount === 0 ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>
-                        {p.eurAmount === 0 ? "Free" : `€${p.eurAmount.toFixed(2)}`}
-                      </span>
-                      <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{new Date(p.createdAt).toLocaleDateString()}</span>
-                      <span style={{ fontWeight: 700, fontSize: "0.9rem", color: p.status === "completed" ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
-                    </div>
-                  )) : <div style={{ color: textSecondary, padding: "1rem 0", fontSize: "0.9rem" }}>No purchases yet.</div>
-                ) : (
-                  transactions.length > 0 ? transactions.map((t, i) => (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
-                        <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                        <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{t.coinsAmount.toLocaleString()}</span>
-                      </div>
-                      <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{t.description}</span>
-                      <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{new Date(t.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  )) : <div style={{ color: textSecondary, padding: "1rem 0", fontSize: "0.9rem" }}>No transactions yet.</div>
-                )}
-              </div>
-            </div>
-
-          </div>
           )}
 
           {/* CLAIM MODAL — desktop only, mobile has its own */}
