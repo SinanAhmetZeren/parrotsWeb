@@ -1,7 +1,8 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotBlueTransparent, parrotDarkBlue } from "../styles/colors";
+import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotBlueTransparent, parrotDarkBlue } from "../styles/colors";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.png";
 import { use } from "react";
 import { invokeHub, isHubReady } from "../signalr/signalRHub";
 
@@ -47,6 +48,8 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
         const prevDate = index > 0 ? new Date(messagesToDisplay[index - 1].dateTime).toLocaleDateString("en-GB") : null;
         const showDateSeparator = date !== prevDate;
         const isCurrentUser = message.senderId === currentUserId;
+        const isAskParrots = isCurrentUser && message.text?.startsWith("**🦜**");
+        const displayText = isAskParrots ? message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text;
         return (
           <React.Fragment key={index}>
             {showDateSeparator && (
@@ -54,6 +57,17 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
                 <span style={dateSeparatorTextStyle(dark)}>{date}</span>
               </div>
             )}
+            {isAskParrots ? (
+              <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", marginBottom: 8, justifySelf: "start", textAlign: "left" }}>
+                <img src={parrotLogo} alt="Ask Parrots" style={{ width: 36, height: 36, borderRadius: "50%", marginRight: 8, flexShrink: 0 }} />
+                <div style={{ textAlign: "left" }}>
+                  <div style={{ fontSize: 12, color: parrotBlue, fontWeight: 700, marginBottom: 2 }}>Ask Parrots</div>
+                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: 8, padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: 14, textAlign: "left" }}>
+                    {displayText}
+                  </div>
+                </div>
+              </div>
+            ) : (
             <div
               style={{
                 ...containerStyle(dark),
@@ -61,7 +75,7 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
               }}
             >
               <div style={messageTextStyle}>
-                <div>{message.text}</div>
+                <div>{displayText}</div>
               </div>
               <div style={dateAndTimeContainerStyle}>
                 <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
@@ -69,6 +83,7 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
                 </span>
               </div>
             </div>
+            )}
           </React.Fragment>
         );
       })}
