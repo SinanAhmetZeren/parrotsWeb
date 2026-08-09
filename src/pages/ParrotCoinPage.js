@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import parrotCracker from "../assets/images/parrotCookie.png";
+import jarImg from "../assets/images/jar.png";
+import parrotWhite from "../assets/images/parrotwhiteoutlinebg.png";
 import {
   useCreatePaymentIntentMutation, useLazyGetParrotCoinBalanceQuery,
   useClaimFreeCoinsMutation
@@ -15,6 +17,7 @@ import { StripePaymentModal } from "../components/StripePaymentModal";
 import { parrotCaravanOrangeRed, parrotDarkBlue, parrotGreen } from "../styles/colors";
 import { toast } from "react-toastify";
 import { ParrotCoinPageMobile } from "./ParrotCoinPageMobile";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const PURCHASE_OPTIONS = [
   { coins: 25, priceEUR: 1.99, label: "NEST PACK" },
@@ -139,32 +142,25 @@ export function ParrotCoinPage() {
               handleClaimFree={handleClaimFree}
             />
           ) : (
-            <div style={{ width: "100%", maxWidth: "72rem", margin: "0 auto", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ width: "100%", maxWidth: "78rem", margin: "0 auto", padding: "1.5rem 1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
 
               {/* ROW 1: 2 columns */}
               <div style={{ display: "grid", gridTemplateColumns: "22rem 1fr", gap: "1rem", alignItems: "stretch" }}>
 
                 {/* HEADER CARD */}
-                <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "2.5rem 2rem 2rem", boxShadow: shadow, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "1.25rem" }}>
-                    You have
+                <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "2rem", boxShadow: shadow, display: "flex", flexDirection: "column", alignItems: "center", gap: "1.25rem", justifyContent: "space-evenly", height: "100%", boxSizing: "border-box" }}>
+                  <img src={jarImg} alt="jar" style={{ width: "9rem", height: "9rem", objectFit: "contain" }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "2rem", fontWeight: 800, color: parrotDarkBlue }}>You have</span>
+                    <span style={{ fontSize: "3.6rem", fontWeight: 900, color: parrotCaravanOrangeRed, lineHeight: 1 }}>{currentBalance}</span>
+                    <img src={parrotCracker} alt="cracker" style={{ width: "3rem", height: "3rem" }} />
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                    <img src={parrotCracker} alt="cracker" style={{ width: "3.5rem", height: "3.5rem" }} />
-                    <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary, lineHeight: 1 }}>{currentBalance}</span>
-                  </div>
-                  <p style={{ fontSize: "1.1rem", fontWeight: 800, color: parrotGreen, marginBottom: "2rem" }}>
-                    ParrotCrackers in your jar
-                  </p>
-                  <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
-                    <button
-                      onClick={() => setShowClaimModal(true)}
-                      style={{ backgroundColor: parrotCaravanOrangeRed, color: "white", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "999rem", padding: "0.75rem 2rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
-                    >
-                      <img src={parrotCracker} alt="cracker" style={{ width: "1.4rem", height: "1.4rem" }} />
-                      Get Free ParrotCrackers
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setShowClaimModal(true)}
+                    style={{ backgroundColor: parrotCaravanOrangeRed, color: "white", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "999rem", padding: "0.75rem 2rem", cursor: "pointer" }}
+                  >
+                    Get Free ParrotCrackers
+                  </button>
                 </div>{/* end HEADER CARD */}
 
                 {/* RIGHT COLUMN */}
@@ -220,16 +216,36 @@ export function ParrotCoinPage() {
 
                   {/* WHAT CRACKERS FEED */}
                   <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
-                    <div style={{ fontSize: "1.1rem", fontWeight: 800, color: textPrimary, marginBottom: "1rem" }}>What ParrotCrackers feed</div>
-                    {WHAT_CRACKERS_FEED.map((item, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 0", borderBottom: i < WHAT_CRACKERS_FEED.length - 1 ? `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#f0ebe0"}` : "none" }}>
-                        <span style={{ fontWeight: 600, color: textPrimary, fontSize: "0.95rem" }}>{item.action}</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                          <img src={parrotCracker} alt="cracker" style={{ width: "1.2rem", height: "1.2rem" }} />
-                          <span style={{ fontWeight: 800, color: "#c8a84b", fontSize: "1rem" }}>{item.cost}</span>
+                    <div style={{ fontSize: "1.5rem", fontWeight: 800, color: textPrimary, marginBottom: "0.5rem", textAlign: "center" }}>What ParrotCrackers feed</div>
+                    <div style={{ fontSize: "1.1rem", fontWeight: 600, color: textSecondary, textAlign: "left", marginBottom: "1.5rem", paddingLeft: "2rem", paddingRight: "2rem" }}>ParrotCrackers keep your voyage visible to the community and deliver instant travel insights for any location & surrounding area.</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                      {/* Feature Your Voyage */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                        <div style={{ width: "2rem", flexShrink: 0, display: "flex", justifyContent: "center" }}>
+                          <FaMapMarkerAlt size={22} color={parrotCaravanOrangeRed} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                          <div style={{ fontWeight: 800, color: textPrimary, fontSize: "1.2rem", textAlign: "left" }}>Feature Your Voyage</div>
+                          <div style={{ fontWeight: 600, color: textSecondary, fontSize: "1.1rem", textAlign: "left" }}>Put your journey on the public map</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontWeight: 600, color: textSecondary, fontSize: "1.2rem" }}>
+                            1 <img src={parrotCracker} alt="cracker" style={{ width: "1.3rem", height: "1.3rem" }} /> / day
+                          </div>
                         </div>
                       </div>
-                    ))}
+                      {/* Ask Parrots */}
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                        <div style={{ width: "3rem", flexShrink: 0, display: "flex", justifyContent: "center", marginTop: "-0.5rem" }}>
+                          <img src={parrotWhite} alt="parrot" style={{ width: "3rem", height: "3rem", objectFit: "contain" }} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", textAlign: "left" }}>
+                          <div style={{ fontWeight: 800, color: textPrimary, fontSize: "1.2rem" }}>Ask Parrots</div>
+                          <div style={{ fontWeight: 600, color: textSecondary, fontSize: "1.1rem", whiteSpace: "nowrap" }}>Get tips for any location and nearby spots</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontWeight: 600, color: textSecondary, fontSize: "1.2rem" }}>
+                            1 <img src={parrotCracker} alt="cracker" style={{ width: "1.3rem", height: "1.3rem" }} /> / query
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>{/* end WHAT CRACKERS */}
                 </div>{/* end RIGHT COLUMN */}
               </div>{/* end ROW 1 */}
