@@ -58,7 +58,7 @@ export function VoyageDetailBidsNew({
     const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
     try {
       // 🔔 Send chat message
-      await invokeHub("SendMessage", currentUserId, bidUserId, text);
+      await invokeHub("SendMessage", currentUserId, bidUserId, text, false);
       // 💾 Update backend
       await acceptBid(bidId).unwrap();
       // 🧠 Optimistic UI update
@@ -81,7 +81,7 @@ export function VoyageDetailBidsNew({
     const text = `Hi there! 👋 Your bid was deleted by ${username}`;
     try {
       // 🔔 Send chat message
-      await invokeHub("SendMessage", currentUserId, bidUserId, text);
+      await invokeHub("SendMessage", currentUserId, bidUserId, text, false);
       // 💾 Delete in backend
       await deleteBid(bidId).unwrap();
       // 🧠 Optimistic UI update

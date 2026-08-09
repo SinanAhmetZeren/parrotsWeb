@@ -29,7 +29,7 @@ export function VoyageDetailBidsLight({
     setLoadingBidId(bidId);
     const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
     try {
-      await invokeHub("SendMessage", currentUserId, bidUserId, text);
+      await invokeHub("SendMessage", currentUserId, bidUserId, text, false);
       await acceptBid(bidId).unwrap();
       setBidsData((prevBids) => prevBids.map((bid) => bid.id === bidId ? { ...bid, accepted: true } : bid));
       makeRefetch();
@@ -41,7 +41,7 @@ export function VoyageDetailBidsLight({
     setLoadingBidId(bidId);
     const text = `Hi there! 👋 Your bid was deleted by ${username}`;
     try {
-      await invokeHub("SendMessage", currentUserId, bidUserId, text);
+      await invokeHub("SendMessage", currentUserId, bidUserId, text, false);
       await deleteBid(bidId).unwrap();
       setBidsData((prevBids) => prevBids.filter((bid) => bid.id !== bidId));
       makeRefetch();

@@ -242,8 +242,7 @@ function ConnectPage() {
         return;
       }
 
-      // Send message via centralized invoke
-      await invokeHub("SendMessage", currentUserId, conversationUserId, message);
+      await invokeHub("SendMessage", currentUserId, conversationUserId, message, false);
 
       // Optionally refresh previews or other UI
       refetchMessagePreviews();
