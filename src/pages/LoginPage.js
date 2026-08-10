@@ -108,6 +108,7 @@ function LoginPage() {
   };
 
   const handleSignup = () => {
+    return;
     resetAllForms();
     setPageState("Register1");
   };
@@ -530,7 +531,7 @@ function LoginPage() {
                             Don't have an account?
                           </span>
                           <span
-                            onClick={() => handleSignup()}
+                            onClick={() => { return; handleSignup(); }}
                             style={{
                               color: parrotTextDarkBlue,
                               fontWeight: "bold",
@@ -707,61 +708,61 @@ function LoginPage() {
                       </span>
                     </div>
 
-                  <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
+                    <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
+                        <div
+                          onClick={() => setTermsAccepted(prev => !prev)}
+                          style={{
+                            width: "1.1rem", height: "1.1rem", borderRadius: "3px",
+                            border: "2px solid #007bff", backgroundColor: termsAccepted ? "#007bff" : "white",
+                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {termsAccepted && <span style={{ color: "white", fontSize: "0.8rem", fontWeight: "bold" }}>✓</span>}
+                        </div>
+                        <span style={{ color: parrotTextDarkBlue, fontSize: "0.9rem" }}>
+                          I have read and agree to the{" "}
+                          <span
+                            onClick={() => setTermsModalOpen(true)}
+                            style={{ color: "#007bff", fontWeight: "bold", cursor: "pointer", textDecoration: "underline" }}
+                          >
+                            Terms of Use
+                          </span>
+                        </span>
+                      </div>
+
+                      <TermsOfUseComponent
+                        open={termsModalOpen}
+                        onClose={() => setTermsModalOpen(false)}
+                      />
+
                       <div
-                        onClick={() => setTermsAccepted(prev => !prev)}
+                        className="register-button"
+                        onClick={() => termsAccepted && handleRegister()}
                         style={{
-                          width: "1.1rem", height: "1.1rem", borderRadius: "3px",
-                          border: "2px solid #007bff", backgroundColor: termsAccepted ? "#007bff" : "white",
-                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                          flexShrink: 0,
+                          opacity:
+                            usernameRegister.length >= 3 &&
+                              /^[a-zA-Z0-9_]+$/.test(usernameRegister) &&
+                              emailRegister &&
+                              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) &&
+                              passwordRegister &&
+                              passwordRegister2 &&
+                              termsAccepted &&
+                              passwordRegister.length >= 8 &&
+                              /[A-Z]/.test(passwordRegister) &&
+                              /[a-z]/.test(passwordRegister) &&
+                              /[0-9]/.test(passwordRegister) &&
+                              passwordRegister === passwordRegister2
+                              ? 1
+                              : 0.5,
+                          cursor: termsAccepted ? "pointer" : "not-allowed",
                         }}
                       >
-                        {termsAccepted && <span style={{ color: "white", fontSize: "0.8rem", fontWeight: "bold" }}>✓</span>}
+                        {" "}
+                        {isRegistering ? <LoginSpinner /> : "Register"}
                       </div>
-                      <span style={{ color: parrotTextDarkBlue, fontSize: "0.9rem" }}>
-                        I have read and agree to the{" "}
-                        <span
-                          onClick={() => setTermsModalOpen(true)}
-                          style={{ color: "#007bff", fontWeight: "bold", cursor: "pointer", textDecoration: "underline" }}
-                        >
-                          Terms of Use
-                        </span>
-                      </span>
                     </div>
-
-                    <TermsOfUseComponent
-                      open={termsModalOpen}
-                      onClose={() => setTermsModalOpen(false)}
-                    />
-
-                    <div
-                      className="register-button"
-                      onClick={() => termsAccepted && handleRegister()}
-                      style={{
-                        opacity:
-                          usernameRegister.length >= 3 &&
-                            /^[a-zA-Z0-9_]+$/.test(usernameRegister) &&
-                            emailRegister &&
-                            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) &&
-                            passwordRegister &&
-                            passwordRegister2 &&
-                            termsAccepted &&
-                            passwordRegister.length >= 8 &&
-                            /[A-Z]/.test(passwordRegister) &&
-                            /[a-z]/.test(passwordRegister) &&
-                            /[0-9]/.test(passwordRegister) &&
-                            passwordRegister === passwordRegister2
-                            ? 1
-                            : 0.5,
-                        cursor: termsAccepted ? "pointer" : "not-allowed",
-                      }}
-                    >
-                      {" "}
-                      {isRegistering ? <LoginSpinner /> : "Register"}
-                    </div>
-                  </div>
                   </div>
                   <div style={{ marginRight: "1rem" }}>
                     <div className="signup-register">
