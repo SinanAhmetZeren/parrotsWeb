@@ -25,6 +25,18 @@ const DURATIONS = ["Half day", "1 day", "2-3 days", "1 week", "2 weeks"];
 const VIBES = ["Culture", "Food", "Nature", "Chill", "Adventure", "Budget", "Scenic", "Any"];
 const RADII = ["1km", "5km", "10km", "50km"];
 const ON_FOOT = ["Walk", "Run"];
+const TRANSIT = ["Bus", "Train", "Airplane"];
+
+const VIBES_CONFIG = {
+  Culture: { label: "culture-focused", detail: "cultural sights and history" },
+  Food: { label: "food-focused", detail: "local food and dining" },
+  Nature: { label: "nature-focused", detail: "outdoor scenery and nature" },
+  Chill: { label: "relaxed", detail: "laid-back pace" },
+  Adventure: { label: "adventurous", detail: "off the beaten path" },
+  Budget: { label: "budget-friendly", detail: "low-cost spots" },
+  Scenic: { label: "scenic", detail: "landscapes and views" },
+  Any: { label: "any vibe", detail: "" },
+};
 
 const VEHICLE_COLORS = {
   Boat: parrotBoatPurple, Car: parrotCarRed, Caravan: parrotCaravanOrangeRed,
@@ -47,15 +59,6 @@ const DURATION_COLORS = {
   "1 week": "#2ac898", "2 weeks": "#2ac898",
 };
 
-const VIBE_DESCRIPTIONS = {
-  Culture: "Culture (focused on cultural sights and history)",
-  Food: "Food (focused on local food and dining)",
-  Nature: "Nature (focused on nature and outdoor scenery)",
-  Chill: "Chill (relaxed and laid-back)",
-  Adventure: "Adventure (adventurous and off the beaten path)",
-  Budget: "Budget (budget-friendly)",
-  Scenic: "Scenic (focused on scenic landscapes and views)",
-};
 
 const purpleIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
@@ -74,17 +77,32 @@ function MapCenterSetter({ center }) {
   return null;
 }
 
-function formatDuration(d) { return d === "Half day" ? "Half a day" : d; }
+function getIndefiniteArticle(word) { return /^[aeiou]/i.test(word) ? "an" : "a"; }
+function formatDuration(d) { return d === "Half day" ? "half a day" : d; }
+function formatVehicleName(v) { return v === "TinyHouse" ? "tiny house" : v.toLowerCase(); }
 
 function buildQueryText(vehicle, duration, vibe, radius, pin) {
-  const isOnFoot = ON_FOOT.includes(vehicle);
   const displayDuration = formatDuration(duration);
-  const vehiclePart = isOnFoot
-    ? `I want to go for a ${vehicle} for ${displayDuration}.`
-    : `I have a ${vehicle} and ${displayDuration} available.`;
-  const vibePart = vibe === "Any"
-    ? "I'm looking for a voyage of any vibe"
-    : `I'm looking for a ${VIBE_DESCRIPTIONS[vibe] ?? vibe} experience`;
+  const displayVehicle = formatVehicleName(vehicle);
+
+  let vehiclePart;
+  if (ON_FOOT.includes(vehicle)) {
+    vehiclePart = `I want to go for a ${displayVehicle} for ${displayDuration}.`;
+  } else if (TRANSIT.includes(vehicle)) {
+    vehiclePart = `I'm traveling by ${displayVehicle} for ${displayDuration}.`;
+  } else {
+    vehiclePart = `I have ${getIndefiniteArticle(displayVehicle)} ${displayVehicle} and ${displayDuration} available.`;
+  }
+
+  let vibePart;
+  if (vibe === "Any") {
+    vibePart = "I'm looking for a voyage of any vibe";
+  } else {
+    const { label, detail } = VIBES_CONFIG[vibe];
+    const detailStr = detail ? ` (${detail})` : "";
+    vibePart = `I'm looking for ${getIndefiniteArticle(label)} ${label} experience${detailStr}`;
+  }
+
   const locationPart = pin
     ? `starting within ${radius} of this location (${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)})`
     : `starting within ${radius} of this location`;
@@ -113,7 +131,7 @@ function PillSelector({ options, selected, onSelect, colorMap, isDark }) {
               transition: "all 0.15s ease",
             }}
           >
-            {opt}
+            {opt === "TinyHouse" ? "Tiny House" : opt}
           </button>
         );
       })}
@@ -146,10 +164,13 @@ function SectionCard({ label, children, style, isDark }) {
 function QueryPreview({ vehicle, duration, vibe, radius, pin, isDark }) {
   if (!vehicle || !duration || !vibe || !radius || !pin) return null;
   const isOnFoot = ON_FOOT.includes(vehicle);
+  const isTransit = TRANSIT.includes(vehicle);
   const displayDuration = formatDuration(duration);
-  const vibeDesc = vibe !== "Any" ? VIBE_DESCRIPTIONS[vibe] : null;
-  const vibeKeyword = vibeDesc ? vibeDesc.split(" (")[0] : null;
-  const vibeParenthesis = vibeDesc ? " (" + vibeDesc.split(" (")[1] : null;
+  const displayVehicle = formatVehicleName(vehicle);
+  const vibeConf = VIBES_CONFIG[vibe];
+  const vibeLabel = vibeConf.label;
+  const vibeDetail = vibeConf.detail;
+  const vibeArticle = vibe === "Any" ? "a" : getIndefiniteArticle(vibeLabel);
   const vc = VEHICLE_COLORS[vehicle] || parrotBlue;
   const dc = DURATION_COLORS[duration] || parrotBlue;
   const vibeC = VIBE_COLORS[vibe] || parrotBlue;
@@ -157,16 +178,16 @@ function QueryPreview({ vehicle, duration, vibe, radius, pin, isDark }) {
 
   return (
     <p style={{ fontSize: "1.1rem", lineHeight: 1.6, margin: 0, color: isDark ? "rgba(255,255,255,0.85)" : "#333" }}>
-      {isOnFoot ? "I want to go for a " : "I have a "}
-      <span style={{ color: vc, fontWeight: 700 }}>{vehicle}</span>
-      {isOnFoot ? " for " : " and "}
+      {isOnFoot && "I want to go for a "}
+      {isTransit && "I'm traveling by "}
+      {!isOnFoot && !isTransit && `I have ${getIndefiniteArticle(displayVehicle)} `}
+      <span style={{ color: vc, fontWeight: 700 }}>{displayVehicle}</span>
+      {(isOnFoot || isTransit) ? " for " : " and "}
       <span style={{ color: dc, fontWeight: 700 }}>{displayDuration}</span>
-      {isOnFoot ? ". " : " available. "}
-      {vibe === "Any" ? "I'm looking for a voyage of " : "I'm looking for a "}
-      {vibe === "Any"
-        ? <span style={{ color: vibeC, fontWeight: 700 }}>any vibe</span>
-        : <span style={{ color: vibeC, fontWeight: 700 }}>{vibeKeyword}</span>}
-      {vibe !== "Any" && vibeParenthesis && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{vibeParenthesis}</span>}
+      {(!isOnFoot && !isTransit) ? " available. " : ". "}
+      {vibe === "Any" ? "I'm looking for a voyage of " : `I'm looking for ${vibeArticle} `}
+      <span style={{ color: vibeC, fontWeight: 700 }}>{vibe === "Any" ? "any vibe" : vibeLabel}</span>
+      {vibe !== "Any" && vibeDetail && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${vibeDetail})`}</span>}
       {vibe === "Any" ? ", starting within " : " experience, starting within "}
       <span style={{ color: rc, fontWeight: 700 }}>{radius}</span>
       {" of this location "}
@@ -361,7 +382,7 @@ export default function AskParrotsPage() {
               <SectionCard label="STARTING WITHIN..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
                 <PillSelector options={RADII} selected={radius} onSelect={setRadius} colorMap={RADIUS_COLORS} isDark={isDark} />
               </SectionCard>
-              <SectionCard label="" style={{ minHeight: "6.5rem", padding: ".5rem" }} isDark={isDark}>
+              <SectionCard label="" style={{ minHeight: "6.5rem", padding: ".5rem", paddingLeft: "1.5rem", paddingRight: "1.5rem" }} isDark={isDark}>
                 <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} radius={radius} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ flex: 1 }} />
