@@ -327,7 +327,7 @@ export default function AskParrotsPage() {
       if (/^\*\*[^*]+\*\*$/.test(part))
         return <span key={i} style={{ color: isDark ? "#60A5FA" : parrotBlue, fontWeight: 700 }}>{part.slice(2, -2)}</span>;
       if (/^\{\{[^}]+\}\}$/.test(part))
-        return <span key={i} style={{ color: "#8B5CF6", fontWeight: 700 }}>{part.slice(2, -2)}</span>;
+        return <span key={i} style={{ color: "#8B5CF6", fontWeight: 700, textTransform: "capitalize" }}>{part.slice(2, -2)}</span>;
       return <span key={i}>{part}</span>;
     });
   };
@@ -400,31 +400,35 @@ export default function AskParrotsPage() {
                 </div>
               )}
               <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
-              <div ref={scrollRef} style={{ height: "100%", overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                <style>{`div::-webkit-scrollbar { display: none; }`}</style>
-                <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
-                  <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
-                </SectionCard>
-                <SectionCard label="FOR..." isDark={isDark}>
-                  <PillSelector options={DURATIONS} selected={duration} onSelect={setDuration} colorMap={DURATION_COLORS} isDark={isDark} />
-                </SectionCard>
-                <SectionCard label="WITH A VIBE OF..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
-                  <PillSelector options={VIBES} selected={vibe} onSelect={setVibe} colorMap={VIBE_COLORS} isDark={isDark} />
-                </SectionCard>
-                <SectionCard label="FOCUSING ON..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
-                  <PillSelector options={SPOT_TYPES} selected={spotType} onSelect={setSpotType} colorMap={SPOT_TYPE_COLORS} isDark={isDark} />
-                </SectionCard>
-                <SectionCard label="STARTING WITHIN..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
-                  <PillSelector options={RADII} selected={radius} onSelect={setRadius} colorMap={RADIUS_COLORS} isDark={isDark} />
-                </SectionCard>
-              </div>
-              {showScrollArrow && (
-                <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
-                  <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                <div ref={scrollRef} style={{ height: "100%", overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                  <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+                  <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="FOR..." isDark={isDark}>
+                    <PillSelector options={DURATIONS} selected={duration} onSelect={setDuration} colorMap={DURATION_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="WITH A VIBE OF..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={VIBES} selected={vibe} onSelect={setVibe} colorMap={VIBE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="FOCUSING ON..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={SPOT_TYPES} selected={spotType} onSelect={setSpotType} colorMap={SPOT_TYPE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="STARTING WITHIN..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={RADII} selected={radius} onSelect={setRadius} colorMap={RADIUS_COLORS} isDark={isDark} />
+                  </SectionCard>
                 </div>
-              )}
+                {showScrollArrow && (
+                  <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
+                    <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                  </div>
+                )}
               </div>
-              <SectionCard label="" style={{ minHeight: "10rem", padding: ".5rem", paddingLeft: "1.5rem", paddingRight: "1.5rem" }} isDark={isDark}>
+              <SectionCard label="" style={{
+                minHeight: "10rem",
+                padding: ".5rem", paddingLeft: "1.5rem", paddingRight: "1.5rem",
+                marginTop: ".5rem"
+              }} isDark={isDark}>
                 <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} spotType={spotType} radius={radius} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem", gap: "0.75rem" }}>
