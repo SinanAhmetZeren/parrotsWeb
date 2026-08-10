@@ -17,6 +17,7 @@ import {
   parrotWalkTurquoise, parrotRunLightOrange, parrotMotorcycleDarkRed,
   parrotBicycleTealGreen, parrotTinyHouseLightYellow, parrotAirplaneLightGreen,
   parrotTrainPink, parrotBlue, parrotPlaceholderGrey, parrotDarkBlue, parrotTextDarkBlue,
+  parrotLightBlue,
 } from "../styles/colors";
 
 const VEHICLES = ["Boat", "Car", "Caravan", "Bus", "Walk", "Run", "Motorcycle", "Bicycle", "TinyHouse", "Airplane", "Train"];
@@ -126,7 +127,7 @@ function SectionCard({ label, children, style, isDark }) {
       backgroundColor: isDark ? "#011a32" : "white",
       borderRadius: "0.875rem",
       padding: ".75rem 1rem",
-      marginBottom: "0.75rem",
+      marginBottom: "0.5rem",
       boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
       ...style,
     }}>
@@ -317,36 +318,50 @@ export default function AskParrotsPage() {
                 </div>
               ) : (
                 <div style={{
-                  backgroundColor: isDark ? "#011a32" : "white",
-                  borderRadius: "0.875rem", padding: "0.75rem 1rem",
-                  display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem",
-                  boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
+                  backgroundColor: "#0d2d52",
+                  borderRadius: "0.875rem", padding: "0.5rem 0.75rem",
+                  display: "flex", flexDirection: "column",
+                  boxShadow: "0 0.125rem 0.5rem rgba(0,0,0,0.25)",
                   marginBottom: "0.75rem",
                 }}>
-                  <span style={{ fontSize: "1.1rem", fontWeight: 800, color: isDark ? "white" : "#003366", width: "4rem", lineHeight: 1.2 }}>Ask Parrots</span>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", alignItems: "flex-start" }}>
-                    <span style={{ fontSize: "0.85rem", color: isDark ? "rgba(255,255,255,0.7)" : parrotPlaceholderGrey }}>
-                      Tell me what kind of voyage you're after.
-                    </span>
-                    <span style={{ fontSize: "0.78rem", color: parrotPlaceholderGrey, fontStyle: "italic" }}>
-                      These recommendations are for inspiration, so please verify before you go.
-                    </span>
+                  {/* top row: logo + title/subtitle */}
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem" }}>
+                    <div style={{
+                      width: "4.5rem", height: "3.5rem", borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center", marginLeft: "-.75rem"
+                    }}>
+                      <img src={require("../assets/images/parrotsiconpaddedtransparent.png")} alt="parrot"
+                        style={{ width: "5rem", height: "5rem" }} />
+                    </div>
+                    <div style={{
+                      display: "flex", flexDirection: "column",
+                      alignItems: "flex-start", gap: "0.1rem", marginLeft: "-1rem"
+                    }}>
+                      <span style={{ fontSize: "1.3rem", fontWeight: 800, color: parrotCaravanOrangeRed }}>Ask Parrots</span>
+                      <span style={{ fontSize: ".95rem", color: "rgba(255,255,255,0.85)", textAlign: "left" }}>
+                        Pick your preferences, set the vibe, and explore recommendations.
+                      </span>
+                      <span style={{ fontSize: ".9rem", color: parrotLightBlue, textAlign: "left" }}>
+                        These tips are for inspiration, so please verify before you go.
+                      </span>
+                    </div>
                   </div>
+
                 </div>
               )}
-              <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark}>
+              <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
                 <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
               </SectionCard>
               <SectionCard label="FOR..." isDark={isDark}>
                 <PillSelector options={DURATIONS} selected={duration} onSelect={setDuration} colorMap={DURATION_COLORS} isDark={isDark} />
               </SectionCard>
-              <SectionCard label="WITH A VIBE OF..." isDark={isDark}>
+              <SectionCard label="WITH A VIBE OF..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
                 <PillSelector options={VIBES} selected={vibe} onSelect={setVibe} colorMap={VIBE_COLORS} isDark={isDark} />
               </SectionCard>
-              <SectionCard label="STARTING WITHIN..." isDark={isDark}>
+              <SectionCard label="STARTING WITHIN..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
                 <PillSelector options={RADII} selected={radius} onSelect={setRadius} colorMap={RADIUS_COLORS} isDark={isDark} />
               </SectionCard>
-              <SectionCard label="" style={{ minHeight: "8rem", padding: "1rem" }} isDark={isDark}>
+              <SectionCard label="" style={{ minHeight: "6.5rem", padding: ".5rem" }} isDark={isDark}>
                 <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} radius={radius} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ flex: 1 }} />
@@ -407,6 +422,7 @@ export default function AskParrotsPage() {
                     border: "none", borderRadius: "999rem", cursor: coinBalance === 0 ? "pointer" : canAsk && !isLoading ? "pointer" : "not-allowed",
                     boxShadow: canAsk ? "0 0.25rem 0.625rem rgba(0,0,0,0.15)" : "none",
                     transition: "all 0.2s ease",
+
                   }}
                 >
                   {isLoading ? "Asking Parrots..." : coinBalance === 0 ? "Get ParrotCrackers" : "Ask Parrots"}
