@@ -38,14 +38,14 @@ const VIBES_CONFIG = {
   Any: { label: "any vibe", detail: "" },
 };
 
-const SPOT_TYPES = ["Popular Spots", "Local Favorites", "Hidden Gems", "Mix of Both"];
+const SPOT_TYPES = ["Popular Spots", "Local Favorites", "Hidden Gems", "Mixed Picks"];
 const SPOT_TYPES_CONFIG = {
   "Popular Spots": { label: "popular spots", detail: "iconic landmarks and high-profile highlights" },
   "Local Favorites": { label: "local favorites", detail: "authentic neighborhood staples where locals actually go" },
   "Hidden Gems": { label: "hidden gems", detail: "lesser-known, off-the-beaten-path secret spots" },
-  "Mix of Both": { label: "balanced mix", detail: "a balance of famous highlights and local spots" },
+  "Mixed Picks": { label: "mixed picks", detail: "a curated mix of popular spots, local favorites, and hidden gems" },
 };
-const SPOT_TYPE_COLORS = { "Popular Spots": "#8B5CF6", "Local Favorites": "#8B5CF6", "Hidden Gems": "#8B5CF6", "Mix of Both": "#8B5CF6" };
+const SPOT_TYPE_COLORS = { "Popular Spots": "#8B5CF6", "Local Favorites": "#8B5CF6", "Hidden Gems": "#8B5CF6", "Mixed Picks": "#8B5CF6" };
 
 const VEHICLE_COLORS = {
   Boat: parrotBoatPurple, Car: parrotCarRed, Caravan: parrotCaravanOrangeRed,
@@ -195,19 +195,19 @@ function QueryPreview({ vehicle, duration, vibe, spotType, radius, pin, isDark }
       {isOnFoot && "I want to go for a "}
       {isTransit && "I'm traveling by "}
       {!isOnFoot && !isTransit && `I have ${getIndefiniteArticle(displayVehicle)} `}
-      <span style={{ color: vc, fontWeight: 700 }}>{displayVehicle}</span>
+      <span style={{ color: vc, fontWeight: 800 }}>{displayVehicle}</span>
       {(isOnFoot || isTransit) ? " for " : " and "}
-      <span style={{ color: dc, fontWeight: 700 }}>{displayDuration}</span>
+      <span style={{ color: dc, fontWeight: 800 }}>{displayDuration}</span>
       {(!isOnFoot && !isTransit) ? " available. " : ". "}
       {vibe === "Any" ? "I'm looking for a voyage of " : `I'm looking for ${vibeArticle} `}
-      <span style={{ color: vibeC, fontWeight: 700 }}>{vibe === "Any" ? "any vibe" : vibeLabel}</span>
-      {vibe !== "Any" && vibeDetail && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${vibeDetail})`}</span>}
+      <span style={{ color: vibeC, fontWeight: 800 }}>{vibe === "Any" ? "any vibe" : vibeLabel}</span>
       {vibe === "Any" ? " voyage" : " experience"}
-      {spotConf && <span>{", focusing on "}<span style={{ color: sc, fontWeight: 700 }}>{spotConf.label}</span><span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${spotConf.detail})`}</span></span>}
+      {vibe !== "Any" && vibeDetail && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${vibeDetail})`}</span>}
+      {spotConf && <span>{", focusing on "}<span style={{ color: sc, fontWeight: 800 }}>{spotConf.label}</span><span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${spotConf.detail})`}</span></span>}
       {", starting within "}
-      <span style={{ color: rc, fontWeight: 700 }}>{radius}</span>
+      <span style={{ color: rc, fontWeight: 800 }}>{radius}</span>
       {" of this location "}
-      {pin && <span style={{ color: parrotBoatPurple, fontWeight: 600 }}>({pin.lat.toFixed(4)}, {pin.lng.toFixed(4)})</span>}
+      {pin && <span style={{ color: parrotBoatPurple, fontWeight: 800 }}>({pin.lat.toFixed(4)}, {pin.lng.toFixed(4)})</span>}
       {"."}
     </p>
   );
