@@ -368,7 +368,7 @@ export default function AskParrotsPage() {
                 </div>
               ) : (
                 <div style={{
-                  backgroundColor: "#0d2d52",
+                  backgroundColor: "#011a32",
                   borderRadius: "0.875rem", padding: "0.5rem 0.75rem",
                   display: "flex", flexDirection: "column",
                   boxShadow: "0 0.125rem 0.5rem rgba(0,0,0,0.25)",
@@ -498,8 +498,20 @@ export default function AskParrotsPage() {
 
             {/* Right panel — 4 parts */}
             <div style={{ flex: 4, display: "flex", flexDirection: "column", gap: "0", minHeight: 0 }}>
-              <SectionCard label="AROUND..." style={{ padding: 0, paddingTop: "0.75rem", overflow: "hidden" }} isDark={isDark}>
+              <SectionCard label="" style={{ padding: 0, overflow: "hidden" }} isDark={isDark}>
                 <div style={{ position: "relative" }}>
+                  <span style={{
+                    position: "absolute", bottom: "0.75rem", left: "0.75rem",
+                    zIndex: 1000, pointerEvents: "none",
+                    fontSize: "0.78rem", fontWeight: 800,
+                    color: "#003366",
+                    backgroundColor: "rgba(255,255,255,0.9)",
+                    borderRadius: "1.5rem",
+                    padding: "0.35rem 1rem",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                    letterSpacing: "0.08em",
+                    whiteSpace: "nowrap",
+                  }}>AROUND...</span>
                   <MapContainer
                     center={mapCenter}
                     zoom={11}
@@ -522,7 +534,7 @@ export default function AskParrotsPage() {
                     {pin && <Marker position={pin} icon={purpleIcon} />}
                   </MapContainer>
                   <span style={{
-                    position: "absolute", bottom: "0.75rem", left: "0.75rem",
+                    position: "absolute", bottom: "0.75rem", left: "8rem",
                     zIndex: 1000, pointerEvents: "none",
                     fontSize: "0.78rem", fontWeight: 700,
                     color: "#003366",
