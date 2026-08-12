@@ -232,6 +232,8 @@ export default function AskParrotsPage() {
   const [askParrots, { isLoading }] = useAskParrotsMutation();
   const scrollRef = useRef(null);
   const [showScrollArrow, setShowScrollArrow] = useState(true);
+  const responseScrollRef = useRef(null);
+  const [showResponseArrow, setShowResponseArrow] = useState(false);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -241,6 +243,15 @@ export default function AskParrotsPage() {
     el.addEventListener("scroll", check);
     return () => el.removeEventListener("scroll", check);
   }, []);
+
+  useEffect(() => {
+    const el = responseScrollRef.current;
+    if (!el) return;
+    const check = () => setShowResponseArrow(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
+    check();
+    el.addEventListener("scroll", check);
+    return () => el.removeEventListener("scroll", check);
+  }, [response]);
   const navigate = useNavigate();
   const [coinBalance, setCoinBalance] = useState(null);
   const [isCoinHovered, setIsCoinHovered] = useState(false);
@@ -321,15 +332,24 @@ export default function AskParrotsPage() {
 
   const stripLocation = (text) => text.replace(/^\[\[[^\]]+\]\]\s*/, "");
 
-  const renderResponse = (text) => {
+  const renderParagraph = (text, keyPrefix) => {
     const tokens = text.split(/(\*\*[^*]+\*\*|\{\{[^}]+\}\})/);
     return tokens.map((part, i) => {
       if (/^\*\*[^*]+\*\*$/.test(part))
-        return <span key={i} style={{ color: isDark ? "#60A5FA" : parrotBlue, fontWeight: 700 }}>{part.slice(2, -2)}</span>;
+        return <span key={`${keyPrefix}-${i}`} style={{ color: isDark ? "#60A5FA" : parrotBlue, fontWeight: 700 }}>{part.slice(2, -2)}</span>;
       if (/^\{\{[^}]+\}\}$/.test(part))
-        return <span key={i} style={{ color: "#8B5CF6", fontWeight: 700, textTransform: "capitalize" }}>{part.slice(2, -2)}</span>;
-      return <span key={i}>{part}</span>;
+        return <span key={`${keyPrefix}-${i}`} style={{ color: "#8B5CF6", fontWeight: 700, textTransform: "capitalize" }}>{part.slice(2, -2)}</span>;
+      return <span key={`${keyPrefix}-${i}`}>{part}</span>;
     });
+  };
+
+  const renderResponse = (text) => {
+    const paragraphs = text.split(/\n\n+/);
+    return paragraphs.map((para, i) => (
+      <p key={i} style={{ margin: i === 0 ? "0 0 0.75rem 0" : "0.75rem 0 0 0" }}>
+        {renderParagraph(para, i)}
+      </p>
+    ));
   };
 
   const canAsk = !!vehicle && !!duration && !!vibe && !!spotType && !!radius && !!pin;
@@ -550,19 +570,28 @@ export default function AskParrotsPage() {
               <SectionCard label="" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }} isDark={isDark}>
                 {response ? (
                   <>
-                    <p style={{
-                      fontSize: "1.1rem", lineHeight: 1.6,
-                      color: isDark ? "rgba(255,255,255,0.9)" : "#333",
-                      margin: 0, textAlign: "left", paddingLeft: "1.5rem",
-                      paddingRight: "1.5rem", flex: 1, overflowY: "auto"
-                    }}>
-                      {extractLocation(response) && (
-                        <span style={{ fontWeight: 700, color: "#10B981", marginRight: "0.5rem" }}>
-                          <span style={{ color: "#10B981" }}>@</span> {extractLocation(response)}
-                        </span>
+                    <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+                      <style>{`.response-scroll::-webkit-scrollbar { display: none; }`}</style>
+                      <p ref={responseScrollRef} className="response-scroll" style={{
+                        fontSize: "1.1rem", lineHeight: 1.6,
+                        color: isDark ? "rgba(255,255,255,0.9)" : "#333",
+                        margin: 0, textAlign: "left", paddingLeft: "1.5rem",
+                        paddingRight: "1.5rem", height: "100%", overflowY: "auto",
+                        scrollbarWidth: "none", msOverflowStyle: "none"
+                      }}>
+                        {extractLocation(response) && (
+                          <span style={{ fontWeight: 700, color: "#10B981", marginRight: "0.5rem" }}>
+                            <span style={{ color: "#10B981" }}>@</span> {extractLocation(response)}
+                          </span>
+                        )}
+                        {renderResponse(stripLocation(response))}
+                      </p>
+                      {showResponseArrow && (
+                        <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
+                          <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                        </div>
                       )}
-                      {renderResponse(stripLocation(response))}
-                    </p>
+                    </div>
                     <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem", marginBottom: "0.25rem", justifyContent: "center", flexShrink: 0 }}>
                       <button onClick={handleCopy} style={btnStyle(parrotBlue)}>
                         {copied ? "Copied!" : "Copy"}
