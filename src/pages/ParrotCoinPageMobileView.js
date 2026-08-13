@@ -4,9 +4,9 @@ import parrotCracker from "../assets/images/parrotCookie.png";
 import { parrotCaravanOrangeRed, parrotGreen } from "../styles/colors";
 
 const PURCHASE_OPTIONS = [
-  { coins: 25, priceEUR: 1.99, label: "NEST PACK" },
-  { coins: 100, priceEUR: 5.99, label: "FLOCK PACK", best: true },
-  { coins: 300, priceEUR: 12.99, label: "COLONY PACK" },
+  { coins: 100, priceEUR: 2.99, label: "NEST PACK" },
+  { coins: 250, priceEUR: 5.99, label: "FLOCK PACK", best: true },
+  { coins: 500, priceEUR: 9.99, label: "COLONY PACK" },
 ];
 
 const WHAT_CRACKERS_FEED = [
@@ -14,10 +14,10 @@ const WHAT_CRACKERS_FEED = [
   { action: "Feature your voyage on the public map (per day)", cost: 1 },
 ];
 
-export function ParrotCoinPageMobile({
+export function ParrotCoinPageMobileView({
   isDark, currentBalance, purchases, transactions,
   processingIndex, isProcessingFree, showClaimModal, displayState,
-  setDisplayState, setShowClaimModal, handleClaimFree,
+  setDisplayState, setShowClaimModal, handleClaimFree, handleBuy,
 }) {
   const cardBg = isDark ? "#011a32" : "white";
   const textPrimary = isDark ? "rgba(255,255,255,0.9)" : "#003366";
@@ -49,23 +49,27 @@ export function ParrotCoinPageMobile({
       {PURCHASE_OPTIONS.map((opt, i) => (
         <div
           key={i}
-          style={{ backgroundColor: cardBg, borderRadius: "1rem", padding: "2rem 1.5rem", boxShadow: opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow, textAlign: "center", position: "relative", opacity: 0.5 }}
+          onClick={() => handleBuy(opt, i)}
+          style={{ backgroundColor: cardBg, borderRadius: "1rem", padding: "2rem 1.5rem", boxShadow: opt.best ? `0 0 0 2px #c8a84b, ${shadow}` : shadow, textAlign: "center", position: "relative", opacity: 1, cursor: "pointer" }}
         >
-          {opt.best && (
-            <div style={{ position: "absolute", top: "-1rem", left: "50%", transform: "translateX(-50%)", backgroundColor: "#c8a84b", color: "white", fontSize: "1.5rem", fontWeight: 800, letterSpacing: "0.08em", padding: "0.25rem 1rem", borderRadius: "999rem" }}>BEST VALUE</div>
-          )}
           <div style={{ fontSize: "2rem", fontWeight: 800, color: opt.best ? "#c8a84b" : textSecondary, letterSpacing: "0.1em", marginBottom: "0.75rem" }}>{opt.label}</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
             <img src={parrotCracker} alt="cracker" style={{ width: "4rem", height: "4rem" }} />
             <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary }}>{opt.coins}</span>
           </div>
           <div style={{ fontSize: "2rem", color: textSecondary, fontWeight: 600 }}>€{opt.priceEUR.toFixed(2)}</div>
+          {processingIndex === i && (
+            <div style={{ marginTop: "1rem" }}>
+              <div className="spinner" style={{ height: "2rem", width: "2rem", margin: "auto", border: "4px solid rgba(0,0,0,0.1)", borderTop: `4px solid ${parrotCaravanOrangeRed}` }} />
+            </div>
+          )}
         </div>
       ))}
 
       {/* WHAT CRACKERS FEED */}
       <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem", boxShadow: shadow }}>
-        <div style={{ fontSize: "2rem", fontWeight: 800, color: textPrimary, marginBottom: "1rem" }}>What ParrotCrackers feed</div>
+        <div style={{ fontSize: "2rem", fontWeight: 800, color: textPrimary, marginBottom: "0.75rem" }}>Feed the Parrots, Chart Your Course.</div>
+        <div style={{ fontSize: "1.6rem", fontWeight: 600, color: textSecondary, marginBottom: "1.25rem" }}>Drop a cracker to keep your voyage live on the community map and get instant travel insights for any location and its surrounding area.</div>
         {WHAT_CRACKERS_FEED.map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 0", borderBottom: i < WHAT_CRACKERS_FEED.length - 1 ? `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#f0ebe0"}` : "none" }}>
             <span style={{ fontWeight: 600, color: textPrimary, fontSize: "2rem", flex: 1, paddingRight: "1rem" }}>{item.action}</span>
