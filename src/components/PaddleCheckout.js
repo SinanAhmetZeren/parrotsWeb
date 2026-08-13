@@ -1,11 +1,10 @@
 import { initializePaddle } from "@paddle/paddle-js";
 
-// SANDBOX (switch to live when Paddle domain approved — retrieve token from Paddle dashboard)
-const CLIENT_TOKEN = "test_cf417181085e33fb375829e32b3";
+const CLIENT_TOKEN = process.env.REACT_APP_PADDLE_CLIENT_TOKEN;
 export const PADDLE_PRICE_IDS = {
-  "NEST PACK":   "pri_01kzy7q6p1y27qdv9xw080qvx2",
-  "FLOCK PACK":  "pri_01kzy7q6p1y27qdv9xw080qvx2",
-  "COLONY PACK": "pri_01kzy7q6p1y27qdv9xw080qvx2",
+  "NEST PACK":   process.env.REACT_APP_PADDLE_PRICE_NEST,
+  "FLOCK PACK":  process.env.REACT_APP_PADDLE_PRICE_FLOCK,
+  "COLONY PACK": process.env.REACT_APP_PADDLE_PRICE_COLONY,
 };
 
 let paddleInstance = null;
