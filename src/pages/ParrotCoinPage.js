@@ -46,7 +46,7 @@ export function ParrotCoinPage() {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [displayState, setDisplayState] = useState("purchases");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
-  const [purchaseBanner, setPurchaseBanner] = useState({ label: "FLOCK PACK", coins: 250 }); // { label, coins }
+  const [purchaseBanner, setPurchaseBanner] = useState(null);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 640);
