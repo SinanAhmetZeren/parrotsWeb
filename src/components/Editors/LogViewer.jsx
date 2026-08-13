@@ -86,14 +86,13 @@ function LogLine({ line }) {
 export function LogViewer() {
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
-  const localDatetime = (d) =>
-    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const utcDatetime = (d) =>
+    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
 
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTodayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
-  const [from, setFrom] = useState(localDatetime(startOfToday));
-  const [to, setTo] = useState(localDatetime(now));
+  const [from, setFrom] = useState(utcDatetime(startOfTodayUtc));
+  const [to, setTo] = useState(utcDatetime(now));
   const [level, setLevel] = useState("ALL");
   const [triggerGetLogs, { data: logs, isFetching, error }] = useLazyGetLogsQuery();
 
