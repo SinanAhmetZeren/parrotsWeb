@@ -1,15 +1,6 @@
 import { initializePaddle } from "@paddle/paddle-js";
 
-// LIVE (swap back when Paddle domain approved)
-// const CLIENT_TOKEN = "live_5705243e38f42dceb380d4221fc";
-// const ENVIRONMENT = "live";
-// export const PADDLE_PRICE_IDS = {
-//   "NEST PACK":   "pri_01kzy51dwrk3fwffn5mxp9exbf",
-//   "FLOCK PACK":  "pri_01kzy50nhj0gcwwva3n2h8nxh5",
-//   "COLONY PACK": "pri_01kzy4ybnwkkqg4znhzax5efyn",
-// };
-
-// SANDBOX
+// SANDBOX (switch to live when Paddle domain approved — retrieve token from Paddle dashboard)
 const CLIENT_TOKEN = "test_cf417181085e33fb375829e32b3";
 export const PADDLE_PRICE_IDS = {
   "NEST PACK":   "pri_01kzy7q6p1y27qdv9xw080qvx2",
