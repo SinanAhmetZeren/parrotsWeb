@@ -12,7 +12,7 @@ import { FaAngleDoubleDown } from "react-icons/fa";
 import { invokeHub } from "../signalr/signalRHub";
 import { useSelector } from "react-redux";
 import { useLazyGetUserByIdQuery } from "../slices/UserSlice";
-import parrotCracker from "../assets/images/parrotCookie.png";
+import parrotCracker from "../assets/images/parrotCracker.png";
 import {
   parrotBoatPurple, parrotCarRed, parrotCaravanOrangeRed, parrotBusYellowGreen,
   parrotWalkTurquoise, parrotRunLightOrange, parrotMotorcycleDarkRed,
@@ -123,8 +123,8 @@ function buildQueryText(vehicle, duration, vibe, spotType, radius, pin) {
   const spotPart = spotConfig ? `, focusing on ${spotConfig.label} (${spotConfig.detail})` : "";
 
   const locationPart = pin
-    ? `starting within ${radius} of this location (${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)})`
-    : `starting within ${radius} of this location`;
+    ? `starting within ${radius} of the selected location`
+    : `starting within ${radius} of the selected location`;
   return `${vehiclePart} ${vibePart}${spotPart}, ${locationPart}.`;
 }
 
@@ -213,9 +213,8 @@ function QueryPreview({ vehicle, duration, vibe, spotType, radius, pin, isDark }
       {spotConf && <span>{", focusing on "}<span style={{ color: sc, fontWeight: 800 }}>{spotConf.label}</span><span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${spotConf.detail})`}</span></span>}
       {", starting within "}
       <span style={{ color: rc, fontWeight: 800 }}>{radius}</span>
-      {" of this location "}
-      {pin && <span style={{ color: parrotBoatPurple, fontWeight: 800 }}>({pin.lat.toFixed(4)}, {pin.lng.toFixed(4)})</span>}
-      {"."}
+      {" of the selected location."}
+
     </p>
   );
 }
@@ -262,14 +261,14 @@ export default function AskParrotsPage() {
     return () => el.removeEventListener("scroll", check);
   }, [response]);
   const navigate = useNavigate();
-  const [coinBalance, setCoinBalance] = useState(null);
-  const [isCoinHovered, setIsCoinHovered] = useState(false);
+  const [crackerBalance, setCrackerBalance] = useState(null);
+  const [isCrackerHovered, setIsCrackerHovered] = useState(false);
   const [triggerGetUser] = useLazyGetUserByIdQuery();
 
   React.useEffect(() => {
     if (currentUserId) {
       triggerGetUser(currentUserId).then((res) => {
-        if (res?.data) setCoinBalance(res.data.parrotCoinBalance ?? 0);
+        if (res?.data) setCrackerBalance(res.data.parrotCrackerBalance ?? 0);
       });
     }
   }, [currentUserId]);
@@ -302,10 +301,10 @@ export default function AskParrotsPage() {
         longitude: pin.lng,
       }).unwrap();
       setResponse(result.response);
-      if (result.remainingBalance !== undefined) setCoinBalance(result.remainingBalance);
+      if (result.remainingBalance !== undefined) setCrackerBalance(result.remainingBalance);
     } catch (err) {
       if (err?.status === 402) {
-        setCoinBalance(0);
+        setCrackerBalance(0);
         setResponse(null);
       } else {
         setResponse("Something went wrong. Please try again.");
@@ -378,7 +377,7 @@ export default function AskParrotsPage() {
 
             {/* Left panel — 2 parts */}
             <div style={{ flex: 2, display: "flex", flexDirection: "column", minHeight: 0 }}>
-              {coinBalance === 0 ? (
+              {crackerBalance === 0 ? (
                 <div style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   backgroundColor: isDark ? "#011a32" : "white",
@@ -387,7 +386,7 @@ export default function AskParrotsPage() {
                   gap: "1rem",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <img src={parrotCracker} alt="coin" style={{ width: "3rem", height: "3rem" }} />
+                    <img src={parrotCracker} alt="cracker" style={{ width: "3rem", height: "3rem" }} />
                     <span style={{ fontWeight: 700, fontSize: "0.9rem", color: isDark ? "rgba(255,255,255,0.9)" : "#003366", textAlign: "left", paddingLeft: "1.5rem" }}>
                       You're out of ParrotCrackers.<br />Get more before you configure your voyage.
                     </span>
@@ -461,9 +460,9 @@ export default function AskParrotsPage() {
                 <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} spotType={spotType} radius={radius} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem", gap: "0.75rem" }}>
-                {coinBalance !== null && (
+                {crackerBalance !== null && (
                   <div style={{ position: "relative" }}>
-                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => navigate("/parrotCoinPage")}>
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => navigate("/parrotCrackerPage")}>
                       <div style={{
                         width: "3.75rem", height: "3.75rem", borderRadius: "4rem",
                         backgroundColor: "#cad8ec5d", display: "flex", alignItems: "center",
@@ -471,16 +470,16 @@ export default function AskParrotsPage() {
                       }}>
                         <img
                           src={parrotCracker}
-                          alt="coin"
+                          alt="cracker"
                           style={{
-                            width: "3.5rem", height: "3.5rem", transform: isCoinHovered ? "scale(1.3)" : "scale(1)", transition: "transform 0.3s ease-in-out", display: "block", marginTop: "1px"
+                            width: "3.5rem", height: "3.5rem", transform: isCrackerHovered ? "scale(1.3)" : "scale(1)", transition: "transform 0.3s ease-in-out", display: "block", marginTop: "1px"
                           }}
-                          onMouseEnter={() => setIsCoinHovered(true)}
-                          onMouseLeave={() => setIsCoinHovered(false)}
+                          onMouseEnter={() => setIsCrackerHovered(true)}
+                          onMouseLeave={() => setIsCrackerHovered(false)}
                         />
                       </div>
                     </div>
-                    {isCoinHovered && (
+                    {isCrackerHovered && (
                       <div style={{
                         position: "absolute", bottom: "4.5rem", left: "0",
                         backgroundColor: isDark ? "#0d2a45" : "#faf7f2",
@@ -490,7 +489,7 @@ export default function AskParrotsPage() {
                         fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap",
                         zIndex: 100,
                       }}>
-                        {coinBalance === 0 ? (
+                        {crackerBalance === 0 ? (
                           <>
                             You have no ParrotCrackers left.<br />
                             You need at least 1 ParrotCracker to ask the Parrots.<br />
@@ -498,7 +497,7 @@ export default function AskParrotsPage() {
                           </>
                         ) : (
                           <>
-                            You have {coinBalance} ParrotCracker{coinBalance !== 1 ? "s" : ""}.<br />
+                            You have {crackerBalance} ParrotCracker{crackerBalance !== 1 ? "s" : ""}.<br />
                             1 ParrotCracker will be deducted per query.<br />
                             <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to manage your ParrotCrackers.</span>
                           </>
@@ -508,19 +507,19 @@ export default function AskParrotsPage() {
                   </div>
                 )}
                 <button
-                  onClick={coinBalance === 0 ? () => navigate("/parrotCoinPage") : handleAsk}
-                  disabled={coinBalance !== 0 && (!canAsk || isLoading)}
+                  onClick={crackerBalance === 0 ? () => navigate("/parrotCrackerPage") : handleAsk}
+                  disabled={crackerBalance !== 0 && (!canAsk || isLoading)}
                   style={{
                     width: "60%", padding: "0.75rem",
-                    backgroundColor: coinBalance === 0 ? parrotCaravanOrangeRed : canAsk && !isLoading ? parrotDarkBlue : isDark ? "#555" : "#ccc",
+                    backgroundColor: crackerBalance === 0 ? parrotCaravanOrangeRed : canAsk && !isLoading ? parrotDarkBlue : isDark ? "#555" : "#ccc",
                     color: "white", fontWeight: 800, fontSize: "1rem",
-                    border: "none", borderRadius: "999rem", cursor: coinBalance === 0 ? "pointer" : canAsk && !isLoading ? "pointer" : "not-allowed",
+                    border: "none", borderRadius: "999rem", cursor: crackerBalance === 0 ? "pointer" : canAsk && !isLoading ? "pointer" : "not-allowed",
                     boxShadow: canAsk ? "0 0.25rem 0.625rem rgba(0,0,0,0.15)" : "none",
                     transition: "all 0.2s ease",
 
                   }}
                 >
-                  {isLoading ? "Asking Parrots..." : coinBalance === 0 ? "Get ParrotCrackers" : "Ask Parrots"}
+                  {isLoading ? "Asking Parrots..." : crackerBalance === 0 ? "Get ParrotCrackers" : "Ask Parrots"}
                 </button>
               </div>
             </div>
