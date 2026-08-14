@@ -80,7 +80,7 @@ export function ParrotCoinPageMobileView({
         <div style={{
           fontSize: "2.5rem", fontWeight: 500, color: textSecondary,
           marginBottom: "1.25rem", textAlign: "left", marginLeft: "2rem"
-        }}>Drop a cracker to keep your voyage live on the community map and get instant travel insights for any location and its surrounding area.</div>
+        }}>Drop a cracker to keep your voyage live on the community map, or get instant travel insights for any location and its surrounding area.</div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginLeft: "2rem", marginTop: "4rem" }}>
           <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
             <div style={{ width: "3rem", flexShrink: 0, display: "flex", justifyContent: "center", paddingTop: "0.1rem" }}>

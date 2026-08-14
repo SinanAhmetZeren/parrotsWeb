@@ -186,7 +186,7 @@ export function ParrotCoinPage() {
                 {/* RIGHT COLUMN: WHAT CRACKERS FEED */}
                 <div style={{ backgroundColor: cardBg, borderRadius: "1.25rem", padding: "1.5rem 2rem", boxShadow: shadow, display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "left" }}>
                   <div style={{ fontSize: "1.5rem", fontWeight: 800, color: textPrimary, marginBottom: "0.5rem" }}>Feed the Parrots, Chart Your Course.</div>
-                  <div style={{ fontSize: "1rem", fontWeight: 500, color: textSecondary, marginBottom: "1.5rem" }}>Drop a cracker to keep your voyage live on the community map and get instant travel insights for any location and its surrounding area.</div>
+                  <div style={{ fontSize: "1rem", fontWeight: 500, color: textSecondary, marginBottom: "1.5rem" }}>Drop a cracker to keep your voyage live on the community map, or get instant travel insights for any location and its surrounding area.</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", paddingLeft: "1.25rem" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
                       <div style={{ width: "2rem", flexShrink: 0, display: "flex", justifyContent: "center" }}>
