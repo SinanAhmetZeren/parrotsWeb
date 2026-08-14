@@ -7,6 +7,7 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { useAskParrotsMutation } from "../slices/AiSlice";
 import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
+import { PulsatingParrotLogoWithText } from "../components/PulsatingParrotLogoWithText";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { invokeHub } from "../signalr/signalRHub";
 import { useSelector } from "react-redux";
@@ -18,7 +19,13 @@ import {
   parrotBicycleTealGreen, parrotTinyHouseLightYellow, parrotAirplaneLightGreen,
   parrotTrainPink, parrotBlue, parrotPlaceholderGrey, parrotDarkBlue, parrotTextDarkBlue,
   parrotLightBlue,
+  parrotBlueSemiTransparent,
+  parrotBlueTransparent,
+  parrotBlueDarkTransparent,
 } from "../styles/colors";
+import scoutingLight from "../assets/images/scouting_lightmode.jpeg";
+import scoutingDark from "../assets/images/scouting_darkmode.jpeg";
+import placeholderParrots from "../assets/images/placeholderparrots.png";
 
 const VEHICLES = ["Boat", "Car", "Caravan", "Bus", "Walk", "Run", "Motorcycle", "Bicycle", "TinyHouse", "Airplane", "Train"];
 const DURATIONS = ["Half day", "1 day", "2-3 days", "1 week", "2 weeks"];
@@ -234,6 +241,8 @@ export default function AskParrotsPage() {
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const responseScrollRef = useRef(null);
   const [showResponseArrow, setShowResponseArrow] = useState(false);
+
+
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -602,15 +611,26 @@ export default function AskParrotsPage() {
                     </div>
                   </>
                 ) : isLoading ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "1rem 0" }}>
-                    <PulsatingParrotLogo size={128} />
-                    <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : parrotPlaceholderGrey, fontSize: "0.85rem", fontWeight: 600, marginTop: "0.5rem" }}>Thinking...</span>
+                  <div style={{ display: "flex", margin: "auto" }}>
+                    <PulsatingParrotLogoWithText size={192} isDark={isDark} />
+                    {/* <img
+                      src={placeholderParrots}
+                      alt="Scouting"
+                      style={{ height: "10rem", objectFit: "contain", display: "block", margin: "auto", marginTop: "0.2rem" }} /> */}
                   </div>
                 ) : (
-                  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1 }}>
-                    <PulsatingParrotLogo size={192} style={{ animation: "none", opacity: 0.2 }} />
+                  <div style={{ display: "flex", margin: "auto" }}>
+                    {/* <PulsatingParrotLogoWithText size={192} isDark={isDark} /> */}
+                    <img
+                      src={placeholderParrots}
+                      alt="Scouting"
+                      style={{
+                        height: "10rem", objectFit: "contain", display: "block", margin: "auto",
+                        marginTop: "-1rem", opacity: 0.5
+                      }} />
                   </div>
                 )}
+
               </SectionCard>
             </div>
 

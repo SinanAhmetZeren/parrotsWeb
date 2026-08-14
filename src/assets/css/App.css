@@ -73,7 +73,7 @@
   letter-spacing: 0.04em;
   padding: 3px 10px;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   white-space: nowrap;
   pointer-events: none;
   transition: opacity 0.15s ease;
@@ -98,7 +98,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 3px 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   white-space: nowrap;
 }
@@ -107,8 +107,7 @@
   display: none;
 }
 
-.place-tooltip-place {
-}
+.place-tooltip-place {}
 
 @keyframes App-logo-spin {
   from {
@@ -264,6 +263,33 @@ img {
   justify-content: flex-end;
 }
 
+@media (max-width: 640px) {
+  .mainpage_TopRow {
+    height: 9rem !important;
+  }
+
+  .mainpage_TopRight {
+    height: 9rem !important;
+  }
+
+  .mainpage_TopRight nav svg {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+
+  .mainpage_TopLeft,
+  .mainpage_TopRight {
+    align-items: center !important;
+  }
+
+  .mainpage_TopLeft img {
+    width: 5rem !important;
+    height: 5rem !important;
+    margin-left: 1rem !important;
+    margin-top: 1rem !important;
+  }
+}
+
 .mainpage_BottomRow {
   flex-grow: 1;
   width: 100%;
@@ -297,8 +323,12 @@ img {
   height: 100%;
   width: 100%;
 }
+
 .mainpage_TopRow {
   background-color: #011a32;
+  overflow: visible;
+  position: relative;
+  z-index: 1000;
 }
 
 .leaflet-container {

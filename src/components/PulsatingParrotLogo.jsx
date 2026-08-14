@@ -26,3 +26,4 @@ export const PulsatingParrotLogo = ({ size = 120, style = {} }) => {
     </>
   );
 };
+

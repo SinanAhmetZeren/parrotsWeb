@@ -45,7 +45,6 @@ export const TopLeftComponent = () => {
     <div
       className="flex mainpage_TopLeft"
       style={{
-        height: "3rem",
         width: "33%",
         alignItems: "center",
         justifyContent: "center",
@@ -61,7 +60,7 @@ export const TopLeftComponent = () => {
         onClick={() => setShowGame(true)}
       />
       <div
-        style={{ cursor: "pointer", position: "relative" }}
+        style={{ cursor: "pointer", position: "relative", lineHeight: 0.6 }}
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <span
