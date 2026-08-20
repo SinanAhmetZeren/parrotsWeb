@@ -196,7 +196,7 @@ const sections = [
     content: (
       <>
         <p>Parrots reserves the right to modify, suspend, or permanently discontinue the Service at any time without prior notice.</p>
-        <p>In the event of permanent discontinuation, we will make reasonable efforts to provide advance notice. Any unused paid credits (ParrotCoins) will be eligible for a refund. Your data will be retained for 30 days after discontinuation, during which you may request a copy.</p>
+        <p>In the event of permanent discontinuation, we will make reasonable efforts to provide advance notice. Any unused paid credits (ParrotCrackers) will be eligible for a refund. Your data will be retained for 30 days after discontinuation, during which you may request a copy.</p>
       </>
     ),
   },
@@ -204,7 +204,7 @@ const sections = [
     heading: "17. Refund Policy",
     content: (
       <>
-        <p>ParrotCoins are currently provided free of charge until further notice. The refund terms below apply once ParrotCoins become a paid feature.</p>
+        <p>ParrotCrackers are currently provided free of charge until further notice. The refund terms below apply once ParrotCrackers become a paid feature.</p>
         <p>Once paid, all purchases will be final and non-refundable except where: a technical error by Parrots caused credits not to be applied; the Service is permanently discontinued; or applicable consumer protection law grants a statutory right to a refund.</p>
         <p>Purchases made through the Google Play Store must be refunded directly through Google in accordance with their refund policy.</p>
         <p>To request a refund, contact parrotsapp@gmail.com within 14 days of purchase.</p>

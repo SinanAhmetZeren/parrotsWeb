@@ -4,7 +4,7 @@ import { DateRange } from "react-date-range";
 import { useRef, useEffect } from "react";
 import { enUS } from "react-date-range/dist/locale"; // Import locale
 import "../assets/css/date-range-custom.css";
-import parrotCoin from "../assets/images/parrotcoin.png";
+import parrotCracker from "../assets/images/parrotCracker.png";
 import { useSelector } from "react-redux";
 
 export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalendarOpen }) => {
@@ -143,8 +143,8 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
           alignItems: "center",
           gap: "0.4rem",
         }}>
-          <img src={parrotCoin} alt="coin" style={{ width: "1.4rem", height: "1.4rem" }} />
-          {Math.max(0, Math.floor((new Date(dates[0].startDate) - new Date()) / (1000 * 60 * 60 * 24)))} ParrotCoins will be used
+          <img src={parrotCracker} alt="cracker" style={{ width: "1.4rem", height: "1.4rem" }} />
+          {Math.max(0, Math.floor((new Date(dates[0].startDate) - new Date()) / (1000 * 60 * 60 * 24)))} ParrotCrackers will be used
         </div>
       )}
     </div >

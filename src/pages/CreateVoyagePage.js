@@ -189,9 +189,9 @@ export default function CreateVoyagePage() {
           ({ closeToast }) => (
             <div className="flex items-center justify-between ">
               <div>
-                <strong className="text-xl">Not enough ParrotCoins</strong>
+                <strong className="text-xl">Not enough ParrotCrackers</strong>
                 <p className="text-lg  ">
-                  You need more coins to create this voyage.
+                  You need more crackers to create this voyage.
                 </p>
 
               </div>

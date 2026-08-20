@@ -27,8 +27,9 @@ import { EditProfilePage } from "./pages/EditProfilePage";
 import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection } from "./signalr/signalRHub";
-import { ParrotCoinPage } from "./pages/ParrotCoinPage";
+import { ParrotCrackerPage } from "./pages/ParrotCrackerPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsPage from "./pages/TermsPage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminPage from "./pages/AdminPage";
@@ -106,7 +107,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/privacy" element={<TermsPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         {!isLoggedIn ? (
           <Route path="*" element={<Navigate to="/login" />} />
         ) : (
@@ -115,7 +117,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/parrotcoinpage" element={<ParrotCoinPage />} />
+            <Route path="/parrotcrackerpage" element={<ParrotCrackerPage />} />
             <Route path="/edit-profile" element={<EditProfilePage />} />
             <Route path="/newVehicle" element={<CreateVehiclePage />} />
             <Route path="/newVoyage" element={<CreateVoyagePage />} />

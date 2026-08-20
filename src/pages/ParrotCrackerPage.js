@@ -6,23 +6,23 @@ import { TopLeftComponent } from "../components/TopLeftComponent";
 import { useSelector } from "react-redux";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import parrotCracker from "../assets/images/parrotCookie.png";
+import parrotCracker from "../assets/images/parrotCracker.png";
 import jarImg from "../assets/images/jar.png";
 import {
-  useLazyGetParrotCoinBalanceQuery,
-  useClaimFreeCoinsMutation
+  useLazyGetParrotCrackerBalanceQuery,
+  useClaimFreeCrackersMutation
 } from "../slices/UserSlice";
 import { openCheckout, PADDLE_PRICE_IDS } from "../components/PaddleCheckout";
 import { parrotCaravanOrangeRed, parrotDarkBlue, parrotGreen } from "../styles/colors";
 import { toast } from "react-toastify";
-import { ParrotCoinPageMobileView } from "./ParrotCoinPageMobileView";
+import { ParrotCrackerPageMobileView } from "./ParrotCrackerPageMobileView";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { BsChatDotsFill } from "react-icons/bs";
 
 const PURCHASE_OPTIONS = [
-  { coins: 100, priceEUR: 2.99, label: "Nest Pack",   color: "#4a90d9" },
-  { coins: 250, priceEUR: 5.99, label: "Flock Pack",  color: "#4caf87" },
-  { coins: 500, priceEUR: 9.99, label: "Colony Pack", color: "#e8874a" },
+  { crackers: 100, priceEUR: 2.99, label: "Nest Pack",   color: "#4a90d9" },
+  { crackers: 250, priceEUR: 5.99, label: "Flock Pack",  color: "#4caf87" },
+  { crackers: 500, priceEUR: 9.99, label: "Colony Pack", color: "#e8874a" },
 ];
 
 const WHAT_CRACKERS_FEED = [
@@ -30,14 +30,14 @@ const WHAT_CRACKERS_FEED = [
   { action: "Feature your voyage on the public map (per day)", cost: 1 },
 ];
 
-export function ParrotCoinPage() {
+export function ParrotCrackerPage() {
   const local_userId = localStorage.getItem("storedUserId");
   const state_userId = useSelector((state) => state.users.userId);
   const userId = local_userId !== null ? local_userId : state_userId;
   const isDark = useSelector((state) => state.users.isDarkMode);
   const navigate = useNavigate();
-  const [claimFreeCoins] = useClaimFreeCoinsMutation();
-  const [getParrotCoinBalance] = useLazyGetParrotCoinBalanceQuery();
+  const [claimFreeCrackers] = useClaimFreeCrackersMutation();
+  const [getParrotCrackerBalance] = useLazyGetParrotCrackerBalanceQuery();
   const [currentBalance, setCurrentBalance] = useState(0);
   const [purchases, setPurchases] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -62,21 +62,21 @@ export function ParrotCoinPage() {
 
   useEffect(() => {
     if (userId) {
-      getParrotCoinBalance(userId).unwrap().then((response) => {
+      getParrotCrackerBalance(userId).unwrap().then((response) => {
         setCurrentBalance(response.balance);
         setPurchases(response.purchases);
         setTransactions(response.transactions);
       }).catch(console.error);
     }
-  }, [userId, getParrotCoinBalance]);
+  }, [userId, getParrotCrackerBalance]);
 
   const handlePaymentSuccess = async (opt) => {
     setTimeout(async () => {
-      const response = await getParrotCoinBalance(userId).unwrap();
+      const response = await getParrotCrackerBalance(userId).unwrap();
       setCurrentBalance(response.balance);
       setPurchases(response.purchases);
       setTransactions(response.transactions);
-      setPurchaseBanner({ label: opt.label, coins: opt.coins });
+      setPurchaseBanner({ label: opt.label, crackers: opt.crackers });
     }, 3000);
   };
 
@@ -97,8 +97,8 @@ export function ParrotCoinPage() {
     }
     setIsProcessingFree(true);
     try {
-      await claimFreeCoins().unwrap();
-      const response = await getParrotCoinBalance(userId).unwrap();
+      await claimFreeCrackers().unwrap();
+      const response = await getParrotCrackerBalance(userId).unwrap();
       setCurrentBalance(response.balance);
       setPurchases(response.purchases);
       setTransactions(response.transactions);
@@ -126,7 +126,7 @@ export function ParrotCoinPage() {
           </div>
 
           {isMobile ? (
-            <ParrotCoinPageMobileView
+            <ParrotCrackerPageMobileView
               isDark={isDark}
               currentBalance={currentBalance}
               purchases={purchases}
@@ -156,7 +156,7 @@ export function ParrotCoinPage() {
                         </div>
                         <div>
                           <div style={{ color: "white", fontWeight: 800, fontSize: "0.95rem" }}>Purchase complete!</div>
-                          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.85rem" }}>{purchaseBanner.label.charAt(0) + purchaseBanner.label.slice(1).toLowerCase()} — {purchaseBanner.coins} crackers added</div>
+                          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.85rem" }}>{purchaseBanner.label.charAt(0) + purchaseBanner.label.slice(1).toLowerCase()} — {purchaseBanner.crackers} crackers added</div>
                         </div>
                       </div>
                       <button onClick={() => setPurchaseBanner(null)} style={{ background: "none", border: "none", color: "white", cursor: "pointer", fontSize: "1.1rem", fontWeight: 700, opacity: 0.7, lineHeight: 1 }}>✕</button>
@@ -234,7 +234,7 @@ export function ParrotCoinPage() {
                     <div style={{ fontSize: "1.3rem", fontWeight: 900, color: opt.color, marginBottom: "0.5rem" }}>{opt.label}</div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem", marginBottom: "0.4rem" }}>
                       <img src={parrotCracker} alt="cracker" style={{ width: "1.6rem", height: "1.6rem" }} />
-                      <span style={{ fontSize: "2rem", fontWeight: 900, color: textPrimary, WebkitTextStroke: "1px " + textPrimary }}>{opt.coins}</span>
+                      <span style={{ fontSize: "2rem", fontWeight: 900, color: textPrimary, WebkitTextStroke: "1px " + textPrimary }}>{opt.crackers}</span>
                     </div>
                     <div style={{ display: "inline-block", backgroundColor: opt.color + "1a", borderRadius: "999px", padding: "0.3rem 1.1rem", fontSize: "1.1rem", color: opt.color, fontWeight: 800 }}>€{opt.priceEUR.toFixed(2)}</div>
                     {processingIndex === i && (
@@ -277,7 +277,7 @@ export function ParrotCoinPage() {
                       <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
                           <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{p.coinsAmount.toLocaleString()}</span>
+                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{p.crackersAmount.toLocaleString()}</span>
                         </div>
                         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: p.eurAmount === 0 ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>
                           {p.eurAmount === 0 ? "Free" : `€${p.eurAmount.toFixed(2)}`}
@@ -291,7 +291,7 @@ export function ParrotCoinPage() {
                       <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", padding: "0.75rem 0", borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#f0ebe0"}`, alignItems: "center" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
                           <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{t.coinsAmount.toLocaleString()}</span>
+                          <span style={{ fontWeight: 700, fontSize: "0.9rem", color: textPrimary }}>{t.crackersAmount.toLocaleString()}</span>
                         </div>
                         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{t.description}</span>
                         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e0d9ce"}` }}>{new Date(t.createdAt).toLocaleDateString()}</span>
@@ -332,4 +332,4 @@ export function ParrotCoinPage() {
   );
 }
 
-export default ParrotCoinPage;
+export default ParrotCrackerPage;

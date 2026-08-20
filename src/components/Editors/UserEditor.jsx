@@ -21,7 +21,7 @@ export function UserEditor() {
   const [tiktokProfile, setTiktokProfile] = useState("");
   const [linkedinProfile, setLinkedinProfile] = useState("");
   const [youtubeProfile, setYoutubeProfile] = useState("");
-  const [parrotCoinBalance, setParrotCoinBalance] = useState("");
+  const [parrotCrackerBalance, setParrotCrackerBalance] = useState("");
   const [emailHidden, setEmailHidden] = useState(false);
   const [honeyPotValue, setHoneyPotValue] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -51,7 +51,7 @@ export function UserEditor() {
     setLinkedinProfile(data.linkedin || "");
     setTiktokProfile(data.tiktok || "");
     setEmailHidden(data.emailVisible === false);
-    setParrotCoinBalance(data.parrotCoinBalance);
+    setParrotCrackerBalance(data.parrotCrackerBalance);
   };
 
   const handleSearchByUserName = async () => {
@@ -86,7 +86,7 @@ export function UserEditor() {
       { op: "replace", path: "/title", value: userTitle },
       { op: "replace", path: "/bio", value: userBio },
       { op: "replace", path: "/emailVisible", value: !emailHidden },
-      { op: "replace", path: "/parrotCoinBalance", value: parrotCoinBalance },
+      { op: "replace", path: "/parrotCrackerBalance", value: parrotCrackerBalance },
     ];
     try {
       const response = await patchUser({ userId: searchUserId, patchDoc });
@@ -125,7 +125,7 @@ export function UserEditor() {
             ["Title", userTitle, setUserTitle, "text"],
             ["Phone", phoneNumber, setPhoneNumber, "tel"],
             ["Display Email", displayEmail, setDisplayEmail, "email"],
-            ["Parrot Coins", parrotCoinBalance, setParrotCoinBalance, "number"],
+            ["Parrot Crackers", parrotCrackerBalance, setParrotCrackerBalance, "number"],
             ["Facebook", facebookProfile, setFacebookProfile, "text"],
             ["Instagram", instagramProfile, setInstagramProfile, "text"],
             ["Twitter", twitterProfile, setTwitterProfile, "text"],

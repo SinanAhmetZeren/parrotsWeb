@@ -18,6 +18,7 @@ const usersSlice = createSlice({
     unreadMessages: false,
     isAdmin: localStorage.getItem("storedIsAdmin") === "true",
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
+    hasAcknowledgedGroupHistory: localStorage.getItem("storedAcknowledgedGroupHistory") === "true",
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
   },
@@ -34,6 +35,8 @@ const usersSlice = createSlice({
         state.isAdmin = action.payload.isAdmin;
         state.hasAcknowledgedPublicProfile = action.payload.hasAcknowledgedPublicProfile ?? false;
         localStorage.setItem("storedAcknowledgedPublicProfile", String(action.payload.hasAcknowledgedPublicProfile ?? false));
+        state.hasAcknowledgedGroupHistory = action.payload.hasAcknowledgedGroupHistory ?? false;
+        localStorage.setItem("storedAcknowledgedGroupHistory", String(action.payload.hasAcknowledgedGroupHistory ?? false));
         localStorage.setItem("storedIsAdmin", String(action.payload.isAdmin ?? false));
 
         localStorage.setItem("storedToken", action.payload.token);
@@ -59,6 +62,7 @@ const usersSlice = createSlice({
         state.unreadMessages = false;
         state.isAdmin = false;
         state.hasAcknowledgedPublicProfile = false;
+        state.hasAcknowledgedGroupHistory = false;
         state.userFavoriteVoyages = [0];
         state.userFavoriteVehicles = [0];
 
@@ -106,6 +110,10 @@ const usersSlice = createSlice({
     setAcknowledgedPublicProfile: (state) => {
       state.hasAcknowledgedPublicProfile = true;
       localStorage.setItem("storedAcknowledgedPublicProfile", "true");
+    },
+    setAcknowledgedGroupHistory: (state) => {
+      state.hasAcknowledgedGroupHistory = true;
+      localStorage.setItem("storedAcknowledgedGroupHistory", "true");
     },
     updateUserFavoriteVehicles: (state, action) => {
       if (action.payload.favoriteVehicles !== undefined) {
@@ -187,6 +195,7 @@ export const {
   setUnreadMessages,
   markMessagesRead,
   setAcknowledgedPublicProfile,
+  setAcknowledgedGroupHistory,
   setIsDarkMode,
   setBgImageVariant,
   setBookmarkedUserIds,
@@ -267,6 +276,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     acknowledgePublicProfile: builder.mutation({
       query: () => ({
         url: "/api/account/acknowledge-public-profile",
+        method: "POST",
+      }),
+    }),
+    acknowledgeGroupHistory: builder.mutation({
+      query: () => ({
+        url: "/api/account/acknowledge-group-history",
         method: "POST",
       }),
     }),
@@ -401,46 +416,46 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         };
       },
     }),
-    purchaseCoins: builder.mutation({
-      query: ({ userId, coins, eurAmount, paymentProviderId }) => ({
-        url: `/api/User/PurchaseCoins`,
+    purchaseCrackers: builder.mutation({
+      query: ({ userId, crackers, eurAmount, paymentProviderId }) => ({
+        url: `/api/User/PurchaseCrackers`,
         method: "POST",
         body: {
           userId,
-          coins,
+          crackers,
           eurAmount,
           paymentProviderId
         },
       }),
     }),
     createPaymentIntent: builder.mutation({
-      query: ({ userId, coins }) => ({
+      query: ({ userId, crackers }) => ({
         url: `/api/payment/create-intent`,
         method: "POST",
-        body: { userId, coins },
+        body: { userId, crackers },
       }),
     }),
-    claimFreeCoins: builder.mutation({
+    claimFreeCrackers: builder.mutation({
       query: () => ({
-        url: `/api/User/ClaimFreeCoins`,
+        url: `/api/User/ClaimFreeCrackers`,
         method: "POST",
       }),
     }),
-    sendParrotCoins: builder.mutation({
-      query: ({ userId, coins, receiverId }) => ({
-        url: `/api/User/sendParrotCoins`,
+    sendParrotCrackers: builder.mutation({
+      query: ({ userId, crackers, receiverId }) => ({
+        url: `/api/User/sendParrotCrackers`,
         method: "POST",
         body: {
           userId,
-          coins,
+          crackers,
           receiverId
         },
       }),
     }),
-    getParrotCoinBalance: builder.query({
+    getParrotCrackerBalance: builder.query({
       query: (userId) => {
         if (userId) {
-          return `/api/User/parrotCoinBalance/${userId}`;
+          return `/api/User/parrotCrackerBalance/${userId}`;
         } else {
           return "";
         }
@@ -518,6 +533,7 @@ export const {
   useLoginUserMutation,
   useAcceptTermsMutation,
   useAcknowledgePublicProfileMutation,
+  useAcknowledgeGroupHistoryMutation,
   useGoogleLoginInternalMutation,
   useResetPasswordMutation,
   useGetUserByIdQuery,
@@ -528,11 +544,11 @@ export const {
   usePatchUserMutation,
   usePatchUserAdminMutation,
   useCreatePaymentIntentMutation,
-  usePurchaseCoinsMutation,
-  useClaimFreeCoinsMutation,
-  useSendParrotCoinsMutation,
-  useGetParrotCoinBalanceQuery,
-  useLazyGetParrotCoinBalanceQuery,
+  usePurchaseCrackersMutation,
+  useClaimFreeCrackersMutation,
+  useSendParrotCrackersMutation,
+  useGetParrotCrackerBalanceQuery,
+  useLazyGetParrotCrackerBalanceQuery,
   useGetBookmarksQuery,
   useLazyGetBookmarksQuery,
   useGetBookmarkedUserIdsQuery,

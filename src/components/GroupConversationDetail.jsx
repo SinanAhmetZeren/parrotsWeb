@@ -4,7 +4,8 @@ import { RiCloseLine, RiAddLine } from "react-icons/ri";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useGetGroupMessagesQuery, useGetGroupByIdQuery } from "../slices/GroupSlice";
 import { useAddGroupMemberMutation, useRemoveGroupMemberMutation, useExitGroupMutation } from "../slices/GroupSlice";
-import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
+import { useGetUsersByUsernameQuery, useAcknowledgeGroupHistoryMutation, setAcknowledgedGroupHistory } from "../slices/UserSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { invokeHub, isHubReady, register_ReceiveGroupMessageRefetch, unregister_ReceiveGroupMessageRefetch, register_ReceiveGroupMessage, unregister_ReceiveGroupMessage } from "../signalr/signalRHub";
 import { parrotBlue, parrotBlueDarkTransparent2, parrotBlueDarkTransparent, parrotLightBlue, parrotRed } from "../styles/colors";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,11 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const sendTimestampsRef = useRef([]);
+
+  const dispatch = useDispatch();
+  const hasAcknowledgedGroupHistory = useSelector((state) => state.users.hasAcknowledgedGroupHistory);
+  const [acknowledgeGroupHistory] = useAcknowledgeGroupHistoryMutation();
+  const [showGroupHistoryModal, setShowGroupHistoryModal] = useState(false);
 
   const [message, setMessage] = useState("");
   const [messagesToDisplay, setMessagesToDisplay] = useState([]);
@@ -46,6 +52,10 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   const [addMember] = useAddGroupMemberMutation();
   const [removeMember] = useRemoveGroupMemberMutation();
   const [exitGroup] = useExitGroupMutation();
+
+  useEffect(() => {
+    if (!hasAcknowledgedGroupHistory) setShowGroupHistoryModal(true);
+  }, [hasAcknowledgedGroupHistory]);
 
   useEffect(() => {
     if (groupMessagesData) setMessagesToDisplay(groupMessagesData);
@@ -94,6 +104,12 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
     register_ReceiveGroupMessage(handler);
     return () => unregister_ReceiveGroupMessage(handler);
   }, [groupId, refetchMessages]);
+
+  const handleAcknowledgeGroupHistory = async () => {
+    setShowGroupHistoryModal(false);
+    dispatch(setAcknowledgedGroupHistory());
+    try { await acknowledgeGroupHistory().unwrap(); } catch { }
+  };
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -155,6 +171,18 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
 
   return (
     <div style={outerContainer(dark)}>
+
+      {showGroupHistoryModal && (
+        <div style={groupHistoryModalOverlay}>
+          <div style={groupHistoryModalBox}>
+            <div style={groupHistoryModalTitle}>ℹ️ Group Message History</div>
+            <p style={groupHistoryModalText}>
+              You have access to the full message history of this group. All future members who join will also be able to see all previous messages.
+            </p>
+            <button style={groupHistoryModalBtn} onClick={handleAcknowledgeGroupHistory}>Got it</button>
+          </div>
+        </div>
+      )}
 
       {/* Members panel */}
       <div style={membersPanel(dark)}>
@@ -576,3 +604,24 @@ const messageList = (dark) => ({
 
 
 
+
+
+const groupHistoryModalOverlay = {
+  position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
+};
+const groupHistoryModalBox = {
+  backgroundColor: "#fff", borderRadius: "12px", padding: "2rem",
+  maxWidth: "480px", width: "90%", boxShadow: "0 8px 32px rgba(0,0,0,0.25)", textAlign: "center",
+};
+const groupHistoryModalTitle = {
+  fontSize: "1.1rem", fontWeight: 700, color: "#1e3a5f", marginBottom: "1rem",
+};
+const groupHistoryModalText = {
+  fontSize: "0.95rem", color: "#374151", lineHeight: "1.6", marginBottom: "1.5rem",
+};
+const groupHistoryModalBtn = {
+  backgroundColor: "rgb(10, 119, 234)", color: "white", border: "none",
+  borderRadius: "8px", padding: "0.65rem 2rem", fontSize: "1rem",
+  fontWeight: 600, cursor: "pointer",
+};

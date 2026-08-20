@@ -1,18 +1,18 @@
 /* eslint-disable no-undef */
 import React from "react";
-import parrotCracker from "../assets/images/parrotCookie.png";
+import parrotCracker from "../assets/images/parrotCracker.png";
 import jarImg from "../assets/images/jar.png";
 import { parrotCaravanOrangeRed, parrotGreen } from "../styles/colors";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { BsChatDotsFill } from "react-icons/bs";
 
 const PURCHASE_OPTIONS = [
-  { coins: 100, priceEUR: 2.99, label: "Nest Pack", color: "#4a90d9" },
-  { coins: 250, priceEUR: 5.99, label: "Flock Pack", color: "#4caf87" },
-  { coins: 500, priceEUR: 9.99, label: "Colony Pack", color: "#e8874a" },
+  { crackers: 100, priceEUR: 2.99, label: "Nest Pack", color: "#4a90d9" },
+  { crackers: 250, priceEUR: 5.99, label: "Flock Pack", color: "#4caf87" },
+  { crackers: 500, priceEUR: 9.99, label: "Colony Pack", color: "#e8874a" },
 ];
 
-export function ParrotCoinPageMobileView({
+export function ParrotCrackerPageMobileView({
   isDark, currentBalance, purchases, transactions,
   processingIndex, isProcessingFree, showClaimModal, displayState,
   setDisplayState, setShowClaimModal, handleClaimFree, handleBuy,
@@ -58,7 +58,7 @@ export function ParrotCoinPageMobileView({
           <div style={{ fontSize: "2rem", fontWeight: 800, color: opt.color, letterSpacing: "0.1em", width: "18rem", flexShrink: 0 }}>{opt.label.toUpperCase()}</div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", width: "12rem", justifyContent: "center", flexShrink: 0 }}>
             <img src={parrotCracker} alt="cracker" style={{ width: "3rem", height: "3rem" }} />
-            <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary, WebkitTextStroke: "2px " + textPrimary }}>{opt.coins}</span>
+            <span style={{ fontSize: "4rem", fontWeight: 900, color: textPrimary, WebkitTextStroke: "2px " + textPrimary }}>{opt.crackers}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.4rem", width: "12rem", flexShrink: 0 }}>
             <div style={{ display: "inline-block", backgroundColor: opt.color + "1a", borderRadius: "999px", padding: "0.3rem 1.25rem", fontSize: "2.2rem", fontWeight: 800, color: opt.color }}>
@@ -133,7 +133,7 @@ export function ParrotCoinPageMobileView({
               <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: "0.75rem 0", borderTop: `1px solid #f0ebe0`, alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
                   <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                  <span style={{ fontWeight: 700, fontSize: "1.8rem", color: textPrimary }}>{p.coinsAmount.toLocaleString()}</span>
+                  <span style={{ fontWeight: 700, fontSize: "1.8rem", color: textPrimary }}>{p.crackersAmount.toLocaleString()}</span>
                 </div>
                 <span style={{ fontWeight: 600, fontSize: "1.8rem", color: p.eurAmount === 0 ? parrotGreen : "#c8a84b", paddingLeft: "0.75rem", borderLeft: `1px solid ${divider}` }}>{p.eurAmount === 0 ? "Free" : `€${p.eurAmount.toFixed(2)}`}</span>
                 <span style={{ fontWeight: 600, fontSize: "1.8rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${divider}` }}>{new Date(p.createdAt).toLocaleDateString()}</span>
@@ -145,7 +145,7 @@ export function ParrotCoinPageMobileView({
               <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", padding: "0.75rem 0", borderTop: `1px solid #f0ebe0`, alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", paddingLeft: "0.75rem" }}>
                   <img src={parrotCracker} alt="cracker" style={{ width: "1rem", height: "1rem" }} />
-                  <span style={{ fontWeight: 700, fontSize: "1.8rem", color: textPrimary }}>{t.coinsAmount.toLocaleString()}</span>
+                  <span style={{ fontWeight: 700, fontSize: "1.8rem", color: textPrimary }}>{t.crackersAmount.toLocaleString()}</span>
                 </div>
                 <span style={{ fontWeight: 600, fontSize: "1.8rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${divider}` }}>{t.description}</span>
                 <span style={{ fontWeight: 600, fontSize: "1.8rem", color: textSecondary, paddingLeft: "0.75rem", borderLeft: `1px solid ${divider}` }}>{new Date(t.createdAt).toLocaleDateString()}</span>

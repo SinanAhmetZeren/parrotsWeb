@@ -25,6 +25,9 @@ import { LogViewer } from "../components/Editors/LogViewer";
 import { PlaceEditor } from "../components/Editors/PlaceEditor";
 import { PlaceEditorEdit } from "../components/Editors/PlaceEditorEdit";
 import { DocsViewer } from "../components/Editors/DocsViewer";
+import { AiQueriesViewer } from "../components/Editors/AiQueriesViewer";
+import { AiMetrics } from "../components/Metrics/AiMetrics";
+import { MobileVersionEditor } from "../components/Editors/MobileVersionEditor";
 
 
 function AdminPage() {
@@ -107,6 +110,9 @@ function AdminPage() {
                 {adminView === "placeEditor" && <PlaceEditor />}
                 {adminView === "placeEditorEdit" && <PlaceEditorEdit />}
                 {adminView === "docsViewer" && <DocsViewer />}
+                {adminView === "aiQueriesViewer" && <AiQueriesViewer />}
+                {adminView === "aiMetrics" && <AiMetrics />}
+                {adminView === "mobileVersionEditor" && <MobileVersionEditor />}
               </div>
             </div>
 

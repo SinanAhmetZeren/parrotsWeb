@@ -28,9 +28,22 @@ const sections = [
         ]
     },
     {
+        label: "AI",
+        items: [
+            { key: "aiQueriesViewer", label: "Ask Parrots" },
+            { key: "aiMetrics", label: "AI Metrics" },
+        ]
+    },
+    {
         label: "Register",
         items: [
             { key: "placeEditor", label: "Places" },
+        ]
+    },
+    {
+        label: "Config",
+        items: [
+            { key: "mobileVersionEditor", label: "Mobile Version" },
         ]
     }
 ];

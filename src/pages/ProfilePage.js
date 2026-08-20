@@ -21,7 +21,7 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { parrotButtonDarkBlue, parrotDarkBlue, parrotTextDarkBlue } from "../styles/colors";
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
-import parrotCoin from "../assets/images/parrotCookie.png"
+import parrotCracker from "../assets/images/parrotCracker.png"
 
 function ProfilePage() {
   const local_userId = localStorage.getItem("storedUserId");
@@ -42,7 +42,7 @@ function ProfilePage() {
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
   const [isOpen, setIsOpen] = useState(false);
-  const [isParrotCoinHovered, setIsParrotCoinHovered] = useState(false);
+  const [isParrotCrackerHovered, setIsParrotCrackerHovered] = useState(false);
 
   const handleGoToPublicPage = () => {
     navigate(`/profile-public/${userData?.publicId}/${userData?.userName}`);
@@ -60,8 +60,8 @@ function ProfilePage() {
     navigate(`/newVoyage`);
   };
 
-  const handleGoToParrotCoinPage = () => {
-    navigate(`/parrotCoinPage`);
+  const handleGoToParrotCrackerPage = () => {
+    navigate(`/parrotCrackerPage`);
   };
 
   const [
@@ -165,22 +165,22 @@ function ProfilePage() {
                   </div>
                 </div>
 
-                <div style={parrotCoinContainer}
-                  onClick={() => handleGoToParrotCoinPage()}
+                <div style={parrotCrackerContainer}
+                  onClick={() => handleGoToParrotCrackerPage()}
                 >
                   <img
-                    src={parrotCoin}
+                    src={parrotCracker}
                     alt=""
                     style={{
-                      ...parrotCoinImg,
-                      transform: isParrotCoinHovered ? "scale(1.3)" : "scale(1)",
+                      ...parrotCrackerImg,
+                      transform: isParrotCrackerHovered ? "scale(1.3)" : "scale(1)",
                       transition: "transform 0.3s ease-in-out",
                       display: "block",
                     }}
-                    onMouseEnter={() => setIsParrotCoinHovered(true)}
-                    onMouseLeave={() => setIsParrotCoinHovered(false)}
+                    onMouseEnter={() => setIsParrotCrackerHovered(true)}
+                    onMouseLeave={() => setIsParrotCrackerHovered(false)}
                   />
-                  {isParrotCoinHovered && (
+                  {isParrotCrackerHovered && (
                     <div style={{
                       position: "absolute", bottom: "5.5rem", left: "50%", transform: "translateX(-50%)",
                       backgroundColor: isDarkMode ? "#0d2a45" : "#faf7f2",
@@ -190,7 +190,7 @@ function ProfilePage() {
                       fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap",
                       zIndex: 100, pointerEvents: "none",
                     }}>
-                      You have {userData?.parrotCoinBalance ?? "..."} ParrotCracker{userData?.parrotCoinBalance !== 1 ? "s" : ""}.<br />
+                      You have {userData?.parrotCrackerBalance ?? "..."} ParrotCracker{userData?.parrotCrackerBalance !== 1 ? "s" : ""}.<br />
                       <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to top up your Crackers.</span>
                     </div>
                   )}
@@ -339,12 +339,12 @@ function ProfilePage() {
 export default ProfilePage;
 
 
-const parrotCoinImg = {
+const parrotCrackerImg = {
   position: "absolute",
   top: "0.1rem"
 }
 
-const parrotCoinContainer = {
+const parrotCrackerContainer = {
   position: "absolute",
   height: "5rem",
   width: "5rem",

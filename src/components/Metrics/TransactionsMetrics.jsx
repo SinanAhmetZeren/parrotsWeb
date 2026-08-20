@@ -17,8 +17,8 @@ export function WeeklyTransactionsMetrics() {
   const chartData = Object.values(grouped)
     .map(w => ({
       ...w,
-      send_parrotCoins: w.send_parrotCoins ?? 0,
-      receive_parrotCoins: w.receive_parrotCoins ?? 0,
+      send_parrotCrackers: w.send_parrotCrackers ?? 0,
+      receive_parrotCrackers: w.receive_parrotCrackers ?? 0,
       voyage_cost: w.voyage_cost ?? 0,
     }))
     .sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
@@ -28,17 +28,17 @@ export function WeeklyTransactionsMetrics() {
       title="Weekly Transactions"
       data={chartData}
       columns={[
-        { key: "send_parrotCoins_count", label: "Send Count" },
-        { key: "send_parrotCoins", label: "Send Total", prefix: "$" },
-        { key: "receive_parrotCoins_count", label: "Receive Count" },
-        { key: "receive_parrotCoins", label: "Receive Total", prefix: "$" },
+        { key: "send_parrotCrackers_count", label: "Send Count" },
+        { key: "send_parrotCrackers", label: "Send Total", prefix: "$" },
+        { key: "receive_parrotCrackers_count", label: "Receive Count" },
+        { key: "receive_parrotCrackers", label: "Receive Total", prefix: "$" },
         { key: "voyage_cost_count", label: "Voyage Count" },
         { key: "voyage_cost", label: "Voyage Total", prefix: "$" },
       ]}
       chartType="line"
       series={[
-        { key: "send_parrotCoins", label: "Send Coins", color: "#f97316", prefix: "$" },
-        { key: "receive_parrotCoins", label: "Receive Coins", color: "#34d399", prefix: "$" },
+        { key: "send_parrotCrackers", label: "Send Crackers", color: "#f97316", prefix: "$" },
+        { key: "receive_parrotCrackers", label: "Receive Crackers", color: "#34d399", prefix: "$" },
         { key: "voyage_cost", label: "Voyage Cost", color: "#818cf8", prefix: "$" },
       ]}
     />
