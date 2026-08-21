@@ -12,8 +12,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body,
       }),
     }),
+    checkRequiresTermsAcceptance: builder.query({
+      query: () => "/api/account/requires-terms-acceptance",
+    }),
+    getCurrentTermsPublic: builder.query({
+      query: () => "/api/account/current-terms",
+    }),
   }),
 });
 
-export const { useGetCurrentTermsAdminQuery, useUpdateTermsAdminMutation } =
+export const { useGetCurrentTermsAdminQuery, useUpdateTermsAdminMutation, useLazyCheckRequiresTermsAcceptanceQuery, useGetCurrentTermsPublicQuery } =
   extendedApiSlice;

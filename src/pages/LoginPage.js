@@ -207,13 +207,6 @@ function LoginPage() {
       }));
       dispatch(setBookmarkedUserIds(loginResponse.bookmarkedUserIds || []));
 
-      if (loginResponse.requiresTermsAcceptance) {
-        setPendingLoginData(loginResponse);
-        setRequiresTermsReAcceptance(true);
-        setIsLoggingIn(false);
-        return;
-      }
-
       dispatch(
         updateAsLoggedIn({
           userId: loginResponse.userId,

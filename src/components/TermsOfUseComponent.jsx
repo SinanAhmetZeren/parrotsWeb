@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { parrotBlue, parrotDarkBlue } from "../styles/colors";
 import { TermsContent } from "./TermsContent";
 
@@ -15,6 +16,30 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
         }
     };
 
+    const modal = modalOpen ? ReactDOM.createPortal(
+        <div style={modalOverlay} onClick={toggleModal}>
+            <div style={modalContent} className="scrollable-modal" onClick={(e) => e.stopPropagation()}>
+                <style>{`
+                    .scrollable-modal::-webkit-scrollbar { width: 10px; }
+                    .scrollable-modal::-webkit-scrollbar-track { background: ${parrotDarkBlue}; border-radius: 5px; }
+                    .scrollable-modal::-webkit-scrollbar-thumb { background: ${parrotBlue}; border-radius: 5px; }
+                `}</style>
+
+                <button style={closeButton} onClick={toggleModal}>&times;</button>
+
+                {onAccept && (
+                    <div style={{ backgroundColor: "#fff3cd", border: "1px solid #ffc107", borderRadius: "8px", padding: "0.75rem 1rem", marginBottom: "1rem", textAlign: "center" }}>
+                        <strong style={{ color: "#856404" }}>⚠ Our Terms of Use have been updated.</strong>
+                        <span style={{ color: "#856404" }}> Please scroll down, read and accept the updated terms to continue.</span>
+                    </div>
+                )}
+
+                <TermsContent onAccept={onAccept} onDecline={onAccept ? undefined : toggleModal} />
+            </div>
+        </div>,
+        document.body
+    ) : null;
+
     return (
         <>
             {!isControlled && (
@@ -22,29 +47,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
                     <span>Terms of Use</span>
                 </button>
             )}
-
-            {modalOpen && (
-                <div style={modalOverlay} onClick={toggleModal}>
-                    <div style={modalContent} className="scrollable-modal" onClick={(e) => e.stopPropagation()}>
-                        <style>{`
-                            .scrollable-modal::-webkit-scrollbar { width: 10px; }
-                            .scrollable-modal::-webkit-scrollbar-track { background: ${parrotDarkBlue}; border-radius: 5px; }
-                            .scrollable-modal::-webkit-scrollbar-thumb { background: ${parrotBlue}; border-radius: 5px; }
-                        `}</style>
-
-                        <button style={closeButton} onClick={toggleModal}>&times;</button>
-
-                        {onAccept && (
-                            <div style={{ backgroundColor: "#fff3cd", border: "1px solid #ffc107", borderRadius: "8px", padding: "0.75rem 1rem", marginBottom: "1rem", textAlign: "center" }}>
-                                <strong style={{ color: "#856404" }}>⚠ Our Terms of Use have been updated.</strong>
-                                <span style={{ color: "#856404" }}> Please scroll down, read and accept the updated terms to continue.</span>
-                            </div>
-                        )}
-
-                        <TermsContent onAccept={onAccept} onDecline={toggleModal} />
-                    </div>
-                </div>
-            )}
+            {modal}
         </>
     );
 };
@@ -70,12 +73,12 @@ const navigationButton = {
 const modalOverlay = {
     position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
     backgroundColor: "rgba(0,0,0,0.6)", display: "flex", justifyContent: "center",
-    alignItems: "center", zIndex: 1000, overflowY: "auto", padding: "1rem",
+    alignItems: "center", zIndex: 1000, overflow: "hidden",
 };
 
 const modalContent = {
     position: "relative", backgroundColor: "#fff", maxWidth: "900px", width: "100%",
-    maxHeight: "90vh", overflowY: "auto", borderRadius: "1rem", padding: "2rem",
+    height: "90vh", overflowY: "auto", borderRadius: "1rem", padding: "2rem",
     boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
 };
 

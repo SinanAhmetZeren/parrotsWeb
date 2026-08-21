@@ -1,7 +1,9 @@
 /* eslint-disable no-undef */
 import "./assets/css/App.css";
 import "./assets/css/advancedmarker.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Modal from "react-modal";
+import { TermsContent } from "./components/TermsContent";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
@@ -42,14 +44,15 @@ function App() {
   const bgImageVariant = useSelector((state) => state.users.bgImageVariant);
   const currentUserId = useSelector((state) => state.users.userId);
   const userName = useSelector((state) => state.users.userName);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [showTermsModal, setShowTermsModal] = useState(true);
 
   useEffect(() => {
     if (isLoggedIn && currentUserId) {
-      // Initialize the SignalR hub once for the app
       initHubConnection(currentUserId, API_URL);
     }
   }, [isLoggedIn, currentUserId]);
+
 
   useEffect(() => {
     if (userName) {
@@ -104,7 +107,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-    <Router>
+<Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/privacy" element={<TermsPage />} />
@@ -147,6 +150,15 @@ function App() {
           </>
         )}
       </Routes>
+      <Modal
+        isOpen={showTermsModal}
+        onRequestClose={() => setShowTermsModal(false)}
+        shouldCloseOnOverlayClick={false}
+        shouldCloseOnEsc={false}
+        style={termsModalStyle}
+      >
+        <TermsContent onAccept={() => setShowTermsModal(false)} />
+      </Modal>
       <ToastContainer
         position="bottom-center"
         autoClose={2500}
@@ -161,5 +173,26 @@ function App() {
     </ErrorBoundary>
   );
 }
+
+const termsModalStyle = {
+  overlay: {
+    backgroundColor: "rgba(0,0,0,0.5)",
+    zIndex: 1000,
+  },
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    transform: "translate(-50%, -50%)",
+    width: "60rem",
+    height: "80vh",
+    borderRadius: "1.5rem",
+    padding: "2rem",
+    border: "none",
+    boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
+    overflowY: "auto",
+  },
+};
 
 export default App;
