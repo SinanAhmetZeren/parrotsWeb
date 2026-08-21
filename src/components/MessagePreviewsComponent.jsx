@@ -62,7 +62,7 @@ export function MessagePreviewsComponent({
           </div>
           <div style={UsernameAndTextContainer}>
             <span style={messageUsernameStyle(dark, message.unreadCount > 0)}>{message.groupName}</span>
-            <span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text ? `${message.senderUsername}: ${message.text?.startsWith("**🦜**") ? "Ask Parrots: " + message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text}` : "No messages yet"}</span>
+            <span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text ? `${message.senderUsername}: ${message.text?.startsWith("**🦜**") ? "Ask Parrots: " + message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text?.startsWith("[parrots-bid]") ? "Parrots: " + message.text.replace(/^\[parrots-bid\]\s*/, "") : message.text}` : "No messages yet"}</span>
           </div>
           <div style={timestampContainer}>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
@@ -112,7 +112,7 @@ export function MessagePreviewsComponent({
         </div>
         <div style={UsernameAndTextContainer}>
           <div><span style={messageUsernameStyle(dark, message.unreadCount > 0)}>{otherUserUsername}</span></div>
-          <div><span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text?.startsWith("**🦜**") ? "Ask Parrots: " + message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text}</span></div>
+          <div><span style={messageTextStyle(dark, message.unreadCount > 0)}>{message.text?.startsWith("**🦜**") ? "Ask Parrots: " + message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text?.startsWith("[parrots-bid]") ? "Parrots: " + message.text.replace(/^\[parrots-bid\]\s*/, "") : message.text}</span></div>
         </div>
         <div style={timestampContainer}>
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>

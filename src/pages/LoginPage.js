@@ -466,6 +466,7 @@ function LoginPage() {
                           placeholder="Username"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                           className="username-input-login"
                           style={{ color: parrotTextDarkBlue }}
                         />
@@ -476,6 +477,7 @@ function LoginPage() {
                           placeholder="Password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                           className="password-input-login"
                           style={{ color: parrotTextDarkBlue }}
                         />

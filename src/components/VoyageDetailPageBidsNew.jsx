@@ -55,7 +55,7 @@ export function VoyageDetailBidsNew({
   // ACCEPT BID
   const handleAcceptBid = async ({ bidId, bidUserId }) => {
     setLoadingBidId(bidId);
-    const text = `Hi there! 👋 Welcome on board to "${voyageData.name}" 🎉`;
+    const text = `[parrots-bid] Welcome aboard "${voyageData.name}"! Your bid has been accepted.`;
     try {
       // 🔔 Send chat message
       await invokeHub("SendMessage", currentUserId, bidUserId, text, false);

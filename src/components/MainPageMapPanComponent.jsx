@@ -1,30 +1,21 @@
 import { useEffect, useRef } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 
-export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, setInitialBounds }) {
+export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, setInitialBounds, locationReady }) {
   const map = useMap();
-  const hasInit = useRef(false);
+  const hasSetInitialBounds = useRef(false);
+  const locationReadyRef = useRef(locationReady);
+
+  useEffect(() => {
+    locationReadyRef.current = locationReady;
+  }, [locationReady]);
 
   const extractBounds = (b) => ({
     lat: { northEast: b.getNorth(), southWest: b.getSouth() },
     lng: { northEast: b.getEast(), southWest: b.getWest() },
   });
 
-  // Set initial bounds once when map is ready
-  useEffect(() => {
-    if (!map) return;
-    map.whenReady(() => {
-      if (hasInit.current) return;
-      const b = map.getBounds();
-      if (!b) return;
-      const newBounds = extractBounds(b);
-      setBounds(newBounds);
-      if (setInitialBounds) setInitialBounds(newBounds);
-      hasInit.current = true;
-    });
-  }, [map, setBounds, setInitialBounds]);
-
-  // Update bounds on every map move
+  // Update bounds on every map move; set initialBounds once after location is ready
   useMapEvents({
     moveend() {
       const b = map.getBounds();
@@ -39,6 +30,10 @@ export function MainPageMapPanComponent({ targetLat, targetLng, setBounds, setIn
           prev.lng?.southWest === newBounds.lng.southWest;
         return isSame ? prev : newBounds;
       });
+      if (locationReadyRef.current && !hasSetInitialBounds.current && setInitialBounds) {
+        setInitialBounds(newBounds);
+        hasSetInitialBounds.current = true;
+      }
     },
   });
 

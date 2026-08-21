@@ -175,7 +175,7 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
       {showGroupHistoryModal && (
         <div style={groupHistoryModalOverlay}>
           <div style={groupHistoryModalBox}>
-            <div style={groupHistoryModalTitle}>ℹ️ Group Message History</div>
+            <div style={groupHistoryModalTitle}>Group Message History</div>
             <p style={groupHistoryModalText}>
               You have access to the full message history of this group. All future members who join will also be able to see all previous messages.
             </p>

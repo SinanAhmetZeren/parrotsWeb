@@ -49,7 +49,12 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
         const showDateSeparator = date !== prevDate;
         const isCurrentUser = message.senderId === currentUserId;
         const isAskParrots = isCurrentUser && message.text?.startsWith("**🦜**");
-        const displayText = isAskParrots ? message.text.replace(/^\*\*🦜\*\*\s*/, "") : message.text;
+        const isParrotsBid = message.text?.startsWith("[parrots-bid]");
+        const displayText = isAskParrots
+          ? message.text.replace(/^\*\*🦜\*\*\s*/, "")
+          : isParrotsBid
+            ? message.text.replace(/^\[parrots-bid\]\s*/, "")
+            : message.text;
         return (
           <React.Fragment key={index}>
             {showDateSeparator && (
@@ -62,27 +67,37 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
                 <img src={parrotLogo} alt="Ask Parrots" style={{ width: 36, height: 36, borderRadius: "50%", marginRight: 8, flexShrink: 0 }} />
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 12, color: parrotBlue, fontWeight: 700, marginBottom: 2 }}>Ask Parrots</div>
-                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: 8, padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: 14, textAlign: "left" }}>
+                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: 8, padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: "1rem", textAlign: "left", fontWeight: "bold" }}>
+                    {displayText}
+                  </div>
+                </div>
+              </div>
+            ) : isParrotsBid ? (
+              <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", marginBottom: 8, justifySelf: "start", textAlign: "left" }}>
+                <img src={parrotLogo} alt="Parrots" style={{ width: 36, height: 36, borderRadius: "50%", marginRight: 8, flexShrink: 0 }} />
+                <div style={{ textAlign: "left" }}>
+                  <div style={{ fontSize: 12, color: parrotBlue, fontWeight: 700, marginBottom: 2 }}>Parrots</div>
+                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: "4rem", padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: "1rem", textAlign: "left", fontWeight: "bold" }}>
                     {displayText}
                   </div>
                 </div>
               </div>
             ) : (
-            <div
-              style={{
-                ...containerStyle(dark),
-                justifySelf: isCurrentUser ? "end" : "start",
-              }}
-            >
-              <div style={messageTextStyle}>
-                <div>{displayText}</div>
+              <div
+                style={{
+                  ...containerStyle(dark),
+                  justifySelf: isCurrentUser ? "end" : "start",
+                }}
+              >
+                <div style={messageTextStyle}>
+                  <div>{displayText}</div>
+                </div>
+                <div style={dateAndTimeContainerStyle}>
+                  <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
+                    {time}
+                  </span>
+                </div>
               </div>
-              <div style={dateAndTimeContainerStyle}>
-                <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
-                  {time}
-                </span>
-              </div>
-            </div>
             )}
           </React.Fragment>
         );
@@ -94,12 +109,13 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
 
 const messageTextStyle = {
   textAlign: "justify",
-  display: "flex",         //   Enables flex behavior
-  flexDirection: "column", //   Keeps content in a column
-  wordBreak: "break-word", //   Prevents overflow issues
+  display: "flex",
+  flexDirection: "column",
+  wordBreak: "break-word",
   padding: ".5rem",
   borderRadius: "1rem",
-  fontSize: "1.15rem",
+  fontSize: "1rem",
+  fontWeight: "bold",
 };
 
 

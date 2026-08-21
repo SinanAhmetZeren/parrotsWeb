@@ -50,6 +50,7 @@ function MainPage() {
   const [selectedVehicle, setSelectedVehicle] = useState();
   const [bounds, setBounds] = useState(null);
   const [initialBounds, setInitialBounds] = useState(null);
+  const [locationReady, setLocationReady] = useState(false);
   const [mapTypeId, setMapTypeId] = useState("hybrid");
 
   const dispatch = useDispatch();
@@ -109,6 +110,7 @@ function MainPage() {
     setInitialLatitude(FALLBACK_LAT);
     setInitialLongitude(FALLBACK_LNG);
     handlePanToLocation(FALLBACK_LAT, FALLBACK_LNG);
+    setLocationReady(true);
   };
 
   const [locationBlocked, setLocationBlocked] = useState(false);
@@ -151,6 +153,7 @@ function MainPage() {
         setInitialLatitude(latitude);
         setInitialLongitude(longitude);
         handlePanToLocation(latitude, longitude);
+        setLocationReady(true);
       },
       () => {
         applyFallbackLocation();
@@ -267,6 +270,7 @@ function MainPage() {
                       <MainPageMapPanComponent
                         setBounds={setBounds}
                         setInitialBounds={setInitialBounds}
+                        locationReady={locationReady}
                         targetLat={targetLocation?.lat}
                         targetLng={targetLocation?.lng}
                       />

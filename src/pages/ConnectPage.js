@@ -37,7 +37,7 @@ import {
   unregister_ReceiveGroupMessage,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
-import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery, useAcknowledgeGroupHistoryMutation, setAcknowledgedGroupHistory } from "../slices/UserSlice";
+import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
 import parrotsLogo from "../assets/images/placeholderparrots.webp";
@@ -83,15 +83,6 @@ function ConnectPage() {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const dark = isDarkMode;
-  const hasAcknowledgedGroupHistory = useSelector((state) => state.users.hasAcknowledgedGroupHistory);
-  const [acknowledgeGroupHistoryMutation] = useAcknowledgeGroupHistoryMutation();
-  const [showGroupHistoryModal, setShowGroupHistoryModal] = useState(!hasAcknowledgedGroupHistory);
-
-  const handleAcknowledgeGroupHistory = async () => {
-    setShowGroupHistoryModal(false);
-    dispatch(setAcknowledgedGroupHistory());
-    try { await acknowledgeGroupHistoryMutation().unwrap(); } catch { }
-  };
   const { data: bookmarksRaw } = useGetBookmarksQuery(undefined, { skip: !showSaved });
   const bookmarksData = React.useMemo(() => bookmarksRaw?.map(b => ({
     id: b.bookmarkedUserId,
@@ -374,17 +365,6 @@ function ConnectPage() {
         <ConnectPagePlaceHolder />
       ) : (
         <div className="App">
-          {showGroupHistoryModal && (
-            <div style={groupHistoryModalOverlay}>
-              <div style={groupHistoryModalBox}>
-                <div style={groupHistoryModalTitle}>ℹ️ Group Message History</div>
-                <p style={groupHistoryModalText}>
-                  You have access to the full message history of this group. All future members who join will also be able to see all previous messages.
-                </p>
-                <button style={groupHistoryModalBtn} onClick={handleAcknowledgeGroupHistory}>Got it</button>
-              </div>
-            </div>
-          )}
           <header className="App-header">
             <div className="flex mainpage_Container">
               <div className="flex mainpage_TopRow">
@@ -674,22 +654,3 @@ const createGroupBtn = (dark) => ({
 });
 
 
-const groupHistoryModalOverlay = {
-  position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
-  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
-};
-const groupHistoryModalBox = {
-  backgroundColor: "#fff", borderRadius: "12px", padding: "2rem",
-  maxWidth: "480px", width: "90%", boxShadow: "0 8px 32px rgba(0,0,0,0.25)", textAlign: "center",
-};
-const groupHistoryModalTitle = {
-  fontSize: "1.1rem", fontWeight: 700, color: "#1e3a5f", marginBottom: "1rem",
-};
-const groupHistoryModalText = {
-  fontSize: "0.95rem", color: "#374151", lineHeight: "1.6", marginBottom: "1.5rem",
-};
-const groupHistoryModalBtn = {
-  backgroundColor: "rgb(10, 119, 234)", color: "white", border: "none",
-  borderRadius: "8px", padding: "0.65rem 2rem", fontSize: "1rem",
-  fontWeight: 600, cursor: "pointer",
-};
