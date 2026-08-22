@@ -60,7 +60,7 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
                     next.setDate(next.getDate() + 1);
                     search.append("to", next.toISOString().slice(0, 10) + "T00:00:00Z");
                 }
-                return `/api/Metrics/aiQueryStats?${search.toString()}`;
+                return `/api/Metrics/askParrotsQueryStats?${search.toString()}`;
             },
             transformResponse: (responseData) => responseData.data,
             keepUnusedDataFor: 0,
@@ -92,7 +92,7 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
                             search.append(k, v);
                     }
                 });
-                return `/api/Metrics/aiQueries?${search.toString()}`;
+                return `/api/Metrics/askParrotsQueries?${search.toString()}`;
             },
             transformResponse: (responseData) => responseData.data,
             keepUnusedDataFor: 0,
