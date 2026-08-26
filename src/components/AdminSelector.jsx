@@ -45,6 +45,12 @@ const sections = [
         items: [
             { key: "mobileVersionEditor", label: "Mobile Version" },
         ]
+    },
+    {
+        label: "Project",
+        items: [
+            { key: "parrotsImages", label: "ParrotsImages" },
+        ]
     }
 ];
 

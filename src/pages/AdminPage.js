@@ -28,6 +28,7 @@ import { DocsViewer } from "../components/Editors/DocsViewer";
 import { AiQueriesViewer } from "../components/Editors/AiQueriesViewer";
 import { AiMetrics } from "../components/Metrics/AiMetrics";
 import { MobileVersionEditor } from "../components/Editors/MobileVersionEditor";
+import { ParrotsImages } from "../components/Editors/ParrotsImages";
 
 
 function AdminPage() {
@@ -113,6 +114,7 @@ function AdminPage() {
                 {adminView === "aiQueriesViewer" && <AiQueriesViewer />}
                 {adminView === "aiMetrics" && <AiMetrics />}
                 {adminView === "mobileVersionEditor" && <MobileVersionEditor />}
+                {adminView === "parrotsImages" && <ParrotsImages />}
               </div>
             </div>
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import "./assets/css/App.css";
 import "./assets/css/advancedmarker.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Modal from "react-modal";
 import { TermsContent } from "./components/TermsContent";
 import "swiper/css/pagination";
@@ -36,6 +36,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminPage from "./pages/AdminPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { useAcceptTermsMutation, setRequiresTermsAcceptance } from "./slices/UserSlice";
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -45,7 +46,8 @@ function App() {
   const currentUserId = useSelector((state) => state.users.userId);
   const userName = useSelector((state) => state.users.userName);
   const dispatch = useDispatch();
-  const [showTermsModal, setShowTermsModal] = useState(true);
+  const requiresTermsAcceptance = useSelector((state) => state.users.requiresTermsAcceptance);
+  const [acceptTerms] = useAcceptTermsMutation();
 
   useEffect(() => {
     if (isLoggedIn && currentUserId) {
@@ -151,13 +153,13 @@ function App() {
         )}
       </Routes>
       <Modal
-        isOpen={showTermsModal}
-        onRequestClose={() => setShowTermsModal(false)}
+        isOpen={requiresTermsAcceptance}
+        onRequestClose={() => dispatch(setRequiresTermsAcceptance(false))}
         shouldCloseOnOverlayClick={false}
         shouldCloseOnEsc={false}
         style={termsModalStyle}
       >
-        <TermsContent onAccept={() => setShowTermsModal(false)} />
+        <TermsContent onAccept={async () => { try { await acceptTerms().unwrap(); } catch (_) {} dispatch(setRequiresTermsAcceptance(false)); }} />
       </Modal>
       <ToastContainer
         position="bottom-center"

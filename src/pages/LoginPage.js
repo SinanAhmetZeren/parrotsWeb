@@ -16,7 +16,7 @@ import {
   setBookmarkedUserIds,
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
-import { updateAsLoggedIn } from "../slices/UserSlice";
+import { updateAsLoggedIn, setRequiresTermsAcceptance } from "../slices/UserSlice";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import {
@@ -108,7 +108,6 @@ function LoginPage() {
   };
 
   const handleSignup = () => {
-    return;
     resetAllForms();
     setPageState("Register1");
   };
@@ -219,6 +218,9 @@ function LoginPage() {
         })
       );
 
+      if (loginResponse.requiresTermsAcceptance === true) {
+        dispatch(setRequiresTermsAcceptance(true));
+      }
       // Reset input and navigate only on success
       setUsername("");
       setPassword("");
@@ -456,7 +458,7 @@ function LoginPage() {
                       <div className="username-wrapper-login">
                         <input
                           type="text"
-                          placeholder="Username"
+                          placeholder="Email"
                           value={username}
                           onChange={(e) => setUsername(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleLogin()}
@@ -526,7 +528,7 @@ function LoginPage() {
                             Don't have an account?
                           </span>
                           <span
-                            onClick={() => { return; handleSignup(); }}
+                            onClick={() => { handleSignup(); }}
                             style={{
                               color: parrotTextDarkBlue,
                               fontWeight: "bold",

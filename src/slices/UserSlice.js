@@ -21,6 +21,7 @@ const usersSlice = createSlice({
     hasAcknowledgedGroupHistory: localStorage.getItem("storedAcknowledgedGroupHistory") === "true",
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
+    requiresTermsAcceptance: false,
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -176,6 +177,9 @@ const usersSlice = createSlice({
       state.bgImageVariant = action.payload;
       localStorage.setItem("storedBgImageVariant", action.payload);
     },
+    setRequiresTermsAcceptance: (state, action) => {
+      state.requiresTermsAcceptance = action.payload;
+    },
   },
 });
 
@@ -201,6 +205,7 @@ export const {
   setBookmarkedUserIds,
   addBookmarkedUserId,
   removeBookmarkedUserId,
+  setRequiresTermsAcceptance,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

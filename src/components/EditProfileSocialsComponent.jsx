@@ -56,7 +56,7 @@ export function EditProfileSocialsComponent({
     { key: "twitter", state: twitterProfile, setter: setTwitterProfile, maxLen: 150, hint: "max 150" },
     { key: "linkedin", state: linkedinProfile, setter: setLinkedinProfile, maxLen: 150, hint: "max 150" },
     { key: "tiktok", state: tiktokProfile, setter: setTiktokProfile, maxLen: 150, hint: "max 150" },
-    { key: "email", state: displayEmail, setter: setDisplayEmail, maxLen: 100, hint: "max 100" },
+    { key: "email", state: displayEmail, setter: setDisplayEmail, maxLen: 100, hint: "max 100", label: "Display Email" },
   ];
 
   return (
@@ -71,7 +71,7 @@ export function EditProfileSocialsComponent({
 
 
       }}>
-        {socialInputs.map(({ key, state, setter, maxLen, hint }) => (
+        {socialInputs.map(({ key, state, setter, maxLen, hint, label }) => (
           <div key={key}>
             <div style={{ ...socialRow, backgroundColor: dark ? "#011a32" : "white" }}>
               <div>
@@ -81,7 +81,7 @@ export function EditProfileSocialsComponent({
                 <input
                   className="font-bold text-base custom-input"
                   type="text"
-                  placeholder={`${key.charAt(0).toUpperCase() + key.slice(1)} (${hint})`}
+                  placeholder={`${label ?? (key.charAt(0).toUpperCase() + key.slice(1))} (${hint})`}
                   maxLength={maxLen}
                   value={state}
                   style={{
