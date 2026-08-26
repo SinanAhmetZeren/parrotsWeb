@@ -162,6 +162,9 @@ function LoginPage() {
           favoriteVoyages: confirmResponse.favoriteVoyageIds,
         }));
         dispatch(setBookmarkedUserIds(confirmResponse.bookmarkedUserIds || []));
+        if (confirmResponse.requiresTermsAcceptance === true) {
+          dispatch(setRequiresTermsAcceptance(true));
+        }
       }
       setIsConfirmingUser(false);
       setConfirmationCode("");
@@ -370,6 +373,9 @@ function LoginPage() {
           favoriteVoyages: resetPasswordResponse.favoriteVoyageIds,
         }));
         dispatch(setBookmarkedUserIds(resetPasswordResponse.bookmarkedUserIds || []));
+        if (resetPasswordResponse.requiresTermsAcceptance === true) {
+          dispatch(setRequiresTermsAcceptance(true));
+        }
       }
       setIsUpdatingPassword(false);
 

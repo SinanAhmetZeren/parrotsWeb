@@ -6,6 +6,7 @@ import {
   updateAsLoggedIn,
   updateUserFavorites,
   setBookmarkedUserIds,
+  setRequiresTermsAcceptance,
 } from "../slices/UserSlice";
 import "../assets/css/GoogleButton.css"; // Assuming you have a CSS file for styles
 
@@ -43,7 +44,9 @@ export default function GoogleLoginButton() {
           favoriteVoyages: res.favoriteVoyageIds,
         }));
         dispatch(setBookmarkedUserIds(res.bookmarkedUserIds || []));
-
+        if (res.requiresTermsAcceptance === true) {
+          dispatch(setRequiresTermsAcceptance(true));
+        }
         navigate("/");
       } catch (err) {
         console.error("Google login failed:", err);

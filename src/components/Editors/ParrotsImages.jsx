@@ -1,30 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const BUCKET_URL = "https://parrotsstorage.nbg1.your-objectstorage.com/ParrotsProjectImages";
 
-export function ParrotsImages() {
-  const [images, setImages] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [error, setError] = useState(null);
+const IMAGE_FILES = [
+  "0-title-persona-journeys.jpg",
+  "00_use-cases-and-pain-points.jpg",
+  "1_boat-or-vehicle-owner-rent-out-vehicle.jpg",
+  "2_boat-broker-rent-captains-boats-commissions.jpg",
+  "3_car-enthusiast-showcase-car-to-friends.jpg",
+  "4_visiting-tourist-find-nearby-tours.jpg",
+  "5_group-of-friends-attend-tour-guide-event.jpg",
+  "6_social-good-organizer-raise-money-fundraiser.jpg",
+  "7_motorcycle-club-wild-west-tour.jpg",
+  "8_restaurant-owner-advertise-to-tourists.jpg",
+  "9_university-student-cross-college-formal-hall-hopping.jpg",
+  "A1_core-idea-organizer-sets-voyage-people-bid.jpg",
+  "A2_why-no-commission-no-commissions-on-accepted-bids.jpg",
+];
 
-  useEffect(() => {
-    fetch(`${BUCKET_URL}?list-type=2`)
-      .then((res) => res.text())
-      .then((xml) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xml, "application/xml");
-        const keys = [...doc.querySelectorAll("Key")].map((k) => k.textContent);
-        setImages(keys.sort());
-      })
-      .catch(() => setError("Failed to load images."));
-  }, []);
+export function ParrotsImages() {
+  const [selected, setSelected] = useState(null);
 
   return (
     <div style={{ padding: "2rem" }}>
       <h2 style={{ color: "white", marginBottom: "1.5rem" }}>Parrots Project Images</h2>
-      {error && <div style={{ color: "red" }}>{error}</div>}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        {images.map((key) => (
+        {IMAGE_FILES.map((key) => (
           <img
             key={key}
             src={`${BUCKET_URL}/${key}`}
