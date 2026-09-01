@@ -97,6 +97,49 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
             transformResponse: (responseData) => responseData.data,
             keepUnusedDataFor: 0,
         }),
+        getReports: builder.query({
+            query: ({ status, page = 1, pageSize = 50, from, to } = {}) => {
+                const params = new URLSearchParams({ page, pageSize });
+                if (status) params.append("status", status);
+                if (from) params.append("from", from);
+                if (to) params.append("to", to);
+                return `/api/Moderation/admin/reports?${params}`;
+            },
+            providesTags: ["Reports"],
+        }),
+        markReportReviewed: builder.mutation({
+            query: (id) => ({ url: `/api/Moderation/admin/reports/${id}/review`, method: "POST" }),
+            invalidatesTags: ["Reports"],
+        }),
+        suspendUser: builder.mutation({
+            query: ({ userId, reason }) => ({
+                url: `/api/Moderation/admin/suspend/${userId}`,
+                method: "POST",
+                body: { reason },
+            }),
+        }),
+        unsuspendUser: builder.mutation({
+            query: (userId) => ({ url: `/api/Moderation/admin/unsuspend/${userId}`, method: "POST" }),
+        }),
+        getDirectMessages: builder.query({
+            query: ({ from, to, userId1, userId2, page = 1, pageSize = 50 } = {}) => {
+                const params = new URLSearchParams({ page, pageSize });
+                if (from) params.append("from", from);
+                if (to) params.append("to", to);
+                if (userId1) params.append("userId1", userId1);
+                if (userId2) params.append("userId2", userId2);
+                return `/api/Moderation/admin/direct-messages?${params}`;
+            },
+        }),
+        getGroupMessages: builder.query({
+            query: ({ from, to, groupId, page = 1, pageSize = 50 } = {}) => {
+                const params = new URLSearchParams({ page, pageSize });
+                if (from) params.append("from", from);
+                if (to) params.append("to", to);
+                if (groupId) params.append("groupId", groupId);
+                return `/api/Moderation/admin/group-messages?${params}`;
+            },
+        }),
     }),
     overrideExisting: true,
 });
@@ -113,4 +156,10 @@ export const {
     useGetAiQueryStatsQuery,
     useGetMinVersionQuery,
     useUpdateMinVersionMutation,
+    useGetReportsQuery,
+    useMarkReportReviewedMutation,
+    useSuspendUserMutation,
+    useUnsuspendUserMutation,
+    useLazyGetDirectMessagesQuery,
+    useLazyGetGroupMessagesQuery,
 } = extendedMetricsApi;

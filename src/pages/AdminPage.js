@@ -2,12 +2,9 @@
 import "../assets/css/advancedmarker.css";
 import "../assets/css/ConnectPage.css";
 import React, { useState, } from "react";
-import { TopBarMenu } from "../components/TopBarMenu";
-import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
-import { parrotBlue, parrotDarkBlue, } from "../styles/colors";
 import { VoyageEditor } from "../components/Editors/VoyageEditor";
 import AdminSelector from "../components/AdminSelector";
 import { BidEditor } from "../components/Editors/BidEditor";
@@ -29,6 +26,9 @@ import { AiQueriesViewer } from "../components/Editors/AiQueriesViewer";
 import { AiMetrics } from "../components/Metrics/AiMetrics";
 import { MobileVersionEditor } from "../components/Editors/MobileVersionEditor";
 import { ParrotsImages } from "../components/Editors/ParrotsImages";
+import { ReportsViewer } from "../components/Editors/ReportsViewer";
+import { DirectMessagesViewer } from "../components/Editors/DirectMessagesViewer";
+import { GroupMessagesViewer } from "../components/Editors/GroupMessagesViewer";
 
 
 function AdminPage() {
@@ -43,86 +43,53 @@ function AdminPage() {
   }
 
   return (
-    (
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: "#f0ece6" }}>
+      <style>{`
+        .admin-content::-webkit-scrollbar { display: none; }
+        .admin-content { scrollbar-width: none; -ms-overflow-style: none; }
+      `}</style>
 
-      <div className="App">
-        <header className="App-header">
-          <div className="flex mainpage_Container">
-            <div className="flex mainpage_TopRow">
-              <TopLeftComponent />
-              <div className="flex mainpage_TopRight">
-                <TopBarMenu />
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                width: "100%",
-                height: "100%",
-                gap: 0
-              }}
-            >
-              {/* LEFT SELECTOR */}
-              <div style={{ width: "9rem" }}>
-                <AdminSelector selected={adminView} setSelected={setAdminView} />
-              </div>
+      {/* TOP NAV (replaces site header) */}
+      <AdminSelector selected={adminView} setSelected={setAdminView} />
 
-              {/* RIGHT PAGE */}
-
-              <div
-                style={{
-                  flex: 1,
-                  padding: 0,
-                  overflowY: "scroll",
-                  height: "92vh",
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-
-                }}
-                className="hide-scrollbar"
-              >
-
-                <style>
-                  {`
-      .hide-scrollbar {
-        scrollbar-width: none;      /* Firefox */
-        -ms-overflow-style: none;   /* IE/Edge */
-      }
-
-      .hide-scrollbar::-webkit-scrollbar {
-        display: none;              /* Chrome/Safari */
-      }
-    `}
-                </style>
-
-                {adminView === "voyageEditor" && <VoyageEditor />}
-                {adminView === "bidEditor" && <BidEditor />}
-                {adminView === "vehicleEditor" && <VehicleEditor />}
-                {adminView === "userEditor" && <UserEditor />}
-                {adminView === "termsEditor" && <TermsEditor />}
-                {adminView === "purchases" && <WeeklyPurchasesMetrics />}
-                {adminView === "transactions" && <WeeklyTransactionsMetrics />}
-                {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
-                {adminView === "vehiclesRegistered" && <WeeklyVehiclesMetrics />}
-                {adminView === "usersCreated" && <WeeklyUsersMetrics />}
-                {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
-                {adminView === "messaging" && <WeeklyMessagesMetrics />}
-                {adminView === "logViewer" && <LogViewer />}
-                {adminView === "placeEditor" && <PlaceEditor />}
-                {adminView === "placeEditorEdit" && <PlaceEditorEdit />}
-                {adminView === "docsViewer" && <DocsViewer />}
-                {adminView === "aiQueriesViewer" && <AiQueriesViewer />}
-                {adminView === "aiMetrics" && <AiMetrics />}
-                {adminView === "mobileVersionEditor" && <MobileVersionEditor />}
-                {adminView === "parrotsImages" && <ParrotsImages />}
-              </div>
-            </div>
-
-
+      {/* CONTENT */}
+      <div
+        className="admin-content"
+        style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}
+      >
+        {adminView === "aiQueriesViewer" ? (
+          <AiQueriesViewer />
+        ) : adminView === "reportsViewer" ? (
+          <ReportsViewer />
+        ) : adminView === "directMessagesViewer" ? (
+          <DirectMessagesViewer />
+        ) : adminView === "groupMessagesViewer" ? (
+          <GroupMessagesViewer />
+        ) : (
+          <div style={{ width: "100%", maxWidth: 1200, margin: "0 auto" }}>
+            {adminView === "voyageEditor" && <VoyageEditor />}
+            {adminView === "bidEditor" && <BidEditor />}
+            {adminView === "vehicleEditor" && <VehicleEditor />}
+            {adminView === "userEditor" && <UserEditor />}
+            {adminView === "termsEditor" && <TermsEditor />}
+            {adminView === "purchases" && <WeeklyPurchasesMetrics />}
+            {adminView === "transactions" && <WeeklyTransactionsMetrics />}
+            {adminView === "voyagesCreated" && <WeeklyVoyagesMetrics />}
+            {adminView === "vehiclesRegistered" && <WeeklyVehiclesMetrics />}
+            {adminView === "usersCreated" && <WeeklyUsersMetrics />}
+            {adminView === "bidsCreated" && <WeeklyBidsMetrics />}
+            {adminView === "messaging" && <WeeklyMessagesMetrics />}
+            {adminView === "logViewer" && <LogViewer />}
+            {adminView === "placeEditor" && <PlaceEditor />}
+            {adminView === "placeEditorEdit" && <PlaceEditorEdit />}
+            {adminView === "docsViewer" && <DocsViewer />}
+            {adminView === "aiMetrics" && <AiMetrics />}
+            {adminView === "mobileVersionEditor" && <MobileVersionEditor />}
+            {adminView === "parrotsImages" && <ParrotsImages />}
           </div>
-        </header>
+        )}
       </div>
-    )
+    </div>
   );
 }
 
@@ -131,35 +98,3 @@ export default AdminPage;
 
 
 
-const rowStyle = {
-  display: "grid",
-  gridTemplateColumns: "1fr 6fr",
-  width: "90%",
-  margin: "auto",
-  gap: "4px",
-  marginBottom: "10px"
-};
-
-const labelStyle = {
-  backgroundColor: parrotBlue,
-  color: "white",
-  padding: "8px"
-};
-
-const inputWrapper = {
-  backgroundColor: parrotDarkBlue,
-  color: "darkblue",
-  padding: "8px"
-};
-
-const inputWrapper1 = {
-  backgroundColor: parrotBlue,
-  color: "white",
-  padding: "8px",
-
-};
-
-const inputStyle = {
-  width: "100%",
-  paddingLeft: "1rem"
-}

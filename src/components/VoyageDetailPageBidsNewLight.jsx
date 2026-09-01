@@ -53,7 +53,7 @@ export function VoyageDetailBidsNewLight({
       <div style={userVehicleInfoRow}>
         <span style={voyageName}>Current Bids</span>
       </div>
-      <div style={{ overflow: "auto", minHeight: "35vh", scrollbarColor: "#1e90ff50" }}>
+      <div style={{ overflow: "auto", scrollbarColor: "#1e90ff50" }}>
         <div className="BidsList">
           <BidsList bidsData={bidsData} ownVoyage={ownVoyage} handleAcceptBid={handleAcceptBid} handleDeleteBid={handleDeleteBid} loadingBidId={loadingBidId} />
         </div>

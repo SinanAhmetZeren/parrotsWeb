@@ -20,6 +20,7 @@ const usersSlice = createSlice({
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
     hasAcknowledgedGroupHistory: localStorage.getItem("storedAcknowledgedGroupHistory") === "true",
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
+    isLegacyView: true,
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
     requiresTermsAcceptance: false,
   },
@@ -173,6 +174,9 @@ const usersSlice = createSlice({
       state.isDarkMode = action.payload;
       localStorage.setItem("storedIsDarkMode", String(action.payload));
     },
+    setIsLegacyView: (state, action) => {
+      state.isLegacyView = action.payload;
+    },
     setBgImageVariant: (state, action) => {
       state.bgImageVariant = action.payload;
       localStorage.setItem("storedBgImageVariant", action.payload);
@@ -201,6 +205,7 @@ export const {
   setAcknowledgedPublicProfile,
   setAcknowledgedGroupHistory,
   setIsDarkMode,
+  setIsLegacyView,
   setBgImageVariant,
   setBookmarkedUserIds,
   addBookmarkedUserId,
@@ -518,6 +523,20 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       transformResponse: (responseData) => responseData.data,
       invalidatesTags: ["Bookmarks"],
     }),
+    reportUser: builder.mutation({
+      query: ({ publicId, reason, details }) => ({
+        url: `/api/Moderation/report/user/${publicId}`,
+        method: "POST",
+        body: { reason, details },
+      }),
+    }),
+    reportVoyage: builder.mutation({
+      query: ({ voyageId, reason }) => ({
+        url: `/api/Moderation/report/voyage/${voyageId}`,
+        method: "POST",
+        body: { reason, details: null },
+      }),
+    }),
   }),
   overrideExisting: true,
 });
@@ -560,4 +579,6 @@ export const {
   useLazyGetBookmarkedUserIdsQuery,
   useAddBookmarkMutation,
   useRemoveBookmarkMutation,
+  useReportUserMutation,
+  useReportVoyageMutation,
 } = extendedApiSlice;

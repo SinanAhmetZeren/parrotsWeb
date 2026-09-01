@@ -7,7 +7,7 @@ import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import { BlueHashtagText } from "../components/BlueHashtagText";
 import { SocialRenderComponent } from "../components/SocialRenderComponent";
-import { useGetUserByPublicIdQuery } from "../slices/UserSlice";
+import { useGetUserByPublicIdQuery, useReportUserMutation } from "../slices/UserSlice";
 import { ProfilePageVoyagesComponent } from "../components/ProfilePageVoyagesComponent";
 import { ProfilePageVehiclesComponent } from "../components/ProfilePageVehiclesComponent";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
@@ -18,6 +18,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useAddBookmarkMutation, useRemoveBookmarkMutation } from "../slices/UserSlice";
 import { addBookmarkedUserId, removeBookmarkedUserId } from "../slices/UserSlice";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+
+const USER_REPORT_REASONS = ["Spam", "Inappropriate behavior", "Harassment", "Scam"];
 
 function ProfilePagePublic() {
   const { userId } = useParams();
@@ -53,6 +55,21 @@ function ProfilePagePublic() {
   const isBookmarked = internalUserId ? bookmarkedUserIds.includes(internalUserId) : false;
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [bookmarkHovered, setBookmarkHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportUser] = useReportUserMutation();
+
+  const handleReportSubmit = async () => {
+    if (!selectedReason) return;
+    try {
+      await reportUser({ publicId: userId, reason: selectedReason, details: null }).unwrap();
+      setReportSubmitted(true);
+    } catch (err) {
+      console.error("Report failed:", err);
+    }
+  };
 
   const handleToggleBookmark = async () => {
     if (!internalUserId || bookmarkLoading) return;
@@ -118,8 +135,51 @@ function ProfilePagePublic() {
                           )}
                         </div>
                     }
+                    {local_userId !== internalUserId && (
+                      <div style={{ position: "relative" }}>
+                        <div onClick={() => setMenuOpen(v => !v)} style={kebabBtn}>⋮</div>
+                        {menuOpen && (
+                          <div style={kebabMenu} onMouseLeave={() => setMenuOpen(false)}>
+                            <div onClick={() => { setMenuOpen(false); setReportModalOpen(true); setReportSubmitted(false); setSelectedReason(""); }} style={kebabItem}>
+                              Report user
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {/* Report modal */}
+                {reportModalOpen && (
+                  <div style={modalOverlay} onClick={() => setReportModalOpen(false)}>
+                    <div style={modalBox} onClick={e => e.stopPropagation()}>
+                      {reportSubmitted ? (
+                        <>
+                          <div style={modalTitle}>Report submitted</div>
+                          <div style={modalSubtitle}>Thank you. Your report stays private.</div>
+                          <button onClick={() => setReportModalOpen(false)} style={modalPrimaryBtn}>Close</button>
+                        </>
+                      ) : (
+                        <>
+                          <div style={modalTitle}>Report {userData?.userName}</div>
+                          <div style={modalSubtitle}>Tell us what's wrong. Your report stays private.</div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", margin: "1rem 0" }}>
+                            {USER_REPORT_REASONS.map(r => (
+                              <div key={r} onClick={() => setSelectedReason(r)} style={reasonItem(selectedReason === r)}>
+                                {r}
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ display: "flex", gap: "0.75rem" }}>
+                            <button onClick={() => setReportModalOpen(false)} style={modalCancelBtn}>Cancel</button>
+                            <button onClick={handleReportSubmit} disabled={!selectedReason} style={{ ...modalPrimaryBtn, opacity: selectedReason ? 1 : 0.4 }}>Submit report</button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex profilePage_CoverImage">
                   <img src={userBaseUrl + userData?.backgroundImageUrl} className="profilePage_CoverImage_Img" alt="" />
@@ -271,3 +331,61 @@ const navButton = (_dark) => ({
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 });
+
+const kebabBtn = {
+  width: "2.2rem", height: "2.2rem", borderRadius: "50%",
+  backgroundColor: "white", display: "flex", alignItems: "center", justifyContent: "center",
+  cursor: "pointer", fontSize: "1.3rem", fontWeight: 700, color: "#555",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+  userSelect: "none",
+};
+
+const kebabMenu = {
+  position: "absolute", top: "calc(100% + 6px)", right: 0,
+  backgroundColor: "white", borderRadius: "10px",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.15)", zIndex: 100,
+  minWidth: "140px", overflow: "hidden",
+};
+
+const kebabItem = {
+  padding: "0.65rem 1rem", fontSize: "0.88rem", cursor: "pointer",
+  color: parrotRed, fontWeight: 600,
+};
+
+const modalOverlay = {
+  position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+};
+
+const modalBox = {
+  backgroundColor: "white", borderRadius: "16px", padding: "2rem",
+  width: "100%", maxWidth: "400px", boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+};
+
+const modalTitle = {
+  fontSize: "1.1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem",
+};
+
+const modalSubtitle = {
+  fontSize: "0.85rem", color: "#64748b", marginBottom: "0.5rem",
+};
+
+const reasonItem = (selected) => ({
+  padding: "0.6rem 1rem", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem",
+  backgroundColor: selected ? "#eff6ff" : "#f8fafc",
+  color: selected ? "#1d4ed8" : "#334155",
+  fontWeight: selected ? 700 : 400,
+  border: selected ? "1px solid #bfdbfe" : "1px solid #e2e8f0",
+});
+
+const modalPrimaryBtn = {
+  flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px", border: "none",
+  backgroundColor: parrotRed, color: "white", fontWeight: 700,
+  fontSize: "0.9rem", cursor: "pointer",
+};
+
+const modalCancelBtn = {
+  flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px",
+  border: "1px solid #e2e8f0", backgroundColor: "white",
+  color: "#475569", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer",
+};

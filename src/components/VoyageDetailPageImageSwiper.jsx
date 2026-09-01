@@ -17,7 +17,7 @@ export function VoyageDetailPageImageSwiper({ voyageData, opacity }) {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const images = [voyageData?.profileImage, ...voyageData?.voyageImages?.map(image => image.voyageImagePath)
+  const images = [voyageData?.profileImage, ...(voyageData?.voyageImages?.map(image => image.voyageImagePath) ?? [])
   ]
 
   return (

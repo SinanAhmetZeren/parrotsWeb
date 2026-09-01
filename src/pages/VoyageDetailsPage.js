@@ -36,7 +36,7 @@ import parrotEmojiIconBlue from "../assets/images/emojipickerblueparrot.jpg";
 import { EMOJI_CATEGORIES, EMOJIS_BY_CATEGORY, EMOJI_NAMES } from "../constants/emojiData";
 
 
-import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery } from "../slices/UserSlice";
+import { addVoyageToUserFavorites, removeVoyageFromUserFavorites, useGetFavoriteVoyageIdsByUserIdQuery, useReportVoyageMutation, setIsLegacyView } from "../slices/UserSlice";
 import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotDarkBlue, parrotGreen, parrotLightBlue, parrotTextDarkBlue } from "../styles/colors";
 import { MapTypeButton } from "../components/MapTypeButton";
 import { toast } from "react-toastify";
@@ -82,8 +82,29 @@ function VoyageDetailsPage() {
   });
   const [isPublicOnMap, setIsPublicOnMap] = useState(false);
   const [mapTypeId, setMapTypeId] = useState("hybrid"); // "roadmap" or "hybrid"
-  const [isLegacyView, setIsLegacyView] = useState(true)
   const isDarkMode = useSelector((state) => state.users.isDarkMode)
+  const isLegacyView = useSelector((state) => state.users.isLegacyView)
+  const [voyageReportOpen, setVoyageReportOpen] = useState(false);
+  const [voyageSelectedReason, setVoyageSelectedReason] = useState("");
+  const [voyageReportSubmitted, setVoyageReportSubmitted] = useState(false);
+  const [reportVoyage] = useReportVoyageMutation();
+
+  const VOYAGE_REPORT_REASONS = [
+    "Inappropriate Content",
+    "Safety / Navigation Hazard",
+    "False or Misleading Information",
+    "Spam, Scam, or Commercial Activity",
+  ];
+
+  const handleReportVoyage = async () => {
+    if (!voyageSelectedReason) return;
+    try {
+      await reportVoyage({ voyageId, reason: voyageSelectedReason }).unwrap();
+      setVoyageReportSubmitted(true);
+    } catch (err) {
+      console.error("Voyage report failed:", err);
+    }
+  };
 
 
   const favoriteVoyages = useSelector((state) => state.users.userFavoriteVoyages);
@@ -287,173 +308,177 @@ function VoyageDetailsPage() {
     <div style={spinnerContainer}>
       <PulsatingParrotLogo size={150} />
     </div>
-  ) : isSuccessVoyage ? isLegacyView ? (
+  ) : isSuccessVoyage ? (
+    <>
+      {isLegacyView ? (
 
-    // legacy view
-    <div style={appStyle}>
-      <header style={appHeaderStyle}>
-        <div style={mainPageContainerStyle} className="flex">
-          <div style={mainPageTopRowStyle} className="flex">
-            <TopLeftComponent />
-            <div style={mainPageTopRightStyle} className="flex">
-              <TopBarMenu />
-            </div>
-          </div>
-
-          <div style={{ ...mainPageBottomRowStyle }} className="flex">
-            <div style={voyageDetailsBottomLeftStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
-
-
-              <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
-                {isDarkMode ? <VoyageDetailPageDetailsLegacy voyageData={VoyageData} /> : <VoyageDetailPageDetailsLegacyLight voyageData={VoyageData} />}
+        // legacy view
+        <div style={appStyle}>
+          <header style={appHeaderStyle}>
+            <div style={mainPageContainerStyle} className="flex">
+              <div style={mainPageTopRowStyle} className="flex">
+                <TopLeftComponent />
+                <div style={mainPageTopRightStyle} className="flex">
+                  <TopBarMenu />
+                </div>
               </div>
-              <div style={voyageDetailsBidsStyle} className="flex">
-                {isDarkMode
-                  ? <VoyageDetailBids userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                  : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                }
-              </div>
-              {userId === VoyageData.userId && (
-                <div style={broadcastCardStyle(isDarkMode)}>
 
-                  {/* Emoji button + panel */}
-                  <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
-                    <button onClick={() => setEmojiOpen(o => !o)} style={broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused)} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
-                      <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 42, height: 42, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
-                    </button>
-                    {emojiOpen && (
-                      <div style={broadcastEmojiPanelStyle(isDarkMode)}>
-                        <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
-                          <input
-                            style={broadcastEmojiSearchInputStyle(isDarkMode)}
-                            placeholder="Search emoji..."
-                            value={emojiSearch}
-                            onChange={e => setEmojiSearch(e.target.value)}
-                            autoFocus
-                          />
-                        </div>
-                        {!emojiSearch && (
-                          <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
-                            {EMOJI_CATEGORIES.map(cat => (
-                              <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
-                                style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}>
-                                {cat.icon}
-                              </button>
-                            ))}
+              <div style={{ ...mainPageBottomRowStyle }} className="flex">
+                <div style={voyageDetailsBottomLeftStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
+
+
+                  <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
+                    {isDarkMode ? <VoyageDetailPageDetailsLegacy voyageData={VoyageData} /> : <VoyageDetailPageDetailsLegacyLight voyageData={VoyageData} />}
+                  </div>
+                  <div style={voyageDetailsBidsStyle} className="flex">
+                    {isDarkMode
+                      ? <VoyageDetailBids userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                      : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                    }
+                  </div>
+                  {userId === VoyageData.userId && (
+                    <div style={broadcastCardStyle(isDarkMode)}>
+
+                      {/* Emoji button + panel */}
+                      <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
+                        <button onClick={() => setEmojiOpen(o => !o)} style={broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused)} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                          <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 42, height: 42, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
+                        </button>
+                        {emojiOpen && (
+                          <div style={broadcastEmojiPanelStyle(isDarkMode)}>
+                            <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
+                              <input
+                                style={broadcastEmojiSearchInputStyle(isDarkMode)}
+                                placeholder="Search emoji..."
+                                value={emojiSearch}
+                                onChange={e => setEmojiSearch(e.target.value)}
+                                autoFocus
+                              />
+                            </div>
+                            {!emojiSearch && (
+                              <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
+                                {EMOJI_CATEGORIES.map(cat => (
+                                  <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
+                                    style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}>
+                                    {cat.icon}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
+                              {(emojiSearch
+                                ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
+                                : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
+                              ).map((emoji, i) => (
+                                <button key={i}
+                                  style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
+                                  onClick={() => setBroadcastMessage(prev => prev + emoji)}
+                                >{emoji}</button>
+                              ))}
+                            </div>
                           </div>
                         )}
-                        <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
-                          {(emojiSearch
-                            ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
-                            : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
-                          ).map((emoji, i) => (
-                            <button key={i}
-                              style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
-                              onClick={() => setBroadcastMessage(prev => prev + emoji)}
-                            >{emoji}</button>
-                          ))}
-                        </div>
                       </div>
-                    )}
-                  </div>
 
-                  <input
-                    style={broadcastInputStyle(isDarkMode, emojiOpen || inputFocused)}
-                    className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
-                    placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
-                    value={broadcastMessage}
-                    disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
-                    onChange={(e) => setBroadcastMessage(e.target.value)}
-                    onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
-                    onBlur={() => setInputFocused(false)}
-                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
-                  />
-                  <button
-                    style={{ ...broadcastBtnStyle, opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
-                    onClick={handleBroadcast}
-                    disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
-                  >
-                    {isBroadcasting ? (
-                      <span style={{ display: "inline-block", width: "1rem", height: "1rem", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                    ) : "Send"}
-                  </button>
-                </div>
-              )}
-
-            </div>
-
-            <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
-              <div style={voyageDetailsImagesStyleLegacy} className="flex">
-                <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
-              </div>
-
-              <div style={{ ...voyageDetailsDetailsStyle2, position: "relative" }} className="flex">
-                <PublicAndHeartAndPageStyleIcons
-                  handleAddVoyageToFavorites={handleAddVoyageToFavorites}
-                  handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
-                  isFavorited={isFavorited}
-                  isPublicOnMap={isPublicOnMap}
-                  isLegacyView={isLegacyView}
-                  setIsLegacyView={setIsLegacyView}
-                  isDarkMode={isDarkMode}
-                />
-              </div>
-              <div style={voyageDetailsDescriptionStyle} className="flex">
-                {isDarkMode
-                  ? <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
-                  : <VoyageDetailPageDescriptionLight voyageDescription={VoyageData.description} voyageName={VoyageData} />
-                }
-              </div>
-            </div>
-
-            <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
-              <div style={voyageDetailsMapContainerStyle} className="flex">
-                {latLngBoundsLiteral?.east ? (
-                  <div style={{ position: "relative", height: "100%", width: "100%" }}>
-                    <MapContainer
-                      bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
-                      style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
-                      zoomControl={false}
-                      scrollWheelZoom={true}
-                    >
-                      <TileLayer
-                        url={mapTypeId === "roadmap"
-                          ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
-                          : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
-                        attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                      <input
+                        style={broadcastInputStyle(isDarkMode, emojiOpen || inputFocused)}
+                        className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
+                        placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
+                        value={broadcastMessage}
+                        disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
+                        onChange={(e) => setBroadcastMessage(e.target.value)}
+                        onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
+                        onBlur={() => setInputFocused(false)}
+                        onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                       />
-                      <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
-                      <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
-                      {sortedWaypoints.map((waypoint, index) => (
-                        <VoyageDetailMarkerWithInfoWindow
-                          key={`${waypoint.id}`}
-                          index={index}
-                          total={sortedWaypoints.length}
-                          waypointTitle={waypoint.title}
-                          position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
-                        />
-                      ))}
-                    </MapContainer>
-                    <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
-                  </div>
-                ) : null}
-              </div>
+                      <button
+                        style={{ ...broadcastBtnStyle, opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
+                        onClick={handleBroadcast}
+                        disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
+                      >
+                        {isBroadcasting ? (
+                          <span style={{ display: "inline-block", width: "1rem", height: "1rem", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                        ) : "Send"}
+                      </button>
+                    </div>
+                  )}
 
-              <div style={voyageDetailsWaypointsContainerStyle}>
-                <VoyageDetailWaypointSwiper
-                  waypoints={sortedWaypoints}
-                  handlePanToLocation={handlePanToLocation}
-                  opacity={opacity}
-                  voyageImage={VoyageData.profileImage}
-                  isDarkMode={isDarkMode}
-                />
+                </div>
+
+                <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
+                  <div style={voyageDetailsImagesStyleLegacy} className="flex">
+                    <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
+                  </div>
+
+                  <div style={{ ...voyageDetailsDetailsStyle2, position: "relative" }} className="flex">
+                    <PublicAndHeartAndPageStyleIcons
+                      handleAddVoyageToFavorites={handleAddVoyageToFavorites}
+                      handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
+                      isFavorited={isFavorited}
+                      isPublicOnMap={isPublicOnMap}
+                      isLegacyView={isLegacyView}
+                      setIsLegacyView={(v) => dispatch(setIsLegacyView(v))}
+                      isDarkMode={isDarkMode}
+                      onReportPress={() => { setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
+                      topOffset="-1rem"
+                    />
+                  </div>
+                  <div style={voyageDetailsDescriptionStyle} className="flex">
+                    {isDarkMode
+                      ? <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
+                      : <VoyageDetailPageDescriptionLight voyageDescription={VoyageData.description} voyageName={VoyageData} />
+                    }
+                  </div>
+                </div>
+
+                <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
+                  <div style={voyageDetailsMapContainerStyle} className="flex">
+                    {latLngBoundsLiteral?.east ? (
+                      <div style={{ position: "relative", height: "100%", width: "100%" }}>
+                        <MapContainer
+                          bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
+                          style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+                          zoomControl={false}
+                          scrollWheelZoom={true}
+                        >
+                          <TileLayer
+                            url={mapTypeId === "roadmap"
+                              ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
+                              : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
+                            attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                          />
+                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
+                          <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
+                          {sortedWaypoints.map((waypoint, index) => (
+                            <VoyageDetailMarkerWithInfoWindow
+                              key={`${waypoint.id}`}
+                              index={index}
+                              total={sortedWaypoints.length}
+                              waypointTitle={waypoint.title}
+                              position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
+                            />
+                          ))}
+                        </MapContainer>
+                        <MapTypeButton mapTypeId={mapTypeId} setMapTypeId={setMapTypeId} />
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div style={voyageDetailsWaypointsContainerStyle}>
+                    <VoyageDetailWaypointSwiper
+                      waypoints={sortedWaypoints}
+                      handlePanToLocation={handlePanToLocation}
+                      opacity={opacity}
+                      voyageImage={VoyageData.profileImage}
+                      isDarkMode={isDarkMode}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <style>
-          {`
+            <style>
+              {`
                     .custom-scrollbar::-webkit-scrollbar {
                         background-color: #091b46;
                         background-color: transparent;
@@ -465,179 +490,180 @@ function VoyageDetailsPage() {
                         border-radius: 10px;
                     }
                 `}
-        </style>
+            </style>
 
-      </header>
-    </div>
-  ) : (
-    // new view
-    <div style={appStyle}>
-      <header style={appHeaderStyle}>
-        <div style={mainPageContainerStyle} className="flex">
-          <div style={mainPageTopRowStyle} className="flex">
-            <TopLeftComponent />
-            <div style={mainPageTopRightStyle} className="flex">
-              <TopBarMenu />
-            </div>
-          </div>
-
-          <div style={{ ...mainPageBottomRowStyle }} className="flex">
-            <div style={voyageDetailsBottomLeftStyleNew}
-
-              className="flex voyageDetailsBottomLeft hide-scrollbar"
-
-            >
-              <div style={voyageDetailsImagesStyle} className="flex">
-                <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
+          </header>
+        </div>
+      ) : (
+        // new view
+        <div style={appStyle}>
+          <header style={appHeaderStyle}>
+            <div style={mainPageContainerStyle} className="flex">
+              <div style={mainPageTopRowStyle} className="flex">
+                <TopLeftComponent />
+                <div style={mainPageTopRightStyle} className="flex">
+                  <TopBarMenu />
+                </div>
               </div>
 
-              <div style={{ ...voyageDetailsDetailsStyle, position: "relative", marginTop: "6rem" }} className="flex">
-                <PublicAndHeartAndPageStyleIcons
-                  handleAddVoyageToFavorites={handleAddVoyageToFavorites}
-                  handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
-                  isFavorited={isFavorited}
-                  isPublicOnMap={isPublicOnMap}
-                  isLegacyView={isLegacyView}
-                  setIsLegacyView={setIsLegacyView}
-                  isDarkMode={isDarkMode}
-                />
-                {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
-              </div>
+              <div style={{ ...mainPageBottomRowStyle }} className="flex">
+                <div style={voyageDetailsBottomLeftStyleNew}
 
-              <div style={voyageDetailsDescriptionStyle} className="flex">
-                {isDarkMode
-                  ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
-                  : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
-                }
-              </div>
+                  className="flex voyageDetailsBottomLeft hide-scrollbar"
 
-              <div style={voyageDetailsBidsStyle} className="flex">
-                {isDarkMode
-                  ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                  : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                }
-              </div>
-              {userId === VoyageData.userId && (
-                <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
+                >
+                  <div style={voyageDetailsImagesStyle} className="flex">
+                    <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
+                  </div>
 
-                  {/* Emoji button + panel */}
-                  <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
-                    <button onClick={() => setEmojiOpen(o => !o)} style={{ ...broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused), width: 44, height: 44 }} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
-                      <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 46, height: 46, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
-                    </button>
-                    {emojiOpen && (
-                      <div style={broadcastEmojiPanelStyle(isDarkMode)}>
-                        <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
-                          <input
-                            style={broadcastEmojiSearchInputStyle(isDarkMode)}
-                            placeholder="Search emoji..."
-                            value={emojiSearch}
-                            onChange={e => setEmojiSearch(e.target.value)}
-                            autoFocus
-                          />
-                        </div>
-                        {!emojiSearch && (
-                          <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
-                            {EMOJI_CATEGORIES.map(cat => (
-                              <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
-                                style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}
-                              >{cat.icon}</button>
-                            ))}
+                  <div style={{ ...voyageDetailsDetailsStyle, position: "relative", marginTop: "6rem" }} className="flex">
+                    <PublicAndHeartAndPageStyleIcons
+                      handleAddVoyageToFavorites={handleAddVoyageToFavorites}
+                      handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
+                      isFavorited={isFavorited}
+                      isPublicOnMap={isPublicOnMap}
+                      isLegacyView={isLegacyView}
+                      setIsLegacyView={(v) => dispatch(setIsLegacyView(v))}
+                      isDarkMode={isDarkMode}
+                      onReportPress={() => { setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
+                    />
+                    {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
+                  </div>
+
+                  <div style={voyageDetailsDescriptionStyle} className="flex">
+                    {isDarkMode
+                      ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
+                      : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
+                    }
+                  </div>
+
+                  <div style={voyageDetailsBidsStyle} className="flex">
+                    {isDarkMode
+                      ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                      : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                    }
+                  </div>
+                  {userId === VoyageData.userId && (
+                    <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
+
+                      {/* Emoji button + panel */}
+                      <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
+                        <button onClick={() => setEmojiOpen(o => !o)} style={{ ...broadcastEmojiBtnStyle(isDarkMode, emojiOpen || inputFocused), width: 44, height: 44 }} disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}>
+                          <img src={emojiOpen || inputFocused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 46, height: 46, objectFit: "cover", opacity: emojiOpen || inputFocused ? (isDarkMode ? 0.35 : 1) : 0.2 }} />
+                        </button>
+                        {emojiOpen && (
+                          <div style={broadcastEmojiPanelStyle(isDarkMode)}>
+                            <div style={{ padding: "0.5rem 0.6rem 0.3rem" }}>
+                              <input
+                                style={broadcastEmojiSearchInputStyle(isDarkMode)}
+                                placeholder="Search emoji..."
+                                value={emojiSearch}
+                                onChange={e => setEmojiSearch(e.target.value)}
+                                autoFocus
+                              />
+                            </div>
+                            {!emojiSearch && (
+                              <div style={{ display: "flex", overflowX: "auto", padding: "0.4rem 0.4rem 0", gap: "0.1rem", scrollbarWidth: "none" }}>
+                                {EMOJI_CATEGORIES.map(cat => (
+                                  <button key={cat.key} onClick={() => setEmojiCategory(cat.key)}
+                                    style={{ background: emojiCategory === cat.key ? (isDarkMode ? "#1a4a7a" : "#e8f0fe") : "none", border: "none", borderRadius: "0.5rem", fontSize: "1.625rem", cursor: "pointer", padding: "0.25rem 0.4rem", flexShrink: 0 }}
+                                  >{cat.icon}</button>
+                                ))}
+                              </div>
+                            )}
+                            <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
+                              {(emojiSearch
+                                ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
+                                : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
+                              ).map((emoji, i) => (
+                                <button key={i}
+                                  style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
+                                  onClick={() => setBroadcastMessage(prev => prev + emoji)}
+                                >{emoji}</button>
+                              ))}
+                            </div>
                           </div>
                         )}
-                        <div style={{ display: "flex", flexWrap: "wrap", padding: "0.4rem", flex: 1, overflowY: "auto", alignContent: "flex-start", gap: "0.1rem" }}>
-                          {(emojiSearch
-                            ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
-                            : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
-                          ).map((emoji, i) => (
-                            <button key={i}
-                              style={{ background: "none", border: "none", fontSize: "2.5rem", cursor: "pointer", padding: "0.15rem", borderRadius: "0.4rem", lineHeight: 1 }}
-                              onClick={() => setBroadcastMessage(prev => prev + emoji)}
-                            >{emoji}</button>
-                          ))}
-                        </div>
                       </div>
-                    )}
-                  </div>
 
-                  <input
-                    style={{ ...broadcastInputStyle(isDarkMode, emojiOpen || inputFocused), height: "3.5rem" }}
-                    className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
-                    placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
-                    value={broadcastMessage}
-                    disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
-                    onChange={(e) => setBroadcastMessage(e.target.value)}
-                    onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
-                    onBlur={() => setInputFocused(false)}
-                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
-                  />
-                  <button
-                    style={{ ...broadcastBtnStyle, height: "3.5rem", opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
-                    onClick={handleBroadcast}
-                    disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
-                  >
-                    {isBroadcasting ? (
-                      <span style={{
-                        display: "inline-block",
-                        width: "1rem", height: "1rem",
-                        border: "2px solid rgba(255,255,255,0.4)",
-                        borderTopColor: "white",
-                        borderRadius: "50%",
-                        animation: "spin 0.7s linear infinite",
-                      }} />
-                    ) : "Send"}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div style={{ ...voyageDetailsBottomRightStyleNew, display: "flex", flexDirection: "column" }}>
-              <div style={voyageDetailsMapContainerStyle} className="flex">
-                {latLngBoundsLiteral?.east ? (
-                  <div style={{ position: "relative", height: "100%", width: "100%" }}>
-                    <MapContainer
-                      bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
-                      style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
-                      zoomControl={false}
-                      scrollWheelZoom={true}
-                    >
-                      <TileLayer
-                        url={mapTypeId === "roadmap"
-                          ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
-                          : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
-                        attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                      <input
+                        style={{ ...broadcastInputStyle(isDarkMode, emojiOpen || inputFocused), height: "3.5rem" }}
+                        className={broadcastPlaceholder !== "Message accepted users..." ? "broadcast-sent" : ""}
+                        placeholder={(VoyageData?.bids || []).some((b) => b.accepted) ? broadcastPlaceholder : "No accepted bids yet..."}
+                        value={broadcastMessage}
+                        disabled={!(VoyageData?.bids || []).some((b) => b.accepted)}
+                        onChange={(e) => setBroadcastMessage(e.target.value)}
+                        onFocus={() => { setEmojiOpen(false); setInputFocused(true); }}
+                        onBlur={() => setInputFocused(false)}
+                        onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleBroadcast()}
                       />
-                      <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
-                      <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
-                      {sortedWaypoints.map((waypoint, index) => (
-                        <VoyageDetailMarkerWithInfoWindow
-                          key={`${waypoint.id}`}
-                          index={index}
-                          total={sortedWaypoints.length}
-                          waypointTitle={waypoint.title}
-                          position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
-                        />
-                      ))}
-                    </MapContainer>
-                  </div>
-                ) : null}
-              </div>
+                      <button
+                        style={{ ...broadcastBtnStyle, height: "3.5rem", opacity: (!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)) ? 0.5 : 1 }}
+                        onClick={handleBroadcast}
+                        disabled={!broadcastMessage.trim() || isBroadcasting || !(VoyageData?.bids || []).some((b) => b.accepted)}
+                      >
+                        {isBroadcasting ? (
+                          <span style={{
+                            display: "inline-block",
+                            width: "1rem", height: "1rem",
+                            border: "2px solid rgba(255,255,255,0.4)",
+                            borderTopColor: "white",
+                            borderRadius: "50%",
+                            animation: "spin 0.7s linear infinite",
+                          }} />
+                        ) : "Send"}
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-              <div style={voyageDetailsWaypointsContainerStyle}>
-                <VoyageDetailWaypointSwiper
-                  waypoints={sortedWaypoints}
-                  handlePanToLocation={handlePanToLocation}
-                  opacity={opacity}
-                  voyageImage={VoyageData.profileImage}
-                  isDarkMode={isDarkMode}
-                />
+                <div style={{ ...voyageDetailsBottomRightStyleNew, display: "flex", flexDirection: "column" }}>
+                  <div style={voyageDetailsMapContainerStyle} className="flex">
+                    {latLngBoundsLiteral?.east ? (
+                      <div style={{ position: "relative", height: "100%", width: "100%" }}>
+                        <MapContainer
+                          bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
+                          style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+                          zoomControl={false}
+                          scrollWheelZoom={true}
+                        >
+                          <TileLayer
+                            url={mapTypeId === "roadmap"
+                              ? `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`
+                              : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
+                            attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                          />
+                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
+                          <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
+                          {sortedWaypoints.map((waypoint, index) => (
+                            <VoyageDetailMarkerWithInfoWindow
+                              key={`${waypoint.id}`}
+                              index={index}
+                              total={sortedWaypoints.length}
+                              waypointTitle={waypoint.title}
+                              position={{ lat: waypoint.latitude, lng: waypoint.longitude }}
+                            />
+                          ))}
+                        </MapContainer>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div style={voyageDetailsWaypointsContainerStyle}>
+                    <VoyageDetailWaypointSwiper
+                      waypoints={sortedWaypoints}
+                      handlePanToLocation={handlePanToLocation}
+                      opacity={opacity}
+                      voyageImage={VoyageData.profileImage}
+                      isDarkMode={isDarkMode}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <style>
-          {`
+            <style>
+              {`
                     .custom-scrollbar::-webkit-scrollbar {
                         background-color: #091b46;
                         background-color: transparent;
@@ -649,12 +675,42 @@ function VoyageDetailsPage() {
                         border-radius: 10px;
                     }
                 `}
-        </style>
+            </style>
 
-      </header>
-    </div>
-
-
+          </header>
+        </div>
+      )}
+      {/* Voyage report modal */}
+      {voyageReportOpen && (
+        <div style={vModalOverlay} onClick={() => setVoyageReportOpen(false)}>
+          <div style={vModalBox} onClick={e => e.stopPropagation()}>
+            {voyageReportSubmitted ? (
+              <>
+                <div style={vModalTitle}>Report submitted</div>
+                <div style={vModalSubtitle}>Thank you. Your report stays private.</div>
+                <button onClick={() => setVoyageReportOpen(false)} style={vModalPrimaryBtn}>Close</button>
+              </>
+            ) : (
+              <>
+                <div style={vModalTitle}>Report voyage</div>
+                <div style={vModalSubtitle}>Tell us what's wrong. Your report stays private.</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", margin: "1rem 0" }}>
+                  {VOYAGE_REPORT_REASONS.map(r => (
+                    <div key={r} onClick={() => setVoyageSelectedReason(r)} style={vReasonItem(voyageSelectedReason === r)}>
+                      {r}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: "0.75rem" }}>
+                  <button onClick={() => setVoyageReportOpen(false)} style={vModalCancelBtn}>Cancel</button>
+                  <button onClick={handleReportVoyage} disabled={!voyageSelectedReason} style={{ ...vModalPrimaryBtn, opacity: voyageSelectedReason ? 1 : 0.4 }}>Submit report</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   ) : null;
 }
 
@@ -1015,3 +1071,42 @@ const broadcastEmojiSearchInputStyle = (dark) => ({
   fontSize: "1.1rem",
   outline: "none",
 });
+
+
+const vModalOverlay = {
+  position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000,
+};
+
+const vModalBox = {
+  backgroundColor: "white", borderRadius: "16px", padding: "2rem",
+  width: "100%", maxWidth: "420px", boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+};
+
+const vModalTitle = {
+  fontSize: "1.1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem",
+};
+
+const vModalSubtitle = {
+  fontSize: "0.85rem", color: "#64748b", marginBottom: "0.5rem",
+};
+
+const vReasonItem = (selected) => ({
+  padding: "0.6rem 1rem", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem",
+  backgroundColor: selected ? "#eff6ff" : "#f8fafc",
+  color: selected ? "#1d4ed8" : "#334155",
+  fontWeight: selected ? 700 : 400,
+  border: selected ? "1px solid #bfdbfe" : "1px solid #e2e8f0",
+});
+
+const vModalPrimaryBtn = {
+  flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px", border: "none",
+  backgroundColor: "#dc2626", color: "white", fontWeight: 700,
+  fontSize: "0.9rem", cursor: "pointer",
+};
+
+const vModalCancelBtn = {
+  flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px",
+  border: "1px solid #e2e8f0", backgroundColor: "white",
+  color: "#475569", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer",
+};

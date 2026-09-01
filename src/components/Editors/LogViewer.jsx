@@ -11,6 +11,11 @@ const LEVEL_COLORS = {
   FTL: { badge: "#4c0519", text: "#fda4af" },
 };
 
+const pgBtn = {
+  backgroundColor: "white", color: "#475569", border: "1px solid #e2e8f0",
+  borderRadius: 8, padding: "6px 14px", cursor: "pointer", fontSize: "0.78rem",
+};
+
 const dtInputStyle = {
   padding: "0.4rem 0.65rem",
   border: "1px solid #cbd5e1",
@@ -83,21 +88,44 @@ function LogLine({ line }) {
   );
 }
 
+const PAGE_SIZE = 100;
+
 export function LogViewer() {
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const utcDatetime = (d) =>
     `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
 
-  const startOfTodayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-  const [from, setFrom] = useState(utcDatetime(startOfTodayUtc));
+  const [from, setFrom] = useState(utcDatetime(oneDayAgo));
   const [to, setTo] = useState(utcDatetime(now));
-  const [level, setLevel] = useState("ALL");
-  const [triggerGetLogs, { data: logs, isFetching, error }] = useLazyGetLogsQuery();
+  const [level, setLevel] = useState("ERR");
+  const [page, setPage] = useState(1);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState(null);
+  const [logsData, setLogsData] = useState(null);
+  const [triggerGetLogs] = useLazyGetLogsQuery();
 
-  const handleFetch = () => {
-    triggerGetLogs({ from: new Date(from).toISOString(), to: new Date(to).toISOString(), level });
+  const logs = logsData?.items;
+  const totalCount = logsData?.totalCount ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const handleFetch = async (p = 1) => {
+    setPage(p);
+    setIsFetching(true);
+    setError(null);
+    try {
+      const result = await triggerGetLogs({ from: new Date(from).toISOString(), to: new Date(to).toISOString(), level, page: p, pageSize: PAGE_SIZE }).unwrap();
+      const normalized = Array.isArray(result)
+        ? { totalCount: result.length, items: result }
+        : result;
+      setLogsData(normalized);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   return (
@@ -135,13 +163,13 @@ export function LogViewer() {
             ))}
           </div>
 
-          <button onClick={handleFetch} style={adminBtnPrimary} disabled={isFetching}>
+          <button onClick={() => handleFetch(1)} style={adminBtnPrimary} disabled={isFetching}>
             {isFetching ? "Loading..." : "Fetch Logs"}
           </button>
 
-          {logs && (
+          {logsData && (
             <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>
-              {logs.length} line{logs.length !== 1 ? "s" : ""}
+              {totalCount} line{totalCount !== 1 ? "s" : ""}
             </span>
           )}
         </div>
@@ -155,20 +183,30 @@ export function LogViewer() {
 
         {/* Log output */}
         {logs && (
-          <div style={{
-            backgroundColor: "#0f172a",
-            borderRadius: "8px",
-            padding: "0.5rem 0.75rem",
-            overflowY: "auto",
-            maxHeight: "70vh",
-            fontFamily: "monospace",
-          }}>
-            {logs.length === 0 ? (
-              <div style={{ color: "#64748b", fontSize: "0.8rem" }}>No entries match the selected filter.</div>
-            ) : (
-              logs.map((line, i) => <LogLine key={i} line={line} />)
+          <>
+            <div style={{
+              backgroundColor: "#0f172a",
+              borderRadius: "8px",
+              padding: "0.5rem 0.75rem",
+              overflowY: "auto",
+              maxHeight: "70vh",
+              fontFamily: "monospace",
+            }}>
+              {logs.length === 0 ? (
+                <div style={{ color: "#64748b", fontSize: "0.8rem" }}>No entries match the selected filter.</div>
+              ) : (
+                logs.map((line, i) => <LogLine key={i} line={line} />)
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem", alignItems: "center" }}>
+                <button onClick={() => handleFetch(page - 1)} disabled={page === 1 || isFetching} style={pgBtn}>← Prev</button>
+                <span style={{ fontSize: "0.78rem", color: "#64748b" }}>Page {page} / {totalPages}</span>
+                <button onClick={() => handleFetch(page + 1)} disabled={page === totalPages || isFetching} style={pgBtn}>Next →</button>
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

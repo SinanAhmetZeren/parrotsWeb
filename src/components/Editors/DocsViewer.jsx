@@ -1,44 +1,6 @@
 import { useState } from "react";
 import { useListDocsQuery, useLazyGetDocQuery, useSaveDocMutation } from "../../slices/DocsSlice";
 import { adminBtnPrimary } from "../../styles/adminStyles";
-import { parrotDarkerBlue } from "../../styles/colors";
-
-function renderPreview(content, isTerms = false) {
-  const lines = content.split("\n");
-  const elements = [];
-  let i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
-    const next = lines[i + 1] || "";
-    if (next.match(/^={3,}$/)) {
-      elements.push(<h1 key={i} style={{ color: "#f97316", fontSize: "2rem", fontWeight: 800, margin: "1.5rem 0 0.25rem", borderBottom: "2px solid rgba(255,165,0,0.3)", paddingBottom: "0.3rem", textAlign: "center" }}>{line}</h1>);
-      i += 2; continue;
-    }
-    if (next.match(/^-{3,}$/)) {
-      elements.push(<h2 key={i} style={{ color: "#FFB800", fontSize: "1.4rem", fontWeight: 700, margin: "1.2rem 0 0.2rem", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center" }}>{line}</h2>);
-      i += 2; continue;
-    }
-    if (line.match(/^={3,}$/) || line.match(/^-{3,}$/)) {
-      elements.push(<hr key={i} style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.1)", margin: "0.5rem 0" }} />);
-      i++; continue;
-    }
-    if (line.match(/^\d+\.\s/)) {
-      elements.push(<p key={i} style={{ color: "#f97316", margin: "1rem 0 0.2rem", fontSize: "1.2rem", fontWeight: 700, textAlign: "left" }}>{line}</p>);
-      i++; continue;
-    }
-    if (line.match(/^[-*]\s/)) {
-      elements.push(<p key={i} style={{ color: "#cbd5e1", margin: "0.2rem 0", paddingLeft: "1rem", fontSize: "1rem", textAlign: "left" }}>{"• " + line.slice(2)}</p>);
-      i++; continue;
-    }
-    if (line.trim() === "") {
-      elements.push(<div key={i} style={{ height: "0.5rem" }} />);
-      i++; continue;
-    }
-    elements.push(<p key={i} style={{ color: "#e2e8f0", margin: "0.15rem 0", lineHeight: "1.7", fontSize: "1rem", textAlign: "left" }}>{line}</p>);
-    i++;
-  }
-  return elements;
-}
 
 const GROUP_LABELS = {
   "docs": "Dev Notes",
@@ -74,6 +36,21 @@ function groupFiles(files) {
   return groups;
 }
 
+const fileLabel = (path) => path.split("/").pop().replace(/\.txt$/i, "");
+
+const sidebarPill = {
+  display: "block",
+  width: "calc(100% - 1rem)",
+  margin: "0 0.5rem 2px",
+  textAlign: "left",
+  padding: "0.3rem 0.75rem",
+  border: "none",
+  borderRadius: "999px",
+  fontSize: "0.9rem",
+  cursor: "pointer",
+  transition: "background 0.1s, color 0.1s",
+};
+
 export function DocsViewer() {
   const { data: files, isLoading: filesLoading } = useListDocsQuery();
   const [triggerGet, { isFetching: docFetching }] = useLazyGetDocQuery();
@@ -81,8 +58,8 @@ export function DocsViewer() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [content, setContent] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
-  const [preview, setPreview] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleSelect = async (filePath) => {
@@ -90,177 +67,190 @@ export function DocsViewer() {
     setSelectedImage(null);
     setSavedMsg("");
     const result = await triggerGet(filePath);
-    if (result.data) setContent(result.data.content);
+    if (result.data) {
+      setContent(result.data.content);
+      setOriginalContent(result.data.content);
+    }
   };
 
   const handleSave = async () => {
     if (!selectedFile) return;
     await saveDoc({ filePath: selectedFile, content });
+    setOriginalContent(content);
     setSavedMsg("Saved.");
     setTimeout(() => setSavedMsg(""), 2500);
   };
 
-  const label = (path) => path.split("/").pop().replace(/\.txt$/i, "");
-
   const groups = groupFiles(files || []);
+  const totalCount = (files || []).length;
 
   return (
-    <div style={{ display: "flex", height: "100%", gap: 0 }}>
+    <div style={{ display: "flex", height: "calc(100vh - 100px)", gap: 0, margin: "-1.5rem" }}>
 
-      {/* Left sidebar */}
+      {/* ── LEFT SIDEBAR ── */}
       <div style={{
-        width: "15rem",
-        minWidth: "15rem",
-        padding: "0.75rem 0.5rem",
+        width: "240px",
+        minWidth: "240px",
+        backgroundColor: "#0f1f35",
+        overflowY: "auto",
+        padding: "1rem 0",
         display: "flex",
         flexDirection: "column",
-        gap: "1.25rem",
-        // backgroundColor: parrotDarkerBlue,
-        backgroundColor: "#0d3d2b",
-        height: "92vh",
-        overflowY: "auto",
+        gap: "1.5rem",
       }}>
         {filesLoading ? (
-          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem", padding: "0.5rem" }}>Loading...</div>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem", padding: "0 1rem" }}>Loading...</div>
         ) : (
-          GROUP_ORDER.filter(dir => groups[dir]).map(dir => [dir, groups[dir]]).map(([dir, dirFiles]) => (
-            <div key={dir}>
-              <div style={{
-                fontSize: "0.65rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.07em",
-                color: "rgba(255,255,255,1)",
-                padding: "0 0.5rem",
-                marginBottom: "0.35rem",
-              }}>
-                {GROUP_LABELS[dir] || dir}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                {dirFiles.map((f) => (
+          <>
+            {GROUP_ORDER.filter(dir => groups[dir]).map(dir => (
+              <div key={dir}>
+                <div style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "white",
+                  padding: "0 1rem",
+                  marginBottom: "0.4rem",
+                }}>
+                  {GROUP_LABELS[dir] || dir}
+                  {dir === "docs" && (
+                    <span style={{ marginLeft: "0.4rem", color: "rgba(255,255,255,0.3)" }}>· {totalCount}</span>
+                  )}
+                </div>
+                {groups[dir].map(f => (
                   <button
                     key={f}
                     onClick={() => handleSelect(f)}
                     style={{
-                      textAlign: "left",
-                      padding: "0.35rem 0.6rem",
-                      border: "none",
-                      borderRadius: "6px",
-                      fontSize: "0.82rem",
-                      fontWeight: selectedFile === f ? 700 : 500,
-                      cursor: "pointer",
-                      backgroundColor: selectedFile === f ? "rgba(255,255,255,0.15)" : "transparent",
-                      color: selectedFile === f ? "white" : "rgba(255,255,255,0.7)",
-                      transition: "background 0.1s",
+                      ...sidebarPill,
+                      background: selectedFile === f ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+                      color: selectedFile === f ? "white" : "rgba(255,255,255,0.65)",
+                      fontWeight: selectedFile === f ? 600 : 400,
                     }}
                   >
-                    {label(f)}
+                    {fileLabel(f)}
                   </button>
                 ))}
               </div>
-            </div>
-          ))
-        )}
-
-        {/* Personas section */}
-        <div>
-          <div style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,1)", padding: "0 0.5rem", marginBottom: "0.35rem" }}>
-            Personas images
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            {PERSONA_IMAGES.map(({ file, label }) => (
-              <button
-                key={file}
-                onClick={() => { setSelectedImage(file); setSelectedFile(null); }}
-                style={{
-                  textAlign: "left",
-                  padding: "0.35rem 0.6rem",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "0.82rem",
-                  fontWeight: selectedImage === file ? 700 : 500,
-                  cursor: "pointer",
-                  backgroundColor: selectedImage === file ? "rgba(255,255,255,0.15)" : "transparent",
-                  color: selectedImage === file ? "white" : "rgba(255,255,255,0.7)",
-                  transition: "background 0.1s",
-                }}
-              >
-                {label}
-              </button>
             ))}
-          </div>
-        </div>
+
+            {/* Personas */}
+            <div>
+              <div style={{
+                fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase",
+                letterSpacing: "0.08em", color: "white",
+                padding: "0 1rem", marginBottom: "0.4rem",
+              }}>
+                Personas
+              </div>
+              {PERSONA_IMAGES.map(({ file, label }) => (
+                <button
+                  key={file}
+                  onClick={() => { setSelectedImage(file); setSelectedFile(null); }}
+                  style={{
+                    ...sidebarPill,
+                    background: selectedImage === file ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+                    color: selectedImage === file ? "white" : "rgba(255,255,255,0.65)",
+                    fontWeight: selectedImage === file ? 600 : 400,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Editor area */}
-      <div style={{ flex: 1, padding: "1rem", display: "flex", flexDirection: "column" }}>
+      {/* ── RIGHT CONTENT ── */}
+      <div style={{ flex: 1, padding: "1.5rem", overflowY: "auto", backgroundColor: "#f0ece6" }}>
         {selectedImage ? (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#0f172a", borderRadius: "8px", padding: "1rem", overflowY: "auto" }}>
-            <img src={`${BASE_URL}/${selectedImage}`} alt={selectedImage} key={selectedImage} style={{ maxWidth: "100%", maxHeight: "85vh", borderRadius: "8px", objectFit: "contain" }} />
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "10px",
+            border: "1px solid #e2e8f0",
+            padding: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <img
+              src={`${BASE_URL}/${selectedImage}`}
+              alt={selectedImage}
+              style={{ maxWidth: "100%", borderRadius: "8px", objectFit: "contain" }}
+            />
           </div>
         ) : selectedFile ? (
-          <>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.6rem" }}>
-              <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{selectedFile}</span>
-              <button
-                onClick={() => setPreview(p => !p)}
-                style={{ ...adminBtnPrimary, backgroundColor: preview ? "#334155" : "#1e40af" }}
-              >
-                {preview ? "Edit" : "Preview"}
-              </button>
-              {!preview && (
-                <button onClick={handleSave} style={adminBtnPrimary} disabled={saving || docFetching}>
-                  {saving ? "Saving..." : "Save"}
-                </button>
-              )}
-              {savedMsg && <span style={{ fontSize: "0.78rem", color: "#4ade80" }}>{savedMsg}</span>}
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "10px",
+            border: "1px solid #e2e8f0",
+            padding: "1.25rem 1.5rem",
+          }}>
+            {/* Card header */}
+            <div style={{
+              fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "0.07em", color: "#94a3b8", marginBottom: "0.4rem",
+            }}>
+              Project · Docs
             </div>
-            {preview ? (
-              <div style={{
-                flex: 1,
-                minHeight: "80vh",
-                backgroundColor: "#0f172a",
-                borderRadius: "8px",
-                padding: "1.25rem 1.5rem",
-                overflowY: "auto",
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "1rem",
-              }}>
-                <div style={{ width: selectedFile?.includes("termsOfUse") ? "70%" : "100%", margin: "0 auto" }}>
-                  {renderPreview(content, selectedFile?.includes("termsOfUse"))}
-                </div>
-              </div>
-            ) : (
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                disabled={docFetching}
-                spellCheck={false}
-                style={{
-                  flex: 1,
-                  minHeight: "80vh",
-                  backgroundColor: "#0f172a",
-                  color: "#e2e8f0",
-                  fontFamily: "monospace",
-                  fontSize: "0.8rem",
-                  lineHeight: "1.6",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "0.75rem 1rem",
-                  resize: "none",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            )}
-          </>
+            <div style={{
+              fontSize: "1.2rem", fontWeight: 700, color: "#0f172a",
+              marginBottom: "1.25rem", paddingBottom: "0.75rem",
+              borderBottom: "1px solid #e2e8f0",
+            }}>
+              {fileLabel(selectedFile)}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", alignItems: "center" }}>
+              <button
+                onClick={handleSave}
+                disabled={saving || docFetching || content === originalContent}
+                style={{ ...adminBtnPrimary, opacity: (saving || docFetching || content === originalContent) ? 0.45 : 1, cursor: content === originalContent ? "not-allowed" : "pointer" }}
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+              {savedMsg && <span style={{ fontSize: "0.78rem", color: "#16a34a" }}>{savedMsg}</span>}
+            </div>
+
+            {/* Content */}
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              disabled={docFetching}
+              spellCheck={false}
+              style={{
+                width: "100%",
+                minHeight: "65vh",
+                fontFamily: "monospace",
+                fontSize: "0.82rem",
+                lineHeight: "1.6",
+                border: "1px solid #e2e8f0",
+                borderRadius: "6px",
+                padding: "0.75rem 1rem",
+                resize: "vertical",
+                outline: "none",
+                boxSizing: "border-box",
+                color: "#1e3a5f",
+                backgroundColor: "#f8fafc",
+              }}
+            />
+          </div>
         ) : (
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.85rem", marginTop: "2rem" }}>
-            Select a file or persona to view.
+          <div style={{
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            height: "60%", gap: "0.5rem",
+          }}>
+            <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#0f172a" }}>No note selected</div>
+            <div style={{ fontSize: "0.88rem", color: "#94a3b8" }}>
+              Pick one of the {totalCount} dev notes on the left.
+            </div>
           </div>
         )}
       </div>
-
     </div>
   );
 }

@@ -1,6 +1,8 @@
 export const adminPage = {
   padding: "1.5rem",
   maxWidth: "960px",
+  margin: "0 auto",
+  width: "100%",
   fontFamily: "inherit",
 };
 

@@ -17,7 +17,7 @@ export function VoyageDetailPageImageSwiperNew({ voyageData }) {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const images = [voyageData?.profileImage, ...voyageData?.voyageImages?.map(image => image.voyageImagePath)];
+  const images = [voyageData?.profileImage, ...(voyageData?.voyageImages?.map(image => image.voyageImagePath) ?? [])];
 
   return (
     <div style={{ position: "relative" }}>

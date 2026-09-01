@@ -30,7 +30,6 @@ import placeholderParrots from "../assets/images/placeholderparrots.png";
 const VEHICLES = ["Boat", "Car", "Caravan", "Bus", "Walk", "Run", "Motorcycle", "Bicycle", "TinyHouse", "Airplane", "Train"];
 const DURATIONS = ["Half day", "1 day", "2-3 days", "1 week", "2 weeks"];
 const VIBES = ["Culture", "Food", "Nature", "Chill", "Adventure", "Budget", "Scenic", "Any"];
-const RADII = ["1km", "5km", "10km", "50km"];
 const ON_FOOT = ["Walk", "Run"];
 const TRANSIT = ["Bus", "Train", "Airplane"];
 
@@ -66,9 +65,6 @@ const VIBE_COLORS = {
   Adventure: "#F5A623", Budget: "#F5A623", Scenic: "#F5A623", Any: "#F5A623",
 };
 
-const RADIUS_COLORS = {
-  "1km": "#06B6D4", "5km": "#06B6D4", "10km": "#06B6D4", "50km": "#06B6D4",
-};
 
 const DURATION_COLORS = {
   "Half day": "#2ac898", "1 day": "#2ac898", "2-3 days": "#2ac898",
@@ -97,7 +93,7 @@ function getIndefiniteArticle(word) { return /^[aeiou]/i.test(word) ? "an" : "a"
 function formatDuration(d) { return d === "Half day" ? "half a day" : d; }
 function formatVehicleName(v) { return v === "TinyHouse" ? "tiny house" : v.toLowerCase(); }
 
-function buildQueryText(vehicle, duration, vibe, spotType, radius, pin) {
+function buildQueryText(vehicle, duration, vibe, spotType, pin) {
   const displayDuration = formatDuration(duration);
   const displayVehicle = formatVehicleName(vehicle);
 
@@ -122,9 +118,7 @@ function buildQueryText(vehicle, duration, vibe, spotType, radius, pin) {
   const spotConfig = SPOT_TYPES_CONFIG[spotType];
   const spotPart = spotConfig ? `, focusing on ${spotConfig.label} (${spotConfig.detail})` : "";
 
-  const locationPart = pin
-    ? `starting within ${radius} of the selected location`
-    : `starting within ${radius} of the selected location`;
+  const locationPart = pin ? "starting from this location" : "";
   return `${vehiclePart} ${vibePart}${spotPart}, ${locationPart}.`;
 }
 
@@ -180,8 +174,8 @@ function SectionCard({ label, children, style, isDark }) {
   );
 }
 
-function QueryPreview({ vehicle, duration, vibe, spotType, radius, pin, isDark }) {
-  if (!vehicle || !duration || !vibe || !radius || !pin) return null;
+function QueryPreview({ vehicle, duration, vibe, spotType, pin, isDark }) {
+  if (!vehicle || !duration || !vibe || !pin) return null;
   const isOnFoot = ON_FOOT.includes(vehicle);
   const isTransit = TRANSIT.includes(vehicle);
   const displayDuration = formatDuration(duration);
@@ -194,7 +188,6 @@ function QueryPreview({ vehicle, duration, vibe, spotType, radius, pin, isDark }
   const vc = VEHICLE_COLORS[vehicle] || parrotBlue;
   const dc = DURATION_COLORS[duration] || parrotBlue;
   const vibeC = VIBE_COLORS[vibe] || parrotBlue;
-  const rc = RADIUS_COLORS[radius] || parrotBlue;
   const sc = "#8B5CF6";
 
   return (
@@ -211,9 +204,7 @@ function QueryPreview({ vehicle, duration, vibe, spotType, radius, pin, isDark }
       {vibe === "Any" ? " voyage" : " experience"}
       {vibe !== "Any" && vibeDetail && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${vibeDetail})`}</span>}
       {spotConf && <span>{", focusing on "}<span style={{ color: sc, fontWeight: 800 }}>{spotConf.label}</span><span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${spotConf.detail})`}</span></span>}
-      {", starting within "}
-      <span style={{ color: rc, fontWeight: 800 }}>{radius}</span>
-      {" of the selected location."}
+      {", starting from this location."}
 
     </p>
   );
@@ -224,7 +215,6 @@ export default function AskParrotsPage() {
   const [duration, setDuration] = useState(null);
   const [vibe, setVibe] = useState(null);
   const [spotType, setSpotType] = useState(null);
-  const [radius, setRadius] = useState(null);
   const [pin, setPin] = useState(null);
   const [response, setResponse] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -289,14 +279,12 @@ export default function AskParrotsPage() {
   const handleAsk = async () => {
     if (!pin) return;
     setResponse(null);
-    const radiusNum = parseInt(radius.replace("km", ""), 10);
     try {
       const result = await askParrots({
         vehicleType: vehicle,
         duration: duration === "Half day" ? "Half a Day" : duration,
         vibe,
         spotType,
-        radiusKm: radiusNum.toString(),
         latitude: pin.lat,
         longitude: pin.lng,
       }).unwrap();
@@ -315,7 +303,7 @@ export default function AskParrotsPage() {
   const handleSendMe = async () => {
     if (!response) return;
     setSending(true);
-    const query = buildQueryText(vehicle, duration, vibe, spotType, radius, pin);
+    const query = buildQueryText(vehicle, duration, vibe, spotType, pin);
     const clean = response.replace(/^\[\[([^\]]+)\]\]\s*/, "($1) ").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\{\{([^}]+)\}\}/g, "$1");
     const text = `🦜 ${query}\n\n➡️ ${clean}`;
     await invokeHub("SendMessage", currentUserId, currentUserId, text, true);
@@ -326,7 +314,7 @@ export default function AskParrotsPage() {
 
   const handleCopy = () => {
     if (!response) return;
-    const query = buildQueryText(vehicle, duration, vibe, spotType, radius, pin);
+    const query = buildQueryText(vehicle, duration, vibe, spotType, pin);
     const clean = response.replace(/^\[\[([^\]]+)\]\]\s*/, "($1) ").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\{\{([^}]+)\}\}/g, "$1");
     navigator.clipboard.writeText(`${query}\n\n${clean}`);
     setCopied(true);
@@ -360,7 +348,7 @@ export default function AskParrotsPage() {
     ));
   };
 
-  const canAsk = !!vehicle && !!duration && !!vibe && !!spotType && !!radius && !!pin;
+  const canAsk = !!vehicle && !!duration && !!vibe && !!spotType && !!pin;
 
   return (
     <div className="App">
@@ -442,9 +430,6 @@ export default function AskParrotsPage() {
                   <SectionCard label="FOCUSING ON..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
                     <PillSelector options={SPOT_TYPES} selected={spotType} onSelect={setSpotType} colorMap={SPOT_TYPE_COLORS} isDark={isDark} />
                   </SectionCard>
-                  <SectionCard label="STARTING WITHIN..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
-                    <PillSelector options={RADII} selected={radius} onSelect={setRadius} colorMap={RADIUS_COLORS} isDark={isDark} />
-                  </SectionCard>
                 </div>
                 {showScrollArrow && (
                   <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
@@ -457,7 +442,7 @@ export default function AskParrotsPage() {
                 padding: ".5rem", paddingLeft: "1.5rem", paddingRight: "1.5rem",
                 marginTop: ".5rem"
               }} isDark={isDark}>
-                <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} spotType={spotType} radius={radius} pin={pin} isDark={isDark} />
+                <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} spotType={spotType} pin={pin} isDark={isDark} />
               </SectionCard>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem", gap: "0.75rem" }}>
                 {crackerBalance !== null && (

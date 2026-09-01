@@ -31,7 +31,7 @@ export function MobileVersionEditor() {
   if (isLoading) return <div style={{ padding: "2rem", color: "#64748b" }}>Loading…</div>;
 
   return (
-    <div style={{ padding: "1.5rem", fontFamily: "sans-serif", maxWidth: 560, textAlign: "left" }}>
+    <div style={{ padding: "1.5rem", fontFamily: "sans-serif", maxWidth: 560, textAlign: "left", margin: "0 auto", width: "100%" }}>
       <div style={adminCard}>
         <div style={adminTitle}>Mobile Min Version</div>
 

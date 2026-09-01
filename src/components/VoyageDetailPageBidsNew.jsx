@@ -106,7 +106,6 @@ export function VoyageDetailBidsNew({
       <div
         style={{
           overflow: "auto",
-          minHeight: "35vh",
           scrollbarColor: "#1e90ff50",
         }}
       >

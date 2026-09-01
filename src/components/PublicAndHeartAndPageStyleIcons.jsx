@@ -3,8 +3,7 @@ import { CustomToolTip } from "./CustomToolTip";
 import { useState } from "react";
 import { MdPublic } from "react-icons/md";
 import { parrotBlueDarkTransparent2, parrotDarkBlue } from "../styles/colors";
-import { LuScroll } from "react-icons/lu";
-import { RiComputerLine } from "react-icons/ri";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export const PublicAndHeartAndPageStyleIcons = ({
     isFavorited,
@@ -14,10 +13,12 @@ export const PublicAndHeartAndPageStyleIcons = ({
     handleDeleteVoyageFromFavorites,
     setIsLegacyView,
     isDarkMode,
+    onReportPress,
+    topOffset = "-.50rem",
 }) => {
     const [isHoveredHeart, setIsHoveredHeart] = useState(false)
     const [isHoveredPublicOnMap, setIsHoveredPublicOnMap] = useState(false)
-    const [isHoveredLegacy, setIsHoveredLegacy] = useState(false)
+    const [kebabOpen, setKebabOpen] = useState(false)
     return (
         <>
             {isFavorited ? (
@@ -25,7 +26,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onClick={() => handleDeleteVoyageFromFavorites()}
                     onMouseEnter={() => setIsHoveredHeart(true)}
                     onMouseLeave={() => setIsHoveredHeart(false)}
-                    style={{ ...heartIconStyle("red"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
+                    style={{ ...heartIconStyle("red"), top: topOffset, zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="red" />
                     <CustomToolTip isHovered={isHoveredHeart} message={"In Favorites"} offsetLeft="-50%" />
                 </div>
@@ -34,7 +35,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                     onClick={() => handleAddVoyageToFavorites()}
                     onMouseEnter={() => setIsHoveredHeart(true)}
                     onMouseLeave={() => setIsHoveredHeart(false)}
-                    style={{ ...heartIconStyle("orange"), zIndex: isHoveredHeart ? 1003 : 1000 }} >
+                    style={{ ...heartIconStyle("orange"), top: topOffset, zIndex: isHoveredHeart ? 1003 : 1000 }} >
                     <IoHeartSharp size="1.5rem" color="orange" />
                     <CustomToolTip isHovered={isHoveredHeart} message={"Add to Favorites"} offsetLeft="-50%" />
                 </div>
@@ -44,7 +45,7 @@ export const PublicAndHeartAndPageStyleIcons = ({
                 <div
                     onMouseEnter={() => setIsHoveredPublicOnMap(true)}
                     onMouseLeave={() => setIsHoveredPublicOnMap(false)}
-                    style={{ ...publicIconStyle(parrotDarkBlue, "white"), zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
+                    style={{ ...publicIconStyle(parrotDarkBlue, "white"), top: topOffset, zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
                     <MdPublic size="1.5rem" color={parrotDarkBlue} />
                     <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Visible on Map"} />
                 </div>
@@ -52,32 +53,29 @@ export const PublicAndHeartAndPageStyleIcons = ({
                 <div
                     onMouseEnter={() => setIsHoveredPublicOnMap(true)}
                     onMouseLeave={() => setIsHoveredPublicOnMap(false)}
-                    style={{ ...publicIconStyle(parrotBlueDarkTransparent2, "white"), zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
+                    style={{ ...publicIconStyle(parrotBlueDarkTransparent2, "white"), top: topOffset, zIndex: isHoveredPublicOnMap ? 1003 : 1000 }} >
                     <MdPublic size="1.5rem" color={parrotBlueDarkTransparent2} />
                     <CustomToolTip isHovered={isHoveredPublicOnMap} message={"Not Visible Globally"} />
                 </div>
             )}
 
-
-            {isLegacyView ? (
-                <div
-                    onClick={() => setIsLegacyView(false)}
-                    onMouseEnter={() => setIsHoveredLegacy(true)}
-                    onMouseLeave={() => setIsHoveredLegacy(false)}
-                    style={legacyIconStyle("green")} >
-                    <LuScroll size="1.5rem" color={"green"} />
-                    <CustomToolTip isHovered={isHoveredLegacy} message={"Switch To Navigator View"} />
+            <div style={{ position: "absolute", right: "8rem", top: topOffset, zIndex: kebabOpen ? 1003 : 1000 }}>
+                <div onClick={() => setKebabOpen(v => !v)} style={kebabIconStyle}>
+                    <BsThreeDotsVertical size="1.5rem" color="green" />
                 </div>
-            ) : (
-                <div
-                    onClick={() => setIsLegacyView(true)}
-                    onMouseEnter={() => setIsHoveredLegacy(true)}
-                    onMouseLeave={() => setIsHoveredLegacy(false)}
-                    style={legacyIconStyle("green")} >
-                    <RiComputerLine size="1.5rem" color={"green"} />
-                    <CustomToolTip isHovered={isHoveredLegacy} message={"Switch To Explorer View"} />
-                </div>
-            )}
+                {kebabOpen && (
+                    <div style={kebabMenu} onMouseLeave={() => setKebabOpen(false)}>
+                        <div onClick={() => { setKebabOpen(false); setIsLegacyView(!isLegacyView); }} style={kebabItem}>
+                            {isLegacyView ? "Switch to Navigator View" : "Switch to Explorer View"}
+                        </div>
+                        {onReportPress && (
+                            <div onClick={() => { setKebabOpen(false); onReportPress(); }} style={{ ...kebabItem, color: "#dc2626" }}>
+                                Report voyage
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </>
     );
 };
@@ -85,18 +83,15 @@ export const PublicAndHeartAndPageStyleIcons = ({
 
 const publicIconStyle = (borderColor, backgroundColor) => ({
     position: "absolute",
-    // backgroundColor: "white",
     backgroundColor: backgroundColor,
     right: "4.5rem",
     top: "-.50rem",
     borderRadius: "3rem",
     padding: "0.5rem",
     zIndex: 1000,
-    // border: `2px solid ${borderColor}`,
     borderWidth: "2px",
     borderColor: borderColor,
     borderStyle: "solid",
-
 });
 
 const heartIconStyle = (borderColor) => ({
@@ -113,16 +108,37 @@ const heartIconStyle = (borderColor) => ({
     cursor: "pointer"
 });
 
-const legacyIconStyle = (borderColor) => ({
-    position: "absolute",
+const kebabIconStyle = {
     backgroundColor: "white",
-    right: "8rem",
-    top: "-.50rem",
     borderRadius: "3rem",
     padding: "0.5rem",
-    zIndex: 1000,
     borderWidth: "2px",
-    borderColor: borderColor,
+    borderColor: "green",
     borderStyle: "solid",
-    cursor: "pointer"
-});
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+};
+
+const kebabMenu = {
+    position: "absolute",
+    bottom: "calc(100% + 6px)",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+    zIndex: 100,
+    minWidth: "180px",
+    overflow: "hidden",
+};
+
+const kebabItem = {
+    padding: "0.65rem 1rem",
+    fontSize: "0.88rem",
+    cursor: "pointer",
+    color: "#1e3a5f",
+    fontWeight: 700,
+    whiteSpace: "nowrap",
+};
