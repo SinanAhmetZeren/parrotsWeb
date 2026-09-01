@@ -9,7 +9,7 @@ import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline } from "react-icons/io5";
 // import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
 import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
-import placeHolder from "../assets/images/placeholder.png";
+import placeHolder from "../assets/images/placeholder1.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -230,7 +230,7 @@ export const VoyageImageUploaderComponent = ({
           style={{
             display: "flex",
             flexDirection: "row",
-            marginTop: "7rem",
+            marginTop: "2rem",
             marginLeft: "1rem",
           }}
         >
@@ -419,10 +419,6 @@ export const VoyageImageUploaderComponent = ({
 };
 
 const GoToWaypointsButton = ({ setPageState, addedVoyageImages }) => {
-  // useEffect(() => {
-  //     console.log("addedvoyage images  :--->", addedVoyageImages);
-  // }, [addedVoyageImages])
-
   const buttonStyle = {
     width: "30%",
     backgroundColor: "#007bff",
@@ -435,33 +431,24 @@ const GoToWaypointsButton = ({ setPageState, addedVoyageImages }) => {
     cursor: "pointer",
     fontSize: "1.2rem",
     border: "none",
-    boxShadow:
-      "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
     transition: "box-shadow 0.2s ease",
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
   };
 
+  const backButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "transparent",
+    color: "#007bff",
+    boxShadow: "none",
+    border: "2px solid #007bff",
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <button
-        onClick={() => {
-          console.log("apply");
-          setPageState(3);
-        }}
-        disabled={addedVoyageImages?.length === 0}
-        style={
-          addedVoyageImages?.length > 0
-            ? buttonStyle
-            : { ...buttonStyle, opacity: "0.5" }
-        }
-      >
-        Next
+    <div style={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+      <button onClick={() => setPageState(3)} style={buttonStyle}>
+        {addedVoyageImages?.length === 0 ? "Skip" : "Next"}
       </button>
     </div>
   );

@@ -8,7 +8,7 @@ import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline } from "react-icons/io5";
 // import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
 import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
-import placeHolder from "../assets/images/placeholder.png";
+import placeHolder from "../assets/images/placeholder1.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -52,7 +52,7 @@ function CreateVehiclePage() {
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
   const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s1");
+  const [pageState, setPageState] = useState("s2");
   const [vehicleId, setVehicleId] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
@@ -171,10 +171,6 @@ function CreateVehiclePage() {
   };
 
   const completeVehicleCreate = async () => {
-    if (addedVehicleImages.length === 0) {
-      console.log("images length: -->", addedVehicleImages.length);
-      return;
-    }
     setIsCompleting(true);
     console.log("confirming vehicle: ", vehicleId);
     var confirmResult = await confirmVehicle(vehicleId);
@@ -263,30 +259,20 @@ function CreateVehiclePage() {
             </div>
           </div>
 
-          <div style={pageStateDisplayContainer}>
-            <div style={pageStateDisplay}>
-              <span
-                style={{
-                  ...VehiclesVoyagesTitle,
-                  ...(pageState === "s1" ? activeStyle : {}),
-                }}
-              >
-                Vehicle Details
-              </span>
-              <span
-                style={{
-                  ...VehiclesVoyagesTitle,
-                  ...(pageState === "s2" ? activeStyle : {}),
-                }}
-              >
-                Vehicle Images
-              </span>
-            </div>
+          <div style={vehicleStepBarContainer}>
+            <span
+              style={{ ...vehicleStepTitle, ...(pageState === "s1" ? vehicleStepActive : vehicleStepInactive), cursor: "pointer" }}
+              onClick={() => setPageState("s1")}
+            >Vehicle Details</span>
+            <span
+              style={{ ...vehicleStepTitle, ...(pageState === "s2" ? vehicleStepActive : vehicleStepInactive), cursor: vehicleId ? "pointer" : "default" }}
+              onClick={() => { if (vehicleId) setPageState("s2"); }}
+            >Vehicle Images</span>
           </div>
 
           {pageState === "s1" && (
             <>
-              <div className="vehiclePage_vehicleContainer">
+              <div className="vehiclePage_vehicleContainer" style={{ marginTop: 0 }}>
                 <div className="vehiclePage_dataContainer">
                   <div className="vehiclePage_detailsContainer">
                     <div className="vehiclePage_nameContainer">
@@ -635,15 +621,10 @@ function CreateVehiclePage() {
               ) : (
                 <div
                   className="completeVehicleButton"
-                  style={{
-                    ...completeVehicleButton,
-                    ...(addedVehicleImages.length === 0
-                      ? { opacity: "0.7" }
-                      : {}),
-                  }}
+                  style={completeVehicleButton}
                   onClick={() => completeVehicleCreate()}
                 >
-                  Complete
+                  {addedVehicleImages.length === 0 ? "Skip" : "Complete"}
                 </div>
               )}
             </>
@@ -956,31 +937,40 @@ const galleryImageDeleteIconHover = {
   transform: "scale(1.2)",
 };
 
-const VehiclesVoyagesTitle = {
-  fontSize: "1.6rem",
-  fontWeight: 800,
-  color: "#ffffff55",
-  backgroundColor: "#a4f4f411",
-  padding: ".3rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  borderRadius: "1.5rem",
-};
-
-const activeStyle = {
-  color: "white",
-  backgroundColor: "#a4f4f433",
-};
-
-const pageStateDisplay = {
+const vehicleStepBarContainer = {
   display: "flex",
   flexDirection: "row",
-  width: "28%",
+  width: "fit-content",
   margin: "auto",
-  justifyContent: "space-between",
+  marginTop: "1rem",
+  marginBottom: "0.5rem",
+  backgroundColor: "rgba(255, 255, 255, 0.12)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: "2rem",
+  padding: "0.3rem",
+  gap: "0.2rem",
 };
 
-const pageStateDisplayContainer = {};
+const vehicleStepTitle = {
+  fontSize: "1.15rem",
+  fontWeight: 800,
+  padding: "0.4rem 1.2rem",
+  borderRadius: "1.5rem",
+  cursor: "pointer",
+  transition: "background 0.2s",
+};
+
+const vehicleStepActive = {
+  color: "white",
+  backgroundColor: "#3b82f6",
+};
+
+const vehicleStepInactive = {
+  color: "rgba(255,255,255,0.45)",
+  opacity: 0.4,
+};
 
 const registerVehicleButton = {
   // position: "absolute",

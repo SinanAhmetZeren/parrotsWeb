@@ -47,8 +47,8 @@ export default function CreateVoyagePage() {
   const [voyageName, setVoyageName] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
-  const [currency, setCurrency] = useState("");
-  const [isAuction, setIsAuction] = useState(false);
+  const [currency, setCurrency] = useState("€");
+  const [isAuction, setIsAuction] = useState(true);
   const [isFixedPrice, setIsFixedPrice] = useState(false);
   const [isPublicOnMap, setIsPublicOnMap] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(true);
@@ -218,7 +218,7 @@ export default function CreateVoyagePage() {
       setMinPrice(null);
       setMaxPrice(null);
       setIsAuction(true);
-      setIsFixedPrice(true);
+      setIsFixedPrice(false);
       setIsPublicOnMap(true);
       setCalendarOpen(true);
       setLastBidDate(null);
@@ -303,13 +303,19 @@ export default function CreateVoyagePage() {
               </div>
             </div>
 
-            <div style={{
-              display: "flex", flexDirection: "row", width: "40%", margin: "auto",
-              justifyContent: "space-between", alignSelf: "flex-start", marginTop: "0rem", marginBottom: "0.5rem"
-            }}>
-              <span style={{ ...voyageStepTitle, ...(pageState === 1 ? voyageStepActive : {}) }}>Voyage Details</span>
-              <span style={{ ...voyageStepTitle, ...(pageState === 2 ? voyageStepActive : {}) }}>Voyage Images</span>
-              <span style={{ ...voyageStepTitle, ...(pageState === 3 ? voyageStepActive : {}) }}>Waypoints</span>
+            <div style={stepBarContainer}>
+              <span
+                style={{ ...voyageStepTitle, ...(pageState === 1 ? voyageStepActive : voyageStepInactive), cursor: "pointer" }}
+                onClick={() => setPageState(1)}
+              >Voyage Details</span>
+              <span
+                style={{ ...voyageStepTitle, ...(pageState === 2 ? voyageStepActive : voyageStepInactive), cursor: voyageId ? "pointer" : "default" }}
+                onClick={() => { if (voyageId) setPageState(2); }}
+              >Voyage Images</span>
+              <span
+                style={{ ...voyageStepTitle, ...(pageState === 3 ? voyageStepActive : voyageStepInactive), cursor: voyageId ? "pointer" : "default" }}
+                onClick={() => { if (voyageId) setPageState(3); }}
+              >Waypoints</span>
             </div>
 
             {
@@ -858,18 +864,38 @@ const CreateVogageSpinner = () => {
   );
 };
 
+const stepBarContainer = {
+  display: "flex",
+  flexDirection: "row",
+  width: "fit-content",
+  margin: "auto",
+  marginTop: "0rem",
+  marginBottom: "0.5rem",
+  backgroundColor: "rgba(255, 255, 255, 0.12)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: "2rem",
+  padding: "0.3rem",
+  gap: "0.2rem",
+};
+
 const voyageStepTitle = {
-  fontSize: "1.6rem",
+  fontSize: "1.15rem",
   fontWeight: 800,
-  color: "#ffffff55",
-  backgroundColor: "#a4f4f411",
-  padding: ".3rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
+  color: "rgba(255,255,255,0.45)",
+  padding: "0.4rem 1.2rem",
   borderRadius: "1.5rem",
+  cursor: "pointer",
+  transition: "background 0.2s",
 };
 
 const voyageStepActive = {
   color: "white",
-  backgroundColor: "#a4f4f433",
+  backgroundColor: "#3b82f6",
+};
+
+const voyageStepInactive = {
+  color: "rgba(255,255,255,0.45)",
+  opacity: 0.4,
 };

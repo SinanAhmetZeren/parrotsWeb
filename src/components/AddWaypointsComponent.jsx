@@ -232,15 +232,17 @@ export const AddWaypointsPage = ({
                         />
                     </div>
 
-                    <div
-                        style={{
-                            ...addWaypointButton,
-                            marginTop: "0rem",
-                            opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
-                            pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none'
-                        }}
-                        onClick={() => { if (addedWaypoints?.length > 0) handleGoToProfilePage(); }}
-                    >Complete</div>
+                    <div style={{ display: "flex", gap: "1rem", marginTop: "0rem", justifyContent: "center" }}>
+                        <div
+                            style={{
+                                ...addWaypointButton,
+                                marginTop: 0, marginLeft: 0, transform: "none", width: "auto",
+                                opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
+                                pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none'
+                            }}
+                            onClick={() => { if (addedWaypoints?.length > 0) handleGoToProfilePage(); }}
+                        >Complete</div>
+                    </div>
                 </div>
 
                 <div style={mapContainerBox}>
