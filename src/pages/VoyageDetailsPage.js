@@ -6,7 +6,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import { useGetVoyageByIdQuery } from "../slices/VoyageSlice";
+import { useGetVoyageByIdQuery, useAddVoyageUpdateMutation } from "../slices/VoyageSlice";
 import { invokeHub } from "../signalr/signalRHub";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { MapContainer, TileLayer } from "react-leaflet";
@@ -313,7 +313,7 @@ function VoyageDetailsPage() {
       {isLegacyView ? (
 
         // legacy view
-        <div style={appStyle}>
+        <div key="explorer" style={appStyle}>
           <header style={appHeaderStyle}>
             <div style={mainPageContainerStyle} className="flex">
               <div style={mainPageTopRowStyle} className="flex">
@@ -324,20 +324,24 @@ function VoyageDetailsPage() {
               </div>
 
               <div style={{ ...mainPageBottomRowStyle }} className="flex">
-                <div style={voyageDetailsBottomLeftStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
+                <div style={voyageDetailsBottomLeftStyle_explorer} className="flex voyageDetailsBottomLeft hide-scrollbar">
 
 
-                  <div style={{ ...voyageDetailsDetailsStyle, position: "relative" }} className="flex">
-                    {isDarkMode ? <VoyageDetailPageDetailsLegacy voyageData={VoyageData} /> : <VoyageDetailPageDetailsLegacyLight voyageData={VoyageData} />}
+                  <div style={{
+                    width: "calc(100% - 2rem)", marginLeft: "1rem", marginRight: "1rem",
+                    paddingBottom: "0.2rem", height: "32vh", position: "relative"
+                  }} className="flex">
+                    {isDarkMode ? <VoyageDetailPageDetailsLegacy voyageData={VoyageData} /> :
+                      <VoyageDetailPageDetailsLegacyLight voyageData={VoyageData} />}
                   </div>
-                  <div style={voyageDetailsBidsStyle} className="flex">
+                  <div style={{ margin: "0 1rem", paddingTop: 0 }} className="flex">
                     {isDarkMode
                       ? <VoyageDetailBids userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                       : <VoyageDetailBidsLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                     }
                   </div>
                   {userId === VoyageData.userId && (
-                    <div style={broadcastCardStyle(isDarkMode)}>
+                    <div style={broadcastCardStyle_explorer(isDarkMode)}>
 
                       {/* Emoji button + panel */}
                       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
@@ -405,12 +409,12 @@ function VoyageDetailsPage() {
 
                 </div>
 
-                <div style={voyageDetailsBottomMiddleStyle} className="flex voyageDetailsBottomLeft custom-scrollbar">
-                  <div style={voyageDetailsImagesStyleLegacy} className="flex">
+                <div style={voyageDetailsBottomMiddleStyle_explorer} className="flex voyageDetailsBottomLeft custom-scrollbar">
+                  <div style={voyageDetailsImagesStyle_explorer} className="flex">
                     <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
                   </div>
 
-                  <div style={{ ...voyageDetailsDetailsStyle2, position: "relative" }} className="flex">
+                  <div style={{ ...voyageDetailsIconsRowStyle_explorer, position: "relative" }} className="flex">
                     <PublicAndHeartAndPageStyleIcons
                       handleAddVoyageToFavorites={handleAddVoyageToFavorites}
                       handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
@@ -423,16 +427,20 @@ function VoyageDetailsPage() {
                       topOffset="-1rem"
                     />
                   </div>
-                  <div style={voyageDetailsDescriptionStyle} className="flex">
+                  <div style={voyageDetailsDescriptionStyle_explorer} className="flex">
                     {isDarkMode
                       ? <VoyageDetailPageDescription voyageDescription={VoyageData.description} voyageName={VoyageData} />
                       : <VoyageDetailPageDescriptionLight voyageDescription={VoyageData.description} voyageName={VoyageData} />
                     }
                   </div>
+                  <div>
+                    <VoyageUpdatesSectionExplorer updates={VoyageData.updates || []} voyageId={voyageId} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
+
+                  </div>
                 </div>
 
-                <div style={{ ...voyageDetailsBottomRightStyle, display: "flex", flexDirection: "column" }}>
-                  <div style={voyageDetailsMapContainerStyle} className="flex">
+                <div style={{ ...voyageDetailsBottomRightStyle_explorer, display: "flex", flexDirection: "column" }}>
+                  <div style={voyageDetailsMapContainerStyle_explorer} className="flex">
                     {latLngBoundsLiteral?.east ? (
                       <div style={{ position: "relative", height: "100%", width: "100%" }}>
                         <MapContainer
@@ -464,7 +472,7 @@ function VoyageDetailsPage() {
                     ) : null}
                   </div>
 
-                  <div style={voyageDetailsWaypointsContainerStyle}>
+                  <div style={voyageDetailsWaypointsContainerStyle_explorer}>
                     <VoyageDetailWaypointSwiper
                       waypoints={sortedWaypoints}
                       handlePanToLocation={handlePanToLocation}
@@ -496,7 +504,7 @@ function VoyageDetailsPage() {
         </div>
       ) : (
         // new view
-        <div style={appStyle}>
+        <div key="navigator" style={appStyle}>
           <header style={appHeaderStyle}>
             <div style={mainPageContainerStyle} className="flex">
               <div style={mainPageTopRowStyle} className="flex">
@@ -507,16 +515,14 @@ function VoyageDetailsPage() {
               </div>
 
               <div style={{ ...mainPageBottomRowStyle }} className="flex">
-                <div style={voyageDetailsBottomLeftStyleNew}
-
+                <div style={voyageDetailsBottomLeftStyle_navigator}
                   className="flex voyageDetailsBottomLeft hide-scrollbar"
-
                 >
-                  <div style={voyageDetailsImagesStyle} className="flex">
+                  <div style={voyageDetailsImagesStyle_navigator} className="flex">
                     <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
                   </div>
 
-                  <div style={{ ...voyageDetailsDetailsStyle, position: "relative", marginTop: "6rem" }} className="flex">
+                  <div style={{ ...voyageDetailsDetailsStyle_navigator, position: "relative", marginTop: "6rem" }} className="flex">
                     <PublicAndHeartAndPageStyleIcons
                       handleAddVoyageToFavorites={handleAddVoyageToFavorites}
                       handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
@@ -530,21 +536,24 @@ function VoyageDetailsPage() {
                     {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
                   </div>
 
-                  <div style={voyageDetailsDescriptionStyle} className="flex">
+                  <div style={voyageDetailsDescriptionStyle_navigator} className="flex">
                     {isDarkMode
                       ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
                       : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
                     }
                   </div>
+                  <div style={{ paddingLeft: "0.3rem", paddingRight: ".3rem" }}>
+                    <VoyageUpdatesSectionNavigator updates={VoyageData.updates || []} voyageId={voyageId} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
+                  </div>
 
-                  <div style={voyageDetailsBidsStyle} className="flex">
+                  <div style={voyageDetailsBidsStyle_navigator} className="flex">
                     {isDarkMode
                       ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                       : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
                     }
                   </div>
                   {userId === VoyageData.userId && (
-                    <div style={{ ...broadcastCardStyle(isDarkMode), padding: "2rem 1rem" }}>
+                    <div style={broadcastCardStyle_navigator(isDarkMode)}>
 
                       {/* Emoji button + panel */}
                       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
@@ -617,8 +626,8 @@ function VoyageDetailsPage() {
                   )}
                 </div>
 
-                <div style={{ ...voyageDetailsBottomRightStyleNew, display: "flex", flexDirection: "column" }}>
-                  <div style={voyageDetailsMapContainerStyle} className="flex">
+                <div style={{ ...voyageDetailsBottomRightStyle_navigator, display: "flex", flexDirection: "column" }}>
+                  <div style={voyageDetailsMapContainerStyle_navigator} className="flex">
                     {latLngBoundsLiteral?.east ? (
                       <div style={{ position: "relative", height: "100%", width: "100%" }}>
                         <MapContainer
@@ -649,7 +658,7 @@ function VoyageDetailsPage() {
                     ) : null}
                   </div>
 
-                  <div style={voyageDetailsWaypointsContainerStyle}>
+                  <div style={voyageDetailsWaypointsContainerStyle_navigator}>
                     <VoyageDetailWaypointSwiper
                       waypoints={sortedWaypoints}
                       handlePanToLocation={handlePanToLocation}
@@ -885,32 +894,48 @@ export const mainPageBottomRowStyle = {
   width: "100%",
 };
 
-export const voyageDetailsBottomRightStyle = {
+export const voyageDetailsBottomRightStyle_explorer = {
   height: "calc(100vh - 4rem)",
-  width: "40%",
+  width: "35%",
 };
 
-export const voyageDetailsBottomMiddleStyle = {
+export const voyageDetailsBottomMiddleStyle_explorer = {
+  height: "calc(100vh - 4rem)",
+  width: "35%",
+  flexDirection: "column",
+  overflowY: "auto",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
+};
+
+export const voyageDetailsBottomLeftStyle_explorer = {
   height: "calc(100vh - 4rem)",
   width: "30%",
   flexDirection: "column",
   overflowY: "auto",
+  scrollbarWidth: "none",
+  msOverflowStyle: "none",
 };
 
-export const voyageDetailsBottomLeftStyle = {
-  height: "calc(100vh - 4rem)",
-  width: "30%",
-  flexDirection: "column",
-  overflowY: "auto",
-};
-
-export const voyageDetailsMapContainerStyle = {
+export const voyageDetailsMapContainerStyle_explorer = {
   width: "100%",
   padding: "0.2rem",
   height: "58vh",
 };
 
-export const voyageDetailsWaypointsContainerStyle = {
+export const voyageDetailsMapContainerStyle_navigator = {
+  width: "100%",
+  padding: "0.2rem",
+  height: "58vh",
+};
+
+export const voyageDetailsWaypointsContainerStyle_explorer = {
+  flexGrow: 1,
+  margin: "0.2rem",
+  height: "auto",
+};
+
+export const voyageDetailsWaypointsContainerStyle_navigator = {
   flexGrow: 1,
   margin: "0.2rem",
   height: "auto",
@@ -920,59 +945,80 @@ export const voyageDetailsWaypointsContainerStyle = {
 
 
 
-export const voyageDetailsDetailsStyle2 = {
+export const voyageDetailsIconsRowStyle_explorer = {
   width: "calc(100% - 2rem)",
   marginLeft: "1rem",
   marginRight: "1rem",
-  padding: "0.3rem",
+  padding: "0.1rem",
 };
 
-export const voyageDetailsDescriptionStyle = {
+export const voyageDetailsDescriptionStyle_explorer = {
+  width: "98%",
+  height: "50vh",
+  marginLeft: 0,
+  marginRight: 0,
+};
+
+export const voyageDetailsDescriptionStyle_navigator = {
   width: "calc(100% - 2rem)",
   height: "50vh",
   marginLeft: "1rem",
   marginRight: "1rem",
   padding: "0.3rem",
-  paddingTop: 0,
 };
 
-export const voyageDetailsImagesStyleLegacy = {
+export const voyageDetailsImagesStyle_explorer = {
   alignItems: "center",
   justifyContent: "center",
-  width: "92%",
+  width: "98%",
   margin: "auto",
+  marginLeft: 0,
 };
 
-export const voyageDetailsImagesStyle = {
+export const voyageDetailsImagesStyle_navigator = {
   alignItems: "center",
   justifyContent: "center",
-  width: "80%",
+  width: "96%",
   height: "35vh",
   margin: "auto",
+  marginLeft: "1rem",
   marginTop: "6.5rem",
   marginBottom: "1rem",
 };
 
-export const voyageDetailsBidsStyle = {
-  // flex: "0 0 45vh",
-  // width: "calc(100% - 2rem)",
-  // height: "65vh",
+export const voyageDetailsBidsStyle_explorer = {
   margin: "0 1rem 0 1rem",
   padding: "0.3rem",
   paddingTop: 0,
-  // backgroundColor: "red"
 };
 
-export const voyageDetailsDetailsStyle = {
+export const voyageDetailsBidsStyle_navigator = {
+  width: "calc(100% - 2rem)",
+  marginLeft: "1rem",
+  marginRight: "1rem",
+  paddingTop: 0,
+  marginTop: ".5rem",
+  paddingLeft: "0.3rem",
+  paddingRight: "0.3rem",
+};
+
+export const voyageDetailsDetailsStyle_explorer = {
   width: "calc(100% - 2rem)",
   marginLeft: "1rem",
   marginRight: "1rem",
   padding: "0.3rem",
   height: "32vh",
-
 };
 
-export const voyageDetailsBottomLeftStyleNew = {
+export const voyageDetailsDetailsStyle_navigator = {
+  width: "calc(100% - 2rem)",
+  marginLeft: "1rem",
+  marginRight: "1rem",
+  padding: "0.3rem",
+  height: "32vh",
+};
+
+export const voyageDetailsBottomLeftStyle_navigator = {
   height: "calc(100vh - 3.5rem)",
   width: "50%",
   flexDirection: "column",
@@ -981,18 +1027,40 @@ export const voyageDetailsBottomLeftStyleNew = {
   msOverflowStyle: "none",
 };
 
-export const voyageDetailsBottomRightStyleNew = {
+export const voyageDetailsBottomRightStyle_navigator = {
   height: "calc(100vh - 3.5rem)",
   width: "50%",
 };
 
-const broadcastCardStyle = (dark) => ({
+export const voyageDetailsIconsRowStyle_navigator = {
+  width: "calc(100% - 2rem)",
+  marginLeft: "1rem",
+  marginRight: "1rem",
+  // padding: "0.3rem",
+};
+
+const broadcastCardStyle_explorer = (dark) => ({
   display: "flex",
   flexDirection: "row",
   gap: "0.6rem",
   alignItems: "center",
-  margin: "0rem 1.3rem",
+  margin: "0.2rem 1rem",
   padding: "0.7rem 1rem",
+  backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
+  borderRadius: "1rem",
+  boxSizing: "border-box",
+  position: "relative",
+  boxShadow: dark ? "0 4px 6px rgba(0,0,0,0.3), inset 0 -8px 6px rgba(0,0,0,0.2)" : "none",
+  color: dark ? "rgba(255,255,255,0.9)" : "black",
+});
+
+const broadcastCardStyle_navigator = (dark) => ({
+  display: "flex",
+  flexDirection: "row",
+  gap: "0.6rem",
+  alignItems: "center",
+  margin: "0.3rem 1.3rem",
+  padding: "2rem 1rem",
   backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
   borderRadius: "1rem",
   boxSizing: "border-box",
@@ -1109,4 +1177,146 @@ const vModalCancelBtn = {
   flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px",
   border: "1px solid #e2e8f0", backgroundColor: "white",
   color: "#475569", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer",
+};
+
+const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }) => {
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [addVoyageUpdate, { isLoading }] = useAddVoyageUpdateMutation();
+  const [localUpdates, setLocalUpdates] = useState(updates || []);
+
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
+    try {
+      const result = await addVoyageUpdate({ voyageId, text }).unwrap();
+      setLocalUpdates([result, ...localUpdates]);
+      setText("");
+      setOpen(false);
+    } catch (e) {
+      console.error("Failed to post update", e);
+    }
+  };
+
+  return (
+    <div style={{
+      padding: "1rem 1.5rem", marginTop: "0.3rem",
+      backgroundColor: isDarkMode ? "#0f2744" : "white",
+      borderRadius: "1rem", width: "98%", marginLeft: 0, marginRight: 0,
+      boxSizing: "border-box", position: "relative", zIndex: 10
+    }}>
+      <div style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.75rem", color: "#2ac898" }}>
+        Updates
+      </div>
+      {localUpdates.length === 0 && (
+        <div style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No updates yet.</div>
+      )}
+      {localUpdates.map((u) => (
+        <div key={u.id} style={{ padding: "0.5rem 0.9rem", borderRadius: "1.5rem", backgroundColor: isDarkMode ? "#0a2745" : "rgb(246,246,246)", marginBottom: "0.6rem", width: "100%", boxSizing: "border-box" }}>
+          <div style={{ fontSize: "1rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
+          <div style={{ fontSize: "0.8rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,139,0.4)", textAlign: "right", marginTop: "0.2rem" }}>
+            {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+          </div>
+        </div>
+      ))}
+      {isOwner && (
+        <div style={{ marginTop: "0.75rem" }}>
+          {!open ? (
+            <button onClick={() => setOpen(true)} style={{ backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "0.75rem", padding: "0.4rem 1rem", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600 }}>
+              + Add Update
+            </button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="Write an update..."
+                style={{ borderRadius: "0.5rem", border: "1px solid #cbd5e1", padding: "0.5rem", fontSize: "0.85rem", resize: "none", color: "#1e293b", backgroundColor: "white" }}
+              />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1 }}>
+                  {isLoading ? "Posting…" : "Post"}
+                </button>
+                <button onClick={() => { setOpen(false); setText(""); }} style={{ backgroundColor: "transparent", color: "#64748b", border: "1px solid #cbd5e1", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const VoyageUpdatesSectionNavigator = ({ updates, voyageId, isOwner, isDarkMode }) => {
+  const [text, setText] = useState("");
+  const [open, setOpen] = useState(false);
+  const [addVoyageUpdate, { isLoading }] = useAddVoyageUpdateMutation();
+  const [localUpdates, setLocalUpdates] = useState(updates || []);
+
+  const handleSubmit = async () => {
+    if (!text.trim()) return;
+    try {
+      const result = await addVoyageUpdate({ voyageId, text }).unwrap();
+      setLocalUpdates([result, ...localUpdates]);
+      setText("");
+      setOpen(false);
+    } catch (e) {
+      console.error("Failed to post update", e);
+    }
+  };
+
+  return (
+    <div style={{
+      padding: "1rem 1.5rem", marginTop: "0.5rem",
+      backgroundColor: isDarkMode ? "#0f2744" : "white",
+      borderRadius: "1rem", width: "calc(100% - 2rem)", marginLeft: "1rem", marginRight: "1rem",
+      boxSizing: "border-box", position: "relative", zIndex: 10
+    }}>
+      <div style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.75rem", color: "#2ac898" }}>
+        Updates
+      </div>
+      {localUpdates.length === 0 && (
+        <div style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No updates yet.</div>
+      )}
+      {localUpdates.map((u) => (
+        <div key={u.id} style={{ padding: "0.5rem 0.9rem", borderRadius: "1.5rem", backgroundColor: isDarkMode ? "#0a2745" : "rgb(246,246,246)", marginBottom: "0.6rem", width: "100%", boxSizing: "border-box" }}>
+          <div style={{ fontSize: "1rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
+          <div style={{ fontSize: "0.8rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,139,0.4)", textAlign: "right", marginTop: "0.2rem" }}>
+            {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+          </div>
+        </div>
+      ))}
+      {isOwner && (
+        <div style={{ marginTop: "0.75rem" }}>
+          {!open ? (
+            <button onClick={() => setOpen(true)} style={{ backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "0.75rem", padding: "0.4rem 1rem", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600 }}>
+              + Add Update
+            </button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="Write an update..."
+                style={{ borderRadius: "0.5rem", border: "1px solid #cbd5e1", padding: "0.5rem", fontSize: "0.85rem", resize: "none", color: "#1e293b", backgroundColor: "white" }}
+              />
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1 }}>
+                  {isLoading ? "Posting…" : "Post"}
+                </button>
+                <button onClick={() => { setOpen(false); setText(""); }} style={{ backgroundColor: "transparent", color: "#64748b", border: "1px solid #cbd5e1", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };

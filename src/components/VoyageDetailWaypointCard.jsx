@@ -100,7 +100,7 @@ const voyageImageStyle = {
 const heading = {
   height: "2rem",
   color: "#2ac898",
-  fontWeight: "600",
+  fontWeight: "800",
 };
 
 const waypointBrief = {

@@ -18,7 +18,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
   return (
     <div style={{ opacity: opacity, overflow: "hidden", position: "relative" }}>
       <Swiper
-        slidesPerView={1.65}
+        slidesPerView={1}
         spaceBetween={5}
         centeredSlides={true}
         pagination={{ clickable: true }}
@@ -31,9 +31,11 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
         }}
         modules={[Navigation]}
         style={{
-          width: "100vh",
+          width: "100%",
           height: "35vh",
-          left: "-10vh"
+          paddingLeft: "3rem",
+          paddingRight: "3rem",
+          boxSizing: "border-box",
         }}
       >
         {waypoints.map((waypoint, index) => (
@@ -61,7 +63,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
             style={{
               position: "absolute",
               top: "50%",
-              left: "5%",
+              left: "0%",
               zIndex: 10,
               height: "2.5rem",
               width: "2.5rem",
@@ -76,7 +78,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
             style={{
               position: "absolute",
               top: "50%",
-              right: "5%",
+              right: "0%",
               zIndex: 10,
               height: "2.5rem",
               width: "2.5rem",
