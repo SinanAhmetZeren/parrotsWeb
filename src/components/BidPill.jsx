@@ -40,7 +40,7 @@ export function BidPillList({ bids }) {
   return (
     <div style={list}>
       {bids.map((bid) => (
-        <BidPill key={bid.bidId} bid={bid} onNavigate={() => navigate(`/voyage-details/${bid.voyageId}`)} />
+        <BidPill key={bid.bidId} bid={bid} onNavigate={() => navigate(`/voyage-details/${bid.voyagePublicId}`)} />
       ))}
     </div>
   );

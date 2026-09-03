@@ -24,7 +24,7 @@ export default function VehicleVoyages({ voyages, isDarkMode = false }) {
             return (
                 <div
                     key={item.id}
-                    onClick={() => handleNavigateToVoyage(item.id)}
+                    onClick={() => handleNavigateToVoyage(item.publicId)}
                     style={{ ...styles.voyageContainer, ...(isDarkMode ? { backgroundColor: "rgba(255,255,255,0.07)" } : {}) }}
                 >
                     <div>

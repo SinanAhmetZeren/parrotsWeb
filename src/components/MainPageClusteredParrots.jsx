@@ -100,7 +100,7 @@ function VoyageMarker({ voyage, icon, onGoToVoyage }) {
             />
             <div
               style={{ position: "absolute", bottom: "0.6rem", right: "0.6rem", ...buttonStyle }}
-              onClick={() => onGoToVoyage(voyage.id)}
+              onClick={() => onGoToVoyage(voyage.publicId)}
             >
               see details
             </div>

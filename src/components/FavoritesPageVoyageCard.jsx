@@ -19,7 +19,7 @@ export function FavoritesPageVoyagesCard({ voyage, index, isDarkMode = false }) 
   };
 
   return (
-    <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(voyage?.id)}>
+    <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(voyage?.publicId)}>
       {voyage.publicOnMap && (
         <div style={publicIconStyle(dark)} title="Visible on map">
           <MdPublic size="1.8rem" color={dark ? "rgba(255,255,255,0.7)" : parrotBlue} />

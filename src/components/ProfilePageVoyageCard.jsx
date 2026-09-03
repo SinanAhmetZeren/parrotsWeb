@@ -20,7 +20,7 @@ export function ProfilePageVoyageCard({ voyage, index, isDarkMode = false }) {
   };
 
   return (
-    <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(voyage?.id)}>
+    <div key={index} className="card" style={cardContainer(dark)} onClick={() => handleCardClick(voyage?.publicId)}>
 
       {voyage.publicOnMap && (
         <div style={publicIconStyle(dark)} title="Visible on map">

@@ -108,8 +108,7 @@ function VoyageDetailsPage() {
 
 
   const favoriteVoyages = useSelector((state) => state.users.userFavoriteVoyages);
-  const isInFavorites = favoriteVoyages?.includes(Number(voyageId));
-  const [isFavorited, setIsFavorited] = useState(isInFavorites);
+  const [isFavorited, setIsFavorited] = useState(false);
   const { data: favoriteVoyagesData } =
     useGetFavoriteVoyageIdsByUserIdQuery(userId, {
       refetchOnFocus: true,
@@ -142,6 +141,8 @@ function VoyageDetailsPage() {
     refetchOnReconnect: true,
   });
 
+  const isInFavorites = favoriteVoyages?.includes(VoyageData?.id);
+
   const sortedWaypoints = VoyageData?.waypoints
     ? [...VoyageData.waypoints].sort((a, b) => a.order - b.order)
     : [];
@@ -150,16 +151,12 @@ function VoyageDetailsPage() {
   const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
 
   const handleAddVoyageToFavorites = async () => {
-    const voyageId_number = Number(voyageId);
-    console.log("voyageId ", voyageId);
-    console.log("voyageId_number", voyageId_number);
-
     try {
-      await addVoyageToFavorites({ userId, voyageId: voyageId_number }).unwrap();
+      await addVoyageToFavorites({ userId, voyageId: VoyageData?.id }).unwrap();
       setIsFavorited(true);
       dispatch(
         addVoyageToUserFavorites({
-          favoriteVoyage: voyageId_number,
+          favoriteVoyage: VoyageData?.id,
         })
       );
     } catch (err) {
@@ -169,13 +166,12 @@ function VoyageDetailsPage() {
   };
 
   const handleDeleteVoyageFromFavorites = async () => {
-    const voyageId_number = Number(voyageId);
     try {
-      await deleteVoyageFromFavorites({ userId, voyageId: voyageId_number }).unwrap();
+      await deleteVoyageFromFavorites({ userId, voyageId: VoyageData?.id }).unwrap();
       setIsFavorited(false);
       dispatch(
         removeVoyageFromUserFavorites({
-          favoriteVoyage: voyageId_number,
+          favoriteVoyage: VoyageData?.id,
         })
       );
     } catch (err) {

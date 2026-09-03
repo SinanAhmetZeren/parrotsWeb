@@ -95,7 +95,7 @@ export function MainPageVoyageCard({ cardData, panToLocation, cardIndex }) {
 
         {/* BUTTONS */}
         <div className="card-buttons" style={buttonContainerStyle}>
-          <button onClick={() => handleCardClick(cardData.id)}
+          <button onClick={() => handleCardClick(cardData.publicId)}
             style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotDarkBlue, boxShadow: "none" }}>
             Trip Details
           </button>

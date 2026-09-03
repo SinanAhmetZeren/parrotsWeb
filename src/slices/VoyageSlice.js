@@ -18,12 +18,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     }),
     getVoyageById: builder.query({
       query: (voyageId) => {
-        // const token = localStorage.getItem("storedToken");
         return {
-          url: `/api/Voyage/GetVoyageById/${voyageId}`,
-          // headers: {
-          //   Authorization: `Bearer ${token}`,
-          // },
+          url: `/api/Voyage/GetVoyageByPublicId/${voyageId}`,
         };
       },
       transformResponse: (responseData) => responseData.data,
