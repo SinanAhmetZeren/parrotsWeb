@@ -9,6 +9,7 @@ import {
   usePatchUserMutation,
   useUpdateBackgroundImageMutation,
   useUpdateProfileImageMutation,
+  useDeleteAccountMutation,
 } from "../slices/UserSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
@@ -18,8 +19,8 @@ import "react-quill/dist/quill.snow.css";
 import { UserNameInputComponent } from "../components/UserNameInputComponent";
 import { UserTitleInputComponent } from "../components/UserTitleInputComponent";
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
-import { updateUserName } from "../slices/UserSlice";
-import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
+import { updateUserName, updateAsLoggedOut } from "../slices/UserSlice";
+import { parrotBlue, parrotRed, parrotTextDarkBlue } from "../styles/colors";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { toast } from "react-toastify";
@@ -73,6 +74,19 @@ export function EditProfilePage() {
   const [patchUser] = usePatchUserMutation();
   const [updateBackgroundImage] = useUpdateBackgroundImageMutation();
   const [updateProfileImage] = useUpdateProfileImageMutation();
+  const [deleteAccount] = useDeleteAccountMutation();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    try {
+      await deleteAccount().unwrap();
+    } catch (_) { }
+    setIsDeletingAccount(false);
+    setShowDeleteModal(false);
+    dispatch(updateAsLoggedOut());
+  };
 
   const {
     data: userData,
@@ -558,18 +572,16 @@ export function EditProfilePage() {
                     />
                   ) : null}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      position: "absolute",
-                      width: "20rem",
-                      height: "5rem",
-                      bottom: "0",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                    }}
-                  >
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    position: "absolute",
+                    width: "20rem",
+                    height: "8rem",
+                    bottom: "0",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                  }}>
                     <input
                       type="text"
                       value={honeyPotValue}
@@ -584,8 +596,33 @@ export function EditProfilePage() {
                       {isUpdatingProfile ? <UpdateProfileSpinner /> : "Save Changes"}
                     </span>
 
+                    <span
+                      onClick={() => setShowDeleteModal(true)}
+                      style={DeleteAccountButton}
+                    >
+                      Delete Account
+                    </span>
 
                   </div>
+
+
+
+                  {showDeleteModal && (
+                    <div style={deleteModalOverlayStyle}>
+                      <div style={deleteModalStyle}>
+                        <div style={{ fontSize: "1.2rem", fontWeight: 800, color: "#163A5F", marginBottom: "0.5rem" }}>Delete Account</div>
+                        <div style={{ fontSize: "1.1rem", color: "#163A5F", marginBottom: "1.5rem", lineHeight: 1.5, textAlign: "center" }}>
+                          Your account will be deactivated. If you are a host with active voyages, your trip details will remain visible to your counterparties. As mentioned in the Terms of Use, Parrots may contact you via your registered email in the event of urgent coordination, and prompt responsiveness to guests is required for active trips and ongoing commitments.
+                        </div>
+                        <div style={{ display: "flex", gap: "0.75rem" }}>
+                          <button onClick={() => setShowDeleteModal(false)} style={deleteCancelBtnStyle}>Cancel</button>
+                          <button onClick={handleDeleteAccount} disabled={isDeletingAccount} style={deleteConfirmBtnStyle}>
+                            {isDeletingAccount ? "Deleting…" : "Yes, Delete My Account"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -668,6 +705,24 @@ const UpdateChangesButton = {
 };
 
 
+const DeleteAccountButton = {
+  position: "absolute",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  borderRadius: "1.5rem",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "3.5rem",
+  backgroundColor: parrotRed,
+  cursor: "pointer",
+  border: "none",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  padding: "0.2rem",
+  width: "20rem",
+};
+
 const buttonsContainer = {
   position: "absolute",
   top: "0",
@@ -697,4 +752,62 @@ const navigationButton = {
   transition: "box-shadow 0.2s ease",
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
+};
+
+const deleteAccountButtonStyle = {
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  borderRadius: "1.5rem",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "0.3rem",
+  backgroundColor: "#cb0404",
+  cursor: "pointer",
+  border: "none",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  padding: "0.2rem",
+  width: "20rem",
+};
+
+const deleteModalOverlayStyle = {
+  position: "fixed",
+  top: 0, left: 0, right: 0, bottom: 0,
+  backgroundColor: "rgba(0,0,0,0.5)",
+  zIndex: 1000,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const deleteModalStyle = {
+  backgroundColor: "#fff",
+  borderRadius: "1.5rem",
+  padding: "2rem",
+  width: "40rem",
+  boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
+};
+
+const deleteCancelBtnStyle = {
+  flex: 1,
+  padding: "0.75rem",
+  borderRadius: "2rem",
+  border: "none",
+  backgroundColor: "#f2f4f7",
+  color: "#9aa0aa",
+  fontWeight: 700,
+  fontSize: "0.95rem",
+  cursor: "pointer",
+};
+
+const deleteConfirmBtnStyle = {
+  flex: 1,
+  padding: "0.75rem",
+  borderRadius: "2rem",
+  border: "none",
+  backgroundColor: "#cb0404",
+  color: "white",
+  fontWeight: 700,
+  fontSize: "0.95rem",
+  cursor: "pointer",
 };

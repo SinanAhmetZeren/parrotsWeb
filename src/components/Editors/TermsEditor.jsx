@@ -229,11 +229,9 @@ export function TermsEditor() {
             </div>
 
             {/* Modal body */}
-            <iframe
-              srcDoc={content}
-              title="Terms of Use Preview"
-              style={{ flex: 1, border: "none", width: "100%", height: "70vh", minHeight: "50rem", paddingBottom: "8rem" }}
-              sandbox="allow-same-origin"
+            <div
+              style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}
+              dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
         </div>

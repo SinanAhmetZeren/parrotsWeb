@@ -50,6 +50,7 @@ const sections = [
             { key: "reportsViewer", label: "Reports" },
             { key: "directMessagesViewer", label: "Direct Messages" },
             { key: "groupMessagesViewer", label: "Group Messages" },
+            { key: "deletedAccountsViewer", label: "Deleted Accounts" },
         ]
     },
     {

@@ -120,6 +120,11 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
         }),
         unsuspendUser: builder.mutation({
             query: (userId) => ({ url: `/api/Moderation/admin/unsuspend/${userId}`, method: "POST" }),
+            invalidatesTags: ["DeletedAccounts"],
+        }),
+        getDeletedAccounts: builder.query({
+            query: () => `/api/Moderation/admin/deleted-accounts`,
+            providesTags: ["DeletedAccounts"],
         }),
         getDirectMessages: builder.query({
             query: ({ from, to, userId1, userId2, page = 1, pageSize = 50 } = {}) => {
@@ -160,6 +165,7 @@ export const {
     useMarkReportReviewedMutation,
     useSuspendUserMutation,
     useUnsuspendUserMutation,
+    useGetDeletedAccountsQuery,
     useLazyGetDirectMessagesQuery,
     useLazyGetGroupMessagesQuery,
 } = extendedMetricsApi;

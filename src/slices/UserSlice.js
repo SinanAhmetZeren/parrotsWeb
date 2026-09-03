@@ -537,6 +537,12 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         body: { reason, details: null },
       }),
     }),
+    deleteAccount: builder.mutation({
+      query: () => ({
+        url: `/api/User/delete-account`,
+        method: "POST",
+      }),
+    }),
   }),
   overrideExisting: true,
 });
@@ -581,4 +587,5 @@ export const {
   useRemoveBookmarkMutation,
   useReportUserMutation,
   useReportVoyageMutation,
+  useDeleteAccountMutation,
 } = extendedApiSlice;

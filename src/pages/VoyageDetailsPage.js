@@ -410,7 +410,12 @@ function VoyageDetailsPage() {
                 </div>
 
                 <div style={voyageDetailsBottomMiddleStyle_explorer} className="flex voyageDetailsBottomLeft custom-scrollbar">
-                  <div style={voyageDetailsImagesStyle_explorer} className="flex">
+                  <div style={{ ...voyageDetailsImagesStyle_explorer, position: "relative" }} className="flex">
+                    {VoyageData?.isOwnerDeleted && (
+                      <div style={ownerDeletedNoticeStyle}>
+                        Notice: This host has deleted their account and is no longer active on Parrots. The voyage remains visible for viewing purposes only. In case of urgent coordination, Parrots will do its best to reach the host on a good-faith basis.
+                      </div>
+                    )}
                     <VoyageDetailPageImageSwiper voyageData={VoyageData} opacity={opacity} />
                   </div>
 
@@ -518,7 +523,14 @@ function VoyageDetailsPage() {
                 <div style={voyageDetailsBottomLeftStyle_navigator}
                   className="flex voyageDetailsBottomLeft hide-scrollbar"
                 >
-                  <div style={voyageDetailsImagesStyle_navigator} className="flex">
+                  <div style={{ ...voyageDetailsImagesStyle_navigator, position: "relative" }} className="flex">
+                    {VoyageData?.isOwnerDeleted && (
+                      <div style={{
+                        ...ownerDeletedNoticeStyle, top: "0rem", width: "60%"
+                      }}>
+                        Notice: This host has deleted their account and is no longer active on Parrots. The voyage remains visible for viewing purposes only. In case of urgent coordination, Parrots will do its best to reach the host on a good-faith basis.
+                      </div>
+                    )}
                     <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
                   </div>
 
@@ -1177,6 +1189,14 @@ const vModalCancelBtn = {
   flex: 1, padding: "0.6rem 1.2rem", borderRadius: "8px",
   border: "1px solid #e2e8f0", backgroundColor: "white",
   color: "#475569", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer",
+};
+
+const ownerDeletedNoticeStyle = {
+  position: "absolute", top: "2rem", left: "1rem", right: "1rem",
+  backgroundColor: "rgba(203,4,4,0.55)", borderRadius: "0.5rem",
+  borderLeft: "3px solid #cb0404", padding: "0.75rem 1rem",
+  zIndex: 10, color: "white", fontSize: "1.1rem", lineHeight: 1.5,
+  fontWeight: 600, textAlign: "left", width: "75%", margin: "auto"
 };
 
 const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }) => {

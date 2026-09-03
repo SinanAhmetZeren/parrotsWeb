@@ -24,6 +24,7 @@ export const VoyageDetailBidButton = ({
   userBidAccepted,
   setOpacity,
   refetch,
+  isOwnerDeleted,
 }) => {
   // console.log("userBid", userBid);
 
@@ -141,15 +142,17 @@ export const VoyageDetailBidButton = ({
           </button>
         ) : ownVoyage ? null : !userBid ? (
           <button
+            disabled={!!isOwnerDeleted}
             onClick={openNewBidModal}
-            style={{ ...buttonStyle, backgroundColor: parrotBlue }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: isOwnerDeleted ? 0.4 : 1, cursor: isOwnerDeleted ? "not-allowed" : "pointer" }}
           >
             Enter Your Bid
           </button>
         ) : (
           <button
+            disabled={!!isOwnerDeleted}
             onClick={openChangeBidModal}
-            style={{ ...buttonStyle, backgroundColor: parrotBlue }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: isOwnerDeleted ? 0.4 : 1, cursor: isOwnerDeleted ? "not-allowed" : "pointer" }}
           >
             Change Bid
           </button>
