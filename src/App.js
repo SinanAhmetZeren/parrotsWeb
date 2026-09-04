@@ -146,7 +146,7 @@ function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/connect" element={<ConnectPage />} />
             <Route
-              path="/connect/:conversationUserId/:conversationUserUsername"
+              path="/connect/:conversationUserPublicId/:conversationUserUsername"
               element={<ConnectPage />}
             />
           </>

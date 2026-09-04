@@ -17,7 +17,7 @@ export function MessagePreviewsComponent({
   isDarkMode = false,
 }) {
   const dark = isDarkMode;
-  const { conversationUserId: selectedUserId } = useParams();
+  const { conversationUserPublicId: selectedUserId } = useParams();
 
   const [hoveredUserImgID, setHoveredUserImgID] = React.useState("");
   const [selectedConversationUserId, setSelectedConversationUserId] = React.useState(selectedUserId);

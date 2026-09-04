@@ -16,7 +16,7 @@ import { parrotTextDarkBlue, parrotRed } from "../styles/colors";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
 import { useSelector, useDispatch } from "react-redux";
 import { useAddBookmarkMutation, useRemoveBookmarkMutation } from "../slices/UserSlice";
-import { addBookmarkedUserId, removeBookmarkedUserId } from "../slices/UserSlice";
+import { addBookmarkedUserId, removeBookmarkedUserId, setPendingChatUserId } from "../slices/UserSlice";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 
 const USER_REPORT_REASONS = ["Spam", "Inappropriate behavior", "Harassment", "Scam"];
@@ -34,6 +34,7 @@ function ProfilePagePublic() {
   const [removeBookmark] = useRemoveBookmarkMutation();
 
   const handleSendMessageRequest = () => {
+    dispatch(setPendingChatUserId(internalUserId));
     navigate(`/connect/${userId}/${userName}`);
   };
 

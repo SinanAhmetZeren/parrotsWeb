@@ -23,6 +23,7 @@ const usersSlice = createSlice({
     isLegacyView: true,
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
     requiresTermsAcceptance: false,
+    pendingChatUserId: null,
   },
   reducers: {
     updateAsLoggedIn: (state, action) => {
@@ -184,6 +185,9 @@ const usersSlice = createSlice({
     setRequiresTermsAcceptance: (state, action) => {
       state.requiresTermsAcceptance = action.payload;
     },
+    setPendingChatUserId: (state, action) => {
+      state.pendingChatUserId = action.payload;
+    },
   },
 });
 
@@ -211,6 +215,7 @@ export const {
   addBookmarkedUserId,
   removeBookmarkedUserId,
   setRequiresTermsAcceptance,
+  setPendingChatUserId,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

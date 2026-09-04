@@ -37,7 +37,7 @@ import {
   unregister_ReceiveGroupMessage,
 } from "../signalr/signalRHub"; // your centralized hub module
 import { useDispatch, useSelector } from "react-redux";
-import { setUnreadMessages, markMessagesRead, useGetBookmarksQuery } from "../slices/UserSlice";
+import { setUnreadMessages, markMessagesRead, setPendingChatUserId, useGetBookmarksQuery } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
 import parrotsLogo from "../assets/images/placeholderparrots.webp";
@@ -47,7 +47,7 @@ import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 //const API_URL = process.env.REACT_APP_API_URL;
 
 function ConnectPage() {
-  const { conversationUserId: paramConversationUserId } = useParams();
+  const { conversationUserPublicId: paramConversationUserId } = useParams();
   const { conversationUserUsername: paramConversationUserUsername } =
     useParams();
   const currentUserId = localStorage.getItem("storedUserId");
@@ -138,10 +138,13 @@ function ConnectPage() {
     },
   ] = useLazyGetMessagesBetweenUsersQuery();
 
+  const pendingChatUserId = useSelector((state) => state.users.pendingChatUserId);
+
   useEffect(() => {
-    if (paramConversationUserId && paramConversationUserUsername) {
-      setConversationUserId(paramConversationUserId);
+    if (pendingChatUserId && paramConversationUserId && paramConversationUserUsername) {
+      setConversationUserId(pendingChatUserId);
       setConversationUserUsername(paramConversationUserUsername);
+      dispatch(setPendingChatUserId(null));
     } else {
       setConversationUserId("");
       setConversationUserUsername("");
