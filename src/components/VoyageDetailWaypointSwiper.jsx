@@ -32,7 +32,7 @@ export function VoyageDetailWaypointSwiper({ waypoints, handlePanToLocation, opa
         modules={[Navigation]}
         style={{
           width: "100%",
-          height: "35vh",
+          height: "38vh",
           paddingLeft: "3rem",
           paddingRight: "3rem",
           boxSizing: "border-box",

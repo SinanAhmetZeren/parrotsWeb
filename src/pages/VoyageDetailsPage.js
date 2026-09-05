@@ -260,7 +260,7 @@ function VoyageDetailsPage() {
   }, [emojiOpen]);
 
   const handlePanToLocation = (lat, lng) => {
-    setTargetLocation({ lat, lng });
+    setTargetLocation(prev => ({ lat, lng, key: (prev.key ?? 0) + 1 }));
   };
 
   const handleBroadcast = async () => {
@@ -456,7 +456,7 @@ function VoyageDetailsPage() {
                               : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
                             attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                           />
-                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
+                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} panKey={targetLocation?.key} />
                           <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
                           {sortedWaypoints.map((waypoint, index) => (
                             <VoyageDetailMarkerWithInfoWindow
@@ -650,7 +650,7 @@ function VoyageDetailsPage() {
                               : `https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
                             attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                           />
-                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} />
+                          <VoyageDetailMapPanComponent targetLat={targetLocation?.lat} targetLng={targetLocation?.lng} panKey={targetLocation?.key} />
                           <VoyageDetailMapPolyLineComponent waypoints={sortedWaypoints} />
                           {sortedWaypoints.map((waypoint, index) => (
                             <VoyageDetailMarkerWithInfoWindow
@@ -927,26 +927,32 @@ export const voyageDetailsBottomLeftStyle_explorer = {
 
 export const voyageDetailsMapContainerStyle_explorer = {
   width: "100%",
-  padding: "0.2rem",
+  // padding: "0.2rem",
   height: "58vh",
 };
 
 export const voyageDetailsMapContainerStyle_navigator = {
   width: "100%",
-  padding: "0.2rem",
+  // padding: "0.2rem",
   height: "58vh",
 };
 
 export const voyageDetailsWaypointsContainerStyle_explorer = {
   flexGrow: 1,
-  margin: "0.2rem",
+  margin: 0,
+  marginTop: "0.2rem",
   height: "auto",
+  backgroundColor: "rgba(255,255,255,0.5)",
+  borderRadius: "1rem",
 };
 
 export const voyageDetailsWaypointsContainerStyle_navigator = {
   flexGrow: 1,
-  margin: "0.2rem",
+  margin: 0,
+  marginTop: "0.2rem",
   height: "auto",
+  backgroundColor: "rgba(255,255,255,0.5)",
+  borderRadius: "1rem",
 };
 
 

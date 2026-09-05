@@ -20,7 +20,7 @@ const usersSlice = createSlice({
     hasAcknowledgedPublicProfile: localStorage.getItem("storedAcknowledgedPublicProfile") === "true",
     hasAcknowledgedGroupHistory: localStorage.getItem("storedAcknowledgedGroupHistory") === "true",
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
-    isLegacyView: true,
+    isLegacyView: localStorage.getItem("storedIsLegacyView") !== null ? localStorage.getItem("storedIsLegacyView") === "true" : true,
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
     requiresTermsAcceptance: false,
     pendingChatUserId: null,
@@ -177,6 +177,7 @@ const usersSlice = createSlice({
     },
     setIsLegacyView: (state, action) => {
       state.isLegacyView = action.payload;
+      localStorage.setItem("storedIsLegacyView", String(action.payload));
     },
     setBgImageVariant: (state, action) => {
       state.bgImageVariant = action.payload;

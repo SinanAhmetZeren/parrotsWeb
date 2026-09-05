@@ -17,6 +17,7 @@ import {
   useCheckAndDeleteVoyageMutation,
   useCreateVoyageMutation,
   useDeleteVoyageImageMutation,
+  usePatchVoyageOwnerMutation,
 } from "../slices/VoyageSlice";
 import { VoyageImageUploaderComponent } from "../components/VoyageImageUploaderComponent";
 import { VoyageProfileImageUploader } from "../components/VoyageProfileImageUploader";
@@ -58,6 +59,9 @@ export default function CreateVoyagePage() {
   const [order, setOrder] = useState(1);
   const [isCreatingVoyage, setIsCreatingVoyage] = useState(false);
   const [vehicleId, setVehicleId] = useState("");
+  const [savedSnapshot, setSavedSnapshot] = useState(null);
+  const [isUpdatingDetails, setIsUpdatingDetails] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const walkDBId = process.env.REACT_APP_WALK_ID;
   const runDBId = process.env.REACT_APP_RUN_ID;
@@ -96,6 +100,7 @@ export default function CreateVoyagePage() {
   const [addVoyageImage] = useAddVoyageImageMutation();
   const [deleteVoyageImage] = useDeleteVoyageImageMutation();
   const [createVoyage] = useCreateVoyageMutation();
+  const [patchVoyageOwner] = usePatchVoyageOwnerMutation();
 
   const {
     data: usersVehiclesData,
@@ -145,6 +150,62 @@ export default function CreateVoyagePage() {
     ).slice(-2)}-${("0" + date.getUTCDate()).slice(-2)}T00:00:00.000Z`;
     return formattedDate;
   }
+
+  const hasChanges = savedSnapshot && (
+    voyageName !== savedSnapshot.voyageName ||
+    voyageBrief !== savedSnapshot.voyageBrief ||
+    voyageDescription !== savedSnapshot.voyageDescription ||
+    String(selectedVacancy) !== String(savedSnapshot.selectedVacancy) ||
+    String(vehicleId) !== String(savedSnapshot.vehicleId) ||
+    String(minPrice) !== String(savedSnapshot.minPrice) ||
+    String(maxPrice) !== String(savedSnapshot.maxPrice) ||
+    currency !== savedSnapshot.currency ||
+    isAuction !== savedSnapshot.isAuction ||
+    isFixedPrice !== savedSnapshot.isFixedPrice ||
+    isPublicOnMap !== savedSnapshot.isPublicOnMap ||
+    lastBidDate !== savedSnapshot.lastBidDate ||
+    String(dates[0]?.startDate) !== String(savedSnapshot.startDate) ||
+    String(dates[0]?.endDate) !== String(savedSnapshot.endDate)
+  );
+
+  const handleUpdateDetails = async () => {
+    setIsUpdatingDetails(true);
+    try {
+      const startDate = dates[0].startDate;
+      const endDate = dates[0].endDate;
+      const formattedStartDate = convertDateFormat(startDate);
+      const formattedEndDate = endDate ? convertDateFormat(endDate) : convertDateFormat(startDate);
+
+      const patchDoc = [
+        { op: "replace", path: "/name", value: voyageName },
+        { op: "replace", path: "/brief", value: voyageBrief },
+        { op: "replace", path: "/description", value: voyageDescription },
+        { op: "replace", path: "/vacancy", value: Number(selectedVacancy) },
+        { op: "replace", path: "/vehicleId", value: Number(vehicleId) },
+        { op: "replace", path: "/minPrice", value: Number(minPrice) },
+        { op: "replace", path: "/maxPrice", value: Number(maxPrice) },
+        { op: "replace", path: "/currency", value: currency },
+        { op: "replace", path: "/auction", value: isAuction },
+        { op: "replace", path: "/fixedPrice", value: isFixedPrice },
+        { op: "replace", path: "/publicOnMap", value: isPublicOnMap },
+        { op: "replace", path: "/startDate", value: formattedStartDate },
+        { op: "replace", path: "/endDate", value: formattedEndDate },
+        { op: "replace", path: "/lastBidDate", value: formattedStartDate },
+      ];
+
+      await patchVoyageOwner({ voyageId, patchDoc }).unwrap();
+      setSavedSnapshot({
+        voyageName, voyageBrief, voyageDescription, selectedVacancy, vehicleId,
+        minPrice, maxPrice, currency, isAuction, isFixedPrice, isPublicOnMap, lastBidDate,
+        startDate: dates[0]?.startDate, endDate: dates[0]?.endDate,
+      });
+      setUpdateSuccess(true);
+      setTimeout(() => setUpdateSuccess(false), 5000);
+    } catch (err) {
+      toast.error("Failed to update voyage details.");
+    }
+    setIsUpdatingDetails(false);
+  };
 
   const handleCreateVoyage = async () => {
     if (!voyageImage) {
@@ -207,35 +268,23 @@ export default function CreateVoyagePage() {
       const createdVoyageId = response.data.id;
       setVoyageId(createdVoyageId);
       console.log("created voyage id: ", createdVoyageId);
-      setVoyageImage(null);
-      setAddedVoyageImages([]);
-      setIsUploadingImage(false);
-      setPageState(1);
-      setVoyageBrief("");
-      setVoyageDescription("");
-      setSelectedVacancy(undefined);
-      setVoyageName("");
-      setMinPrice(null);
-      setMaxPrice(null);
-      setIsAuction(true);
-      setIsFixedPrice(false);
-      setIsPublicOnMap(true);
-      setCalendarOpen(true);
-      setLastBidDate(null);
+      setSavedSnapshot({
+        voyageName,
+        voyageBrief,
+        voyageDescription,
+        selectedVacancy,
+        vehicleId,
+        minPrice,
+        maxPrice,
+        currency,
+        isAuction,
+        isFixedPrice,
+        isPublicOnMap,
+        lastBidDate,
+        startDate: dates[0]?.startDate,
+        endDate: dates[0]?.endDate,
+      });
       setIsCreatingVoyage(false);
-      setVehicleId("");
-      setVehiclesList([
-        { label: "Walk", value: walkDBId },
-        { label: "Run", value: runDBId },
-        { label: "Train", value: trainDBId },
-      ]);
-      setDates([
-        {
-          startDate: null,
-          endDate: null,
-          key: "selection",
-        },
-      ]);
       setPageState(2);
     } catch (error) {
       console.error("Error creating voyage", error);
@@ -400,28 +449,49 @@ export default function CreateVoyagePage() {
                       isDarkMode={dark}
                     />
                   </div>
-                  <CreateVoyageButton
-                    handleCreateVoyage={handleCreateVoyage}
-                    isCreatingVoyage={isCreatingVoyage}
-                    disabled={
-                      !(
-                        voyageDescription &&
-                        voyageBrief &&
-                        voyageImage &&
-                        selectedVacancy &&
-                        vehicleId &&
-                        voyageName &&
-                        minPrice != null &&
-                        maxPrice != null &&
-                        maxPrice >= minPrice &&
-                        lastBidDate &&
-                        currency &&
-                        // isAuction !== "" &&
-                        // isFixedPrice !== "" &&
-                        dates[0]?.startDate
-                      )
-                    }
-                  />
+                  {voyageId ? (
+                    <>
+                      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+                        <button
+                          onClick={handleUpdateDetails}
+                          disabled={!hasChanges || isUpdatingDetails}
+                          style={{
+                            width: "30%", padding: "0.6rem", borderRadius: "1.5rem",
+                            backgroundColor: updateSuccess ? "#16a34a" : hasChanges && !isUpdatingDetails ? "#007bff" : "#cbd5e1",
+                            color: "white", border: "none", fontWeight: "bold", fontSize: "1.2rem",
+                            cursor: hasChanges && !isUpdatingDetails ? "pointer" : "default",
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
+                            boxShadow: hasChanges ? "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)" : "none",
+                          }}
+                        >
+                          {isUpdatingDetails && <span style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />}
+                          {updateSuccess ? "Details Updated" : "Update Details"}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <CreateVoyageButton
+                      handleCreateVoyage={handleCreateVoyage}
+                      isCreatingVoyage={isCreatingVoyage}
+                      disabled={
+                        !(
+                          voyageDescription &&
+                          voyageBrief &&
+                          voyageImage &&
+                          selectedVacancy &&
+                          vehicleId &&
+                          voyageName &&
+                          minPrice != null &&
+                          maxPrice != null &&
+                          maxPrice >= minPrice &&
+                          lastBidDate &&
+                          currency &&
+                          dates[0]?.startDate
+                        )
+                      }
+                    />
+                  )}
                   {/* <div style={addWaypointButton}
                   onClick={() => setPageState(2)}
                 >Back</div> */}
