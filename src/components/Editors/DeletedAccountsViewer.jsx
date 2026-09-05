@@ -5,7 +5,13 @@ import {
 } from "../../slices/MetricsSlice";
 
 export function DeletedAccountsViewer() {
-    const { data, isLoading, isError, refetch } = useGetDeletedAccountsQuery(undefined, { refetchOnMountOrArgChange: true });
+    const DUMMY = [
+        { userId: "u1", username: "marco_del_mar", createdAt: "2026-08-01T10:23:00Z" },
+        { userId: "u2", username: "bosnanil", createdAt: "2026-07-28T14:05:00Z" },
+        { userId: "u3", username: "wanderer99", createdAt: "2026-07-15T09:11:00Z" },
+    ];
+    const { data: realData, isLoading, isError, refetch } = useGetDeletedAccountsQuery(undefined, { refetchOnMountOrArgChange: true });
+    const data = DUMMY;
     const [unsuspendUser] = useUnsuspendUserMutation();
     const [status, setStatus] = useState({});
 

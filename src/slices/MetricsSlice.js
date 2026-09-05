@@ -108,7 +108,7 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
             providesTags: ["Reports"],
         }),
         markReportReviewed: builder.mutation({
-            query: (id) => ({ url: `/api/Moderation/admin/reports/${id}/review`, method: "POST" }),
+            query: ({ id, reviewed = true }) => ({ url: `/api/Moderation/admin/reports/${id}/review?reviewed=${reviewed}`, method: "POST" }),
             invalidatesTags: ["Reports"],
         }),
         suspendUser: builder.mutation({
@@ -125,6 +125,16 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
         getDeletedAccounts: builder.query({
             query: () => `/api/Moderation/admin/deleted-accounts`,
             providesTags: ["DeletedAccounts"],
+        }),
+        getModerationFeed: builder.query({
+            query: ({ status = [], page = 1, pageSize = 50, from, to } = {}) => {
+                const params = new URLSearchParams({ page, pageSize });
+                status.forEach(s => params.append("status", s));
+                if (from) params.append("from", from);
+                if (to) params.append("to", to);
+                return `/api/Moderation/admin/moderation-feed?${params}`;
+            },
+            providesTags: ["ModerationFeed"],
         }),
         getDirectMessages: builder.query({
             query: ({ from, to, userId1, userId2, page = 1, pageSize = 50 } = {}) => {
@@ -166,6 +176,7 @@ export const {
     useSuspendUserMutation,
     useUnsuspendUserMutation,
     useGetDeletedAccountsQuery,
+    useGetModerationFeedQuery,
     useLazyGetDirectMessagesQuery,
     useLazyGetGroupMessagesQuery,
 } = extendedMetricsApi;
