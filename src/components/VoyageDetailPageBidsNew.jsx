@@ -302,7 +302,6 @@ const userVehicleInfoRow = {
   display: "flex",
   flexDirection: "row",
   margin: "0.2rem",
-  marginLeft: "1.3rem",
 };
 
 const cardContainerStyle = {

@@ -435,7 +435,7 @@ function VoyageDetailsPage() {
                     }
                   </div>
                   <div>
-                    <VoyageUpdatesSectionExplorer updates={VoyageData.updates || []} voyageId={voyageId} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
+                    <VoyageUpdatesSectionExplorer updates={VoyageData.updates || []} voyageId={VoyageData.id} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
 
                   </div>
                 </div>
@@ -519,46 +519,51 @@ function VoyageDetailsPage() {
                 <div style={voyageDetailsBottomLeftStyle_navigator}
                   className="flex voyageDetailsBottomLeft hide-scrollbar"
                 >
-                  <div style={{ ...voyageDetailsImagesStyle_navigator, position: "relative" }} className="flex">
+                  <div style={{ ...voyageDetailsImagesStyle_navigator, position: "relative" }}>
                     {VoyageData?.isOwnerDeleted && (
-                      <div style={{
-                        ...ownerDeletedNoticeStyle, top: "0rem", width: "60%"
-                      }}>
+                      <div style={{ ...ownerDeletedNoticeStyle, top: "0rem", width: "60%" }}>
                         Notice: This host has deleted their account and is no longer active on Parrots. The voyage remains visible for viewing purposes only. In case of urgent coordination, Parrots will do its best to reach the host on a good-faith basis.
                       </div>
                     )}
                     <VoyageDetailPageImageSwiperNew voyageData={VoyageData} />
                   </div>
 
-                  <div style={{ ...voyageDetailsDetailsStyle_navigator, position: "relative", marginTop: "6rem" }} className="flex">
-                    <PublicAndHeartAndPageStyleIcons
-                      handleAddVoyageToFavorites={handleAddVoyageToFavorites}
-                      handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
-                      isFavorited={isFavorited}
-                      isPublicOnMap={isPublicOnMap}
-                      isLegacyView={isLegacyView}
-                      setIsLegacyView={(v) => dispatch(setIsLegacyView(v))}
-                      isDarkMode={isDarkMode}
-                      onReportPress={() => { setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
-                    />
-                    {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
+                  <div style={voyageDetailsDetailsStyle_navigator}>
+                    <div style={{ position: "relative", width: "100%", height: "100%" }} className="flex">
+                      <PublicAndHeartAndPageStyleIcons
+                        handleAddVoyageToFavorites={handleAddVoyageToFavorites}
+                        handleDeleteVoyageFromFavorites={handleDeleteVoyageFromFavorites}
+                        isFavorited={isFavorited}
+                        isPublicOnMap={isPublicOnMap}
+                        isLegacyView={isLegacyView}
+                        setIsLegacyView={(v) => dispatch(setIsLegacyView(v))}
+                        isDarkMode={isDarkMode}
+                        onReportPress={() => { setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
+                      />
+                      {isDarkMode ? <VoyageDetailPageDetails voyageData={VoyageData} /> : <VoyageDetailPageDetailsLight voyageData={VoyageData} />}
+                    </div>
                   </div>
 
-                  <div style={voyageDetailsDescriptionStyle_navigator} className="flex">
-                    {isDarkMode
-                      ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
-                      : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
-                    }
-                  </div>
-                  <div style={{ paddingLeft: "0.3rem", paddingRight: ".3rem" }}>
-                    <VoyageUpdatesSectionNavigator updates={VoyageData.updates || []} voyageId={voyageId} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
+                  <div style={voyageDetailsDescriptionStyle_navigator}>
+                    <div style={{ width: "100%", height: "100%" }} className="flex">
+                      {isDarkMode
+                        ? <VoyageDetailPageDescriptionNew voyageDescription={VoyageData.description} />
+                        : <VoyageDetailPageDescriptionNewLight voyageDescription={VoyageData.description} />
+                      }
+                    </div>
                   </div>
 
-                  <div style={voyageDetailsBidsStyle_navigator} className="flex">
-                    {isDarkMode
-                      ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                      : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
-                    }
+                  <div style={voyageDetailsUpdatesStyle_navigator}>
+                    <VoyageUpdatesSectionNavigator updates={VoyageData.updates || []} voyageId={VoyageData.id} isOwner={userId === VoyageData.userId} isDarkMode={isDarkMode} />
+                  </div>
+
+                  <div style={voyageDetailsBidsStyle_navigator}>
+                    <div style={{ width: "100%", height: "100%" }} className="flex">
+                      {isDarkMode
+                        ? <VoyageDetailBidsNew userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                        : <VoyageDetailBidsNewLight userId={userId} voyageId={voyageId} voyageData={VoyageData} ownVoyage={userId === VoyageData.userId} userBid={userBid} userBidAccepted={userBidAccepted} currentUserId={userId} isSuccessVoyage={isSuccessVoyage} refetch={refetch} setOpacity={setOpacity} />
+                      }
+                    </div>
                   </div>
                   {userId === VoyageData.userId && (
                     <div style={broadcastCardStyle_navigator(isDarkMode)}>
@@ -975,10 +980,10 @@ export const voyageDetailsDescriptionStyle_explorer = {
 
 export const voyageDetailsDescriptionStyle_navigator = {
   width: "calc(100% - 2rem)",
-  height: "50vh",
   marginLeft: "1rem",
   marginRight: "1rem",
-  padding: "0.3rem",
+  marginTop: "0.2rem",
+  height: "auto",
 };
 
 export const voyageDetailsImagesStyle_explorer = {
@@ -990,14 +995,10 @@ export const voyageDetailsImagesStyle_explorer = {
 };
 
 export const voyageDetailsImagesStyle_navigator = {
-  alignItems: "center",
-  justifyContent: "center",
-  width: "96%",
-  height: "35vh",
-  margin: "auto",
+  width: "calc(100% - 2rem)",
   marginLeft: "1rem",
-  marginTop: "6.5rem",
-  marginBottom: "1rem",
+  marginRight: "1rem",
+  marginTop: "0.2rem",
 };
 
 export const voyageDetailsBidsStyle_explorer = {
@@ -1010,10 +1011,13 @@ export const voyageDetailsBidsStyle_navigator = {
   width: "calc(100% - 2rem)",
   marginLeft: "1rem",
   marginRight: "1rem",
-  paddingTop: 0,
-  marginTop: ".5rem",
-  paddingLeft: "0.3rem",
-  paddingRight: "0.3rem",
+  marginTop: "0.2rem",
+  height: "auto",
+};
+
+export const voyageDetailsUpdatesStyle_navigator = {
+  marginTop: "0.2rem",
+  height: "auto",
 };
 
 export const voyageDetailsDetailsStyle_explorer = {
@@ -1028,8 +1032,8 @@ export const voyageDetailsDetailsStyle_navigator = {
   width: "calc(100% - 2rem)",
   marginLeft: "1rem",
   marginRight: "1rem",
-  padding: "0.3rem",
-  height: "32vh",
+  marginTop: "0.2rem",
+  height: "auto",
 };
 
 export const voyageDetailsBottomLeftStyle_navigator = {
@@ -1073,7 +1077,7 @@ const broadcastCardStyle_navigator = (dark) => ({
   flexDirection: "row",
   gap: "0.6rem",
   alignItems: "center",
-  margin: "0.3rem 1.3rem",
+  margin: "0.2rem 1rem",
   padding: "2rem 1rem",
   backgroundColor: dark ? "#0d2b4e" : "#fdf9f5",
   borderRadius: "1rem",
@@ -1203,7 +1207,6 @@ const ownerDeletedNoticeStyle = {
 
 const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }) => {
   const [text, setText] = useState("");
-  const [open, setOpen] = useState(false);
   const [addVoyageUpdate, { isLoading }] = useAddVoyageUpdateMutation();
   const [localUpdates, setLocalUpdates] = useState(updates || []);
 
@@ -1213,7 +1216,6 @@ const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }
       const result = await addVoyageUpdate({ voyageId, text }).unwrap();
       setLocalUpdates([result, ...localUpdates]);
       setText("");
-      setOpen(false);
     } catch (e) {
       console.error("Failed to post update", e);
     }
@@ -1226,55 +1228,50 @@ const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }
       borderRadius: "1rem", width: "98%", marginLeft: 0, marginRight: 0,
       boxSizing: "border-box", position: "relative", zIndex: 10
     }}>
-      <div style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.75rem", color: "#2ac898" }}>
+      <div style={{ fontWeight: 800, fontSize: "1.5rem", marginBottom: "0.75rem", color: "#2ac898", textAlign: "left", marginLeft: "1.3rem" }}>
         Updates
       </div>
-      {localUpdates.length === 0 && (
-        <div style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No updates yet.</div>
-      )}
-      {localUpdates.map((u) => (
-        <div key={u.id} style={{ padding: "0.5rem 0.9rem", borderRadius: "1.5rem", backgroundColor: isDarkMode ? "#0a2745" : "rgb(246,246,246)", marginBottom: "0.6rem", width: "100%", boxSizing: "border-box" }}>
-          <div style={{ fontSize: "1rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
-          <div style={{ fontSize: "0.8rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,139,0.4)", textAlign: "right", marginTop: "0.2rem" }}>
-            {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-          </div>
-        </div>
-      ))}
-      {isOwner && (
-        <div style={{ marginTop: "0.75rem" }}>
-          {!open ? (
-            <button onClick={() => setOpen(true)} style={{ backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "0.75rem", padding: "0.4rem 1rem", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600 }}>
-              + Add Update
-            </button>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                maxLength={500}
-                rows={3}
-                placeholder="Write an update..."
-                style={{ borderRadius: "0.5rem", border: "1px solid #cbd5e1", padding: "0.5rem", fontSize: "0.85rem", resize: "none", color: "#1e293b", backgroundColor: "white" }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1 }}>
-                  {isLoading ? "Posting…" : "Post"}
-                </button>
-                <button onClick={() => { setOpen(false); setText(""); }} style={{ backgroundColor: "transparent", color: "#64748b", border: "1px solid #cbd5e1", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}>
-                  Cancel
-                </button>
-              </div>
+      <div style={{ marginLeft: "1.3rem", marginRight: "0.5rem" }}>
+        {localUpdates.length === 0 && (
+          <div style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "0.75rem" }}>No updates yet.</div>
+        )}
+        {localUpdates.map((u) => (
+          <div key={u.id} style={{
+            padding: "0.5rem 0.9rem",
+            borderLeft: "3px solid #2ac898",
+            background: isDarkMode ? "linear-gradient(to right, rgba(42,200,152,0.15), rgba(42,200,152,0.03))" : "linear-gradient(to right, rgba(42,200,152,0.12), transparent)",
+            marginBottom: "0.6rem",
+            boxSizing: "border-box",
+            borderRadius: "0 0.5rem 0.5rem 0",
+          }}>
+            <div style={{ fontSize: "0.75rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "#64748b", marginBottom: "0.2rem", textAlign: "right" }}>
+              {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
             </div>
-          )}
-        </div>
-      )}
+            <div style={{ fontSize: "0.95rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
+          </div>
+        ))}
+        {isOwner && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={500}
+              rows={3}
+              placeholder="Write an update..."
+              style={{ ...broadcastInputStyle(isDarkMode, false), height: "auto", borderRadius: "1rem", width: "100%", boxSizing: "border-box" }}
+            />
+            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start" }}>
+              {isLoading ? "Posting…" : "Post"}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 const VoyageUpdatesSectionNavigator = ({ updates, voyageId, isOwner, isDarkMode }) => {
   const [text, setText] = useState("");
-  const [open, setOpen] = useState(false);
   const [addVoyageUpdate, { isLoading }] = useAddVoyageUpdateMutation();
   const [localUpdates, setLocalUpdates] = useState(updates || []);
 
@@ -1284,7 +1281,6 @@ const VoyageUpdatesSectionNavigator = ({ updates, voyageId, isOwner, isDarkMode 
       const result = await addVoyageUpdate({ voyageId, text }).unwrap();
       setLocalUpdates([result, ...localUpdates]);
       setText("");
-      setOpen(false);
     } catch (e) {
       console.error("Failed to post update", e);
     }
@@ -1292,53 +1288,49 @@ const VoyageUpdatesSectionNavigator = ({ updates, voyageId, isOwner, isDarkMode 
 
   return (
     <div style={{
-      padding: "1rem 1.5rem", marginTop: "0.5rem",
+      padding: "1rem", marginTop: 0,
       backgroundColor: isDarkMode ? "#0f2744" : "white",
       borderRadius: "1rem", width: "calc(100% - 2rem)", marginLeft: "1rem", marginRight: "1rem",
       boxSizing: "border-box", position: "relative", zIndex: 10
     }}>
-      <div style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.75rem", color: "#2ac898" }}>
+      <div style={{ fontWeight: 800, fontSize: "1.5rem", marginBottom: "0.75rem", color: "#2ac898", textAlign: "left", marginLeft: "1.3rem" }}>
         Updates
       </div>
-      {localUpdates.length === 0 && (
-        <div style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No updates yet.</div>
-      )}
-      {localUpdates.map((u) => (
-        <div key={u.id} style={{ padding: "0.5rem 0.9rem", borderRadius: "1.5rem", backgroundColor: isDarkMode ? "#0a2745" : "rgb(246,246,246)", marginBottom: "0.6rem", width: "100%", boxSizing: "border-box" }}>
-          <div style={{ fontSize: "1rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
-          <div style={{ fontSize: "0.8rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,139,0.4)", textAlign: "right", marginTop: "0.2rem" }}>
-            {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-          </div>
-        </div>
-      ))}
-      {isOwner && (
-        <div style={{ marginTop: "0.75rem" }}>
-          {!open ? (
-            <button onClick={() => setOpen(true)} style={{ backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "0.75rem", padding: "0.4rem 1rem", cursor: "pointer", fontSize: "0.85rem", fontWeight: 600 }}>
-              + Add Update
-            </button>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                maxLength={500}
-                rows={3}
-                placeholder="Write an update..."
-                style={{ borderRadius: "0.5rem", border: "1px solid #cbd5e1", padding: "0.5rem", fontSize: "0.85rem", resize: "none", color: "#1e293b", backgroundColor: "white" }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1 }}>
-                  {isLoading ? "Posting…" : "Post"}
-                </button>
-                <button onClick={() => { setOpen(false); setText(""); }} style={{ backgroundColor: "transparent", color: "#64748b", border: "1px solid #cbd5e1", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}>
-                  Cancel
-                </button>
-              </div>
+      <div style={{ marginLeft: "1.3rem", marginRight: "0.5rem" }}>
+        {localUpdates.length === 0 && (
+          <div style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "0.75rem" }}>No updates yet.</div>
+        )}
+        {localUpdates.map((u) => (
+          <div key={u.id} style={{
+            padding: "0.5rem 0.9rem",
+            borderLeft: "3px solid #2ac898",
+            background: isDarkMode ? "linear-gradient(to right, rgba(42,200,152,0.15), rgba(42,200,152,0.03))" : "linear-gradient(to right, rgba(42,200,152,0.12), transparent)",
+            marginBottom: "0.6rem",
+            boxSizing: "border-box",
+            borderRadius: "0 0.5rem 0.5rem 0",
+          }}>
+            <div style={{ fontSize: "0.75rem", color: isDarkMode ? "rgba(255,255,255,0.4)" : "#64748b", marginBottom: "0.2rem", textAlign: "right" }}>
+              {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
             </div>
-          )}
-        </div>
-      )}
+            <div style={{ fontSize: "0.95rem", color: isDarkMode ? "rgba(255,255,255,0.85)" : "darkblue", wordBreak: "break-word", textAlign: "left" }}>{u.text}</div>
+          </div>
+        ))}
+        {isOwner && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={500}
+              rows={3}
+              placeholder="Write an update..."
+              style={{ ...broadcastInputStyle(isDarkMode, false), height: "auto", borderRadius: "1rem", width: "100%", boxSizing: "border-box" }}
+            />
+            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start" }}>
+              {isLoading ? "Posting…" : "Post"}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

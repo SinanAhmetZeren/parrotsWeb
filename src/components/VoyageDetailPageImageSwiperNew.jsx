@@ -41,12 +41,12 @@ export function VoyageDetailPageImageSwiperNew({ voyageData }) {
           modifier: 1,
           slideShadows: false,
         }}
-        navigation={images.length > 1 ? { prevEl: prevRef.current, nextEl: nextRef.current } : false}
-        onBeforeInit={(swiper) => {
-          if (images.length > 1) {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-          }
+        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
+        onSwiper={(swiper) => {
+          swiper.params.navigation.prevEl = prevRef.current;
+          swiper.params.navigation.nextEl = nextRef.current;
+          swiper.navigation.init();
+          swiper.navigation.update();
         }}
         modules={[Navigation]}
       >
@@ -77,40 +77,36 @@ export function VoyageDetailPageImageSwiperNew({ voyageData }) {
         }
       `}</style>
       </div>
-      {images.length > 1 && (
-        <>
-          <div
-            ref={prevRef}
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "-3.5rem",
-              transform: "translateY(-50%)",
-              height: "2.5rem",
-              width: "2.5rem",
-              cursor: "pointer",
-              zIndex: 10,
-            }}
-          >
-            <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
-          </div>
-          <div
-            ref={nextRef}
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "-3.5rem",
-              transform: "translateY(-50%)",
-              height: "2.5rem",
-              width: "2.5rem",
-              cursor: "pointer",
-              zIndex: 10,
-            }}
-          >
-            <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
-          </div>
-        </>
-      )}
+      <div
+        ref={prevRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "-1%",
+          transform: "translateY(-50%)",
+          height: "2.5rem",
+          width: "2.5rem",
+          cursor: "pointer",
+          zIndex: 10,
+        }}
+      >
+        <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
+      </div>
+      <div
+        ref={nextRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          right: "-1%",
+          transform: "translateY(-50%)",
+          height: "2.5rem",
+          width: "2.5rem",
+          cursor: "pointer",
+          zIndex: 10,
+        }}
+      >
+        <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
+      </div>
     </div>
   );
 }

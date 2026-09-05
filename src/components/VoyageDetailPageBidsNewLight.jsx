@@ -132,7 +132,7 @@ const AcceptBidSpinner = () => (
 
 const userImageStyle = { height: "3rem", width: "3rem", borderRadius: "3rem", transition: "transform 0.3s ease-in-out", cursor: "pointer" };
 
-const voyageName = { color: "#0077EA", fontWeight: "800", fontSize: "1.5rem" };
+const voyageName = { color: "#2ac898", fontWeight: "800", fontSize: "1.5rem" };
 const userVehicleInfoRow = { display: "flex", flexDirection: "row", margin: "0.2rem", marginLeft: "1.3rem" };
 
 const cardContainerStyle = {
