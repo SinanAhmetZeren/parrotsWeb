@@ -1260,8 +1260,9 @@ const VoyageUpdatesSectionExplorer = ({ updates, voyageId, isOwner, isDarkMode }
               placeholder="Write an update..."
               style={{ ...broadcastInputStyle(isDarkMode, false), height: "auto", borderRadius: "1rem", width: "100%", boxSizing: "border-box" }}
             />
-            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start" }}>
-              {isLoading ? "Posting…" : "Post"}
+            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start", position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ visibility: isLoading ? "hidden" : "visible" }}>Post Update</span>
+              {isLoading && <span style={{ position: "absolute", width: "1rem", height: "1rem", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
             </button>
           </div>
         )}
@@ -1325,8 +1326,9 @@ const VoyageUpdatesSectionNavigator = ({ updates, voyageId, isOwner, isDarkMode 
               placeholder="Write an update..."
               style={{ ...broadcastInputStyle(isDarkMode, false), height: "auto", borderRadius: "1rem", width: "100%", boxSizing: "border-box" }}
             />
-            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start" }}>
-              {isLoading ? "Posting…" : "Post"}
+            <button onClick={handleSubmit} disabled={isLoading || !text.trim()} style={{ backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "2rem", padding: "0.4rem 1.2rem", cursor: text.trim() ? "pointer" : "default", fontSize: "0.9rem", fontWeight: "bold", opacity: (isLoading || !text.trim()) ? 0.5 : 1, alignSelf: "flex-start", position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ visibility: isLoading ? "hidden" : "visible" }}>Post Update</span>
+              {isLoading && <span style={{ position: "absolute", width: "1rem", height: "1rem", border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
             </button>
           </div>
         )}

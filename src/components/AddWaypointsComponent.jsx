@@ -20,6 +20,7 @@ import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 const tileUrl = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
@@ -57,6 +58,8 @@ export const AddWaypointsPage = ({
     const [imagePreview, setImagePreview] = useState("")
     const [isUploadingWaypointImage, setIsUploadingWaypointImage] = useState(false);
     const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [voyageCreated, setVoyageCreated] = useState(false);
     const [addWaypoint] = useAddWaypointMutation();
     const [addWaypointNoImage] = useAddWaypointNoImageMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
@@ -147,9 +150,22 @@ export const AddWaypointsPage = ({
         }
     }
 
-    function handleGoToProfilePage() {
-        confirmVoyage(voyageId);
-        navigate(`/profile`);
+    async function handleGoToProfilePage() {
+        setIsConfirming(true);
+        try {
+            const result = await confirmVoyage(voyageId).unwrap();
+            if (result?.success === false) {
+                toast.error(result.message || "Failed to post voyage.");
+                setIsConfirming(false);
+                return;
+            }
+            setIsConfirming(false);
+            setVoyageCreated(true);
+            setTimeout(() => navigate(`/profile`), 3000);
+        } catch (err) {
+            toast.error(err?.data?.message || "Failed to post voyage. Please try again.");
+            setIsConfirming(false);
+        }
     }
 
     return (
@@ -237,11 +253,14 @@ export const AddWaypointsPage = ({
                             style={{
                                 ...addWaypointButton,
                                 marginTop: 0, marginLeft: 0, transform: "none", width: "auto",
-                                opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
-                                pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none'
+                                opacity: addedWaypoints?.length > 0 && !isConfirming && !voyageCreated ? 1 : 0.5,
+                                pointerEvents: addedWaypoints?.length > 0 && !isConfirming && !voyageCreated ? 'auto' : 'none',
+                                backgroundColor: voyageCreated ? "#16a34a" : "#007bff",
                             }}
-                            onClick={() => { if (addedWaypoints?.length > 0) handleGoToProfilePage(); }}
-                        >Complete</div>
+                            onClick={() => { if (addedWaypoints?.length > 0 && !isConfirming && !voyageCreated) handleGoToProfilePage(); }}
+                        >
+                            {isConfirming ? <div className="spinner" style={{ height: "1.2rem", width: "1.2rem", border: "3px solid white", borderTop: "3px solid #1e90ff", margin: "auto" }} /> : voyageCreated ? "Voyage Created!" : "Complete"}
+                        </div>
                     </div>
                 </div>
 
