@@ -41,11 +41,79 @@ function MapClickHandler({ onMapClick }) {
     return null;
 }
 
+function ConfirmModal({ voyageName, startDate, endDate, isPublicOnMap, setShowConfirmModal, handleGoToProfilePage, isConfirming, voyageCreated }) {
+    const end = endDate ? new Date(endDate) : null;
+    if (end) end.setHours(23, 59, 0, 0);
+    const today = new Date(); today.setHours(23, 59, 0, 0);
+    const cost = isPublicOnMap && end ? Math.max(0, Math.round((end - today) / (1000 * 60 * 60 * 24)) + 1) : 0;
+    const startD = startDate ? new Date(startDate) : null;
+    const formatDate = (d) => d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "";
+    const formatYear = (d) => d ? String(d.getFullYear()).slice(-2) : "";
+    const dateLabel = startD && end && startD.toDateString() !== end.toDateString()
+        ? `${formatDate(startD)} – ${formatDate(end)} ${formatYear(end)}`
+        : `${formatDate(startD)} ${formatYear(startD)}`;
+    return (
+        <div style={modalOverlay}>
+            <div style={modalBox}>
+                <span style={modalTitle}>Post this voyage?</span>
+                <div style={modalSummaryCard}>
+                    <div style={modalSummaryRow}>
+                        <span style={modalSummaryLabel}>Voyage</span>
+                        <span style={modalSummaryValue}>{voyageName || "—"}</span>
+                    </div>
+                    <div style={modalSummaryRow}>
+                        <span style={modalSummaryLabel}>Dates</span>
+                        <span style={modalSummaryValue}>{dateLabel || "—"}</span>
+                    </div>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "rgba(0,100,200,0.12)" }}>
+                    <span style={{ fontSize: "1rem" }}>🌍</span>
+                    <span style={{ ...modalPillText, color: "#007bff" }}>
+                        {isPublicOnMap
+                            ? "Goes public on the map right away. Anyone can find it and place a bid."
+                            : "This voyage won't appear on the map. People can still view it through your profile."}
+                    </span>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "rgba(0,150,100,0.12)" }}>
+                    <span style={{ fontSize: "1rem" }}>🦜</span>
+                    <span style={{ ...modalPillText, color: "#065f46" }}>
+                        {isPublicOnMap && cost > 0 ? `${cost} ParrotCrackers will be used` : "Free, no ParrotCrackers used."}
+                    </span>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "#fef3c7", marginBottom: 0 }}>
+                    <span style={{ fontSize: "1rem" }}>🔒</span>
+                    <span style={{ ...modalPillText, color: "#92400e" }}>
+                        The details lock once posted. You can still post updates later.
+                    </span>
+                </div>
+                <div style={modalButtonRow}>
+                    {!isConfirming && !voyageCreated && (
+                        <span style={modalCancelText} onClick={() => setShowConfirmModal(false)}>Cancel</span>
+                    )}
+                    <button
+                        style={{ ...modalConfirmBtn, backgroundColor: voyageCreated ? "#16a34a" : "#007bff", pointerEvents: isConfirming || voyageCreated ? "none" : "auto" }}
+                        onClick={handleGoToProfilePage}
+                    >
+                        {isConfirming
+                            ? <div style={{ height: "1.2rem", width: "1.2rem", border: "3px solid white", borderTop: "3px solid rgba(255,255,255,0.3)", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "auto" }} />
+                            : voyageCreated ? "Voyage Created!" : "Post voyage"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export const AddWaypointsPage = ({
     voyageId,
     setPageState,
     order,
-    setOrder
+    setOrder,
+    voyageName,
+    startDate,
+    endDate,
+    isPublicOnMap,
+    crackerBalance,
 }) => {
     const [waypointTitle, setWaypointTitle] = useState("")
     const [waypointLatitude, setWaypointLatitude] = useState(null)
@@ -60,6 +128,7 @@ export const AddWaypointsPage = ({
     const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
     const [voyageCreated, setVoyageCreated] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [addWaypoint] = useAddWaypointMutation();
     const [addWaypointNoImage] = useAddWaypointNoImageMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
@@ -88,9 +157,6 @@ export const AddWaypointsPage = ({
 
     const handleAddWaypoint = async () => {
         setIsAddingWaypoint(true)
-        if (!waypointImage) {
-            console.log("no image");
-        }
         setIsUploadingWaypointImage(true);
         const hasImage = waypointImage instanceof File;
 
@@ -112,6 +178,10 @@ export const AddWaypointsPage = ({
                 order,
             })
 
+            if (result.error || !result.data?.data) {
+                toast.error("Could not add waypoint. Check your connection and try again.");
+                return;
+            }
             const waypointId = result.data.data
             setOrder(order + 1);
             setAddedWaypoints((prevWaypoints) => [
@@ -133,21 +203,21 @@ export const AddWaypointsPage = ({
             setWaypointBrief("")
             setImagePreview("")
         } catch (error) {
-            console.error("Error uploading image", error);
+            toast.error("Could not add waypoint. Check your connection and try again.");
         }
         setIsUploadingWaypointImage(false);
         setIsAddingWaypoint(false);
     };
 
     const handleDeleteWaypoint = async (waypointId) => {
-        try {
-            await deleteWaypoint({ waypointId });
-            setAddedWaypoints((prevWaypoints) =>
-                prevWaypoints.filter((waypoint) => waypoint.waypointId !== waypointId)
-            );
-        } catch (error) {
-            console.error("Error deleting waypoint", error);
+        const result = await deleteWaypoint({ waypointId });
+        if (result.error) {
+            toast.error("Could not delete waypoint. Check your connection and try again.");
+            return;
         }
+        setAddedWaypoints((prevWaypoints) =>
+            prevWaypoints.filter((waypoint) => waypoint.waypointId !== waypointId)
+        );
     }
 
     async function handleGoToProfilePage() {
@@ -159,9 +229,10 @@ export const AddWaypointsPage = ({
                 setIsConfirming(false);
                 return;
             }
+            const voyagePublicId = result?.data;
             setIsConfirming(false);
             setVoyageCreated(true);
-            setTimeout(() => navigate(`/profile`), 3000);
+            setTimeout(() => navigate(`/voyage-details/${voyagePublicId}`), 3000);
         } catch (err) {
             toast.error(err?.data?.message || "Failed to post voyage. Please try again.");
             setIsConfirming(false);
@@ -253,13 +324,12 @@ export const AddWaypointsPage = ({
                             style={{
                                 ...addWaypointButton,
                                 marginTop: 0, marginLeft: 0, transform: "none", width: "auto",
-                                opacity: addedWaypoints?.length > 0 && !isConfirming && !voyageCreated ? 1 : 0.5,
-                                pointerEvents: addedWaypoints?.length > 0 && !isConfirming && !voyageCreated ? 'auto' : 'none',
-                                backgroundColor: voyageCreated ? "#16a34a" : "#007bff",
+                                opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
+                                pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none',
                             }}
-                            onClick={() => { if (addedWaypoints?.length > 0 && !isConfirming && !voyageCreated) handleGoToProfilePage(); }}
+                            onClick={() => { if (addedWaypoints?.length > 0) setShowConfirmModal(true); }}
                         >
-                            {isConfirming ? <div className="spinner" style={{ height: "1.2rem", width: "1.2rem", border: "3px solid white", borderTop: "3px solid #1e90ff", margin: "auto" }} /> : voyageCreated ? "Voyage Created!" : "Complete"}
+                            Complete
                         </div>
                     </div>
                 </div>
@@ -296,6 +366,7 @@ export const AddWaypointsPage = ({
                     </div>
                 </div>
             </div>
+            {showConfirmModal && ConfirmModal({ voyageName, startDate, endDate, isPublicOnMap, setShowConfirmModal, handleGoToProfilePage, isConfirming, voyageCreated })}
         </div>
     );
 }
@@ -613,3 +684,59 @@ const waypointDeleteIcon = {
 }
 
 const waypointDeleteIconHover = { transform: "scale(1.2)" }
+
+const modalOverlay = {
+    position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1.5rem",
+}
+
+const modalBox = {
+    backgroundColor: "white", borderRadius: "1.25rem", padding: "1.5rem",
+    width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
+}
+
+const modalTitle = {
+    fontWeight: 800, fontSize: "1.15rem", color: "#1a2e4a", marginBottom: "0.5rem",
+}
+
+const modalSummaryCard = {
+    backgroundColor: "#f3f4f6", borderRadius: "0.625rem", padding: "0.875rem",
+    width: "100%", display: "flex", flexDirection: "column", gap: "0.375rem", marginBottom: "0.375rem",
+}
+
+const modalSummaryRow = {
+    display: "flex", justifyContent: "space-between", gap: "0.5rem",
+}
+
+const modalSummaryLabel = {
+    fontWeight: 800, fontSize: "0.875rem", color: "#6b7280",
+}
+
+const modalSummaryValue = {
+    fontWeight: 800, fontSize: "0.875rem", color: "#1a2e4a", textAlign: "right",
+}
+
+const modalPill = {
+    display: "flex", alignItems: "center", gap: "0.375rem",
+    borderRadius: "1.25rem", padding: "0.625rem 0.875rem",
+    width: "100%", marginBottom: "0.625rem",
+}
+
+const modalPillText = {
+    fontWeight: 700, fontSize: "0.875rem", textAlign: "left",
+}
+
+const modalButtonRow = {
+    display: "flex", flexDirection: "row", gap: "0.75rem",
+    marginTop: "1.25rem", width: "100%", alignItems: "center",
+}
+
+const modalCancelText = {
+    flex: 1, textAlign: "center", fontWeight: 700, fontSize: "0.9375rem",
+    color: "#6b7280", cursor: "pointer",
+}
+
+const modalConfirmBtn = {
+    flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem",
+    padding: "0.75rem", fontWeight: 700, fontSize: "0.9375rem", color: "white", cursor: "pointer",
+}

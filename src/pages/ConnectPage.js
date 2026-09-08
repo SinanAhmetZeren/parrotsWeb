@@ -429,7 +429,7 @@ function ConnectPage() {
                   )}
                   {activeTab === "Bids" ? (
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">
-                      <BidPillList bids={myBids} />
+                      <BidPillList bids={myBids} isDarkMode={isDarkMode} />
                     </div>
                   ) : showSaved ? (
                     <div style={MessagePreviewsContainer} className="hide-scrollbar">

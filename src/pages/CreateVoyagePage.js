@@ -27,14 +27,14 @@ import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { useAcknowledgePublicProfileMutation } from "../slices/UserSlice";
-import { setAcknowledgedPublicProfile } from "../slices/UserSlice";
+import { useAcknowledgePublicProfileMutation, setAcknowledgedPublicProfile, useGetParrotCrackerBalanceQuery } from "../slices/UserSlice";
 
 export default function CreateVoyagePage() {
   const userId = localStorage.getItem("storedUserId");
   const dispatch = useDispatch();
   const hasAcknowledgedPublicProfile = useSelector((state) => state.users.hasAcknowledgedPublicProfile);
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const { data: crackerBalance } = useGetParrotCrackerBalanceQuery(userId);
   const dark = isDarkMode;
   const [showPublicProfileModal, setShowPublicProfileModal] = useState(false);
   const [acknowledgePublicProfile] = useAcknowledgePublicProfileMutation();
@@ -220,8 +220,9 @@ export default function CreateVoyagePage() {
       const formattedEndDate = endDate
         ? convertDateFormat(endDate)
         : convertDateFormat(startDate);
-      // const formattedLastBidDate = convertDateFormat_LastBidDate(lastBidDate);
-      const formattedLastBidDate = formattedStartDate;
+      const lastBidDateObj = endDate ? new Date(endDate) : new Date(startDate);
+      lastBidDateObj.setHours(23, 59, 59, 999);
+      const formattedLastBidDate = convertDateFormat(lastBidDateObj);
 
       const response = await createVoyage({
         voyageImage,
@@ -430,6 +431,8 @@ export default function CreateVoyagePage() {
                             setDates={setDates}
                             calendarOpen={calendarOpen}
                             setCalendarOpen={setCalendarOpen}
+                            crackerBalance={crackerBalance}
+                            isPublicOnMap={isPublicOnMap}
                           />
                         </div>
                       </div>
@@ -474,22 +477,20 @@ export default function CreateVoyagePage() {
                     <CreateVoyageButton
                       handleCreateVoyage={handleCreateVoyage}
                       isCreatingVoyage={isCreatingVoyage}
-                      disabled={
-                        !(
-                          voyageDescription &&
-                          voyageBrief &&
-                          voyageImage &&
-                          selectedVacancy &&
-                          vehicleId &&
-                          voyageName &&
-                          minPrice != null &&
-                          maxPrice != null &&
-                          maxPrice >= minPrice &&
-                          lastBidDate &&
-                          currency &&
-                          dates[0]?.startDate
-                        )
-                      }
+                      disabled={(() => {
+                        const fieldsOk = voyageDescription && voyageBrief && voyageImage &&
+                          selectedVacancy && vehicleId && voyageName &&
+                          minPrice != null && maxPrice != null && maxPrice >= minPrice &&
+                          lastBidDate && currency && dates[0]?.startDate;
+                        if (!fieldsOk) return true;
+                        if (isPublicOnMap && crackerBalance != null && dates[0]?.startDate) {
+                          const today = new Date(); today.setHours(23, 59, 0, 0);
+                          const end = new Date(dates[0].endDate ?? dates[0].startDate); end.setHours(23, 59, 0, 0);
+                          const cost = Math.max(0, (end - today) / (1000 * 60 * 60 * 24) + 1);
+                          if (crackerBalance < cost) return true;
+                        }
+                        return false;
+                      })()}
                     />
                   )}
                   {/* <div style={addWaypointButton}
@@ -529,6 +530,11 @@ export default function CreateVoyagePage() {
                   setPageState={setPageState}
                   order={order}
                   setOrder={setOrder}
+                  voyageName={voyageName}
+                  startDate={dates[0]?.startDate}
+                  endDate={dates[0]?.endDate}
+                  isPublicOnMap={isPublicOnMap}
+                  crackerBalance={crackerBalance}
                 />
               </>
             )}

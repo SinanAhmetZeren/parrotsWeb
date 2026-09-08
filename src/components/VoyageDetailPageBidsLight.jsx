@@ -61,6 +61,7 @@ export function VoyageDetailBidsLight({
         userName={voyageData?.user?.userName} userBidAccepted={userBidAccepted} setOpacity={setOpacity}
         userId={userId} voyageId={voyageId} refetch={refetch}
         isOwnerDeleted={voyageData?.isOwnerDeleted}
+        endDate={voyageData?.endDate}
       />
     </div>
   );

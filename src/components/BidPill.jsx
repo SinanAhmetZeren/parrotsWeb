@@ -16,39 +16,39 @@ const timeAgo = (dateStr) => {
   return `${days}d ago`;
 };
 
-export function BidPill({ bid, onNavigate }) {
+export function BidPill({ bid, onNavigate, dark }) {
   const accepted = bid.accepted;
   return (
-    <div style={cardWrapper} onClick={onNavigate}>
+    <div style={cardWrapper(dark)} onClick={onNavigate}>
       <div style={contentRow}>
         <img src={bid.profileImageThumbnail} alt={bid.voyageName} style={thumbnail} />
         <div style={middleContent}>
           <div style={middleInfo}>
-            <div style={voyageNameStyle}>{bid.voyageName}</div>
-            <div style={datesStyle}>{formatDate(bid.startDate)} – {formatDate(bid.endDate)}</div>
-            <div style={bidPlacedStyle}>Bid placed {timeAgo(bid.bidDateTime)}</div>
+            <div style={voyageNameStyle(dark)}>{bid.voyageName}</div>
+            <div style={datesStyle(dark)}>{formatDate(bid.startDate)} – {formatDate(bid.endDate)}</div>
+            <div style={bidPlacedStyle(dark)}>Bid placed {timeAgo(bid.bidDateTime)}</div>
           </div>
         </div>
-        <div style={separator()} />
-        <div style={rightSection(accepted)}>
-          <div style={priceStyle}>€{bid.offerPrice}</div>
+        <div style={separator(dark)} />
+        <div style={rightSection(accepted, dark)}>
+          <div style={priceStyle(dark)}>€{bid.offerPrice}</div>
           <div style={statusBadge(accepted)}>{accepted ? "ACCEPTED" : "PENDING"}</div>
         </div>
       </div>
-
     </div>
   );
 }
 
-export function BidPillList({ bids }) {
+export function BidPillList({ bids, isDarkMode }) {
   const navigate = useNavigate();
+  const dark = isDarkMode;
   if (!bids || bids.length === 0) {
-    return <div style={empty}>No bids yet</div>;
+    return <div style={empty(dark)}>No bids yet</div>;
   }
   return (
     <div style={list}>
       {bids.map((bid) => (
-        <BidPill key={bid.bidId} bid={bid} onNavigate={() => navigate(`/voyage-details/${bid.voyagePublicId}`)} />
+        <BidPill key={bid.bidId} bid={bid} dark={dark} onNavigate={() => navigate(`/voyage-details/${bid.voyagePublicId}`)} />
       ))}
     </div>
   );
@@ -63,16 +63,16 @@ const list = {
   height: "100%",
 };
 
-const cardWrapper = {
+const cardWrapper = (dark) => ({
   display: "flex",
   flexDirection: "column",
   borderRadius: "1rem",
   overflow: "hidden",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-  backgroundColor: "white",
+  boxShadow: dark ? "0 2px 12px rgba(0,0,0,0.35)" : "0 2px 10px rgba(0,0,0,0.08)",
+  backgroundColor: dark ? "#0a2745" : "white",
   cursor: "pointer",
-  border: "1px solid rgba(0,0,0,0.06)",
-};
+  border: dark ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,0,0,0.06)",
+});
 
 const contentRow = {
   display: "flex",
@@ -92,14 +92,14 @@ const middleContent = {
   gap: "0.8rem",
 };
 
-const separator = () => ({
+const separator = (dark) => ({
   width: "0",
-  borderLeft: "1px dashed rgba(0,0,0,0.15)",
+  borderLeft: dark ? "1px dashed rgba(255,255,255,0.15)" : "1px dashed rgba(0,0,0,0.15)",
   flexShrink: 0,
   alignSelf: "stretch",
 });
 
-const rightSection = (accepted) => ({
+const rightSection = (accepted, dark) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -107,7 +107,9 @@ const rightSection = (accepted) => ({
   gap: "0.35rem",
   flexShrink: 0,
   width: "6rem",
-  backgroundColor: accepted ? "rgba(42,200,152,0.1)" : "rgba(245,158,11,0.1)",
+  backgroundColor: accepted
+    ? (dark ? "rgba(42,200,152,0.15)" : "rgba(42,200,152,0.1)")
+    : (dark ? "rgba(245,158,11,0.15)" : "rgba(245,158,11,0.1)"),
   padding: "0.7rem 0.5rem",
 });
 
@@ -137,46 +139,46 @@ const middleInfo = {
   minWidth: 0,
 };
 
-const voyageNameStyle = {
+const voyageNameStyle = (dark) => ({
   fontFamily: "Nunito, sans-serif",
   fontWeight: 900,
   fontSize: "1.1rem",
-  color: parrotBlue,
+  color: dark ? "rgba(255,255,255,0.9)" : parrotBlue,
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
   textAlign: "left",
-};
+});
 
-const bidPlacedStyle = {
-  fontFamily: "Nunito, sans-serif",
-  fontSize: "0.75rem",
-  color: "rgba(0,0,0,0.35)",
-  marginTop: "0.15rem",
-  textAlign: "left",
-};
-
-const datesStyle = {
+const datesStyle = (dark) => ({
   fontFamily: "Nunito, sans-serif",
   fontWeight: 700,
   fontSize: "0.82rem",
-  color: "rgba(0,0,0,0.45)",
+  color: dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.45)",
   marginTop: "0.15rem",
   textAlign: "left",
-};
+});
 
-const priceStyle = {
+const bidPlacedStyle = (dark) => ({
+  fontFamily: "Nunito, sans-serif",
+  fontSize: "0.75rem",
+  color: dark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)",
+  marginTop: "0.15rem",
+  textAlign: "left",
+});
+
+const priceStyle = (dark) => ({
   fontFamily: "Nunito, sans-serif",
   fontWeight: 900,
   fontSize: "1.2rem",
-  color: "#0d2b4e",
-};
+  color: dark ? "rgba(255,255,255,0.9)" : "#0d2b4e",
+});
 
-const empty = {
+const empty = (dark) => ({
   fontFamily: "Nunito, sans-serif",
   fontWeight: 700,
   fontSize: "1rem",
-  color: "rgba(0,119,234,0.5)",
+  color: dark ? "rgba(255,255,255,0.3)" : "rgba(0,119,234,0.5)",
   textAlign: "center",
   marginTop: "2rem",
-};
+});

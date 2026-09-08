@@ -130,6 +130,8 @@ export function VoyageDetailBidsNew({
         voyageId={voyageId}
         refetch={refetch}
         isOwnerDeleted={voyageData?.isOwnerDeleted}
+        endDate={voyageData?.endDate}
+        endDate={voyageData?.endDate}
       />
     </div>
   );

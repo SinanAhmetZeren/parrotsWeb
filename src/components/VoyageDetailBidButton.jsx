@@ -25,7 +25,9 @@ export const VoyageDetailBidButton = ({
   setOpacity,
   refetch,
   isOwnerDeleted,
+  endDate,
 }) => {
+  const isBiddingClosed = endDate && new Date(new Date(endDate).setHours(23, 59, 59, 999)) < Date.now();
   // console.log("userBid", userBid);
 
   const [isNewBidModalOpen, setIsNewBidModalOpen] = useState(false);
@@ -142,17 +144,17 @@ export const VoyageDetailBidButton = ({
           </button>
         ) : ownVoyage ? null : !userBid ? (
           <button
-            disabled={!!isOwnerDeleted}
+            disabled={!!isOwnerDeleted || isBiddingClosed}
             onClick={openNewBidModal}
-            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: isOwnerDeleted ? 0.4 : 1, cursor: isOwnerDeleted ? "not-allowed" : "pointer" }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: (isOwnerDeleted || isBiddingClosed) ? 0.4 : 1, cursor: (isOwnerDeleted || isBiddingClosed) ? "not-allowed" : "pointer" }}
           >
             Enter Your Bid
           </button>
         ) : (
           <button
-            disabled={!!isOwnerDeleted}
+            disabled={!!isOwnerDeleted || isBiddingClosed}
             onClick={openChangeBidModal}
-            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: isOwnerDeleted ? 0.4 : 1, cursor: isOwnerDeleted ? "not-allowed" : "pointer" }}
+            style={{ ...buttonStyle, backgroundColor: parrotBlue, opacity: (isOwnerDeleted || isBiddingClosed) ? 0.4 : 1, cursor: (isOwnerDeleted || isBiddingClosed) ? "not-allowed" : "pointer" }}
           >
             Change Bid
           </button>
