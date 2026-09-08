@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { resizeImage } from "../utils/resizeImage";
 // import '../assets/css/VehicleImagesSwiper.css';
 
-export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
+export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage, size = "28rem" }) => { // eslint-disable-line no-unused-vars
   const deleteImageIcon = {
     backgroundColor: "rgba(211,1,1,0.4)",
     width: "3rem",
@@ -82,52 +82,28 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage }) => {
             }}
           >
             {imagePreview ? (
-              <div>
+              <div style={{ width: "60%", margin: "0 auto", position: "relative" }}>
                 <img
                   src={imagePreview}
                   alt=""
-                  style={{
-                    width: "28rem",
-                    height: "28rem",
-                    objectFit: "cover",
-                    borderRadius: "1.5rem",
-                    border: "2px solid transparent",
-                  }}
+                  style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: "11px", display: "block" }}
                 />
+                {voyageImage && (
+                  <div
+                    onClick={handleCancelUpload}
+                    style={{ position: "absolute", top: "0.5rem", right: "0.5rem", backgroundColor: "rgba(30,30,30,0.6)", color: "white", width: "1.5rem", height: "1.5rem", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700 }}
+                  >✕</div>
+                )}
               </div>
             ) : (
-              <div>
-                <img
-                  src={uploadImage}
-                  alt="Upload Icon"
-                  onClick={handleImageClick}
-                  style={{
-                    width: "28rem",
-                    height: "28rem",
-                    objectFit: "cover",
-                    borderRadius: "1.5rem",
-                    border: "2px solid transparent",
-                    //   boxShadow: `
-                    // 0 4px 6px rgba(0, 0, 0, 0.1),
-                    // inset 0 -4px 6px rgba(0, 0, 0, 0.31)
-                    // `,
-                  }}
-                />
-              </div>
-            )}
-            {voyageImage && (
               <div
-                onClick={handleCancelUpload}
+                onClick={handleImageClick}
                 style={{
-                  ...deleteImageIcon,
-                  ...(hoveredUserImg ? deleteImageIconHover : {}),
+                  width: "60%", aspectRatio: "1", borderRadius: "11px", display: "flex", alignItems: "center",
+                  justifyContent: "center", cursor: "pointer", overflow: "hidden", position: "relative", alignContent: "center", textAlign: "center", margin: "0 auto"
                 }}
-                onMouseEnter={() => {
-                  setHoveredUserImg(true);
-                }}
-                onMouseLeave={() => setHoveredUserImg(false)}
               >
-                <IoRemoveCircleOutline size={"2.5rem"} />
+                <img src={uploadImage} alt="Upload Icon" style={{ width: "80%", height: "80%", objectFit: "contain", opacity: 0.5 }} />
               </div>
             )}
           </div>
