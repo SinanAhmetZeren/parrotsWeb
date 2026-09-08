@@ -52,11 +52,12 @@ function CreateVehiclePage() {
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
   const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s2");
+  const [pageState, setPageState] = useState("s1");
   const [vehicleId, setVehicleId] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const isFormValid = useMemo(() => {
     return (
@@ -155,8 +156,6 @@ function CreateVehiclePage() {
       setVehicleId(createdVehicleId);
       setVehicleDescription("");
       setVehicleCapacity("");
-      setSelectedVehicleType("");
-      setVehicleName("");
       setProfileImageFile("");
       setImagePreview("");
       setVehicleImage("");
@@ -405,18 +404,24 @@ function CreateVehiclePage() {
                           />
                         </div>
                       ) : (
-                        <img
-                          src={uploadImage}
-                          alt="Upload Icon"
-                          onClick={handleImageClick}
-                          style={{
-                            width: "35rem",
-                            height: "35rem",
-                            objectFit: "cover",
-                            borderRadius: "1.5rem",
-                            border: "2px solid transparent",
-                          }}
-                        />
+                        <div style={{
+                          backgroundColor: "white", width: "35rem",
+                          height: "35rem", borderRadius: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <img
+                            src={uploadImage}
+                            alt="Upload Icon"
+                            onClick={handleImageClick}
+                            style={{
+                              width: "22rem",
+                              height: "22rem",
+                              opacity: "0.4",
+                              objectFit: "cover",
+                              borderRadius: "1.5rem",
+                              border: "2px solid transparent",
+                            }}
+                          />
+                        </div>
                       )}
                       {profileImageFile && (
                         <div
@@ -485,7 +490,10 @@ function CreateVehiclePage() {
                 >
                   <div
                     style={{
-                      width: "26rem",
+                      width: "29rem",
+                      paddingLeft: "2rem",
+                      paddingRight: "2rem",
+                      boxSizing: "border-box",
                     }}
                   >
                     <input
@@ -511,12 +519,27 @@ function CreateVehiclePage() {
                           />
                         </div>
                       ) : (
-                        <img
-                          src={uploadImage}
-                          alt="Upload Icon"
-                          onClick={handleImageClick2}
-                          style={galleryImageUploadStyle}
-                        />
+                        <div style={{
+                          backgroundColor: "#ffffff88",
+                          width: "25rem", height: "25rem",
+                          borderRadius: "1.5rem",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer",
+                        }} onClick={handleImageClick2}>
+                          <div style={{
+                            width: "20rem", height: "20rem", backgroundColor: "#ffffff",
+                            borderRadius: "1.5rem", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center"
+                          }}>
+                            <img
+                              src={uploadImage}
+                              alt="Upload Icon"
+                              style={{
+                                width: "20rem", height: "20rem",
+                                objectFit: "cover", opacity: 0.3
+                              }}
+                            />
+                          </div>
+                        </div>
                       )}
                       {vehicleImage && (
                         <>
@@ -622,7 +645,7 @@ function CreateVehiclePage() {
                 <div
                   className="completeVehicleButton"
                   style={completeVehicleButton}
-                  onClick={() => completeVehicleCreate()}
+                  onClick={() => setShowConfirmModal(true)}
                 >
                   {addedVehicleImages.length === 0 ? "Skip" : "Complete"}
                 </div>
@@ -631,6 +654,28 @@ function CreateVehiclePage() {
           )}
         </div>
       </header>
+
+      {showConfirmModal && (
+        <div style={confirmModalOverlay}>
+          <div style={confirmModalBox}>
+            <div style={confirmModalTitle}>Register this vehicle?</div>
+            <div style={confirmModalHeadline}>It goes on your public profile.</div>
+            <div style={confirmModalDesc}>Anyone viewing your profile can see it.</div>
+            <div style={confirmModalPill}>
+              <span style={{ fontSize: "1rem", marginRight: "0.5rem" }}>✏️</span>
+              <span style={confirmModalPillText}>Nothing locks, you can edit or remove it any time.</span>
+            </div>
+            <div style={{ ...confirmModalPill, backgroundColor: "rgba(0,150,100,0.1)", marginBottom: "1.5rem" }}>
+              <span style={{ fontSize: "1rem", marginRight: "0.5rem", color: "#16a34a" }}>✓</span>
+              <span style={{ ...confirmModalPillText, color: "#16a34a" }}>Free to register, no crackers used</span>
+            </div>
+            <div style={confirmModalButtonRow}>
+              <div style={confirmModalCancelBtn} onClick={() => setShowConfirmModal(false)}>Cancel</div>
+              <div style={confirmModalConfirmBtn} onClick={() => { setShowConfirmModal(false); completeVehicleCreate(); }}>Register vehicle</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>
         {`
@@ -864,7 +909,7 @@ const uploadedImagesContainer = {
   display: "flex",
   flexDirection: "row",
   overflow: "scroll",
-  width: "calc(100vw - 26rem)",
+  flex: 1,
   margin: "auto",
   scrollbarWidth: "none",
   msOverflowStyle: "none",
@@ -1005,4 +1050,44 @@ const completeVehicleButton = {
     "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
   padding: "0.2rem",
   width: "20rem",
+};
+
+const confirmModalOverlay = {
+  position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1.5rem",
+};
+const confirmModalBox = {
+  backgroundColor: "white", borderRadius: "1.25rem", padding: "1.75rem",
+  width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column",
+};
+const confirmModalTitle = {
+  fontFamily: "Nunito", fontWeight: 800, fontSize: "1.5rem", color: "#007bff", marginBottom: "0.75rem", textAlign: "left",
+};
+const confirmModalHeadline = {
+  fontFamily: "Nunito", fontWeight: 800, fontSize: "1.25rem", color: "#1a2e4a", marginBottom: "0.25rem", textAlign: "left",
+};
+const confirmModalDesc = {
+  fontFamily: "Nunito", fontWeight: 800, fontSize: "1rem", color: "#6b7280", marginBottom: "1rem", textAlign: "left",
+};
+const confirmModalPill = {
+  display: "flex", alignItems: "center",
+  backgroundColor: "#f3f4f6", borderRadius: "1rem",
+  padding: "0.75rem 1rem", marginBottom: "0.5rem", width: "100%",
+};
+const confirmModalPillText = {
+  fontWeight: 600, fontSize: "0.9rem", color: "#374151", textAlign: "left",
+};
+const confirmModalButtonRow = {
+  display: "flex", flexDirection: "row", gap: "0.75rem",
+  marginTop: "1.25rem", width: "100%", alignItems: "center",
+};
+const confirmModalCancelBtn = {
+  flex: 1, textAlign: "center", fontWeight: 700, fontSize: "1rem", justifyContent: "center", display: "flex", alignItems: "center",
+  color: "#6b7280", cursor: "pointer", border: "1.5px solid #e5e7eb",
+  borderRadius: "1.875rem", padding: "0.75rem",
+};
+const confirmModalConfirmBtn = {
+  flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem",
+  padding: "0.75rem", fontWeight: 700, fontSize: "1rem", color: "white",
+  cursor: "pointer", textAlign: "center",
 };
