@@ -20,7 +20,6 @@ import {
   useDeleteVehicleImageMutation,
   useCheckAndDeleteVehicleMutation,
   useConfirmVehicleMutation,
-  usePatchVehicleMutation,
 } from "../slices/VehicleSlice";
 import { useNavigate } from "react-router-dom";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
@@ -33,7 +32,6 @@ function CreateVehiclePage() {
   const dark = useSelector((state) => state.users.isDarkMode);
   const [createVehicle] = useCreateVehicleMutation();
   const [confirmVehicle] = useConfirmVehicleMutation();
-  const [patchVehicle] = usePatchVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
   const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
@@ -54,14 +52,12 @@ function CreateVehiclePage() {
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
   const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s2");
+  const [pageState, setPageState] = useState("s1");
   const [vehicleId, setVehicleId] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [savedSnapshot, setSavedSnapshot] = useState(null);
-  const [isSavingChanges, setIsSavingChanges] = useState(false);
 
   const isFormValid = useMemo(() => {
     return (
@@ -80,14 +76,10 @@ function CreateVehiclePage() {
     profileImageFile,
   ]);
 
-  const hasChanges = useMemo(() => {
-    if (!savedSnapshot) return false;
-    return (
-      vehicleName !== savedSnapshot.vehicleName ||
-      vehicleDescription !== savedSnapshot.vehicleDescription ||
-      String(vehicleCapacity) !== String(savedSnapshot.vehicleCapacity)
-    );
-  }, [savedSnapshot, vehicleName, vehicleDescription, vehicleCapacity]);
+  // useEffect(() => {
+  //   console.log("--->>>", vehicleDescription);
+  //   console.log("--->>>", vehicleDescription === "<p><br></p>");
+  // }, [vehicleDescription]);
 
   useEffect(() => {
     console.log("useffect added images: ", addedVehicleImages);
@@ -104,19 +96,11 @@ function CreateVehiclePage() {
 
   const handleImageChange2 = async (e) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
-    if (addedVehicleImages.length >= 8) return;
-    const resized = await resizeImage(files[0]);
-    setIsUploadingImage(true);
-    try {
-      const response = await addVehicleImage({ vehicleImage: resized, vehicleId }).unwrap();
-      const addedvehicleImageId = response.imagePath;
-      setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage: resized }]);
-    } catch (error) {
-      console.error("Error uploading image", error);
-      toast.error("Failed to upload image. Please check your connection and try again.");
+    if (files && files.length > 0) {
+      const resized = await resizeImage(files[0]);
+      setVehicleImage(resized);
+      setGalleryImagePreview(URL.createObjectURL(resized));
     }
-    setIsUploadingImage(false);
   };
 
   const handleCancelUpload = () => {
@@ -170,7 +154,11 @@ function CreateVehiclePage() {
       const createdVehicleId = response.data.id;
       console.log("3. Vehicle created with ID:", createdVehicleId, "...");
       setVehicleId(createdVehicleId);
-      setSavedSnapshot({ vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType });
+      setVehicleDescription("");
+      setVehicleCapacity("");
+      setProfileImageFile("");
+      setImagePreview("");
+      setVehicleImage("");
       setAddedVehicleImages([]);
       setPageState("s2");
     } catch (error) {
@@ -179,25 +167,6 @@ function CreateVehiclePage() {
     } finally {
       setIsRegisteringVehicle(false);
     }
-  };
-
-  const handleUpdateVehicle = async () => {
-    setIsSavingChanges(true);
-    try {
-      const patch = [
-        { op: "replace", path: "/name", value: vehicleName },
-        { op: "replace", path: "/description", value: vehicleDescription },
-        { op: "replace", path: "/capacity", value: Number(vehicleCapacity) },
-      ];
-      console.log("handleUpdateVehicle vehicleId:", vehicleId, "patch:", JSON.stringify(patch));
-      const result = await patchVehicle({ currentVehicleId: vehicleId, patchDoc: patch }).unwrap();
-      console.log("patchVehicle result:", result);
-      setSavedSnapshot({ vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType });
-    } catch (error) {
-      console.error("Error updating vehicle - full error:", JSON.stringify(error));
-      toast.error("Failed to save changes. Please check your connection and try again.");
-    }
-    setIsSavingChanges(false);
   };
 
   const completeVehicleCreate = async () => {
@@ -301,226 +270,387 @@ function CreateVehiclePage() {
           </div>
 
           {pageState === "s1" && (
-            <div style={s1Card}>
-              <div style={s1Body}>
-                {/* Left column */}
-                <div style={s1Left}>
-                  <div style={s1SectionHeader}>BASICS</div>
-
-                  <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
-                    <div style={{ flex: 3 }}>
-                      <div style={s1FieldLabel}>Name
+            <>
+              <div className="vehiclePage_vehicleContainer" style={{ marginTop: 0 }}>
+                <div className="vehiclePage_dataContainer">
+                  <div className="vehiclePage_detailsContainer">
+                    <div className="vehiclePage_nameContainer">
+                      <div className=" ">
+                        <span>Name</span>
                       </div>
-                      <input
-                        type="text"
-                        placeholder="Vehicle name"
-                        value={vehicleName}
-                        maxLength={20}
-                        onChange={(e) => setVehicleName(e.target.value)}
-                        className="vehicle-name-input"
-                        style={s1TextInput}
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={s1FieldLabel}>Capacity</div>
-                      <select
-                        id="capacity"
-                        value={vehicleCapacity ?? ""}
-                        onChange={(e) => setVehicleCapacity(e.target.value)}
-                        className="capacity-input"
-                        style={{ ...s1TextInput, width: "100%", color: vehicleCapacity ? "#00008b" : "#96989c" }}
-                      >
-                        <option value="" disabled>Select</option>
-                        {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => (
-                          <option key={n} value={n}>{n}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={s1FieldLabel}>Type
+                      <div className=" ">
+                        <input
+                          type="text"
+                          placeholder="Vehicle name (max 20)"
+                          value={vehicleName}
+                          maxLength={20}
+                          style={
+                            {
+                              // backgroundColor: "rgb(249, 245, 244)"
+                            }
+                          }
+                          onChange={(e) => setVehicleName(e.target.value)}
+                          className="vehicle-name-input"
+                        />
                       </div>
-                      <select
-                        id="vehicle-type"
-                        value={selectedVehicleType}
-                        onChange={(e) => setSelectedVehicleType(e.target.value)}
-                        className="type-input"
-                        style={{ ...s1TextInput, width: "100%", color: selectedVehicleType ? "#00008b" : "#96989c" }}
-                      >
-                        <option value="" disabled className="placeholderOption">Select</option>
-                        {Object.keys(vehicles)
-                          .filter((v) => v !== "Walk" && v !== "Run" && v !== "Train")
-                          .map((v) => (
-                            <option key={v} value={v}>{v}</option>
-                          ))}
-                      </select>
+                    </div>
+                    <div className="vehiclePage_vacancyContainer">
+                      <div className=" ">
+                        <span>Capacity</span>
+                      </div>
+                      <div className=" ">
+                        <input
+                          type="number"
+                          id="capacity"
+                          placeholder="Select"
+                          min="1"
+                          max="100"
+                          value={vehicleCapacity}
+                          onChange={(e) => setVehicleCapacity(e.target.value)}
+                          className="capacity-input"
+                        />
+                      </div>
+                    </div>
+                    <div className="vehiclePage_typeContainer">
+                      <div className=" ">
+                        <span>Type</span>
+                      </div>
+                      <div className=" ">
+                        <select
+                          id="vehicle-type"
+                          value={selectedVehicleType}
+                          onChange={(e) => {
+                            setSelectedVehicleType(e.target.value);
+                          }}
+                          className="type-input"
+                          style={{
+                            color: selectedVehicleType ? "#00008b" : "#96989c",
+                          }}
+                        >
+                          <option
+                            value=""
+                            disabled
+                            className="placeholderOption"
+                          >
+                            Select
+                          </option>
+                          {Object.keys(vehicles)
+                            .filter(
+                              (vehicle) =>
+                                vehicle !== "Walk" && vehicle !== "Run" && vehicle !== "Train"
+                            )
+                            .map((vehicle) => (
+                              <option key={vehicle} value={vehicle}>
+                                {vehicle}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
-                  <div style={s1FieldHint}>Max 20 characters</div>
-
-                  <div style={{ ...s1SectionHeader, marginTop: "1.5rem" }}>DESCRIPTION</div>
-                  <div className="editor-container" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-                    <ReactQuill
-                      value={vehicleDescription}
-                      onChange={setVehicleDescription}
-                      placeholder="Tell us about your vehicle (max 600 characters)"
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, false] }],
-                          ["bold", "italic", "underline"],
-                          [{ list: "ordered" }, { list: "bullet" }],
-                          ["emoji"],
-                        ],
-                      }}
-                    />
-                  </div>
-                  <div style={s1CharCount}>
-                    {(vehicleDescription === "<p><br></p>" ? 0 : vehicleDescription.replace(/<[^>]*>/g, "").length)} / 600
-                  </div>
-                </div>
-
-                {/* Right column */}
-                <div style={s1Right}>
-                  <div style={s1SectionHeader}>PROFILE IMAGE</div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    style={{ display: "none" }}
-                    ref={fileInputRef}
-                  />
-                  <div style={{ position: "relative" }}>
-                    {imagePreview ? (
-                      <img
-                        src={imagePreview}
-                        alt=""
-                        style={s1ImagePreview}
-                      />
-                    ) : (
-                      <div style={s1ImagePlaceholder} onClick={handleImageClick}>
-                        <div style={{ backgroundColor: "white", borderRadius: "1.25rem" }}>
-                          <img
-                            src={uploadImage}
-                            alt="Upload Icon"
-                            style={s1ImagePlaceholderInner}
+                  <div className="vehiclePage_descriptionContainer">
+                    <div className="createvehiclePage_descriptionContainer_inner">
+                      <div className="vehiclePage_descriptionContainer_descriptionTitle">
+                        <span>Description</span>
+                      </div>
+                      <div className="vehiclePage_descriptionContainer_descriptionContent">
+                        <div className="editor-container">
+                          <ReactQuill
+                            value={vehicleDescription}
+                            onChange={setVehicleDescription}
+                            placeholder="Tell us about your vehicle"
+                            modules={{
+                              toolbar: [
+                                [{ header: [1, 2, false] }],
+                                ["bold", "italic", "underline"],
+                                [{ list: "ordered" }, { list: "bullet" }],
+                                ["emoji"],
+                              ],
+                            }}
                           />
                         </div>
                       </div>
-                    )}
-                    {profileImageFile && (
-                      <div
-                        onClick={handleCancelUpload}
-                        style={{
-                          ...deleteImageIcon,
-                          ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}),
-                        }}
-                        onMouseEnter={() => setIsProfileImageDeleteHovered(true)}
-                        onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
-                      >
-                        <IoRemoveCircleOutline size={"2.5rem"} />
-                      </div>
-                    )}
+                    </div>
                   </div>
-                  <div style={s1ImageCaption}>Add a profile image</div>
-                  <div style={s1ImageSubCaption}>Square works best. You can add more photos go on the next page.</div>
                 </div>
-              </div>
-
-              {/* Footer */}
-              <div style={s1Footer}>
-                <div style={s1FreePill}>✓ Free to register, no ParrotCrackers used</div>
-                <div style={{ display: "flex", gap: "0.75rem" }}>
-                  {vehicleId ? (
-                    <>
-                      {hasChanges && (
-                        <div
-                          style={{ ...s1RegisterBtn, backgroundColor: "#16a34a", position: "relative", ...(isSavingChanges ? { opacity: 0.7, cursor: "not-allowed" } : {}) }}
-                          onClick={!isSavingChanges ? handleUpdateVehicle : undefined}
-                        >
-                          <span style={{ opacity: isSavingChanges ? 0 : 1 }}>Save changes</span>
-                          {isSavingChanges && <RegisterSpinner />}
+                <div className="vehicle_imageContainer">
+                  <div style={{}}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      // onClick={(e) => (e.target.value = null)} // Reset value before selection
+                      style={{ display: "none" }}
+                      ref={fileInputRef}
+                    />
+                    <div
+                      style={{
+                        position: "relative",
+                      }}
+                    >
+                      {imagePreview ? (
+                        <div className="image-preview">
+                          <img
+                            src={imagePreview}
+                            alt=""
+                            style={{
+                              width: "35rem",
+                              height: "35rem",
+                              objectFit: "cover",
+                              borderRadius: "1.5rem",
+                              // border: "2px solid #3c9dee42"
+                              border: "2px solid transparent",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div style={{
+                          backgroundColor: "white", width: "35rem",
+                          height: "35rem", borderRadius: "1.5rem", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <img
+                            src={uploadImage}
+                            alt="Upload Icon"
+                            onClick={handleImageClick}
+                            style={{
+                              width: "22rem",
+                              height: "22rem",
+                              opacity: "0.4",
+                              objectFit: "cover",
+                              borderRadius: "1.5rem",
+                              border: "2px solid transparent",
+                            }}
+                          />
                         </div>
                       )}
-                      <div style={s1RegisterBtn} onClick={() => setPageState("s2")}>
-                        Next →
-                      </div>
-                    </>
-                  ) : (
-                    <div
-                      style={{ ...s1RegisterBtn, ...(!isFormValid && !isRegisteringVehicle ? { opacity: 0.6, cursor: "not-allowed" } : {}), position: "relative" }}
-                      onClick={!isRegisteringVehicle && isFormValid ? () => { console.log("--->> creating vehicle"); handleCreateVehicle(); } : undefined}
-                    >
-                      <span style={{ opacity: isRegisteringVehicle ? 0 : 1 }}>Register vehicle</span>
-                      {isRegisteringVehicle && <RegisterSpinner style={{ position: "absolute" }} />}
+                      {profileImageFile && (
+                        <div
+                          onClick={handleCancelUpload}
+                          style={{
+                            ...deleteImageIcon,
+                            ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}),
+                          }}
+                          onMouseEnter={() => {
+                            setIsProfileImageDeleteHovered(true);
+                          }}
+                          onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
+                        >
+                          <IoRemoveCircleOutline size={"2.5rem"} />
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
+
+              {isRegisteringVehicle ? (
+                <div
+                  className="createVehicleButton"
+                  style={{
+                    ...registerVehicleButton,
+                    ...(isFormValid
+                      ? {}
+                      : { backgroundColor: "#007bff", cursor: "not-allowed" }),
+                  }}
+                >
+                  <RegisterSpinner />
+                </div>
+              ) : (
+                <div
+                  className="createVehicleButton"
+                  style={{
+                    ...registerVehicleButton,
+                    ...(isFormValid ? {} : { opacity: "0.7" }),
+                  }}
+                  onClick={
+                    isFormValid
+                      ? () => {
+                        console.log("--->> creating vehicle");
+                        handleCreateVehicle()
+                      }
+                      : () => {
+                        console.log("Form is not valid");
+                      }
+                  }
+                >
+                  Register Vehicle
+                </div>
+              )}
+            </>
           )}
           {pageState === "s2" && (
-            <div style={s1Card}>
-              <div style={s2HeaderRow}>
-                <div>
-                  <div style={s2Title}>Vehicle images</div>
-                </div>
-                <div style={s2Counter}>{addedVehicleImages.length} / 8</div>
-              </div>
-
-              <div style={s2Grid}>
-                {/* Uploader cell */}
-                <div style={s2UploaderCell} onClick={!isUploadingImage ? handleImageClick2 : undefined}>
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange2}
-                    onClick={(e) => (e.target.value = null)}
-                    style={{ display: "none" }}
-                    ref={galleryImageInputRef}
-                  />
-                  {isUploadingImage ? (
-                    <div className="spinner" style={{ height: "2rem", width: "2rem", border: "3px solid #3b82f6", borderTop: "3px solid transparent" }} />
-                  ) : (
-
-                    <div style={{ backgroundColor: "white", height: "85%", width: "85%", borderRadius: "1.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <img src={uploadImage} alt="Upload" style={{ width: "70%", height: "70%", objectFit: "cover", opacity: 0.45, borderRadius: "0.75rem" }} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Added images */}
-                {addedVehicleImages.map((item, index) => (
-                  <div style={s2ImageCell} key={item.addedvehicleImageId}>
-                    <img src={URL.createObjectURL(item.vehicleImage)} alt={`Uploaded ${index + 1}`} style={s2GridImage} />
-
-                    <div style={s2DeleteBtn} onClick={() => handleDeleteImage(item.addedvehicleImageId)}>✕</div>
-                  </div>
-                ))}
-
-                {/* Placeholder cells */}
-                {Array.from({ length: Math.max(0, 11 - addedVehicleImages.length) }).map((_, i) => (
-                  <div style={s2PlaceholderCell} key={`ph_${i}`}>
-                    <img src={placeHolder} alt="" style={s2PlaceholderImg} />
-                  </div>
-                ))}
-              </div>
-
-              <div style={s1Footer}>
-                <div style={s1FreePill}>✓ Free to register, no ParrotCrackers used</div>
-                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                  <div style={s2BackBtn} onClick={() => setPageState("s1")}>‹ Back</div>
+            <>
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "1rem",
+                  }}
+                >
                   <div
-                    style={{ ...s1RegisterBtn, position: "relative" }}
-                    onClick={!isCompleting ? () => setShowConfirmModal(true) : undefined}
+                    style={{
+                      width: "29rem",
+                      paddingLeft: "2rem",
+                      paddingRight: "2rem",
+                      boxSizing: "border-box",
+                    }}
                   >
-                    <span style={{ opacity: isCompleting ? 0 : 1 }}>
-                      {addedVehicleImages.length === 0 ? "Skip for now" : "Register vehicle"}
-                    </span>
-                    {isCompleting && <CompleteSpinner />}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange2}
+                      onClick={(e) => (e.target.value = null)}
+                      style={{ display: "none" }}
+                      ref={galleryImageInputRef}
+                    />
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "25rem",
+                      }}
+                    >
+                      {galleryImagePreview ? (
+                        <div className="image-preview">
+                          <img
+                            src={galleryImagePreview}
+                            alt=""
+                            style={galleryImageUploadStyle}
+                          />
+                        </div>
+                      ) : (
+                        <div style={{
+                          backgroundColor: "#ffffff88",
+                          width: "25rem", height: "25rem",
+                          borderRadius: "1.5rem",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer",
+                        }} onClick={handleImageClick2}>
+                          <div style={{
+                            width: "20rem", height: "20rem", backgroundColor: "#ffffff",
+                            borderRadius: "1.5rem", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center"
+                          }}>
+                            <img
+                              src={uploadImage}
+                              alt="Upload Icon"
+                              style={{
+                                width: "20rem", height: "20rem",
+                                objectFit: "cover", opacity: 0.3
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {vehicleImage && (
+                        <>
+                          <div
+                            onClick={handleCancelUpload2}
+                            style={{
+                              ...galleryImageDeleteIcon,
+                              ...(isGalleryImageDeleteHovered ? galleryImageDeleteIconHover : {}),
+                            }}
+                            onMouseEnter={() => {
+                              setIsGalleryImageDeleteHovered(true);
+                            }}
+                            onMouseLeave={() => setIsGalleryImageDeleteHovered(false)}
+                          >
+                            <IoRemoveCircleOutline size={"2.5rem"} />
+                          </div>
+
+                          {isUploadingImage ? (
+                            <div style={addImageButton}>
+                              <AddImageSpinner />
+                            </div>
+                          ) : (
+                            <div
+                              style={addImageButton}
+                              onClick={() => {
+                                handleUploadImage();
+                                // console.log("hi");
+                              }}
+                            >
+                              Add Image
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={uploadedImagesContainer}>
+                    <Swiper
+                      scrollbar={{ hide: true }}
+                      slidesPerView={3}
+                      spaceBetween={10}
+                      freeMode={true}
+                      pagination={{
+                        clickable: true,
+                      }}
+                      modules={[FreeMode]}
+                      className="mySwiper"
+                    >
+                      {data.map((item, index) => {
+                        return (
+                          <SwiperSlide>
+                            <div
+                              key={item.key}
+                              className="placeholder_imageContainer"
+                              style={{
+                                borderRadius: "2rem",
+                                overflow: "hidden",
+                              }}
+                            >
+                              {item.addedvehicleImageId ? (
+                                <>
+                                  <img
+                                    src={URL.createObjectURL(item.vehicleImage)}
+                                    alt={`Uploaded ${index + 1}`}
+                                    style={userUploadedImage}
+                                  />
+                                  <div
+                                    onClick={() =>
+                                      handleDeleteImage(
+                                        item.addedvehicleImageId
+                                      )
+                                    }
+                                    style={uploadedImageDeleteIcon}
+                                  >
+                                    <IoRemoveCircleOutline size={"2.5rem"} />
+                                  </div>
+                                </>
+                              ) : (
+                                <img
+                                  src={placeHolder}
+                                  alt={`Placeholder ${index + 1}`}
+                                  style={placeHolderImage}
+                                />
+                              )}
+                            </div>
+                          </SwiperSlide>
+                        );
+                      })}
+                    </Swiper>
                   </div>
                 </div>
               </div>
-            </div>
+
+              {isCompleting ? (
+                <div
+                  className="completeVehicleButton"
+                  style={completeVehicleButton}
+                >
+                  <CompleteSpinner />
+                </div>
+              ) : (
+                <div
+                  className="completeVehicleButton"
+                  style={completeVehicleButton}
+                  onClick={() => setShowConfirmModal(true)}
+                >
+                  {addedVehicleImages.length === 0 ? "Skip" : "Complete"}
+                </div>
+              )}
+            </>
           )}
         </div>
       </header>
@@ -537,7 +667,7 @@ function CreateVehiclePage() {
             </div>
             <div style={{ ...confirmModalPill, backgroundColor: "rgba(0,150,100,0.1)", marginBottom: "1.5rem" }}>
               <span style={{ fontSize: "1rem", marginRight: "0.5rem", color: "#16a34a" }}>✓</span>
-              <span style={{ ...confirmModalPillText, color: "#16a34a" }}>Free to register, no ParrotCrackers used</span>
+              <span style={{ ...confirmModalPillText, color: "#16a34a" }}>Free to register, no crackers used</span>
             </div>
             <div style={confirmModalButtonRow}>
               <div style={confirmModalCancelBtn} onClick={() => setShowConfirmModal(false)}>Cancel</div>
@@ -551,12 +681,6 @@ function CreateVehiclePage() {
         {`
           #app {
             height: 100%;
-          }
-
-          .editor-container .ql-editor {
-            min-height: 120px;
-            max-height: 220px;
-            overflow-y: auto;
           }
 
           html, body {
@@ -687,12 +811,13 @@ const RegisterSpinner = () => {
   return (
     <div
       style={{
-        position: "absolute",
-        inset: 0,
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "inherit",
+        height: "2.5rem",
       }}
     >
       <div
@@ -965,205 +1090,4 @@ const confirmModalConfirmBtn = {
   flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem",
   padding: "0.75rem", fontWeight: 700, fontSize: "1rem", color: "white",
   cursor: "pointer", textAlign: "center",
-};
-
-// Page 1 new card design
-const s1Card = {
-  backgroundColor: "white",
-  borderRadius: "1.25rem",
-  fontFamily: "Nunito",
-  margin: "1rem auto",
-  width: "75%",
-  display: "flex",
-  flexDirection: "column",
-  maxHeight: "calc(100vh - 8rem)",
-  overflow: "hidden",
-  boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-};
-const s1Body = {
-  display: "flex",
-  flexDirection: "row",
-  padding: "2rem",
-  gap: "2rem",
-  flex: 1,
-  overflowY: "auto",
-  alignItems: "stretch",
-};
-const s1Left = {
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  textAlign: "left",
-  alignItems: "stretch",
-};
-const s1Right = {
-  width: "24rem",
-  flexShrink: 0,
-  display: "flex",
-  flexDirection: "column",
-  textAlign: "left",
-  alignItems: "flex-start",
-};
-const s1SectionHeader = {
-  fontSize: "0.7rem",
-  fontWeight: 700,
-  color: "#9ca3af",
-  letterSpacing: "0.08em",
-  marginBottom: "0.75rem",
-};
-const s1FieldLabel = {
-  fontSize: "1.0625rem",
-  fontWeight: 700,
-  color: "#1e3a5f",
-  marginBottom: "0.35rem",
-};
-const s1TextInput = {
-  width: "100%",
-  boxSizing: "border-box",
-  backgroundColor: "#f3f4f6",
-  border: "none",
-  borderRadius: "0.625rem",
-  padding: "0.6rem 0.75rem",
-  fontSize: "0.95rem",
-  color: "#1e3a5f",
-  outline: "none",
-};
-const s1FieldHint = {
-  fontSize: "0.75rem",
-  color: "#9ca3af",
-  marginTop: "0.3rem",
-};
-const s1CharCount = {
-  fontSize: "0.78rem",
-  color: "#9ca3af",
-  textAlign: "right",
-  marginTop: "0.3rem",
-};
-const s1ImagePlaceholder = {
-  backgroundColor: "#f3f4f6ca",
-  width: "24rem",
-  height: "24rem",
-  borderRadius: "1.25rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
-  overflow: "hidden",
-};
-const s1ImagePlaceholderInner = {
-  width: "19rem",
-  height: "19rem",
-  objectFit: "cover",
-  opacity: 0.4,
-  borderRadius: "1rem",
-};
-const s1ImagePreview = {
-  width: "24rem",
-  height: "24rem",
-  objectFit: "cover",
-  borderRadius: "1.25rem",
-  border: "2px solid transparent",
-};
-const s1ImageCaption = {
-  fontWeight: 700,
-  fontSize: "1.125rem",
-  color: "#1e3a5f",
-  marginTop: "0.75rem",
-};
-const s1ImageSubCaption = {
-  fontSize: "1rem",
-  color: "#6b7280",
-  marginTop: "0.25rem",
-  lineHeight: 1.4,
-};
-const s1Footer = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "1.25rem 2rem",
-  borderTop: "1px solid #f3f4f6",
-};
-const s1FreePill = {
-  backgroundColor: "rgba(0,180,100,0.1)",
-  color: "#16a34a",
-  fontWeight: 600,
-  fontSize: "0.85rem",
-  padding: "0.4rem 0.9rem",
-  borderRadius: "2rem",
-};
-const s1RegisterBtn = {
-  padding: "0.6rem 1.5rem",
-  borderRadius: "2rem",
-  backgroundColor: "#007bff",
-  fontWeight: 700,
-  fontSize: "0.95rem",
-  color: "white",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  minWidth: "9rem",
-  justifyContent: "center",
-};
-
-// Page 2 styles
-const s2HeaderRow = {
-  display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-  padding: "1.5rem 2rem 1rem",
-};
-const s2Title = {
-  fontFamily: "Nunito", fontWeight: 800, fontSize: "1.4rem", color: "#1e3a5f",
-};
-const s2Subtitle = {
-  fontFamily: "Nunito", fontSize: "0.9rem", color: "#6b7280", marginTop: "0.25rem",
-};
-const s2Counter = {
-  fontFamily: "Nunito", fontWeight: 700, fontSize: "1rem", color: "#9ca3af",
-};
-const s2Grid = {
-  display: "grid", gridTemplateColumns: "repeat(6, 1fr)",
-  gap: "0.75rem", padding: "0 2rem 1rem",
-};
-const s2UploaderCell = {
-  backgroundColor: "#f3f4f6ca", borderRadius: "1rem",
-  display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer", aspectRatio: "1", overflow: "hidden",
-};
-const s2ImageCell = {
-  position: "relative", borderRadius: "1rem", overflow: "hidden", aspectRatio: "1",
-};
-const s2GridImage = {
-  width: "100%", height: "100%", objectFit: "cover",
-};
-const s2CoverBadge = {
-  position: "absolute", top: "0.5rem", left: "0.5rem",
-  backgroundColor: "#1e3a5f", color: "white",
-  fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.07em",
-  padding: "0.2rem 0.5rem", borderRadius: "0.35rem",
-  fontFamily: "Nunito",
-};
-const s2DeleteBtn = {
-  position: "absolute", top: "0.5rem", right: "0.5rem",
-  backgroundColor: "rgba(30,30,30,0.6)", color: "white",
-  width: "1.5rem", height: "1.5rem", borderRadius: "50%",
-  display: "flex", alignItems: "center", justifyContent: "center",
-  cursor: "pointer", fontSize: "0.75rem", fontWeight: 700,
-};
-const s2PlaceholderCell = {
-  backgroundColor: "#f9fafb", borderRadius: "1rem",
-  display: "flex", alignItems: "center", justifyContent: "center",
-  aspectRatio: "1", overflow: "hidden",
-};
-const s2PlaceholderImg = {
-  width: "40%", height: "40%", objectFit: "contain", opacity: 0.3,
-};
-const s2SkipText = {
-  fontFamily: "Nunito", fontWeight: 700, fontSize: "1rem",
-  color: "#6b7280", cursor: "pointer",
-};
-const s2BackBtn = {
-  padding: "0.6rem 1.2rem", borderRadius: "2rem",
-  border: "1.5px solid #e5e7eb", fontWeight: 700, fontSize: "0.95rem",
-  color: "#374151", cursor: "pointer", display: "flex", alignItems: "center",
-  fontFamily: "Nunito",
 };
