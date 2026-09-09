@@ -1,0 +1,745 @@
+
+/* eslint-disable no-undef */
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import "../assets/css/CreateVehicle.css"
+import "react-quill/dist/quill.snow.css";
+import { IoRemoveCircleOutline } from "react-icons/io5";
+import uploadImage from "../assets/images/ParrotsLogoPlus.jpg"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import parrotMarker1 from "../assets/images/parrotMarker1.png";
+import parrotsLogo from "../assets/images/ParrotsLogo.png";
+import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css/navigation';
+import rightOrangeArrow from "../assets/images/arrow-right-orange.png";
+import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
+import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
+const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
+const tileUrl = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
+const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
+
+const clickMarkerIcon = L.icon({
+    iconUrl: parrotMarker1,
+    iconSize: [50, 60],
+    iconAnchor: [25, 60],
+});
+
+function MapClickHandler({ onMapClick }) {
+    useMapEvents({
+        click(e) {
+            onMapClick(e.latlng.lat, e.latlng.lng);
+        },
+    });
+    return null;
+}
+
+function ConfirmModal({ voyageName, startDate, endDate, isPublicOnMap, setShowConfirmModal, handleGoToProfilePage, isConfirming, voyageCreated }) {
+    const end = endDate ? new Date(endDate) : null;
+    if (end) end.setHours(23, 59, 0, 0);
+    const today = new Date(); today.setHours(23, 59, 0, 0);
+    const cost = isPublicOnMap && end ? Math.max(0, Math.round((end - today) / (1000 * 60 * 60 * 24)) + 1) : 0;
+    const startD = startDate ? new Date(startDate) : null;
+    const formatDate = (d) => d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "";
+    const formatYear = (d) => d ? String(d.getFullYear()).slice(-2) : "";
+    const dateLabel = startD && end && startD.toDateString() !== end.toDateString()
+        ? `${formatDate(startD)} – ${formatDate(end)} ${formatYear(end)}`
+        : `${formatDate(startD)} ${formatYear(startD)}`;
+    return (
+        <div style={modalOverlay}>
+            <div style={modalBox}>
+                <span style={modalTitle}>Post this voyage?</span>
+                <div style={modalSummaryCard}>
+                    <div style={modalSummaryRow}>
+                        <span style={modalSummaryLabel}>Voyage</span>
+                        <span style={modalSummaryValue}>{voyageName || "—"}</span>
+                    </div>
+                    <div style={modalSummaryRow}>
+                        <span style={modalSummaryLabel}>Dates</span>
+                        <span style={modalSummaryValue}>{dateLabel || "—"}</span>
+                    </div>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "rgba(0,100,200,0.12)" }}>
+                    <span style={{ fontSize: "1rem" }}>🌍</span>
+                    <span style={{ ...modalPillText, color: "#007bff" }}>
+                        {isPublicOnMap
+                            ? "Goes public on the map right away. Anyone can find it and place a bid."
+                            : "This voyage won't appear on the map. People can still view it through your profile."}
+                    </span>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "rgba(0,150,100,0.12)" }}>
+                    <span style={{ fontSize: "1rem" }}>🦜</span>
+                    <span style={{ ...modalPillText, color: "#065f46" }}>
+                        {isPublicOnMap && cost > 0 ? `${cost} ParrotCrackers will be used` : "Free, no ParrotCrackers used."}
+                    </span>
+                </div>
+                <div style={{ ...modalPill, backgroundColor: "#fef3c7", marginBottom: 0 }}>
+                    <span style={{ fontSize: "1rem" }}>🔒</span>
+                    <span style={{ ...modalPillText, color: "#92400e" }}>
+                        The details lock once posted. You can still post updates later.
+                    </span>
+                </div>
+                <div style={modalButtonRow}>
+                    {!isConfirming && !voyageCreated && (
+                        <span style={modalCancelText} onClick={() => setShowConfirmModal(false)}>Cancel</span>
+                    )}
+                    <button
+                        style={{ ...modalConfirmBtn, backgroundColor: voyageCreated ? "#16a34a" : "#007bff", pointerEvents: isConfirming || voyageCreated ? "none" : "auto" }}
+                        onClick={handleGoToProfilePage}
+                    >
+                        {isConfirming
+                            ? <div style={{ height: "1.2rem", width: "1.2rem", border: "3px solid white", borderTop: "3px solid rgba(255,255,255,0.3)", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "auto" }} />
+                            : voyageCreated ? "Voyage Created!" : "Post voyage"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export const AddWaypointsPage = ({
+    voyageId,
+    setPageState,
+    order,
+    setOrder,
+    voyageName,
+    startDate,
+    endDate,
+    isPublicOnMap,
+    crackerBalance,
+}) => {
+    const [waypointTitle, setWaypointTitle] = useState("")
+    const [waypointLatitude, setWaypointLatitude] = useState(null)
+    const [waypointLongitude, setWaypointLongitude] = useState(null)
+    const [waypointImage, setWaypointImage] = useState("")
+    const [waypointBrief, setWaypointBrief] = useState("")
+    const [initialLatitude, setInitialLatitude] = useState();
+    const [initialLongitude, setInitialLongitude] = useState();
+    const [addedWaypoints, setAddedWaypoints] = useState([
+        { waypointId: "dummy-1", waypointImage: null, latitude: 48.8566, longitude: 2.3522, title: "Paris", description: "Starting point in the heart of Paris.", voyageId, order: 1 },
+        { waypointId: "dummy-2", waypointImage: null, latitude: 41.9028, longitude: 12.4964, title: "Rome", description: "Final destination in Rome.", voyageId, order: 2 },
+    ]);
+    const [imagePreview, setImagePreview] = useState("")
+    const [isUploadingWaypointImage, setIsUploadingWaypointImage] = useState(false);
+    const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [voyageCreated, setVoyageCreated] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [addWaypoint] = useAddWaypointMutation();
+    const [addWaypointNoImage] = useAddWaypointNoImageMutation();
+    const [deleteWaypoint] = useDeleteWaypointMutation();
+    const [confirmVoyage] = useConfirmVoyageMutation();
+    const navigate = useNavigate();
+    const dark = useSelector((state) => state.users.isDarkMode);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setInitialLatitude(position.coords.latitude);
+                    setInitialLongitude(position.coords.longitude);
+                },
+                (error) => {
+                    console.error("Error getting location", error);
+                    setInitialLatitude(52.20551962389507);
+                    setInitialLongitude(0.11798991656591876);
+                }
+            );
+        } else {
+            setInitialLatitude(37.7749);
+            setInitialLongitude(-122.4194);
+        }
+    }, []);
+
+    const handleAddWaypoint = async () => {
+        setIsAddingWaypoint(true)
+        setIsUploadingWaypointImage(true);
+        const hasImage = waypointImage instanceof File;
+
+        try {
+            const result = hasImage ? await addWaypoint({
+                waypointImage,
+                latitude: waypointLatitude,
+                longitude: waypointLongitude,
+                title: waypointTitle,
+                description: waypointBrief,
+                voyageId: voyageId,
+                order,
+            }) : await addWaypointNoImage({
+                latitude: waypointLatitude,
+                longitude: waypointLongitude,
+                title: waypointTitle,
+                description: waypointBrief,
+                voyageId: voyageId,
+                order,
+            })
+
+            if (result.error || !result.data?.data) {
+                toast.error("Could not add waypoint. Check your connection and try again.");
+                return;
+            }
+            const waypointId = result.data.data
+            setOrder(order + 1);
+            setAddedWaypoints((prevWaypoints) => [
+                ...prevWaypoints,
+                {
+                    waypointId,
+                    waypointImage,
+                    latitude: waypointLatitude,
+                    longitude: waypointLongitude,
+                    title: waypointTitle,
+                    description: waypointBrief,
+                    voyageId,
+                    order,
+                },
+            ]);
+            setWaypointLongitude(null)
+            setWaypointLatitude(null)
+            setWaypointTitle("")
+            setWaypointBrief("")
+            setImagePreview("")
+        } catch (error) {
+            toast.error("Could not add waypoint. Check your connection and try again.");
+        }
+        setIsUploadingWaypointImage(false);
+        setIsAddingWaypoint(false);
+    };
+
+    const handleDeleteWaypoint = async (waypointId) => {
+        const result = await deleteWaypoint({ waypointId });
+        if (result.error) {
+            toast.error("Could not delete waypoint. Check your connection and try again.");
+            return;
+        }
+        setAddedWaypoints((prevWaypoints) =>
+            prevWaypoints.filter((waypoint) => waypoint.waypointId !== waypointId)
+        );
+    }
+
+    async function handleGoToProfilePage() {
+        setIsConfirming(true);
+        try {
+            const result = await confirmVoyage(voyageId).unwrap();
+            if (result?.success === false) {
+                toast.error(result.message || "Failed to post voyage.");
+                setIsConfirming(false);
+                return;
+            }
+            const voyagePublicId = result?.data;
+            setIsConfirming(false);
+            setVoyageCreated(true);
+            setTimeout(() => navigate(`/voyage-details/${voyagePublicId}`), 3000);
+        } catch (err) {
+            toast.error(err?.data?.message || "Failed to post voyage. Please try again.");
+            setIsConfirming(false);
+        }
+    }
+
+    return (
+        <div style={{ height: "calc(100vh - 3rem)" }}>
+            <div style={mainContainer}>
+                <div style={{ width: "35%" }}>
+                    <div style={{ ...newWaypointContainer, backgroundColor: dark ? "#011a32" : "white" }}>
+                        <div style={WaypointImageUploaderContainerBox}>
+                            <div style={WaypointImageUploaderContainer}>
+                                <WaypointImageUploader
+                                    waypointImage={waypointImage}
+                                    setWaypointImage={setWaypointImage}
+                                    imagePreview={imagePreview}
+                                    setImagePreview={setImagePreview}
+                                />
+                            </div>
+                            <div style={WaypointDetailsContainer}>
+                                <div style={waypointDetailRow}>
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lat:</span>
+                                    <input type="text" placeholder="Click on map" value={waypointLatitude && waypointLatitude !== 0 ? Number(waypointLatitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
+                                </div>
+                                <div style={waypointDetailRow}>
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lng:</span>
+                                    <input type="text" placeholder="Click on map" value={waypointLongitude && waypointLongitude !== 0 ? Number(waypointLongitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
+                                </div>
+                                <div style={waypointDetailRow}>
+                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Title:</span>
+                                    <input type="text" placeholder="Waypoint title (max 25)" value={waypointTitle} onChange={(e) => setWaypointTitle(e.target.value)} maxLength={25} style={titleInputStyle(dark)} />
+                                </div>
+                            </div>
+                        </div>
+                        <div style={WaypointDescriptionContainerBox}>
+                            <div style={{ ...waypointDesctriptionContainer, backgroundColor: dark ? "#011a32" : "white" }}>
+                                <WaypointBriefInput
+                                    waypointBrief={waypointBrief}
+                                    setWaypointBrief={setWaypointBrief}
+                                    dark={dark} />
+                            </div>
+                        </div>
+
+                        {isAddingWaypoint ? (
+                            <div style={addWaypointButton}>
+                                <div style={spinnerContainer}>
+                                    <div className="spinner" style={spinnerInner}></div>
+                                </div>
+                                <text style={{ opacity: 0 }}> A</text>
+                            </div>
+                        ) : (
+                            <div
+                                style={{
+                                    ...addWaypointButton,
+                                    opacity: (!(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief)) ? 0.5 : 1,
+                                    pointerEvents: !(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief) ? 'none' : 'auto'
+                                }}
+                                onClick={() => {
+                                    if (waypointTitle && waypointLatitude && waypointLongitude && waypointBrief) {
+                                        handleAddWaypoint();
+                                    }
+                                }}
+                            >
+                                Add Waypoint
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={{
+                        height: "18rem",
+                        margin: "auto",
+                        marginTop: "0.5rem",
+                        marginBottom: "0rem",
+                        width: "95%",
+                        backgroundColor: "transparent",
+                        borderRadius: "1.5rem"
+                    }}>
+                        <AddedWaypointsSlider
+                            addedWaypoints={addedWaypoints}
+                            setAddedWaypoints={setAddedWaypoints}
+                            handleDeleteWaypoint={handleDeleteWaypoint}
+                            dark={dark}
+                        />
+                    </div>
+
+                    <div style={{ display: "flex", gap: "1rem", marginTop: "0rem", justifyContent: "center" }}>
+                        <div
+                            style={{
+                                ...addWaypointButton,
+                                marginTop: 0, marginLeft: 0, transform: "none", width: "auto",
+                                opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
+                                pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none',
+                            }}
+                            onClick={() => { if (addedWaypoints?.length > 0) setShowConfirmModal(true); }}
+                        >
+                            Complete
+                        </div>
+                    </div>
+                </div>
+
+                <div style={mapContainerBox}>
+                    <div style={mapContainer}>
+                        {!initialLatitude || !initialLongitude ? (
+                            <div className="cardSwiperSpinner">
+                                <p>Locating you...</p>
+                            </div>
+                        ) : (
+                            <MapContainer
+                                center={[initialLatitude, initialLongitude]}
+                                zoom={10}
+                                style={{ height: "100%", width: "100%" }}
+                                zoomControl={false}
+                                scrollWheelZoom={true}
+                            >
+                                <TileLayer url={tileUrl} attribution={tileAttribution} />
+                                <MapClickHandler onMapClick={(lat, lng) => {
+                                    setWaypointLatitude(lat);
+                                    setWaypointLongitude(lng);
+                                }} />
+                                {waypointLatitude !== null && waypointLongitude !== null && (
+                                    <Marker
+                                        position={[waypointLatitude, waypointLongitude]}
+                                        icon={clickMarkerIcon}
+                                    />
+                                )}
+                                <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
+                                <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
+                            </MapContainer>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {showConfirmModal && ConfirmModal({ voyageName, startDate, endDate, isPublicOnMap, setShowConfirmModal, handleGoToProfilePage, isConfirming, voyageCreated })}
+        </div>
+    );
+}
+
+const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, setImagePreview }) => {
+    const fileInputRef = React.createRef();
+    const [isDeleteHovered, setIsDeleteHovered] = useState(false)
+
+    const handleImageChange = (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            setWaypointImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleCancelUpload = () => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
+        setWaypointImage(null);
+        setImagePreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    return (
+        <div style={{ borderRadius: "1.5rem" }}>
+            <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+                ref={fileInputRef}
+            />
+            <div style={{ position: "relative" }}>
+                {imagePreview ? (
+                    <img src={imagePreview} alt="" style={imageStyle} />
+                ) : (
+                    <img
+                        src={uploadImage}
+                        alt="Upload Icon"
+                        onClick={() => fileInputRef.current.click()}
+                        style={{
+                            ...imageStyle,
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -4px 6px rgba(0,0,0,0.31)",
+                        }}
+                    />
+                )}
+                {imagePreview && (
+                    <div
+                        onClick={handleCancelUpload}
+                        style={{ ...deleteImageIcon, ...(isDeleteHovered ? deleteImageIconHover : {}) }}
+                        onMouseEnter={() => setIsDeleteHovered(true)}
+                        onMouseLeave={() => setIsDeleteHovered(false)}
+                    >
+                        <IoRemoveCircleOutline size={"2.5rem"} />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+const WaypointBriefInput = ({ waypointBrief, setWaypointBrief, dark = false }) => (
+    <textarea
+        placeholder="Waypoint brief (max 300)"
+        maxLength={300}
+        value={waypointBrief}
+        onChange={(e) => setWaypointBrief(e.target.value)}
+        style={{
+            ...titleInputStyle(dark),
+            height: "7rem",
+            maxHeight: "7rem",
+            resize: "none",
+            padding: "1rem",
+            width: "95%",
+            marginTop: "0.5rem",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+        }}
+    />
+);
+
+const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = false }) => {
+    const swiperRef = useRef(null);
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
+
+    useEffect(() => {
+        if (swiperRef.current && addedWaypoints.length > 0) {
+            swiperRef.current.slideTo(addedWaypoints.length - 1);
+        }
+    }, [addedWaypoints]);
+
+    useEffect(() => {
+        if (swiperRef.current && prevRef.current && nextRef.current) {
+            swiperRef.current.params.navigation.prevEl = prevRef.current;
+            swiperRef.current.params.navigation.nextEl = nextRef.current;
+            swiperRef.current.navigation.init();
+            swiperRef.current.navigation.update();
+        }
+    }, []);
+
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            overflow: "scroll",
+            width: "34rem",
+            margin: "auto",
+            paddingLeft: "2rem",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            height: "100%",
+            position: "relative",
+        }}>
+            {addedWaypoints?.length > 0 ? (
+                <>
+                    <Swiper
+                        slidesPerView={1}
+                        centeredSlides={true}
+                        spaceBetween={30}
+                        pagination={{ clickable: true }}
+                        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                        onSwiper={(swiper) => { swiperRef.current = swiper; }}
+                    >
+                        {addedWaypoints.map((waypoint, index) => (
+                            <SwiperSlide key={index}>
+                                <div style={{ marginTop: "0.5rem" }}>
+                                    <WaypointComponent
+                                        waypointId={waypoint.waypointId}
+                                        description={waypoint.description}
+                                        latitude={waypoint.latitude}
+                                        longitude={waypoint.longitude}
+                                        profileImage={waypoint.waypointImage}
+                                        title={waypoint.title}
+                                        handleDeleteWaypoint={handleDeleteWaypoint}
+                                        dark={dark}
+                                    />
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                    <div ref={prevRef}
+                        style={{
+                            position: "absolute", top: "50%",
+                            left: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
+                        }}>
+                        <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
+                    </div>
+                    <div ref={nextRef}
+                        style={{
+                            position: "absolute", top: "50%",
+                            right: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
+                        }}>
+                        <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
+                    </div>
+                    <style>{`.swiper-button-disabled { opacity: 0 !important; }`}</style>
+                </>
+            ) : (
+                <div style={{ height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <span style={{
+                        color: "white",
+                        padding: "1vh",
+                        fontSize: "1.6rem",
+                        fontWeight: 800,
+                        textShadow: "2px 2px 4px rgba(0,0,0,0.6), -2px -2px 4px rgba(255,255,255,0.2)",
+                        opacity: "0.7"
+                    }}>
+                        Add Waypoints
+                    </span>
+                </div>
+            )}
+        </div>
+    );
+}
+
+const WaypointComponent = ({ description, profileImage, title, waypointId, handleDeleteWaypoint, dark = false }) => {
+    const [isDeleteHovered, setIsDeleteHovered] = useState(false);
+    return (
+        <div style={{
+            backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,1)",
+            boxShadow: dark
+                ? "0 0 12px rgba(100,180,255,0.15), 0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)"
+                : "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+            height: "17rem", width: "30rem",
+            display: "flex", flexDirection: "row",
+            borderRadius: "1.5rem", overflow: "hidden"
+        }}>
+            <img
+                src={profileImage instanceof File ? URL.createObjectURL(profileImage) : parrotsLogo}
+                alt=""
+                style={{ height: "100%", width: "15rem", objectFit: "cover" }}
+            />
+            <div style={{ width: "calc(15rem - .8rem)", margin: ".4rem" }}>
+                <div style={{ height: "3rem" }}>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.9)" : "#007bff", fontWeight: "700", fontSize: "1.3rem" }}>{title}</span>
+                </div>
+                <div style={{ height: "calc(100% - 3rem)", width: "100%", lineHeight: "1.2rem" }}>
+                    <span style={{ color: dark ? "rgba(255,255,255,0.7)" : "#007bff", fontWeight: "400", fontSize: "1.1rem", textAlign: "left", display: "block" }}>{description}</span>
+                </div>
+            </div>
+            <div
+                onClick={() => handleDeleteWaypoint(waypointId)}
+                style={{ ...waypointDeleteIcon, ...(isDeleteHovered ? waypointDeleteIconHover : {}) }}
+                onMouseEnter={() => setIsDeleteHovered(true)}
+                onMouseLeave={() => setIsDeleteHovered(false)}
+            >
+                <IoRemoveCircleOutline size={"2.5rem"} />
+            </div>
+        </div>
+    );
+}
+
+const titleStyle = {
+    borderRadius: "1rem", width: "100%", padding: "0.3rem",
+    fontSize: "1.2rem", color: "#757575", fontWeight: 700,
+}
+
+const titleInputStyle = (dark) => ({
+    borderRadius: "1rem",
+    backgroundColor: dark ? "#0a2745" : "white",
+    border: dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(4,4,4,0.2)",
+    width: "100%",
+    padding: "0.3rem", fontSize: "1.2rem", fontWeight: 700,
+    color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
+})
+
+const waypointDetailRow = {
+    height: "3rem", width: "100%", margin: "auto",
+    alignContent: "center", display: "grid",
+    gridTemplateColumns: "1.5fr 5fr", paddingRight: "1rem",
+    marginRight: "0", borderRadius: "1rem"
+}
+
+const mainContainer = {
+    display: "flex", flexGrow: "1", width: "100%", height: "100%",
+}
+
+const newWaypointContainer = {
+    display: "flex", flexDirection: "column",
+    height: "calc(50vh - 1.5rem)", backgroundColor: "white",
+    padding: ".5rem", margin: "3rem", marginBottom: "0", marginTop: "0rem",
+    borderRadius: "1.5rem",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
+}
+
+const WaypointDescriptionContainerBox = { width: "100%" }
+
+const waypointDesctriptionContainer = {
+    height: "90%", width: "100%", backgroundColor: "white", margin: "auto"
+}
+
+const mapContainerBox = {
+    display: "flex", flexDirection: "column",
+    width: "64%", height: "calc(100vh - 7rem)", marginTop: "0rem"
+}
+
+const mapContainer = {
+    display: "flex", height: "100%",
+    width: "calc(100% - 0rem)", backgroundColor: "rgba(155,225,115,0.05)",
+}
+
+const WaypointDetailsContainer = {
+    height: "100%", width: "55%",
+    display: "flex", flexDirection: "column", fontSize: "1.5rem"
+}
+
+const WaypointImageUploaderContainer = {
+    height: "100%", width: "45%", display: "flex", justifyContent: "center"
+}
+
+const WaypointImageUploaderContainerBox = {
+    height: "50%", width: "100%", display: "flex", flexDirection: "row",
+}
+
+const spinnerContainer = {
+    height: "100%", width: "100%", borderRadius: "1.5rem", position: "relative"
+}
+
+const spinnerInner = {
+    position: "absolute", left: "40%", height: "2rem", width: "2rem",
+    border: "6px solid rgba(173,216,230,.5)", borderTop: "6px solid #1e90ff",
+}
+
+const addWaypointButton = {
+    backgroundColor: "#007bff", bottom: "-0.5rem", borderRadius: "2rem",
+    alignContent: "center", justifyItems: "center", cursor: "pointer",
+    transition: "transform 0.3s ease-in-out", fontSize: "1.3rem", fontWeight: "800",
+    width: "40%", marginLeft: "50%", transform: "translateX(-50%)",
+    padding: "0.3rem", paddingRight: "1rem", paddingLeft: "1rem",
+    marginTop: "1rem"
+}
+
+const imageStyle = {
+    objectFit: "cover", borderRadius: "1.5rem",
+    border: "2px solid transparent", height: "12rem", width: "12rem"
+}
+
+const deleteImageIcon = {
+    backgroundColor: "rgba(211,1,1,0.4)", width: "3rem", height: "3rem",
+    position: "absolute", top: "-0.5rem", right: "-0.5rem",
+    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", transition: "transform 0.3s ease-in-out",
+}
+
+const deleteImageIconHover = { transform: "scale(1.2)" }
+
+const waypointDeleteIcon = {
+    backgroundColor: "#3e99", width: "3rem", height: "3rem",
+    position: "absolute", top: ".5rem", right: "1.5rem",
+    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", transition: "transform 0.3s ease-in-out", zIndex: "200"
+}
+
+const waypointDeleteIconHover = { transform: "scale(1.2)" }
+
+const modalOverlay = {
+    position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
+    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1.5rem",
+}
+
+const modalBox = {
+    backgroundColor: "white", borderRadius: "1.25rem", padding: "1.5rem",
+    width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
+}
+
+const modalTitle = {
+    fontWeight: 800, fontSize: "1.15rem", color: "#1a2e4a", marginBottom: "0.5rem",
+}
+
+const modalSummaryCard = {
+    backgroundColor: "#f3f4f6", borderRadius: "0.625rem", padding: "0.875rem",
+    width: "100%", display: "flex", flexDirection: "column", gap: "0.375rem", marginBottom: "0.375rem",
+}
+
+const modalSummaryRow = {
+    display: "flex", justifyContent: "space-between", gap: "0.5rem",
+}
+
+const modalSummaryLabel = {
+    fontWeight: 800, fontSize: "0.875rem", color: "#6b7280",
+}
+
+const modalSummaryValue = {
+    fontWeight: 800, fontSize: "0.875rem", color: "#1a2e4a", textAlign: "right",
+}
+
+const modalPill = {
+    display: "flex", alignItems: "center", gap: "0.375rem",
+    borderRadius: "1.25rem", padding: "0.625rem 0.875rem",
+    width: "100%", marginBottom: "0.625rem",
+}
+
+const modalPillText = {
+    fontWeight: 700, fontSize: "0.875rem", textAlign: "left",
+}
+
+const modalButtonRow = {
+    display: "flex", flexDirection: "row", gap: "0.75rem",
+    marginTop: "1.25rem", width: "100%", alignItems: "center",
+}
+
+const modalCancelText = {
+    flex: 1, textAlign: "center", fontWeight: 700, fontSize: "0.9375rem",
+    color: "#6b7280", cursor: "pointer",
+}
+
+const modalConfirmBtn = {
+    flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem",
+    padding: "0.75rem", fontWeight: 700, fontSize: "0.9375rem", color: "white", cursor: "pointer",
+}

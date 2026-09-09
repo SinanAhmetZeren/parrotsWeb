@@ -1,42 +1,31 @@
 
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import "../assets/css/CreateVehicle.css"
-import "react-quill/dist/quill.snow.css";
-import { IoRemoveCircleOutline } from "react-icons/io5";
-import uploadImage from "../assets/images/ParrotsLogoPlus.jpg"
-import { Swiper, SwiperSlide } from 'swiper/react';
+import React, { useState, useEffect, useRef } from "react";
+import "../assets/css/CreateVehicle.css";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import parrotMarker1 from "../assets/images/parrotMarker1.png";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
-import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice"
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination, Navigation } from 'swiper/modules';
-import 'swiper/css/navigation';
-import rightOrangeArrow from "../assets/images/arrow-right-orange.png";
+import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
+import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice";
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 const tileUrl = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
 const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
 
-const clickMarkerIcon = L.icon({
-    iconUrl: parrotMarker1,
-    iconSize: [50, 60],
-    iconAnchor: [25, 60],
+const clickMarkerIcon = L.divIcon({
+    className: "",
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41"><path d="M12.5 0C5.596 0 0 5.596 0 12.5C0 21.875 12.5 41 12.5 41C12.5 41 25 21.875 25 12.5C25 5.596 19.404 0 12.5 0z" fill="#FACC15"/><circle cx="12.5" cy="12.5" r="5" fill="white" fill-opacity="0.6"/></svg>`,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
 });
 
 function MapClickHandler({ onMapClick }) {
     useMapEvents({
-        click(e) {
-            onMapClick(e.latlng.lat, e.latlng.lng);
-        },
+        click(e) { onMapClick(e.latlng.lat, e.latlng.lng); },
     });
     return null;
 }
@@ -115,110 +104,88 @@ export const AddWaypointsPage = ({
     isPublicOnMap,
     crackerBalance,
 }) => {
-    const [waypointTitle, setWaypointTitle] = useState("")
-    const [waypointLatitude, setWaypointLatitude] = useState(null)
-    const [waypointLongitude, setWaypointLongitude] = useState(null)
-    const [waypointImage, setWaypointImage] = useState("")
-    const [waypointBrief, setWaypointBrief] = useState("")
+    const [waypointTitle, setWaypointTitle] = useState("");
+    const [waypointLatitude, setWaypointLatitude] = useState(null);
+    const [waypointLongitude, setWaypointLongitude] = useState(null);
+    const [waypointImage, setWaypointImage] = useState(null);
+    const [waypointBrief, setWaypointBrief] = useState("");
     const [initialLatitude, setInitialLatitude] = useState();
     const [initialLongitude, setInitialLongitude] = useState();
-    const [addedWaypoints, setAddedWaypoints] = useState([]);
-    const [imagePreview, setImagePreview] = useState("")
-    const [isUploadingWaypointImage, setIsUploadingWaypointImage] = useState(false);
+    const [addedWaypoints, setAddedWaypoints] = useState([
+        { waypointId: "dummy-1", waypointImage: null, latitude: 48.8566, longitude: 2.3522, title: "Paris", description: "Starting point in the heart of Paris.", voyageId, order: 1 },
+        { waypointId: "dummy-2", waypointImage: null, latitude: 46.2044, longitude: 6.1432, title: "Geneva", description: "Overnight stop by the lake.", voyageId, order: 2 },
+        { waypointId: "dummy-3", waypointImage: null, latitude: 45.0703, longitude: 7.6869, title: "Turin", description: "Refuel and a long lunch.", voyageId, order: 3 },
+        { waypointId: "dummy-4", waypointImage: null, latitude: 43.7696, longitude: 11.2558, title: "Florence", description: "Two nights, museums and pasta.", voyageId, order: 4 },
+        { waypointId: "dummy-5", waypointImage: null, latitude: 41.9028, longitude: 12.4964, title: "Rome", description: "Final stop, three nights.", voyageId, order: 5 },
+    ]);
+    const [imagePreview, setImagePreview] = useState("");
     const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
     const [voyageCreated, setVoyageCreated] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    const fileInputRef = useRef(null);
     const [addWaypoint] = useAddWaypointMutation();
     const [addWaypointNoImage] = useAddWaypointNoImageMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
     const [confirmVoyage] = useConfirmVoyageMutation();
     const navigate = useNavigate();
-    const dark = useSelector((state) => state.users.isDarkMode);
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setInitialLatitude(position.coords.latitude);
-                    setInitialLongitude(position.coords.longitude);
-                },
-                (error) => {
-                    console.error("Error getting location", error);
-                    setInitialLatitude(52.20551962389507);
-                    setInitialLongitude(0.11798991656591876);
-                }
+                (pos) => { setInitialLatitude(pos.coords.latitude); setInitialLongitude(pos.coords.longitude); },
+                () => { setInitialLatitude(48.8566); setInitialLongitude(2.3522); }
             );
         } else {
-            setInitialLatitude(37.7749);
-            setInitialLongitude(-122.4194);
+            setInitialLatitude(48.8566);
+            setInitialLongitude(2.3522);
         }
     }, []);
 
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setWaypointImage(file);
+        setImagePreview(URL.createObjectURL(file));
+    };
+
     const handleAddWaypoint = async () => {
-        setIsAddingWaypoint(true)
-        setIsUploadingWaypointImage(true);
+        setIsAddingWaypoint(true);
         const hasImage = waypointImage instanceof File;
-
         try {
-            const result = hasImage ? await addWaypoint({
-                waypointImage,
-                latitude: waypointLatitude,
-                longitude: waypointLongitude,
-                title: waypointTitle,
-                description: waypointBrief,
-                voyageId: voyageId,
-                order,
-            }) : await addWaypointNoImage({
-                latitude: waypointLatitude,
-                longitude: waypointLongitude,
-                title: waypointTitle,
-                description: waypointBrief,
-                voyageId: voyageId,
-                order,
-            })
-
+            const result = hasImage
+                ? await addWaypoint({ waypointImage, latitude: waypointLatitude, longitude: waypointLongitude, title: waypointTitle, description: waypointBrief, voyageId, order })
+                : await addWaypointNoImage({ latitude: waypointLatitude, longitude: waypointLongitude, title: waypointTitle, description: waypointBrief, voyageId, order });
             if (result.error || !result.data?.data) {
                 toast.error("Could not add waypoint. Check your connection and try again.");
+                setIsAddingWaypoint(false);
                 return;
             }
-            const waypointId = result.data.data
+            const waypointId = result.data.data;
             setOrder(order + 1);
-            setAddedWaypoints((prevWaypoints) => [
-                ...prevWaypoints,
-                {
-                    waypointId,
-                    waypointImage,
-                    latitude: waypointLatitude,
-                    longitude: waypointLongitude,
-                    title: waypointTitle,
-                    description: waypointBrief,
-                    voyageId,
-                    order,
-                },
-            ]);
-            setWaypointLongitude(null)
-            setWaypointLatitude(null)
-            setWaypointTitle("")
-            setWaypointBrief("")
-            setImagePreview("")
-        } catch (error) {
+            setAddedWaypoints((prev) => [...prev, { waypointId, waypointImage, latitude: waypointLatitude, longitude: waypointLongitude, title: waypointTitle, description: waypointBrief, voyageId, order }]);
+            setWaypointLatitude(null);
+            setWaypointLongitude(null);
+            setWaypointTitle("");
+            setWaypointBrief("");
+            setWaypointImage(null);
+            setImagePreview("");
+        } catch {
             toast.error("Could not add waypoint. Check your connection and try again.");
         }
-        setIsUploadingWaypointImage(false);
         setIsAddingWaypoint(false);
     };
 
     const handleDeleteWaypoint = async (waypointId) => {
-        const result = await deleteWaypoint({ waypointId });
-        if (result.error) {
-            toast.error("Could not delete waypoint. Check your connection and try again.");
+        if (waypointId.startsWith("dummy-")) {
+            setAddedWaypoints((prev) => prev.filter((wp) => wp.waypointId !== waypointId));
             return;
         }
-        setAddedWaypoints((prevWaypoints) =>
-            prevWaypoints.filter((waypoint) => waypoint.waypointId !== waypointId)
-        );
-    }
+        const result = await deleteWaypoint({ waypointId });
+        if (result.error) { toast.error("Could not delete waypoint."); return; }
+        setAddedWaypoints((prev) => prev.filter((wp) => wp.waypointId !== waypointId));
+    };
 
     async function handleGoToProfilePage() {
         setIsConfirming(true);
@@ -239,504 +206,206 @@ export const AddWaypointsPage = ({
         }
     }
 
-    return (
-        <div style={{ height: "calc(100vh - 3rem)" }}>
-            <div style={mainContainer}>
-                <div style={{ width: "35%" }}>
-                    <div style={{ ...newWaypointContainer, backgroundColor: dark ? "#011a32" : "white" }}>
-                        <div style={WaypointImageUploaderContainerBox}>
-                            <div style={WaypointImageUploaderContainer}>
-                                <WaypointImageUploader
-                                    waypointImage={waypointImage}
-                                    setWaypointImage={setWaypointImage}
-                                    imagePreview={imagePreview}
-                                    setImagePreview={setImagePreview}
-                                />
-                            </div>
-                            <div style={WaypointDetailsContainer}>
-                                <div style={waypointDetailRow}>
-                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lat:</span>
-                                    <input type="text" placeholder="Click on map" value={waypointLatitude && waypointLatitude !== 0 ? Number(waypointLatitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
-                                </div>
-                                <div style={waypointDetailRow}>
-                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Lng:</span>
-                                    <input type="text" placeholder="Click on map" value={waypointLongitude && waypointLongitude !== 0 ? Number(waypointLongitude.toFixed(6)) : ""} style={titleInputStyle(dark)} readOnly />
-                                </div>
-                                <div style={waypointDetailRow}>
-                                    <span style={{ ...titleStyle, color: dark ? "rgba(255,255,255,0.6)" : "#757575" }}>Title:</span>
-                                    <input type="text" placeholder="Waypoint title (max 25)" value={waypointTitle} onChange={(e) => setWaypointTitle(e.target.value)} maxLength={25} style={titleInputStyle(dark)} />
-                                </div>
-                            </div>
-                        </div>
-                        <div style={WaypointDescriptionContainerBox}>
-                            <div style={{ ...waypointDesctriptionContainer, backgroundColor: dark ? "#011a32" : "white" }}>
-                                <WaypointBriefInput
-                                    waypointBrief={waypointBrief}
-                                    setWaypointBrief={setWaypointBrief}
-                                    dark={dark} />
-                            </div>
-                        </div>
+    const [hoveredWaypoint, setHoveredWaypoint] = useState(null);
 
-                        {isAddingWaypoint ? (
-                            <div style={addWaypointButton}>
-                                <div style={spinnerContainer}>
-                                    <div className="spinner" style={spinnerInner}></div>
-                                </div>
-                                <text style={{ opacity: 0 }}> A</text>
-                            </div>
-                        ) : (
+    const canAdd = !!(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief);
+
+    return (
+        <div style={{ flex: 1, minHeight: 0, display: "flex", fontFamily: "Nunito", padding: "0.75rem 3rem", gap: "1.5rem", boxSizing: "border-box" }}>
+
+            {/* ── Left panel ── */}
+            <div style={{ width: "380px", flexShrink: 0, backgroundColor: "white", borderRadius: "1rem", display: "flex", flexDirection: "column", boxShadow: "0 4px 24px rgba(0,14,30,0.18)", overflow: "hidden" }}>
+
+                {/* NEW WAYPOINT */}
+                <div style={{ padding: "1rem 1rem 0.75rem" }}>
+                    <div style={secLabel}>New Waypoint</div>
+
+                    {/* Coords / hint */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#F3F4F6", borderRadius: "10px", padding: "9px 13px", marginBottom: "0.75rem" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 800, color: waypointLatitude != null ? "#0A2540" : "#9CA3AF", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontSize: "15px" }}>📍</span>
+                            {waypointLatitude != null ? `${waypointLatitude.toFixed(4)}, ${waypointLongitude.toFixed(4)}` : "Click the map to pin a location"}
+                        </span>
+                    </div>
+
+                    {/* Image + inputs row */}
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                        {/* Image uploader */}
+                        <div style={{ position: "relative", flexShrink: 0 }}>
+                            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: "none" }} />
+                            {/* Outer grey */}
                             <div
-                                style={{
-                                    ...addWaypointButton,
-                                    opacity: (!(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief)) ? 0.5 : 1,
-                                    pointerEvents: !(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief) ? 'none' : 'auto'
-                                }}
-                                onClick={() => {
-                                    if (waypointTitle && waypointLatitude && waypointLongitude && waypointBrief) {
-                                        handleAddWaypoint();
-                                    }
-                                }}
+                                onClick={() => !imagePreview && fileInputRef.current?.click()}
+                                style={{ width: "7.5rem", height: "7.5rem", borderRadius: "1rem", backgroundColor: "#F0F2F5", padding: "0.75rem", cursor: imagePreview ? "default" : "pointer", boxSizing: "border-box", position: "relative" }}
                             >
-                                Add Waypoint
+                                {/* Inner white */}
+                                <div style={{ width: "100%", height: "100%", borderRadius: "0.7rem", backgroundColor: "white", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    {imagePreview
+                                        ? <img src={imagePreview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                        : <img src={uploadImage} alt="" style={{ width: "90%", height: "90%", opacity: 0.45, objectFit: "contain" }} />
+                                    }
+                                </div>
                             </div>
-                        )}
-                    </div>
+                            {imagePreview && (
+                                <div onClick={() => { if (imagePreview) URL.revokeObjectURL(imagePreview); setWaypointImage(null); setImagePreview(""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                                    style={{ position: "absolute", top: "0.3rem", right: "0.3rem", width: "1.1rem", height: "1.1rem", backgroundColor: "rgba(30,30,30,0.6)", color: "white", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.65rem", fontWeight: 700, zIndex: 10 }}>✕</div>
+                            )}
+                        </div>
 
-                    <div style={{
-                        height: "18rem",
-                        margin: "auto",
-                        marginTop: "0.5rem",
-                        marginBottom: "0rem",
-                        width: "95%",
-                        backgroundColor: "transparent",
-                        borderRadius: "1.5rem"
-                    }}>
-                        <AddedWaypointsSlider
-                            addedWaypoints={addedWaypoints}
-                            setAddedWaypoints={setAddedWaypoints}
-                            handleDeleteWaypoint={handleDeleteWaypoint}
-                            dark={dark}
-                        />
-                    </div>
-
-                    <div style={{ display: "flex", gap: "1rem", marginTop: "0rem", justifyContent: "center" }}>
-                        <div
-                            style={{
-                                ...addWaypointButton,
-                                marginTop: 0, marginLeft: 0, transform: "none", width: "auto",
-                                opacity: addedWaypoints?.length > 0 ? 1 : 0.5,
-                                pointerEvents: addedWaypoints?.length > 0 ? 'auto' : 'none',
-                            }}
-                            onClick={() => { if (addedWaypoints?.length > 0) setShowConfirmModal(true); }}
-                        >
-                            Complete
+                        {/* Title + brief */}
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "7px" }}>
+                            <input
+                                type="text"
+                                placeholder="Waypoint title"
+                                maxLength={25}
+                                value={waypointTitle}
+                                onChange={(e) => setWaypointTitle(e.target.value)}
+                                style={{ fontFamily: "Nunito", fontSize: "13px", fontWeight: 600, color: "#0A2540", border: "none", borderRadius: "8px", padding: "9px 12px", outline: "none", width: "100%", backgroundColor: "#F3F4F6", boxSizing: "border-box", textAlign: "left" }}
+                            />
+                            <textarea
+                                placeholder="What happens here"
+                                maxLength={300}
+                                value={waypointBrief}
+                                onChange={(e) => setWaypointBrief(e.target.value)}
+                                style={{ fontFamily: "Nunito", fontSize: "13px", fontWeight: 600, color: "#0A2540", border: "none", borderRadius: "8px", padding: "9px 12px", outline: "none", width: "100%", backgroundColor: "#F3F4F6", resize: "none", height: "3.875rem", boxSizing: "border-box", textAlign: "left" }}
+                            />
                         </div>
                     </div>
+
+                    {/* Char count */}
+                    <div style={{ textAlign: "right", fontSize: "10.5px", fontWeight: 700, color: "#9CA3AF", marginTop: "5px" }}>{waypointBrief.length} / 300</div>
+
+                    {/* Add button */}
+                    <button
+                        onClick={canAdd && !isAddingWaypoint ? handleAddWaypoint : undefined}
+                        style={{ width: "100%", backgroundColor: canAdd ? "#3B82F6" : "#E5E7EB", color: canAdd ? "white" : "#9CA3AF", border: "none", borderRadius: "99px", padding: "11px", fontFamily: "Nunito", fontSize: "14px", fontWeight: 800, cursor: canAdd ? "pointer" : "not-allowed", marginTop: "0.625rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
+                    >
+                        {isAddingWaypoint
+                            ? <div style={{ width: "16px", height: "16px", border: "2.5px solid white", borderTop: "2.5px solid transparent", borderRadius: "50%" }} />
+                            : "+ Add waypoint"}
+                    </button>
                 </div>
 
-                <div style={mapContainerBox}>
-                    <div style={mapContainer}>
-                        {!initialLatitude || !initialLongitude ? (
-                            <div className="cardSwiperSpinner">
-                                <p>Locating you...</p>
-                            </div>
-                        ) : (
-                            <MapContainer
-                                center={[initialLatitude, initialLongitude]}
-                                zoom={10}
-                                style={{ height: "100%", width: "100%" }}
-                                zoomControl={false}
-                                scrollWheelZoom={true}
+                {/* Divider */}
+                <div style={{ height: "1px", backgroundColor: "#E3E9F0" }} />
+
+                {/* ROUTE header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.625rem 1rem 0.5rem" }}>
+                    <span style={secLabel}>Route</span>
+                    <span style={{ fontSize: "11px", fontWeight: 700, color: "#6B7280", backgroundColor: "#F3F4F6", borderRadius: "99px", padding: "3px 10px" }}>{addedWaypoints.length} stop{addedWaypoints.length !== 1 ? "s" : ""}</span>
+                </div>
+
+                {/* Waypoint list */}
+                <div style={{ flex: 1, overflowY: "auto", padding: "0 1rem" }}>
+                    {addedWaypoints.length === 0 && (
+                        <div style={{ textAlign: "center", color: "#9CA3AF", fontSize: "12.5px", fontWeight: 600, padding: "1.5rem 0" }}>No waypoints yet</div>
+                    )}
+                    {addedWaypoints.map((wp, index) => {
+                        const isFirst = index === 0;
+                        const isLast = index === addedWaypoints.length - 1 && addedWaypoints.length > 1;
+                        const badgeColor = isFirst ? "#22C55E" : isLast ? "#EF4444" : "#3B82F6";
+                        const isHovered = hoveredWaypoint === wp.waypointId;
+                        return (
+                            <div
+                                key={wp.waypointId}
+                                style={{ position: "relative" }}
+                                onMouseEnter={() => setHoveredWaypoint(wp.waypointId)}
+                                onMouseLeave={() => setHoveredWaypoint(null)}
                             >
-                                <TileLayer url={tileUrl} attribution={tileAttribution} />
-                                <MapClickHandler onMapClick={(lat, lng) => {
-                                    setWaypointLatitude(lat);
-                                    setWaypointLongitude(lng);
-                                }} />
-                                {waypointLatitude !== null && waypointLongitude !== null && (
-                                    <Marker
-                                        position={[waypointLatitude, waypointLongitude]}
-                                        icon={clickMarkerIcon}
-                                    />
-                                )}
-                                <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
-                                <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
-                            </MapContainer>
-                        )}
-                    </div>
-                </div>
-            </div>
-            {showConfirmModal && ConfirmModal({ voyageName, startDate, endDate, isPublicOnMap, setShowConfirmModal, handleGoToProfilePage, isConfirming, voyageCreated })}
-        </div>
-    );
-}
-
-const WaypointImageUploader = ({ waypointImage, setWaypointImage, imagePreview, setImagePreview }) => {
-    const fileInputRef = React.createRef();
-    const [isDeleteHovered, setIsDeleteHovered] = useState(false)
-
-    const handleImageChange = (e) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const file = files[0];
-            setWaypointImage(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleCancelUpload = () => {
-        if (imagePreview) URL.revokeObjectURL(imagePreview);
-        setWaypointImage(null);
-        setImagePreview(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-    };
-
-    return (
-        <div style={{ borderRadius: "1.5rem" }}>
-            <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: "none" }}
-                ref={fileInputRef}
-            />
-            <div style={{ position: "relative" }}>
-                {imagePreview ? (
-                    <img src={imagePreview} alt="" style={imageStyle} />
-                ) : (
-                    <img
-                        src={uploadImage}
-                        alt="Upload Icon"
-                        onClick={() => fileInputRef.current.click()}
-                        style={{
-                            ...imageStyle,
-                            boxShadow: "0 4px 6px rgba(0,0,0,0.1), inset 0 -4px 6px rgba(0,0,0,0.31)",
-                        }}
-                    />
-                )}
-                {imagePreview && (
-                    <div
-                        onClick={handleCancelUpload}
-                        style={{ ...deleteImageIcon, ...(isDeleteHovered ? deleteImageIconHover : {}) }}
-                        onMouseEnter={() => setIsDeleteHovered(true)}
-                        onMouseLeave={() => setIsDeleteHovered(false)}
-                    >
-                        <IoRemoveCircleOutline size={"2.5rem"} />
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-const WaypointBriefInput = ({ waypointBrief, setWaypointBrief, dark = false }) => (
-    <textarea
-        placeholder="Waypoint brief (max 300)"
-        maxLength={300}
-        value={waypointBrief}
-        onChange={(e) => setWaypointBrief(e.target.value)}
-        style={{
-            ...titleInputStyle(dark),
-            height: "7rem",
-            maxHeight: "7rem",
-            resize: "none",
-            padding: "1rem",
-            width: "95%",
-            marginTop: "0.5rem",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-        }}
-    />
-);
-
-const AddedWaypointsSlider = ({ addedWaypoints, handleDeleteWaypoint, dark = false }) => {
-    const swiperRef = useRef(null);
-    const prevRef = useRef(null);
-    const nextRef = useRef(null);
-
-    useEffect(() => {
-        if (swiperRef.current && addedWaypoints.length > 0) {
-            swiperRef.current.slideTo(addedWaypoints.length - 1);
-        }
-    }, [addedWaypoints]);
-
-    useEffect(() => {
-        if (swiperRef.current && prevRef.current && nextRef.current) {
-            swiperRef.current.params.navigation.prevEl = prevRef.current;
-            swiperRef.current.params.navigation.nextEl = nextRef.current;
-            swiperRef.current.navigation.init();
-            swiperRef.current.navigation.update();
-        }
-    }, []);
-
-    return (
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            overflow: "scroll",
-            width: "34rem",
-            margin: "auto",
-            paddingLeft: "2rem",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            height: "100%",
-            position: "relative",
-        }}>
-            {addedWaypoints?.length > 0 ? (
-                <>
-                    <Swiper
-                        slidesPerView={1}
-                        centeredSlides={true}
-                        spaceBetween={30}
-                        pagination={{ clickable: true }}
-                        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-                        modules={[Pagination, Navigation]}
-                        className="mySwiper"
-                        onSwiper={(swiper) => { swiperRef.current = swiper; }}
-                    >
-                        {addedWaypoints.map((waypoint, index) => (
-                            <SwiperSlide key={index}>
-                                <div style={{ marginTop: "0.5rem" }}>
-                                    <WaypointComponent
-                                        waypointId={waypoint.waypointId}
-                                        description={waypoint.description}
-                                        latitude={waypoint.latitude}
-                                        longitude={waypoint.longitude}
-                                        profileImage={waypoint.waypointImage}
-                                        title={waypoint.title}
-                                        handleDeleteWaypoint={handleDeleteWaypoint}
-                                        dark={dark}
-                                    />
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", padding: "0.5rem 0.625rem", marginBottom: "6px", backgroundColor: isHovered ? "#EEF2FF" : "#F9FAFB", borderRadius: "10px", cursor: "default" }}>
+                                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: badgeColor, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 900, flexShrink: 0, fontFamily: "Nunito" }}>{index + 1}</div>
+                                    <div style={{ width: "46px", height: "46px", borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
+                                        <img src={wp.waypointImage instanceof File ? URL.createObjectURL(wp.waypointImage) : parrotsLogo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
+                                        <div style={{ fontSize: "13.5px", fontWeight: 800, color: "#3B82F6", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{wp.title}</div>
+                                        <div style={{ fontSize: "11.5px", fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{wp.description}</div>
+                                    </div>
+                                    <div style={{ color: "#9CA3AF", cursor: "pointer", fontSize: "18px", fontWeight: 400, flexShrink: 0, lineHeight: 1 }} onClick={() => handleDeleteWaypoint(wp.waypointId)}>×</div>
                                 </div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                    <div ref={prevRef}
-                        style={{
-                            position: "absolute", top: "50%",
-                            left: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
-                        }}>
-                        <img src={rightOrangeArrow} alt="Previous" style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }} />
-                    </div>
-                    <div ref={nextRef}
-                        style={{
-                            position: "absolute", top: "50%",
-                            right: "0%", zIndex: 10, height: "2.5rem", width: "2.5rem", cursor: "pointer", transform: "translateY(-50%)"
-                        }}>
-                        <img src={rightOrangeArrow} alt="Next" style={{ width: "100%", height: "100%" }} />
-                    </div>
-                    <style>{`.swiper-button-disabled { opacity: 0 !important; }`}</style>
-                </>
-            ) : (
-                <div style={{ height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <span style={{
-                        color: "white",
-                        padding: "1vh",
-                        fontSize: "1.6rem",
-                        fontWeight: 800,
-                        textShadow: "2px 2px 4px rgba(0,0,0,0.6), -2px -2px 4px rgba(255,255,255,0.2)",
-                        opacity: "0.7"
-                    }}>
-                        Add Waypoints
-                    </span>
-                </div>
-            )}
-        </div>
-    );
-}
 
-const WaypointComponent = ({ description, profileImage, title, waypointId, handleDeleteWaypoint, dark = false }) => {
-    const [isDeleteHovered, setIsDeleteHovered] = useState(false);
-    return (
-        <div style={{
-            backgroundColor: dark ? "#0a2745" : "rgba(255,255,255,1)",
-            boxShadow: dark
-                ? "0 0 12px rgba(100,180,255,0.15), 0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)"
-                : "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
-            height: "17rem", width: "30rem",
-            display: "flex", flexDirection: "row",
-            borderRadius: "1.5rem", overflow: "hidden"
-        }}>
-            <img
-                src={profileImage instanceof File ? URL.createObjectURL(profileImage) : parrotsLogo}
-                alt=""
-                style={{ height: "100%", width: "15rem", objectFit: "cover" }}
-            />
-            <div style={{ width: "calc(15rem - .8rem)", margin: ".4rem" }}>
-                <div style={{ height: "3rem" }}>
-                    <span style={{ color: dark ? "rgba(255,255,255,0.9)" : "#007bff", fontWeight: "700", fontSize: "1.3rem" }}>{title}</span>
+                                {/* Hover popover */}
+                                {isHovered && (() => {
+                                    const above = index === addedWaypoints.length - 1;
+                                    return (
+                                        <div style={{ position: "absolute", left: "3rem", ...(above ? { bottom: "calc(100% + 8px)" } : { top: "calc(100% + 8px)" }), zIndex: 200, backgroundColor: "white", borderRadius: "10px", padding: "12px 14px", boxShadow: "0 8px 24px rgba(0,14,30,0.18)", border: "1px solid #E3E9F0", width: "240px" }}>
+                                            {above
+                                                ? <div style={{ position: "absolute", bottom: "-7px", left: "24px", width: "13px", height: "13px", backgroundColor: "white", border: "1px solid #E3E9F0", borderTop: "none", borderLeft: "none", transform: "rotate(45deg)" }} />
+                                                : <div style={{ position: "absolute", top: "-7px", left: "24px", width: "13px", height: "13px", backgroundColor: "white", border: "1px solid #E3E9F0", borderRight: "none", borderBottom: "none", transform: "rotate(45deg)" }} />
+                                            }
+                                            <div style={{ fontSize: "13.5px", fontWeight: 800, color: "#3B82F6", marginBottom: "5px", fontFamily: "Nunito", textAlign: "left" }}>{wp.title}</div>
+                                            <div style={{ fontSize: "12.5px", fontWeight: 600, color: "#374151", lineHeight: 1.5, fontFamily: "Nunito", textAlign: "left" }}>{wp.description}</div>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                        );
+                    })}
                 </div>
-                <div style={{ height: "calc(100% - 3rem)", width: "100%", lineHeight: "1.2rem" }}>
-                    <span style={{ color: dark ? "rgba(255,255,255,0.7)" : "#007bff", fontWeight: "400", fontSize: "1.1rem", textAlign: "left", display: "block" }}>{description}</span>
+
+                {/* Footer */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1rem", borderTop: "1px solid #E3E9F0" }}>
+                    <button onClick={() => setPageState(2)} style={{ fontFamily: "Nunito", border: "1.5px solid #E3E9F0", fontSize: "13px", fontWeight: 700, padding: "7px 16px", borderRadius: "99px", cursor: "pointer", backgroundColor: "white", color: "#374151" }}>‹ Images</button>
+                    <button
+                        onClick={() => addedWaypoints.length > 0 && setShowConfirmModal(true)}
+                        style={{ fontFamily: "Nunito", border: "none", fontSize: "13px", fontWeight: 800, padding: "7px 18px", borderRadius: "99px", cursor: addedWaypoints.length > 0 ? "pointer" : "not-allowed", backgroundColor: addedWaypoints.length > 0 ? "#22C55E" : "#E3E9F0", color: addedWaypoints.length > 0 ? "white" : "#9CA3AF" }}
+                    >Complete voyage</button>
                 </div>
             </div>
-            <div
-                onClick={() => handleDeleteWaypoint(waypointId)}
-                style={{ ...waypointDeleteIcon, ...(isDeleteHovered ? waypointDeleteIconHover : {}) }}
-                onMouseEnter={() => setIsDeleteHovered(true)}
-                onMouseLeave={() => setIsDeleteHovered(false)}
-            >
-                <IoRemoveCircleOutline size={"2.5rem"} />
+
+            {/* ── Map ── */}
+            <div style={{ flex: 1, minWidth: 0, minHeight: 0, position: "relative", borderRadius: "1rem", overflow: "hidden", boxShadow: "0 4px 24px rgba(0,14,30,0.18)" }}>
+
+                {!initialLatitude || !initialLongitude ? (
+                    <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontFamily: "Nunito", fontSize: "1.2rem" }}>Locating you…</div>
+                ) : (
+                    <MapContainer
+                        center={[initialLatitude, initialLongitude]}
+                        zoom={5}
+                        style={{ height: "100%", width: "100%" }}
+                        zoomControl={false}
+                        scrollWheelZoom={true}
+                    >
+                        <TileLayer url={tileUrl} attribution={tileAttribution} />
+                        <MapClickHandler onMapClick={(lat, lng) => { setWaypointLatitude(lat); setWaypointLongitude(lng); }} />
+                        {waypointLatitude != null && waypointLongitude != null && (
+                            <Marker position={[waypointLatitude, waypointLongitude]} icon={clickMarkerIcon} />
+                        )}
+                        <CreateVoyageWaypointsMarkers waypoints={addedWaypoints} />
+                        <CreateVoyagePolyLineComponent waypoints={addedWaypoints} />
+                    </MapContainer>
+                )}
+
+                {/* Legend */}
+                <div style={{ position: "absolute", bottom: "16px", left: "16px", zIndex: 1000, backgroundColor: "rgba(0,0,0,0.65)", borderRadius: "8px", padding: "8px 12px", display: "flex", flexDirection: "column", gap: "5px" }}>
+                    {[["#22C55E", "Start"], ["#3B82F6", "Stop"], ["#EF4444", "Finish"]].map(([color, label]) => (
+                        <div key={label} style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                            <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: "11.5px", fontWeight: 700, color: "white", fontFamily: "Nunito" }}>{label}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            {showConfirmModal && <ConfirmModal voyageName={voyageName} startDate={startDate} endDate={endDate} isPublicOnMap={isPublicOnMap} setShowConfirmModal={setShowConfirmModal} handleGoToProfilePage={handleGoToProfilePage} isConfirming={isConfirming} voyageCreated={voyageCreated} />}
         </div>
     );
-}
+};
 
-const titleStyle = {
-    borderRadius: "1rem", width: "100%", padding: "0.3rem",
-    fontSize: "1.2rem", color: "#757575", fontWeight: 700,
-}
+const secLabel = {
+    fontSize: "10px", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase",
+    color: "#5C6B7A", marginBottom: "0.5rem", fontFamily: "Nunito",
+};
 
-const titleInputStyle = (dark) => ({
-    borderRadius: "1rem",
-    backgroundColor: dark ? "#0a2745" : "white",
-    border: dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(4,4,4,0.2)",
-    width: "100%",
-    padding: "0.3rem", fontSize: "1.2rem", fontWeight: 700,
-    color: dark ? "rgba(255,255,255,0.9)" : "#007bff",
-})
-
-const waypointDetailRow = {
-    height: "3rem", width: "100%", margin: "auto",
-    alignContent: "center", display: "grid",
-    gridTemplateColumns: "1.5fr 5fr", paddingRight: "1rem",
-    marginRight: "0", borderRadius: "1rem"
-}
-
-const mainContainer = {
-    display: "flex", flexGrow: "1", width: "100%", height: "100%",
-}
-
-const newWaypointContainer = {
-    display: "flex", flexDirection: "column",
-    height: "calc(50vh - 1.5rem)", backgroundColor: "white",
-    padding: ".5rem", margin: "3rem", marginBottom: "0", marginTop: "0rem",
-    borderRadius: "1.5rem",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
-}
-
-const WaypointDescriptionContainerBox = { width: "100%" }
-
-const waypointDesctriptionContainer = {
-    height: "90%", width: "100%", backgroundColor: "white", margin: "auto"
-}
-
-const mapContainerBox = {
-    display: "flex", flexDirection: "column",
-    width: "64%", height: "calc(100vh - 7rem)", marginTop: "0rem"
-}
-
-const mapContainer = {
-    display: "flex", height: "100%",
-    width: "calc(100% - 0rem)", backgroundColor: "rgba(155,225,115,0.05)",
-}
-
-const WaypointDetailsContainer = {
-    height: "100%", width: "55%",
-    display: "flex", flexDirection: "column", fontSize: "1.5rem"
-}
-
-const WaypointImageUploaderContainer = {
-    height: "100%", width: "45%", display: "flex", justifyContent: "center"
-}
-
-const WaypointImageUploaderContainerBox = {
-    height: "50%", width: "100%", display: "flex", flexDirection: "row",
-}
-
-const spinnerContainer = {
-    height: "100%", width: "100%", borderRadius: "1.5rem", position: "relative"
-}
-
-const spinnerInner = {
-    position: "absolute", left: "40%", height: "2rem", width: "2rem",
-    border: "6px solid rgba(173,216,230,.5)", borderTop: "6px solid #1e90ff",
-}
-
-const addWaypointButton = {
-    backgroundColor: "#007bff", bottom: "-0.5rem", borderRadius: "2rem",
-    alignContent: "center", justifyItems: "center", cursor: "pointer",
-    transition: "transform 0.3s ease-in-out", fontSize: "1.3rem", fontWeight: "800",
-    width: "40%", marginLeft: "50%", transform: "translateX(-50%)",
-    padding: "0.3rem", paddingRight: "1rem", paddingLeft: "1rem",
-    marginTop: "1rem"
-}
-
-const imageStyle = {
-    objectFit: "cover", borderRadius: "1.5rem",
-    border: "2px solid transparent", height: "12rem", width: "12rem"
-}
-
-const deleteImageIcon = {
-    backgroundColor: "rgba(211,1,1,0.4)", width: "3rem", height: "3rem",
-    position: "absolute", top: "-0.5rem", right: "-0.5rem",
-    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
-    cursor: "pointer", transition: "transform 0.3s ease-in-out",
-}
-
-const deleteImageIconHover = { transform: "scale(1.2)" }
-
-const waypointDeleteIcon = {
-    backgroundColor: "#3e99", width: "3rem", height: "3rem",
-    position: "absolute", top: ".5rem", right: "1.5rem",
-    borderRadius: "2rem", display: "flex", alignItems: "center", justifyContent: "center",
-    cursor: "pointer", transition: "transform 0.3s ease-in-out", zIndex: "200"
-}
-
-const waypointDeleteIconHover = { transform: "scale(1.2)" }
-
-const modalOverlay = {
-    position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1.5rem",
-}
-
-const modalBox = {
-    backgroundColor: "white", borderRadius: "1.25rem", padding: "1.5rem",
-    width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-}
-
-const modalTitle = {
-    fontWeight: 800, fontSize: "1.15rem", color: "#1a2e4a", marginBottom: "0.5rem",
-}
-
-const modalSummaryCard = {
-    backgroundColor: "#f3f4f6", borderRadius: "0.625rem", padding: "0.875rem",
-    width: "100%", display: "flex", flexDirection: "column", gap: "0.375rem", marginBottom: "0.375rem",
-}
-
-const modalSummaryRow = {
-    display: "flex", justifyContent: "space-between", gap: "0.5rem",
-}
-
-const modalSummaryLabel = {
-    fontWeight: 800, fontSize: "0.875rem", color: "#6b7280",
-}
-
-const modalSummaryValue = {
-    fontWeight: 800, fontSize: "0.875rem", color: "#1a2e4a", textAlign: "right",
-}
-
-const modalPill = {
-    display: "flex", alignItems: "center", gap: "0.375rem",
-    borderRadius: "1.25rem", padding: "0.625rem 0.875rem",
-    width: "100%", marginBottom: "0.625rem",
-}
-
-const modalPillText = {
-    fontWeight: 700, fontSize: "0.875rem", textAlign: "left",
-}
-
-const modalButtonRow = {
-    display: "flex", flexDirection: "row", gap: "0.75rem",
-    marginTop: "1.25rem", width: "100%", alignItems: "center",
-}
-
-const modalCancelText = {
-    flex: 1, textAlign: "center", fontWeight: 700, fontSize: "0.9375rem",
-    color: "#6b7280", cursor: "pointer",
-}
-
-const modalConfirmBtn = {
-    flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem",
-    padding: "0.75rem", fontWeight: 700, fontSize: "0.9375rem", color: "white", cursor: "pointer",
-}
+const modalOverlay = { position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1.5rem" };
+const modalBox = { backgroundColor: "white", borderRadius: "1.25rem", padding: "1.5rem", width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" };
+const modalTitle = { fontWeight: 800, fontSize: "1.15rem", color: "#1a2e4a", marginBottom: "0.5rem" };
+const modalSummaryCard = { backgroundColor: "#f3f4f6", borderRadius: "0.625rem", padding: "0.875rem", width: "100%", display: "flex", flexDirection: "column", gap: "0.375rem", marginBottom: "0.375rem" };
+const modalSummaryRow = { display: "flex", justifyContent: "space-between", gap: "0.5rem" };
+const modalSummaryLabel = { fontWeight: 800, fontSize: "0.875rem", color: "#6b7280" };
+const modalSummaryValue = { fontWeight: 800, fontSize: "0.875rem", color: "#1a2e4a", textAlign: "right" };
+const modalPill = { display: "flex", alignItems: "center", gap: "0.375rem", borderRadius: "1.25rem", padding: "0.625rem 0.875rem", width: "100%", marginBottom: "0.625rem" };
+const modalPillText = { fontWeight: 700, fontSize: "0.875rem", textAlign: "left" };
+const modalButtonRow = { display: "flex", flexDirection: "row", gap: "0.75rem", marginTop: "1.25rem", width: "100%", alignItems: "center" };
+const modalCancelText = { flex: 1, textAlign: "center", fontWeight: 700, fontSize: "0.9375rem", color: "#6b7280", cursor: "pointer" };
+const modalConfirmBtn = { flex: 1, backgroundColor: "#007bff", border: "none", borderRadius: "1.875rem", padding: "0.75rem", fontWeight: 700, fontSize: "0.9375rem", color: "white", cursor: "pointer" };

@@ -43,21 +43,16 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
         borderRadius: "1.5rem",
         justifyContent: "center",
         alignItems: "center",
-        paddingTop: "0",
+        paddingTop: "3rem",
         position: "relative",
       }}
     >
 
-      <style>{`
-        .custom-date-range .rdrMonth { width: 100%; }
-        .custom-date-range .rdrDay { height: 3rem; }
-        .custom-date-range .rdrDayNumber { height: 3rem; top: 0; bottom: 0; }
-      `}</style>
       <div
         ref={calendarRef}
         style={{
           zIndex: 1000,
-          width: "85%",
+          height: "27rem"
         }}
       >
         <DateRange
@@ -69,7 +64,7 @@ export const CreateVoyageDatePicker = ({ dates, setDates, calendarOpen, setCalen
           ranges={dates}
           locale={enUS}
           minDate={new Date()}
-          style={{ width: "100%" }}
+          style={{ width: "33rem" }}
           className="custom-date-range"
         />
         <style>

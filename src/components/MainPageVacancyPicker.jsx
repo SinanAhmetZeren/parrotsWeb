@@ -39,8 +39,9 @@ export const MainPageVacancyPicker = ({
           className="text-lg font-bold"
           style={{
             width: "35%",
-            display: "inline-block", // Make the width apply
-            textAlign: "end", // Optional: Align the text inside the span
+            display: "inline-block",
+            textAlign: "end",
+            color: "white",
           }}
         >
           Vacancy&nbsp;
