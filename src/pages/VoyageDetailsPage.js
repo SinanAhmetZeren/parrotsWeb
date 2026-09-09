@@ -39,6 +39,7 @@ import { MdPublic } from "react-icons/md";
 import DOMPurify from "dompurify";
 import he from "he";
 import { toast } from "react-toastify";
+import { ImageGallery } from "../components/ImageGallery";
 
 const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
 
@@ -112,9 +113,15 @@ function VoyageDetailsPage() {
   const ownVoyage = userId === VoyageData?.userId;
   const username = localStorage.getItem("storedUserName");
 
+  const DUMMY_BIDS = [
+    { id: "dummy-1", userId: "dummy-u1", userPublicId: "dummy-pub1", userName: "Alice Wanderer", userProfileImage: "https://i.pravatar.cc/80?img=47", personCount: 2, offerPrice: 240, currency: "€", accepted: false, message: "We are very excited to join!" },
+    { id: "dummy-2", userId: "dummy-u2", userPublicId: "dummy-pub2", userName: "Captain Rodrigo", userProfileImage: "https://i.pravatar.cc/80?img=12", personCount: 4, offerPrice: 380, currency: "€", accepted: true, message: "" },
+  ];
+
   // Sync bidsData from server
   useEffect(() => {
-    if (VoyageData?.bids) setBidsData(VoyageData.bids);
+    if (VoyageData?.bids) setBidsData([...DUMMY_BIDS, ...VoyageData.bids]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [VoyageData?.bids]);
 
   useEffect(() => {
@@ -360,30 +367,30 @@ function VoyageDetailsPage() {
               {/* Host + Vehicle */}
               <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "12px", flexWrap: "wrap" }}>
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, cursor: "pointer" }}
+                  style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", cursor: "pointer", overflow: "hidden" }}
                   onClick={() => navigate(`/profile-public/${VoyageData.user?.publicId}/${VoyageData.user?.userName}`)}
                 >
                   <img src={VoyageData.user?.profileImageThumbnailUrl || VoyageData.user?.profileImageUrl} alt="" style={avatarSpec} />
-                  <span>
+                  <span style={{ minWidth: 0 }}>
                     <span style={specLabel}>Host</span>
-                    <span style={specValue}>{VoyageData.user?.userName}</span>
+                    <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.user?.userName}</span>
                   </span>
                 </div>
                 {VoyageData.vehicle && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", overflow: "hidden" }}>
                     <img src={VoyageData.vehicle.profileImageUrl} alt="" style={avatarSpec} />
-                    <span>
+                    <span style={{ minWidth: 0 }}>
                       <span style={specLabel}>Vehicle</span>
-                      <span style={specValue}>{VoyageData.vehicle.name}</span>
+                      <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.vehicle.name}</span>
                     </span>
                   </div>
                 )}
               </div>
 
               {/* Stats — 5-column grid with Duration */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: "14px", marginTop: "14px", paddingTop: "13px", borderTop: "1px solid rgba(255,255,255,0.14)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)", gap: "14px", marginTop: "14px", paddingTop: "13px", borderTop: "1px solid rgba(255,255,255,0.14)" }}>
                 <span><span style={specLabel}>Dates</span><span style={specStat}>{fmtDate(VoyageData.startDate)} – {fmtDate(VoyageData.endDate)}</span></span>
-                <span><span style={specLabel}>Price</span><span style={specStat}>{VoyageData.currency || "€"}{VoyageData.minPrice} – {VoyageData.currency || "€"}{VoyageData.maxPrice}</span></span>
+                <span><span style={specLabel}>Price</span><span style={specStat}>{VoyageData.minPrice === VoyageData.maxPrice ? `${VoyageData.currency || "€"}${VoyageData.minPrice}` : `${VoyageData.currency || "€"}${VoyageData.minPrice} – ${VoyageData.currency || "€"}${VoyageData.maxPrice}`}</span></span>
                 <span><span style={specLabel}>Spots</span><span style={specStat}>{bidsData?.filter((b) => b.accepted).length || 0} / {VoyageData.vacancy}</span></span>
                 <span><span style={specLabel}>Stops</span><span style={specStat}>{sortedWaypoints.length}</span></span>
                 <span>
@@ -402,7 +409,7 @@ function VoyageDetailsPage() {
               <span style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>Description</span>
               <div style={{ position: "relative", flex: 1, minHeight: 0, marginTop: "7px" }}>
                 <div style={{ position: "absolute", inset: 0, overflowY: "auto", paddingRight: "4px", scrollbarWidth: "none" }}>
-                  <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "rgba(255,255,255,0.94)", lineHeight: 1.6, margin: 0 }}>{descriptionHtml}</p>
+                  <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "rgba(255,255,255,0.94)", lineHeight: 1.6, margin: 0, paddingBottom: "2rem" }}>{descriptionHtml}</p>
                 </div>
                 <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "34px", background: "linear-gradient(180deg,rgba(8,32,56,0),#082038)", pointerEvents: "none" }} />
               </div>
@@ -472,7 +479,7 @@ function VoyageDetailsPage() {
           </div>
 
           {/* Right sidebar */}
-          <div style={{ width: "300px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.75rem", overflowY: "auto", scrollbarWidth: "none" }}>
+          <div style={{ width: "32rem", flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.75rem", overflowY: "auto", scrollbarWidth: "none" }}>
 
             {ownVoyage ? (
               <>
@@ -662,87 +669,6 @@ function FitBoundsWithPadding({ bounds }) {
   return null;
 }
 
-const THUMB_STEP = 39; // 34px thumb + 5px gap
-const VISIBLE = 5;
-
-function ImageGallery({ images }) {
-  const [idx, setIdx] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [lightbox, setLightbox] = useState(false);
-
-  const navigate = (n) => {
-    n = ((n % images.length) + images.length) % images.length;
-    let f = first;
-    if (n < f) f = n;
-    if (n > f + VISIBLE - 1) f = n - VISIBLE + 1;
-    f = Math.max(0, Math.min(f, Math.max(0, images.length - VISIBLE)));
-    setIdx(n);
-    setFirst(f);
-  };
-
-  const showL = first > 0;
-  const showR = first + VISIBLE < images.length;
-
-  return (
-    <>
-      <div style={{ width: "250px", position: "relative", overflow: "hidden" }}>
-        {/* Main image */}
-        <img src={images[idx] || images[0]} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-
-        {/* Counter */}
-        <div style={{ position: "absolute", left: 8, top: 8, zIndex: 3, background: "rgba(4,16,30,0.6)", border: "1px solid rgba(255,255,255,0.24)", color: "#fff", fontSize: "10px", fontWeight: 800, padding: "3px 8px", borderRadius: "99px", fontVariantNumeric: "tabular-nums" }}>
-          <b>{idx + 1}</b> / {images.length}
-        </div>
-
-        {/* Expand button */}
-        <button onClick={() => setLightbox(true)} title="Enlarge" style={{ position: "absolute", right: 8, top: 8, zIndex: 3, width: 28, height: 28, borderRadius: 8, border: "1px solid rgba(255,255,255,0.3)", background: "rgba(4,16,30,0.55)", backdropFilter: "blur(5px)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
-            <path d="M14 4h6v6" /><path d="M20 4l-7 7" /><path d="M10 20H4v-6" /><path d="M4 20l7-7" />
-          </svg>
-        </button>
-
-        {/* Prev / Next arrows */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 7px", pointerEvents: "none" }}>
-          {[{ dir: -1, path: "M15 5l-7 7 7 7" }, { dir: 1, path: "M9 5l7 7-7 7" }].map(({ dir, path }) => (
-            <button key={dir} onClick={() => navigate(idx + dir)} style={{ width: 28, height: 28, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(4,16,30,0.55)", backdropFilter: "blur(5px)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, pointerEvents: "auto" }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}><path d={path} /></svg>
-            </button>
-          ))}
-        </div>
-
-        {/* Thumbnail zone */}
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 2, padding: "22px 8px 8px", background: "linear-gradient(180deg, rgba(4,16,30,0), rgba(4,16,30,0.78) 58%)", display: "flex", justifyContent: "center" }}>
-          <div style={{ position: "relative", overflow: "hidden", width: `${Math.min(images.length, VISIBLE) * THUMB_STEP - 5}px` }}>
-            {showL && <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 26, zIndex: 3, background: "linear-gradient(90deg, rgba(4,16,30,0.72), transparent)", pointerEvents: "none" }} />}
-            {showR && <div style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 26, zIndex: 3, background: "linear-gradient(270deg, rgba(4,16,30,0.72), transparent)", pointerEvents: "none" }} />}
-            <div style={{ display: "flex", gap: 5, transition: "transform 0.2s ease", transform: `translateX(-${first * THUMB_STEP}px)` }}>
-              {images.map((img, i) => (
-                <div key={i} onClick={() => navigate(i)} style={{ flex: "0 0 34px", height: 34, borderRadius: 6, overflow: "hidden", border: i === idx ? "2px solid white" : "2px solid rgba(255,255,255,0.42)", cursor: "pointer", boxShadow: i === idx ? "0 0 0 2px rgba(255,255,255,0.28)" : "none", flexShrink: 0 }}>
-                  <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      {lightbox && (
-        <div onClick={() => setLightbox(false)} style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.92)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <img src={images[idx]} alt="" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain", borderRadius: 12 }} />
-          <button onClick={(e) => { e.stopPropagation(); navigate(idx - 1); }} style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(4,16,30,0.7)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M15 5l-7 7 7 7" /></svg>
-          </button>
-          <button onClick={(e) => { e.stopPropagation(); navigate(idx + 1); }} style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(4,16,30,0.7)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M9 5l7 7-7 7" /></svg>
-          </button>
-          <button onClick={() => setLightbox(false)} style={{ position: "absolute", top: 20, right: 20, width: 36, height: 36, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(4,16,30,0.7)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, padding: 0 }}>✕</button>
-          <div style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 800 }}>{idx + 1} / {images.length}</div>
-        </div>
-      )}
-    </>
-  );
-}
 
 function WaypointStripCard({ waypoint, index, total, voyageImage, onClick, vertical }) {
   const isFirst = index === 0;
@@ -775,46 +701,40 @@ function WaypointStripCard({ waypoint, index, total, voyageImage, onClick, verti
 function OwnerBidRow({ bid, loadingBidId, onAccept, onDelete }) {
   const navigate = useNavigate();
   return (
-    <div style={{ backgroundColor: bid.accepted ? "#F0FDF4" : "#F8FAFC", borderRadius: "0.75rem", padding: "0.6rem 0.75rem", border: bid.accepted ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
-        <img
-          src={bid.userProfileImage}
-          alt=""
-          style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", cursor: "pointer", flexShrink: 0 }}
-          onClick={() => navigate(`/profile-public/${bid.userPublicId}/${bid.userName}`)}
-        />
-        <span style={{ flex: 1, fontWeight: 700, fontSize: "0.88rem", color: "#0F172A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bid.userName}</span>
-        <span style={{ display: "flex", alignItems: "center", gap: "0.2rem", color: "#64748B", fontSize: "0.78rem", fontWeight: 600, flexShrink: 0 }}>
-          {bid.personCount === 1 ? <IoPersonOutline size={14} /> : <IoPeopleOutline size={14} />}
-          {bid.personCount}
-        </span>
-        <span style={{ color: "#10B981", fontWeight: 800, fontSize: "0.95rem", flexShrink: 0 }}>€{bid.offerPrice}</span>
+    <div style={{ backgroundColor: bid.accepted ? "#F0FDF4" : "#F8FAFC", borderRadius: "0.75rem", padding: "0.55rem 0.75rem", border: bid.accepted ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", alignItems: "center", gap: "0.6rem" }}>
+        {/* Col 1: avatar + name */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0, overflow: "hidden" }}>
+          <img src={bid.userProfileImage} alt="" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", cursor: "pointer", flexShrink: 0 }} onClick={() => navigate(`/profile-public/${bid.userPublicId}/${bid.userName}`)} />
+          <span style={{ fontWeight: 700, fontSize: "0.85rem", color: "#0F172A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bid.userName}</span>
+        </div>
+        {/* Col 2: person count + price */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.2rem", color: "#64748B", fontSize: "0.78rem", fontWeight: 600 }}>
+            {bid.personCount === 1 ? <IoPersonOutline size={13} /> : <IoPeopleOutline size={13} />}{bid.personCount}
+          </span>
+          <span style={{ color: "#10B981", fontWeight: 800, fontSize: "0.92rem" }}>{bid.currency || "€"}{bid.offerPrice}</span>
+        </div>
+        {/* Col 3: actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", justifyContent: "flex-end" }}>
+          {bid.accepted ? (
+            <>
+              <span style={{ backgroundColor: "#DCFCE7", color: "#166534", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, width: "5rem", height: "1.75rem", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>Accepted</span>
+              <span style={{ width: "1.75rem", height: "1.75rem", borderRadius: "50%", backgroundColor: "#D1FAE5", color: "#10B981", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", fontWeight: 800, flexShrink: 0 }}>✓</span>
+            </>
+          ) : (
+            <>
+              <button onClick={() => onAccept({ bidId: bid.id, bidUserId: bid.userId })} disabled={!!loadingBidId} style={{ width: "5rem", height: "1.75rem", backgroundColor: "#3B82F6", color: "white", border: "none", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", opacity: loadingBidId === bid.id ? 0.6 : 1 }}>
+                {loadingBidId === bid.id ? "..." : "Accept"}
+              </button>
+              <button onClick={() => onDelete({ bidId: bid.id, bidUserId: bid.userId })} disabled={!!loadingBidId} style={{ width: "1.75rem", height: "1.75rem", backgroundColor: "#FEE2E2", color: "#EF4444", border: "none", borderRadius: "50%", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>✕</button>
+            </>
+          )}
+        </div>
       </div>
       {bid.message ? (
-        <div style={{ fontSize: "0.8rem", color: "#475569", backgroundColor: "white", borderRadius: "0.5rem", padding: "0.4rem 0.6rem", marginBottom: "0.4rem", border: "1px solid #E2E8F0" }}>{bid.message}</div>
+        <div style={{ fontSize: "0.78rem", color: "#475569", backgroundColor: "white", borderRadius: "0.4rem", padding: "0.3rem 0.55rem", marginTop: "0.35rem" }}>{bid.message}</div>
       ) : null}
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.4rem" }}>
-        {bid.accepted ? (
-          <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#10B981", display: "flex", alignItems: "center", gap: "0.25rem" }}>✓ Accepted</span>
-        ) : (
-          <>
-            <button
-              onClick={() => onAccept({ bidId: bid.id, bidUserId: bid.userId })}
-              disabled={!!loadingBidId}
-              style={{ padding: "0.25rem 0.75rem", backgroundColor: "#3B82F6", color: "white", border: "none", borderRadius: "99px", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", opacity: loadingBidId === bid.id ? 0.6 : 1 }}
-            >
-              {loadingBidId === bid.id ? "..." : "Accept"}
-            </button>
-            <button
-              onClick={() => onDelete({ bidId: bid.id, bidUserId: bid.userId })}
-              disabled={!!loadingBidId}
-              style={{ padding: "0.25rem 0.6rem", backgroundColor: "#FEE2E2", color: "#EF4444", border: "none", borderRadius: "99px", fontSize: "0.78rem", fontWeight: 700, cursor: "pointer" }}
-            >
-              ✕
-            </button>
-          </>
-        )}
-      </div>
     </div>
   );
 }
@@ -822,30 +742,28 @@ function OwnerBidRow({ bid, loadingBidId, onAccept, onDelete }) {
 function GuestBidRow({ bid, isMyBid }) {
   const navigate = useNavigate();
   return (
-    <div style={{ backgroundColor: bid.accepted ? "#F0FDF4" : "white", borderRadius: "0.75rem", padding: "0.75rem", border: bid.accepted ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-        <img
-          src={bid.userProfileImage}
-          alt=""
-          style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", cursor: "pointer", flexShrink: 0 }}
-          onClick={() => navigate(`/profile-public/${bid.userPublicId}/${bid.userName}`)}
-        />
-        <span style={{ flex: 1, fontWeight: 700, fontSize: "0.9rem", color: "#0F172A" }}>{bid.userName}</span>
-        <span style={{ display: "flex", alignItems: "center", gap: "0.2rem", color: "#64748B", fontSize: "0.82rem", fontWeight: 600 }}>
-          {bid.personCount === 1 ? <IoPersonOutline size={15} /> : <IoPeopleOutline size={15} />}
-          {bid.personCount}
-        </span>
-        <span style={{ color: "#10B981", fontWeight: 800, fontSize: "1rem", flexShrink: 0 }}>€{bid.offerPrice}</span>
-      </div>
-      {isMyBid && bid.message ? (
-        <div style={{ fontSize: "0.82rem", color: "#475569", backgroundColor: "#F8FAFC", borderRadius: "0.5rem", padding: "0.5rem 0.65rem", marginBottom: "0.5rem", border: "1px solid #E2E8F0" }}>{bid.message}</div>
-      ) : null}
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        {bid.accepted ? (
-          <span style={{ backgroundColor: "#DCFCE7", color: "#166534", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, padding: "0.2rem 0.7rem" }}>✓ Accepted</span>
-        ) : (
-          <span style={{ backgroundColor: "#FEF3C7", color: "#92400E", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, padding: "0.2rem 0.7rem" }}>Pending</span>
-        )}
+    <div style={{ backgroundColor: bid.accepted ? "#F0FDF4" : "white", borderRadius: "0.75rem", padding: "0.55rem 0.75rem", border: bid.accepted ? "1px solid #BBF7D0" : "1px solid #E2E8F0" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", alignItems: "center", gap: "0.6rem" }}>
+        {/* Col 1: avatar + name */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0, overflow: "hidden" }}>
+          <img src={bid.userProfileImage} alt="" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", cursor: "pointer", flexShrink: 0 }} onClick={() => navigate(`/profile-public/${bid.userPublicId}/${bid.userName}`)} />
+          <span style={{ fontWeight: 700, fontSize: "0.85rem", color: "#0F172A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bid.userName}</span>
+        </div>
+        {/* Col 2: person count + price */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: "0.2rem", color: "#64748B", fontSize: "0.78rem", fontWeight: 600 }}>
+            {bid.personCount === 1 ? <IoPersonOutline size={13} /> : <IoPeopleOutline size={13} />}{bid.personCount}
+          </span>
+          <span style={{ color: "#10B981", fontWeight: 800, fontSize: "0.92rem" }}>{bid.currency || "€"}{bid.offerPrice}</span>
+        </div>
+        {/* Col 3: status pill */}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          {bid.accepted ? (
+            <span style={{ backgroundColor: "#DCFCE7", color: "#166534", borderRadius: "99px", fontSize: "0.72rem", fontWeight: 700, padding: "0.18rem 0.6rem", whiteSpace: "nowrap", display: "inline-block", textAlign: "center", minWidth: "5rem" }}>Accepted</span>
+          ) : (
+            <span style={{ backgroundColor: "#FEF3C7", color: "#92400E", borderRadius: "99px", fontSize: "0.72rem", fontWeight: 700, padding: "0.18rem 0.6rem", whiteSpace: "nowrap", display: "inline-block", textAlign: "center", minWidth: "5rem" }}>Pending</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -855,6 +773,7 @@ function UpdatesCard({ updates, voyageId, isOwner }) {
   const [text, setText] = useState("");
   const [addVoyageUpdate, { isLoading }] = useAddVoyageUpdateMutation();
   const [localUpdates, setLocalUpdates] = useState(updates || []);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => { setLocalUpdates(updates || []); }, [updates]);
 
@@ -869,49 +788,85 @@ function UpdatesCard({ updates, voyageId, isOwner }) {
     }
   };
 
+  const preview = localUpdates.slice(0, 2);
+
   return (
-    <div style={sideCard}>
-      <div style={cardHeader}>
-        <span style={cardHeaderTitle}>UPDATES</span>
-        {localUpdates.length > 0 && (
-          <span style={{ backgroundColor: "#F1F5F9", color: "#64748B", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, padding: "0.15rem 0.55rem" }}>
-            {localUpdates.length}
-          </span>
-        )}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "220px", overflowY: "auto", scrollbarWidth: "none" }}>
-        {localUpdates.length === 0 && (
-          <div style={{ color: "#94A3B8", fontSize: "0.82rem" }}>No updates yet.</div>
-        )}
-        {localUpdates.map((u) => (
-          <div key={u.id} style={{ borderLeft: "3px solid #10B981", background: "linear-gradient(to right, rgba(16,185,129,0.08), transparent)", borderRadius: "0 0.5rem 0.5rem 0", padding: "0.4rem 0.6rem" }}>
-            <div style={{ fontSize: "0.7rem", color: "#94A3B8", textAlign: "right", marginBottom: "0.15rem" }}>
-              {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-            </div>
-            <div style={{ fontSize: "0.82rem", color: "#1E3A5F", lineHeight: 1.5, textAlign: "left" }}>{u.text}</div>
+    <>
+      <div style={{ ...sideCard, display: "flex", flexDirection: "column" }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.6rem", flexShrink: 0 }}>
+          <span style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B" }}>Updates</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            {localUpdates.length > 0 && (
+              <span style={{ backgroundColor: "#E2E8F0", color: "#475569", borderRadius: "99px", fontSize: "0.72rem", fontWeight: 700, padding: "0.1rem 0.55rem", minWidth: "1.4rem", textAlign: "center" }}>
+                {localUpdates.length}
+              </span>
+            )}
+            {localUpdates.length > 2 && (
+              <button onClick={() => setExpanded(true)} style={{ width: "1.8rem", height: "1.8rem", borderRadius: "0.4rem", border: "1.5px solid #E2E8F0", backgroundColor: "#F8FAFC", color: "#475569", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem" }}>
+                ⤢
+              </button>
+            )}
           </div>
-        ))}
+        </div>
+        {/* Preview: last 2 updates */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem", flex: 1, overflow: "hidden" }}>
+          {localUpdates.length === 0 && (
+            <div style={{ color: "#94A3B8", fontSize: "0.82rem" }}>No updates yet.</div>
+          )}
+          {preview.map((u) => (
+            <div key={u.id} style={{ backgroundColor: "#F8FAFC", borderRadius: "0.6rem", padding: "0.5rem 0.7rem" }}>
+              <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{u.text}</div>
+              <div style={{ fontSize: "0.7rem", color: "#94A3B8", marginTop: "0.15rem" }}>
+                {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Input row — owner only */}
+        {isOwner && (
+          <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem", alignItems: "center", flexShrink: 0 }}>
+            <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              maxLength={500}
+              placeholder="Write an update..."
+              style={{ flex: 1, height: "2.2rem", padding: "0.35rem 0.9rem", fontSize: "0.82rem", color: "#0F172A", backgroundColor: "#F8FAFC", borderRadius: "2rem", border: "1.5px solid #E2E8F0", outline: "none", fontFamily: "Nunito" }}
+            />
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || !text.trim()}
+              style={{ height: "2.2rem", padding: "0 1.1rem", backgroundColor: "#3B82F6", color: "white", border: "none", borderRadius: "2rem", fontSize: "0.82rem", fontWeight: 700, cursor: text.trim() ? "pointer" : "default", opacity: (isLoading || !text.trim()) ? 0.5 : 1, flexShrink: 0, fontFamily: "Nunito" }}
+            >
+              Post
+            </button>
+          </div>
+        )}
       </div>
-      {isOwner && (
-        <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", marginTop: "0.6rem", alignItems: "flex-start" }}>
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            maxLength={500}
-            placeholder="Write an update..."
-            style={{ flex: 1, height: "2.4rem", padding: "0.4rem 0.9rem", fontSize: "0.82rem", color: "#0F172A", backgroundColor: "#F8FAFC", borderRadius: "2rem", border: "2px solid #E2E8F0", outline: "none", fontFamily: "Nunito" }}
-          />
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading || !text.trim()}
-            style={{ height: "2.4rem", padding: "0 1rem", backgroundColor: "#3B82F6", color: "white", border: "none", borderRadius: "2rem", fontSize: "0.82rem", fontWeight: 700, cursor: text.trim() ? "pointer" : "default", opacity: (isLoading || !text.trim()) ? 0.5 : 1, flexShrink: 0 }}
-          >
-            Post
-          </button>
+
+      {/* Expanded modal */}
+      {expanded && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setExpanded(false)}>
+          <div style={{ backgroundColor: "white", borderRadius: "1rem", padding: "1.5rem", width: "28rem", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <span style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B" }}>All Updates ({localUpdates.length})</span>
+              <button onClick={() => setExpanded(false)} style={{ background: "none", border: "none", fontSize: "1.2rem", color: "#94A3B8", cursor: "pointer" }}>✕</button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", overflowY: "auto", scrollbarWidth: "thin" }}>
+              {localUpdates.map((u) => (
+                <div key={u.id} style={{ backgroundColor: "#F8FAFC", borderRadius: "0.6rem", padding: "0.6rem 0.8rem" }}>
+                  <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.5 }}>{u.text}</div>
+                  <div style={{ fontSize: "0.7rem", color: "#94A3B8", marginTop: "0.2rem" }}>
+                    {new Date(u.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

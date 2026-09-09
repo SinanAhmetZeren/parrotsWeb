@@ -1,46 +1,47 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import styles
+import "react-quill/dist/quill.snow.css";
 import { IoRemoveCircleOutline, IoCameraReverseOutline } from "react-icons/io5";
-// import uploadImage from "../assets/images/ParrotsWhiteBgPlus.png";
 import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
 import placeHolder from "../assets/images/placeholder.png";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/pagination";
-// import '../assets/css/VehicleImagesSwiper.css';
-import { FreeMode } from "swiper/modules";
 import {
-  useCreateVehicleMutation,
   useAddVehicleImageMutation,
   useDeleteVehicleImageMutation,
-  useCheckAndDeleteVehicleMutation,
   useGetVehicleByIdQuery,
   useUpdateVehicleProfileImageMutation,
-  useDeleteVehicleMutation,
   usePatchVehicleMutation,
 } from "../slices/VehicleSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { toast } from "react-toastify";
-const apiUrl = process.env.REACT_APP_API_URL;
+
+const vehicles = {
+  Boat: "⛵",
+  Car: "🚗",
+  Caravan: "🚐",
+  Bus: "🚌",
+  Walk: "🚶",
+  Run: "🏃",
+  Motorcycle: "🏍️",
+  Bicycle: "🚲",
+  Tinyhouse: "🏠",
+  Airplane: "✈️",
+  Train: "🚄",
+};
 
 function EditVehiclePage() {
-  const [createVehicle] = useCreateVehicleMutation();
   const [addVehicleImage] = useAddVehicleImageMutation();
   const [deleteVehicleImage] = useDeleteVehicleImageMutation();
-  const [checkAndDeleteVehicle] = useCheckAndDeleteVehicleMutation();
   const [updateVehicleProfileImage] = useUpdateVehicleProfileImageMutation();
-  const [deleteVehicle] = useDeleteVehicleMutation();
   const [patchVehicle] = usePatchVehicleMutation();
   const { vehicleId } = useParams();
-  const userId = localStorage.getItem("storedUserId");
-  // xxxxxx
+  const navigate = useNavigate();
+
   const {
     data: VehicleData,
     isSuccess: isSuccessVehicles,
@@ -48,9 +49,6 @@ function EditVehiclePage() {
     isError: isErrorVehicles,
     refetch,
   } = useGetVehicleByIdQuery(vehicleId);
-  // const userId = "1bf7d55e-7be2-49fb-99aa-93d947711e32";
-
-  const navigate = useNavigate();
 
   const [vehicleName, setVehicleName] = useState("");
   const [vehicleDescription, setVehicleDescription] = useState("");
@@ -58,20 +56,29 @@ function EditVehiclePage() {
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [newProfileImageSelected, setNewProfileImageSelected] = useState(false);
-  const [vehicleImage, setVehicleImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [vehicleImage, setVehicleImage] = useState(null);
   const [galleryImagePreview, setGalleryImagePreview] = useState(null);
-  const fileInputRef = React.createRef();
-  const galleryImageInputRef = React.createRef();
+  const fileInputRef = useRef();
+  const galleryImageInputRef = useRef();
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
-  const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
   const [pageState, setPageState] = useState("s1");
-  // const [vehicleId, setVehicleId] = useState("")
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUpdatingVehicle, setIsUpdatingVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [honeyPotValue, setHoneyPotValue] = useState("");
+
+  useEffect(() => {
+    if (!VehicleData) return;
+    setVehicleName(VehicleData.name ?? "");
+    setVehicleDescription(VehicleData.description ?? "");
+    setVehicleCapacity(VehicleData.capacity ?? null);
+    setSelectedVehicleType(Object.entries(vehicles)?.[VehicleData.type]?.[0] ?? "");
+    setAddedVehicleImages(VehicleData.vehicleImages ?? []);
+    setImagePreview(VehicleData.profileImageUrl ?? null);
+    setProfileImageFile(VehicleData.profileImageUrl ?? null);
+  }, [VehicleData]);
 
   const isFormValid = useMemo(() => {
     return (
@@ -82,132 +89,65 @@ function EditVehiclePage() {
       selectedVehicleType &&
       profileImageFile
     );
-  }, [
-    vehicleName,
-    vehicleDescription,
-    vehicleCapacity,
-    selectedVehicleType,
-    profileImageFile,
-  ]);
-
-  useEffect(() => {
-    // console.log("--->", VehicleData);
-    setVehicleCapacity(VehicleData?.capacity);
-    setVehicleDescription(VehicleData?.description);
-    setVehicleName(VehicleData?.name);
-    setSelectedVehicleType(
-      Object.entries(vehicles)?.[VehicleData?.type]?.[0] ?? ""
-    );
-    setAddedVehicleImages(VehicleData?.vehicleImages);
-    setImagePreview(
-      `` + VehicleData?.profileImageUrl
-    );
-    setProfileImageFile(
-      `` + VehicleData?.profileImageUrl
-    );
-    setVehicleImage(VehicleData?.vehicleImage);
-    setGalleryImagePreview(VehicleData?.vehicleImage);
-  }, [VehicleData]);
-
-  // useEffect(() => {
-  //   console.log("useffect added images: ", addedVehicleImages);
-  // }, [addedVehicleImages])
+  }, [vehicleName, vehicleDescription, vehicleCapacity, selectedVehicleType, profileImageFile]);
 
   const handleImageChange = (e) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (file.size > 5 * 1024 * 1024) { toast.error("File size must be 5MB or less."); return; }
+    setProfileImageFile(file);
+    setNewProfileImageSelected(true);
+    setImagePreview(URL.createObjectURL(file));
+  };
 
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-
-      setProfileImageFile(file);
-      setNewProfileImageSelected(true);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-    }
+  const handleRevertImage = () => {
+    setProfileImageFile(VehicleData?.profileImageUrl ?? null);
+    setImagePreview(VehicleData?.profileImageUrl ?? null);
+    setNewProfileImageSelected(false);
   };
 
   const handleImageChange2 = (e) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      const file = files[0];
-
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-      setVehicleImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setGalleryImagePreview(previewUrl);
-    }
-  };
-
-  const handleCancelUpload = () => {
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
-    setProfileImageFile(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleRevertImage = () => {
-    setProfileImageFile(
-      `` + VehicleData?.profileImageUrl
-    );
-    setImagePreview(
-      `` + VehicleData?.profileImageUrl
-    );
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (file.size > 5 * 1024 * 1024) { toast.error("File size must be 5MB or less."); return; }
+    setVehicleImage(file);
+    setGalleryImagePreview(URL.createObjectURL(file));
   };
 
   const handleCancelUpload2 = () => {
-    if (galleryImagePreview) {
-      URL.revokeObjectURL(galleryImagePreview);
-    }
+    if (galleryImagePreview) URL.revokeObjectURL(galleryImagePreview);
     setVehicleImage(null);
     setGalleryImagePreview(null);
-    if (galleryImageInputRef.current) {
-      galleryImageInputRef.current.value = "";
+    if (galleryImageInputRef.current) galleryImageInputRef.current.value = "";
+  };
+
+  const handleUploadImage = useCallback(async () => {
+    if (!vehicleImage) return;
+    setIsUploadingImage(true);
+    try {
+      const response = await addVehicleImage({ vehicleImage, vehicleId }).unwrap();
+      const addedvehicleImageId = response.imagePath;
+      setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage }]);
+      setVehicleImage(null);
+      setGalleryImagePreview(null);
+    } catch (error) {
+      console.error("Error uploading image", error);
+      toast.error("Failed to upload image. Please check your connection and try again.");
     }
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleImageClick2 = () => {
-    galleryImageInputRef.current.click();
-  };
-
-  const completeVehicleCreate = () => {
-    setIsCompleting(true);
-    navigate(`/profile`);
-  };
+    setIsUploadingImage(false);
+  }, [vehicleImage, vehicleId, addVehicleImage]);
 
   const handleDeleteImage = async (imageId) => {
-    console.log("imageId", imageId);
     const previousImages = [...addedVehicleImages];
-
-    setAddedVehicleImages(
-      previousImages.filter(
-        (item) => item.addedvehicleImageId !== imageId && item.id !== imageId
-      )
-    );
-
+    setAddedVehicleImages(previousImages.filter(
+      (item) => item.addedvehicleImageId !== imageId && item.id !== imageId
+    ));
     try {
       const imageToDelete = previousImages.find(
         (item) => item.addedvehicleImageId === imageId || item.id === imageId
       );
-
       if (imageToDelete?.addedvehicleImageId) {
         await deleteVehicleImage(imageToDelete.addedvehicleImageId).unwrap();
       } else if (imageToDelete?.id) {
@@ -220,26 +160,16 @@ function EditVehiclePage() {
     }
   };
 
-  // xxxxx
   const handleUpdateButtonClick = async () => {
-
-    if (honeyPotValue) {
-      console.warn("Bot detected – update blocked");
-      return;
-    }
-
+    if (honeyPotValue) { console.warn("Bot detected – update blocked"); return; }
     setIsUpdatingVehicle(true);
     const patchDoc = [
       { op: "replace", path: "/name", value: vehicleName },
       { op: "replace", path: "/description", value: vehicleDescription },
       { op: "replace", path: "/capacity", value: vehicleCapacity },
     ];
-
     try {
-      await patchVehicle({
-        patchDoc,
-        currentVehicleId: vehicleId,
-      }).unwrap();
+      await patchVehicle({ patchDoc, currentVehicleId: vehicleId }).unwrap();
       if (newProfileImageSelected) {
         try {
           await updateVehicleProfileImage({ vehicleImage: profileImageFile, vehicleId }).unwrap();
@@ -257,59 +187,13 @@ function EditVehiclePage() {
     setIsUpdatingVehicle(false);
   };
 
-  const maxItems = 10;
-  const placeholders = Array.from({ length: maxItems }, (_, index) => ({
-    key: `placeholder_${index + 1}`,
-  }));
+  const completeEdit = () => {
+    setIsCompleting(true);
+    navigate("/profile");
+  };
 
-  const data = useMemo(
-    () =>
-      addedVehicleImages?.length < maxItems
-        ? [
-          ...addedVehicleImages,
-          ...placeholders.slice(addedVehicleImages?.length),
-        ]
-        : addedVehicleImages?.map((item) => ({
-          ...item,
-          key: item.addedvehicleImageId,
-        })),
-    [addedVehicleImages, maxItems, placeholders]
-  );
-
-  const handleUploadImage = useCallback(async () => {
-    if (!vehicleImage) {
-      return;
-    }
-    setIsUploadingImage(true);
-    try {
-      const addedVehicleImageResponse = await addVehicleImage({
-        vehicleImage,
-        vehicleId,
-      }).unwrap();
-
-      const addedvehicleImageId = addedVehicleImageResponse.imagePath;
-      const newItem = {
-        addedvehicleImageId,
-        vehicleImage,
-      };
-      setAddedVehicleImages((prevImages) => [...prevImages, newItem]);
-      setVehicleImage(null);
-      setGalleryImagePreview(null);
-    } catch (error) {
-      console.error("Error uploading image", error);
-      toast.error("Failed to upload image. Please check your connection and try again.");
-    }
-    setIsUploadingImage(false);
-  }, [vehicleImage, vehicleId, addVehicleImage]);
-
-  const { data: healthCheckData, isError: isHealthCheckError } =
-    useHealthCheckQuery();
-
-  if (isHealthCheckError) {
-    console.log(".....Health check failed.....");
-    return <SomethingWentWrong />;
-  }
-
+  const { isError: isHealthCheckError } = useHealthCheckQuery();
+  if (isHealthCheckError) return <SomethingWentWrong />;
   if (isErrorVehicles) return <SomethingWentWrong />;
 
   if (isLoadingVehicles || !isSuccessVehicles) {
@@ -319,12 +203,10 @@ function EditVehiclePage() {
           <div className="flex mainpage_Container">
             <div className="flex mainpage_TopRow">
               <TopLeftComponent />
-              <div className="flex mainpage_TopRight">
-                <TopBarMenu />
-              </div>
+              <div className="flex mainpage_TopRight"><TopBarMenu /></div>
             </div>
             <div style={{ display: "flex", justifyContent: "center", marginTop: "4rem" }}>
-              <div className="spinner" style={{ height: "3rem", width: "3rem", border: "4px solid white", borderTop: "4px solid #1e90ff" }}></div>
+              <div className="spinner" style={{ height: "3rem", width: "3rem", border: "4px solid white", borderTop: "4px solid #1e90ff" }} />
             </div>
           </div>
         </header>
@@ -332,547 +214,275 @@ function EditVehiclePage() {
     );
   }
 
+  const existingImages = addedVehicleImages.filter((item) => item.id);
+  const newImages = addedVehicleImages.filter((item) => item.addedvehicleImageId);
+  const totalImages = addedVehicleImages.length;
+
   return (
     <div className="App">
       <header className="App-header">
         <div className="flex mainpage_Container">
           <div className="flex mainpage_TopRow">
             <TopLeftComponent />
-            <div className="flex mainpage_TopRight">
-              <TopBarMenu />
-            </div>
+            <div className="flex mainpage_TopRight"><TopBarMenu /></div>
           </div>
 
-          <div style={pageStateDisplayContainer}>
-            <div style={pageStateDisplay}>
-              <span
-                style={{
-                  ...VehiclesVoyagesTitle,
-                  ...(pageState === "s1" ? activeStyle : {}),
-                }}
-              >
-                Vehicle Details
-              </span>
-              <span
-                style={{
-                  ...VehiclesVoyagesTitle,
-                  ...(pageState === "s2" ? activeStyle : {}),
-                }}
-              >
-                Vehicle Images
-              </span>
-            </div>
+          {/* Step bar */}
+          <div style={vehicleStepBarContainer}>
+            <span
+              style={{ ...vehicleStepTitle, ...(pageState === "s1" ? vehicleStepActive : vehicleStepInactive), cursor: "pointer" }}
+              onClick={() => setPageState("s1")}
+            >Vehicle Details</span>
+            <span
+              style={{ ...vehicleStepTitle, ...(pageState === "s2" ? vehicleStepActive : vehicleStepInactive), cursor: "pointer" }}
+              onClick={() => setPageState("s2")}
+            >Vehicle Images</span>
           </div>
 
+          {/* ── Page 1: Details ── */}
           {pageState === "s1" && (
-            <>
-              <div className="vehiclePage_vehicleContainer">
-                <div className="vehiclePage_dataContainer">
-                  <div className="vehiclePage_detailsContainer">
-                    <div className="vehiclePage_nameContainer">
-                      <div className=" ">
-                        <span>Name</span>
-                      </div>
-                      <div className=" ">
-                        <input
-                          type="text"
-                          placeholder="Vehicle name (max 20)"
-                          value={vehicleName}
-                          maxLength={20}
-                          onChange={(e) => setVehicleName(e.target.value)}
-                          className="vehicle-name-input"
-                        />
-                      </div>
+            <div style={s1Card}>
+              <div style={s1Body}>
+                {/* Left: fields + description */}
+                <div style={s1Left}>
+                  <div style={s1SectionHeader}>BASICS</div>
+
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+                    <div style={{ flex: 3 }}>
+                      <div style={s1FieldLabel}>Name</div>
+                      <input
+                        type="text"
+                        placeholder="Vehicle name"
+                        value={vehicleName}
+                        maxLength={20}
+                        onChange={(e) => setVehicleName(e.target.value)}
+                        className="vehicle-name-input"
+                        style={s1TextInput}
+                      />
                     </div>
-                    <div className="vehiclePage_vacancyContainer">
-                      <div className=" ">
-                        <span>Capacity</span>
-                      </div>
-                      <div className=" ">
-                        <input
-                          type="number"
-                          id="capacity"
-                          placeholder="Select"
-                          min="1"
-                          max="100"
-                          value={vehicleCapacity}
-                          onChange={(e) => setVehicleCapacity(e.target.value)}
-                          className="capacity-input"
-                        />
-                      </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={s1FieldLabel}>Capacity</div>
+                      <select
+                        value={vehicleCapacity ?? ""}
+                        onChange={(e) => setVehicleCapacity(e.target.value)}
+                        className="capacity-input"
+                        style={{ ...s1TextInput, width: "100%", color: vehicleCapacity ? "#00008b" : "#96989c" }}
+                      >
+                        <option value="" disabled>Select</option>
+                        {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
                     </div>
-                    <div className="vehiclePage_typeContainer">
-                      <div className=" ">
-                        <span>Type</span>
-                      </div>
-                      <div className=" ">
-                        <select
-                          disabled={true}
-                          id="vehicle-type"
-                          value={selectedVehicleType}
-                          onChange={(e) => {
-                            setSelectedVehicleType(e.target.value);
-                          }}
-                          className="type-input"
-                          style={{
-                            color: selectedVehicleType
-                              ? "#00008b66"
-                              : "#96989c",
-                          }}
-                        >
-                          <option
-                            value=""
-                            disabled
-                            className="placeholderOption"
-                          >
-                            Select
-                          </option>
-                          {Object.keys(vehicles)
-                            .filter(
-                              (vehicle) =>
-                                vehicle !== "Walk" && vehicle !== "Run" && vehicle !== "Train"
-                            )
-                            .map((vehicle) => (
-                              <option key={vehicle} value={vehicle}>
-                                {vehicle}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={s1FieldLabel}>Type</div>
+                      <select
+                        disabled
+                        value={selectedVehicleType}
+                        className="type-input"
+                        style={{ ...s1TextInput, width: "100%", color: selectedVehicleType ? "#00008b66" : "#96989c" }}
+                        onChange={() => {}}
+                      >
+                        <option value="" disabled>Select</option>
+                        {Object.keys(vehicles).map((v) => (
+                          <option key={v} value={v}>{v}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
-                  <div className="vehiclePage_descriptionContainer">
-                    <div className="createvehiclePage_descriptionContainer_inner">
-                      <div className="vehiclePage_descriptionContainer_descriptionTitle">
-                        <span>Description</span>
-                      </div>
-                      <div className="vehiclePage_descriptionContainer_descriptionContent">
-                        <div className="editor-container">
-                          <ReactQuill
-                            value={vehicleDescription}
-                            onChange={setVehicleDescription}
-                            placeholder="Tell us about your vehicle"
-                            modules={{
-                              toolbar: [
-                                [{ header: [1, 2, false] }],
-                                ["bold", "italic", "underline"],
-                                [{ list: "ordered" }, { list: "bullet" }],
-                                ["emoji"],
-                              ],
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="vehicle_imageContainer">
-                  <div style={{}}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      // onClick={(e) => (e.target.value = null)} // Reset value before selection
-                      style={{ display: "none" }}
-                      ref={fileInputRef}
-                    />
-                    <div
-                      style={{
-                        position: "relative",
+                  <div style={s1FieldHint}>Max 20 characters</div>
+
+                  <div style={{ ...s1SectionHeader, marginTop: "1.5rem" }}>DESCRIPTION</div>
+                  <div className="editor-container" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                    <ReactQuill
+                      value={vehicleDescription}
+                      onChange={setVehicleDescription}
+                      placeholder="Tell us about your vehicle (max 600 characters)"
+                      modules={{
+                        toolbar: [
+                          [{ header: [1, 2, false] }],
+                          ["bold", "italic", "underline"],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          ["emoji"],
+                        ],
                       }}
-                    >
-                      {imagePreview ? (
-                        <div className="image-preview">
-                          <img
-                            src={imagePreview}
-                            alt=""
-                            style={{
-                              width: "35rem",
-                              height: "35rem",
-                              objectFit: "cover",
-                              borderRadius: "1.5rem",
-                              border: "2px solid transparent",
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <img
-                          src={uploadImage}
-                          alt="Upload Icon"
-                          onClick={handleImageClick}
-                          style={{
-                            width: "35rem",
-                            height: "35rem",
-                            objectFit: "cover",
-                            borderRadius: "1.5rem",
-                            border: "2px solid transparent",
-                          }}
-                        />
-                      )}
-                      {profileImageFile && (
-                        <div
-                          onClick={handleCancelUpload}
-                          style={{
-                            ...deleteImageIcon,
-                            ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}),
-                          }}
-                          onMouseEnter={() => {
-                            setIsProfileImageDeleteHovered(true);
-                          }}
-                          onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
-                        >
-                          <IoRemoveCircleOutline size={"2.5rem"} />
-                        </div>
-                      )}
-                      {!profileImageFile && (
-                        <div
-                          onClick={handleRevertImage}
-                          style={{
-                            ...deleteImageIcon,
-                            ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}),
-                          }}
-                          onMouseEnter={() => {
-                            setIsProfileImageDeleteHovered(true);
-                          }}
-                          onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
-                        >
-                          <IoCameraReverseOutline size={"2.5rem"} />
-                        </div>
-                      )}
-                    </div>
+                    />
                   </div>
+                  <div style={s1CharCount}>
+                    {(vehicleDescription === "<p><br></p>" ? 0 : vehicleDescription.replace(/<[^>]*>/g, "").length)} / 600
+                  </div>
+                </div>
+
+                {/* Right: profile image */}
+                <div style={s1Right}>
+                  <div style={s1SectionHeader}>PROFILE IMAGE</div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: "none" }}
+                    ref={fileInputRef}
+                  />
+                  <div style={{ position: "relative" }}>
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt=""
+                        style={{ ...s1ImagePreview, cursor: "pointer" }}
+                        onClick={() => fileInputRef.current.click()}
+                      />
+                    ) : (
+                      <div style={s1ImagePlaceholder} onClick={() => fileInputRef.current.click()}>
+                        <div style={{ backgroundColor: "white", borderRadius: "1.25rem" }}>
+                          <img src={uploadImage} alt="Upload Icon" style={s1ImagePlaceholderInner} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Revert to original */}
+                    {newProfileImageSelected && (
+                      <div
+                        onClick={handleRevertImage}
+                        style={{ ...deleteImageIcon, ...(isProfileImageDeleteHovered ? deleteImageIconHover : {}) }}
+                        onMouseEnter={() => setIsProfileImageDeleteHovered(true)}
+                        onMouseLeave={() => setIsProfileImageDeleteHovered(false)}
+                      >
+                        <IoCameraReverseOutline size="2.5rem" />
+                      </div>
+                    )}
+                  </div>
+                  <div style={s1ImageCaption}>Click image to change</div>
+                  <div style={s1ImageSubCaption}>Square works best. Add gallery images on the next page.</div>
                 </div>
               </div>
 
-
-              <input
-                type="text"
-                value={honeyPotValue}
-                onChange={(e) => setHoneyPotValue(e.target.value)}
-                style={{ display: "none" }}
-                autoComplete="off"
-              />
-
-              <div
-                className="createVehicleButton"
-                style={{
-                  ...registerVehicleButton,
-                  ...(isUpdatingVehicle
-                    ? { backgroundColor: "#007bff", cursor: "not-allowed" }
-                    : !isFormValid
-                      ? { opacity: "0.7" }
-                      : {}),
-                }}
-                onClick={() => {
-                  if (isUpdatingVehicle) return;
-                  if (isFormValid) {
-                    handleUpdateButtonClick();
-                  } else {
-                    console.log("Form is not valid");
-                  }
-                }}
-              >
-                {isUpdatingVehicle ? <RegisterSpinner /> : "Update Details"}
-              </div>
-            </>
-          )}
-          {pageState === "s2" && (
-            <>
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginTop: "1rem",
-                  }}
-                >
+              {/* Footer */}
+              <div style={s1Footer}>
+                <input
+                  type="text"
+                  value={honeyPotValue}
+                  onChange={(e) => setHoneyPotValue(e.target.value)}
+                  style={{ display: "none" }}
+                  autoComplete="off"
+                />
+                <div />
+                <div style={{ display: "flex", gap: "0.75rem" }}>
                   <div
                     style={{
-                      width: "26rem",
+                      ...s1RegisterBtn,
+                      ...(!isFormValid || isUpdatingVehicle ? { opacity: 0.6, cursor: "not-allowed" } : {}),
+                      position: "relative",
                     }}
+                    onClick={!isUpdatingVehicle && isFormValid ? handleUpdateButtonClick : undefined}
                   >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange2}
-                      onClick={(e) => (e.target.value = null)}
-                      style={{ display: "none" }}
-                      ref={galleryImageInputRef}
-                    />
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "25rem",
-                      }}
-                    >
-                      {galleryImagePreview ? (
-                        <div className="image-preview">
-                          <img
-                            src={galleryImagePreview}
-                            alt=""
-                            style={galleryImageUploadStyle}
-                          />
-                        </div>
-                      ) : (
-                        <img
-                          src={uploadImage}
-                          alt="Upload Icon"
-                          onClick={handleImageClick2}
-                          style={galleryImageUploadStyle}
-                        />
-                      )}
-                      {vehicleImage && (
-                        <>
-                          <div
-                            onClick={handleCancelUpload2}
-                            style={{
-                              ...galleryImageDeleteIcon,
-                              ...(isGalleryImageDeleteHovered ? galleryImageDeleteIconHover : {}),
-                            }}
-                            onMouseEnter={() => {
-                              setIsGalleryImageDeleteHovered(true);
-                            }}
-                            onMouseLeave={() => setIsGalleryImageDeleteHovered(false)}
-                          >
-                            <IoRemoveCircleOutline size={"2.5rem"} />
-                          </div>
-
-                          {isUploadingImage ? (
-                            <div style={addImageButton}>
-                              <AddImageSpinner />
-                            </div>
-                          ) : (
-                            <div
-                              style={addImageButton}
-                              onClick={() => {
-                                handleUploadImage();
-                                // console.log("hi");
-                              }}
-                            >
-                              Add Image
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={uploadedImagesContainer}>
-                    <Swiper
-                      scrollbar={{ hide: true }}
-                      slidesPerView={3}
-                      spaceBetween={10}
-                      freeMode={true}
-                      pagination={{
-                        clickable: true,
-                      }}
-                      modules={[FreeMode]}
-                      className="mySwiper"
-                    >
-                      {/* {data.map((item, index) => {
-                        if (index === 1)
-                          console.log("data:", data);
-                        return (
-                          <SwiperSlide>
-                            <div key={item.key} className="placeholder_imageContainer"
-                              style={{ borderRadius: "2rem", overflow: "hidden" }}>
-                              {item.addedvehicleImageId ? (
-                                <>
-                                  <img
-                                    src={URL.createObjectURL(item.vehicleImage)}
-                                    alt={`Uploaded ${index + 1}`}
-                                    style={userUploadedImage}
-                                  />
-                                  <div onClick={() => handleDeleteImage(item.addedvehicleImageId)}
-                                    style={uploadedImageDeleteIcon}
-                                  >
-                                    <IoRemoveCircleOutline size={"2.5rem"} />
-                                  </div>
-                                </>
-
-                              ) : (
-                                <img
-                                  src={placeHolder}
-                                  alt={`Placeholder ${index + 1}`}
-                                  style={placeHolderImage}
-                                />
-                              )}
-                            </div>
-                          </SwiperSlide>)
-                      }
-                      )} */}
-
-                      {data?.map((item, index) => {
-                        return (
-                          <SwiperSlide
-                            key={item.id || item.addedvehicleImageId}
-                          >
-                            <div
-                              className="placeholder_imageContainer"
-                              style={{
-                                borderRadius: "2rem",
-                                overflow: "hidden",
-                              }}
-                            >
-                              {item.vehicleImagePath ? (
-                                <>
-                                  <img
-                                    src={
-                                      `` +
-                                      item.vehicleImagePath
-                                    } // Replace with your actual image base URL
-                                    alt={`Uploaded ${index + 1}`}
-                                    style={userUploadedImage}
-                                  />
-                                  <div
-                                    onClick={() => handleDeleteImage(item.id)}
-                                    style={uploadedImageDeleteIcon}
-                                  >
-                                    <IoRemoveCircleOutline size={"2.5rem"} />
-                                  </div>
-                                </>
-                              ) : item.vehicleImage ? (
-                                <>
-                                  <img
-                                    src={URL.createObjectURL(item.vehicleImage)}
-                                    alt={`Uploaded ${index + 1}`}
-                                    style={userUploadedImage}
-                                  />
-                                  <div
-                                    onClick={() =>
-                                      handleDeleteImage(
-                                        item.addedvehicleImageId
-                                      )
-                                    }
-                                    style={uploadedImageDeleteIcon}
-                                  >
-                                    <IoRemoveCircleOutline size={"2.5rem"} />
-                                  </div>
-                                </>
-                              ) : (
-                                <img
-                                  src={placeHolder}
-                                  alt={`Placeholder ${index + 1}`}
-                                  style={placeHolderImage}
-                                />
-                              )}
-                            </div>
-                          </SwiperSlide>
-                        );
-                      })}
-
-                      {null &&
-                        data?.map((item, index) => {
-                          // console.log("item", item);
-                          return (
-                            <SwiperSlide key={item.id}>
-                              <div
-                                className="placeholder_imageContainer"
-                                style={{
-                                  borderRadius: "2rem",
-                                  overflow: "hidden",
-                                }}
-                              >
-                                {item.vehicleImagePath ? (
-                                  <>
-                                    <img
-                                      src={
-                                        `` +
-                                        item.vehicleImagePath
-                                      } // Replace with your actual image base URL
-                                      alt={`Uploaded ${index + 1}`}
-                                      style={userUploadedImage}
-                                    />
-                                    <div
-                                      onClick={() => handleDeleteImage(item.id)}
-                                      style={uploadedImageDeleteIcon}
-                                    >
-                                      <IoRemoveCircleOutline size={"2.5rem"} />
-                                    </div>
-                                  </>
-                                ) : (
-                                  <img
-                                    src={placeHolder}
-                                    alt={`Placeholder ${index + 1}`}
-                                    style={placeHolderImage}
-                                  />
-                                )}
-                              </div>
-                            </SwiperSlide>
-                          );
-                        })}
-                    </Swiper>
+                    <span style={{ opacity: isUpdatingVehicle ? 0 : 1 }}>Save & Next →</span>
+                    {isUpdatingVehicle && <RegisterSpinner />}
                   </div>
                 </div>
               </div>
+            </div>
+          )}
 
-              {isCompleting ? (
-                <div
-                  className="completeVehicleButton"
-                  style={completeVehicleButton}
-                >
-                  <CompleteSpinner />
+          {/* ── Page 2: Images ── */}
+          {pageState === "s2" && (
+            <div style={s1Card}>
+              <div style={s2HeaderRow}>
+                <div style={s2Title}>Vehicle Images</div>
+                <div style={s2Counter}>{totalImages} / 8</div>
+              </div>
+
+              <div style={s2Grid}>
+                {/* Uploader cell */}
+                <div style={s2UploaderCell} onClick={!isUploadingImage && !vehicleImage ? () => galleryImageInputRef.current.click() : undefined}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange2}
+                    onClick={(e) => (e.target.value = null)}
+                    style={{ display: "none" }}
+                    ref={galleryImageInputRef}
+                  />
+                  {isUploadingImage ? (
+                    <div className="spinner" style={{ height: "2rem", width: "2rem", border: "3px solid #3b82f6", borderTop: "3px solid transparent" }} />
+                  ) : galleryImagePreview ? (
+                    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                      <img src={galleryImagePreview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div
+                        style={{ ...s2DeleteBtn, backgroundColor: "rgba(239,68,68,0.85)" }}
+                        onClick={(e) => { e.stopPropagation(); handleCancelUpload2(); }}
+                      >✕</div>
+                      <div
+                        style={{ position: "absolute", bottom: "0.5rem", left: "50%", transform: "translateX(-50%)", backgroundColor: "#007bff", color: "white", fontSize: "0.75rem", fontWeight: 700, padding: "0.3rem 0.8rem", borderRadius: "1rem", cursor: "pointer", whiteSpace: "nowrap" }}
+                        onClick={(e) => { e.stopPropagation(); handleUploadImage(); }}
+                      >
+                        Add Image
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ backgroundColor: "white", height: "85%", width: "85%", borderRadius: "1.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <img src={uploadImage} alt="Upload" style={{ width: "70%", height: "70%", objectFit: "cover", opacity: 0.45, borderRadius: "0.75rem" }} />
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div
-                  className="completeVehicleButton"
-                  style={completeVehicleButton}
-                  onClick={() => completeVehicleCreate()}
-                >
-                  Complete
+
+                {/* Existing images (from server) */}
+                {existingImages.map((item) => (
+                  <div style={s2ImageCell} key={`ex_${item.id}`}>
+                    <img
+                      src={item.imageUrl || item.vehicleImagePath}
+                      alt=""
+                      style={s2GridImage}
+                    />
+                    <div style={s2DeleteBtn} onClick={() => handleDeleteImage(item.id)}>✕</div>
+                  </div>
+                ))}
+
+                {/* Newly uploaded images (blob) */}
+                {newImages.map((item) => (
+                  <div style={s2ImageCell} key={`new_${item.addedvehicleImageId}`}>
+                    <img
+                      src={URL.createObjectURL(item.vehicleImage)}
+                      alt=""
+                      style={s2GridImage}
+                    />
+                    <div style={s2DeleteBtn} onClick={() => handleDeleteImage(item.addedvehicleImageId)}>✕</div>
+                  </div>
+                ))}
+
+                {/* Placeholders */}
+                {Array.from({ length: Math.max(0, 11 - totalImages) }).map((_, i) => (
+                  <div style={s2PlaceholderCell} key={`ph_${i}`}>
+                    <img src={placeHolder} alt="" style={s2PlaceholderImg} />
+                  </div>
+                ))}
+              </div>
+
+              <div style={s1Footer}>
+                <div />
+                <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                  <div style={s2BackBtn} onClick={() => setPageState("s1")}>‹ Back</div>
+                  <div
+                    style={{ ...s1RegisterBtn, backgroundColor: "#16a34a", position: "relative" }}
+                    onClick={!isCompleting ? completeEdit : undefined}
+                  >
+                    <span style={{ opacity: isCompleting ? 0 : 1 }}>Done</span>
+                    {isCompleting && <RegisterSpinner />}
+                  </div>
                 </div>
-              )}
-            </>
+              </div>
+            </div>
           )}
         </div>
       </header>
 
       <style>
         {`
-          #app {
-            height: 100%;
-          }
-
-          html, body {
-            position: relative;
-            height: 100%;
-          }
-
-          body {
-            background: #eee;
-            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            color: #000;
-            margin: 0;
-            padding: 0;
-          }
-
-          .swiper {
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 1.5rem;
-          }
-
-          .swiper-slide {
-            text-align: center;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 1.5rem;
-            filter: none !important;
-            opacity: 1 !important;
-            padding: 1rem !important;
-            width: 23rem !important;
-          }
-
-          .swiper-slide img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+          .editor-container .ql-editor {
+            min-height: 120px;
+            max-height: 220px;
+            overflow-y: auto;
+            color: #111827;
+            background-color: #f3f4f6;
           }
         `}
       </style>
@@ -882,259 +492,99 @@ function EditVehiclePage() {
 
 export default EditVehiclePage;
 
-const AddImageSpinner = () => {
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(0, 119, 234,0.1)",
-        borderRadius: "1.5rem",
-        position: "relative",
-        margin: "auto",
-        display: "flex",
-        alignItems: "center",
-        height: "2.5rem",
-      }}
-    >
-      <div
-        className="spinner"
-        style={{
-          height: "1rem",
-          width: "1rem",
-          border: "3px solid white",
-          borderTop: "3px solid #1e90ff",
-        }}
-      ></div>
-    </div>
-  );
-};
-
-const RegisterSpinner = () => {
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(0, 119, 234,0.1)",
-        borderRadius: "1.5rem",
-        position: "relative",
-        margin: "auto",
-        display: "flex",
-        alignItems: "center",
-        height: "1.7rem",
-      }}
-    >
-      <div
-        className="spinner"
-        style={{
-          height: "1rem",
-          width: "1rem",
-          border: "3px solid white",
-          borderTop: "3px solid #1e90ff",
-        }}
-      ></div>
-    </div>
-  );
-};
-
-const CompleteSpinner = () => {
-  return (
-    <div
-      style={{
-        backgroundColor: "rgba(0, 119, 234,0.1)",
-        borderRadius: "1.5rem",
-        position: "relative",
-        margin: "auto",
-        display: "flex",
-        alignItems: "center",
-        height: "2.5rem",
-      }}
-    >
-      <div
-        className="spinner"
-        style={{
-          height: "1rem",
-          width: "1rem",
-          border: "3px solid white",
-          borderTop: "3px solid #1e90ff",
-        }}
-      ></div>
-    </div>
-  );
-};
-
-const addImageButton = {
-  backgroundColor: "#007bff",
-  position: "absolute",
-  bottom: "-0.5rem",
-  borderRadius: "2rem",
-  alignContent: "center",
-  justifyItems: "center",
-  cursor: "pointer",
-  transition: "transform 0.3s ease-in-out",
-  fontSize: "1.5rem",
-  fontWeight: "800",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  left: "50%",
-  transform: "translateX(-50%)", // Centers it horizontally
-  width: "15rem",
-  height: "2.5rem",
-};
-
-const placeHolderImage = {
-  width: "20rem",
-  height: "20rem",
-  maxWidth: "20rem",
-  margin: "0.5rem",
-  borderRadius: "1rem",
-  overflow: "hidden",
-  objectFit: "cover",
-};
-
-const userUploadedImage = {
-  width: "20rem",
-  height: "20rem",
-  objectFit: "cover",
-  maxWidth: "20rem",
-  borderRadius: "1rem",
-  margin: "0.5rem",
-};
-
-const galleryImageUploadStyle = {
-  width: "25rem",
-  height: "25rem",
-  objectFit: "cover",
-  borderRadius: "1.5rem",
-  border: "2px solid transparent",
-};
-
-const uploadedImagesContainer = {
-  display: "flex",
-  flexDirection: "row",
-  overflow: "scroll",
-  width: "calc(100vw - 26rem)",
-  margin: "auto",
-  scrollbarWidth: "none",
-  msOverflowStyle: "none",
-};
-
-const vehicles = {
-  Boat: "⛵",
-  Car: "🚗",
-  Caravan: "🚐",
-  Bus: "🚌",
-  Walk: "🚶",
-  Run: "🏃",
-  Motorcycle: "🏍️",
-  Bicycle: "🚲",
-  Tinyhouse: "🏠",
-  Airplane: "✈️",
-  Train: "🚄",
-};
+const RegisterSpinner = () => (
+  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "inherit" }}>
+    <div className="spinner" style={{ height: "1rem", width: "1rem", border: "3px solid white", borderTop: "3px solid #1e90ff" }} />
+  </div>
+);
 
 const deleteImageIcon = {
-  backgroundColor: " #3c9dee99",
-  width: "3rem",
-  height: "3rem",
-  position: "absolute",
-  top: "-0.5rem",
-  right: "-0.5rem",
-  borderRadius: "2rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
+  backgroundColor: "#3c9dee99",
+  width: "3rem", height: "3rem",
+  position: "absolute", top: "-0.5rem", right: "-0.5rem",
+  borderRadius: "2rem", display: "flex", alignItems: "center",
+  justifyContent: "center", cursor: "pointer",
   transition: "transform 0.3s ease-in-out",
 };
+const deleteImageIconHover = { transform: "scale(1.2)" };
 
-const deleteImageIconHover = {
-  transform: "scale(1.2)",
+const vehicleStepBarContainer = {
+  display: "flex", flexDirection: "row", width: "fit-content",
+  margin: "auto", marginTop: "1rem", marginBottom: "0.5rem",
+  backgroundColor: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: "2rem", padding: "0.3rem", gap: "0.2rem",
+};
+const vehicleStepTitle = {
+  fontSize: "1.15rem", fontWeight: 800, padding: "0.4rem 1.2rem",
+  borderRadius: "1.5rem", cursor: "pointer", transition: "background 0.2s",
+};
+const vehicleStepActive = { color: "white", backgroundColor: "#3b82f6" };
+const vehicleStepInactive = { color: "rgba(255,255,255,0.45)", opacity: 0.4 };
+
+const s1Card = {
+  backgroundColor: "white", borderRadius: "1.25rem", fontFamily: "Nunito",
+  margin: "1rem auto", width: "75%", display: "flex", flexDirection: "column",
+  maxHeight: "calc(100vh - 8rem)", overflow: "hidden",
+  boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+};
+const s1Body = {
+  display: "flex", flexDirection: "row", padding: "2rem", gap: "2rem",
+  flex: 1, overflowY: "auto", alignItems: "stretch",
+};
+const s1Left = { flex: 1, display: "flex", flexDirection: "column", textAlign: "left", alignItems: "stretch" };
+const s1Right = { width: "24rem", flexShrink: 0, display: "flex", flexDirection: "column", textAlign: "left", alignItems: "flex-start" };
+const s1SectionHeader = { fontSize: "0.7rem", fontWeight: 700, color: "#9ca3af", letterSpacing: "0.08em", marginBottom: "0.75rem" };
+const s1FieldLabel = { fontSize: "1.0625rem", fontWeight: 700, color: "#1e3a5f", marginBottom: "0.35rem" };
+const s1TextInput = {
+  width: "100%", boxSizing: "border-box", backgroundColor: "#f3f4f6",
+  border: "none", borderRadius: "0.625rem", padding: "0.6rem 0.75rem",
+  fontSize: "0.95rem", color: "#1e3a5f", outline: "none",
+};
+const s1FieldHint = { fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.3rem" };
+const s1CharCount = { fontSize: "0.78rem", color: "#9ca3af", textAlign: "right", marginTop: "0.3rem" };
+const s1ImagePlaceholder = {
+  backgroundColor: "#f3f4f6ca", width: "24rem", height: "24rem",
+  borderRadius: "1.25rem", display: "flex", alignItems: "center",
+  justifyContent: "center", cursor: "pointer", overflow: "hidden",
+};
+const s1ImagePlaceholderInner = { width: "19rem", height: "19rem", objectFit: "cover", opacity: 0.4, borderRadius: "1rem" };
+const s1ImagePreview = { width: "24rem", height: "24rem", objectFit: "cover", borderRadius: "1.25rem", border: "2px solid transparent" };
+const s1ImageCaption = { fontWeight: 700, fontSize: "1.125rem", color: "#1e3a5f", marginTop: "0.75rem" };
+const s1ImageSubCaption = { fontSize: "1rem", color: "#6b7280", marginTop: "0.25rem", lineHeight: 1.4 };
+const s1Footer = {
+  display: "flex", flexDirection: "row", alignItems: "center",
+  justifyContent: "space-between", padding: "1.25rem 2rem",
+  borderTop: "1px solid #f3f4f6",
+};
+const s1RegisterBtn = {
+  padding: "0.6rem 1.5rem", borderRadius: "2rem", backgroundColor: "#007bff",
+  fontWeight: 700, fontSize: "0.95rem", color: "white", cursor: "pointer",
+  display: "flex", alignItems: "center", minWidth: "9rem", justifyContent: "center",
 };
 
-const galleryImageDeleteIcon = {
-  backgroundColor: " #3c9dee99",
-  width: "3rem",
-  height: "3rem",
-  position: "absolute",
-  top: "-0.5rem",
-  right: "-0.5rem",
-  borderRadius: "2rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
-  transition: "transform 0.3s ease-in-out",
+const s2HeaderRow = { display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "1.5rem 2rem 1rem" };
+const s2Title = { fontFamily: "Nunito", fontWeight: 800, fontSize: "1.4rem", color: "#1e3a5f" };
+const s2Counter = { fontFamily: "Nunito", fontWeight: 700, fontSize: "1rem", color: "#9ca3af" };
+const s2Grid = { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.75rem", padding: "0 2rem 1rem" };
+const s2UploaderCell = {
+  backgroundColor: "#f3f4f6ca", borderRadius: "1rem",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  cursor: "pointer", aspectRatio: "1", overflow: "hidden",
 };
-
-const uploadedImageDeleteIcon = {
-  backgroundColor: " #3e99",
-  width: "3rem",
-  height: "3rem",
-  position: "absolute",
-  top: "0",
-  right: "0",
-  borderRadius: "2rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
-  transition: "transform 0.3s ease-in-out",
+const s2ImageCell = { position: "relative", borderRadius: "1rem", overflow: "hidden", aspectRatio: "1" };
+const s2GridImage = { width: "100%", height: "100%", objectFit: "cover" };
+const s2DeleteBtn = {
+  position: "absolute", top: "0.5rem", right: "0.5rem",
+  backgroundColor: "rgba(30,30,30,0.6)", color: "white",
+  width: "1.5rem", height: "1.5rem", borderRadius: "50%",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  cursor: "pointer", fontSize: "0.75rem", fontWeight: 700,
 };
-
-const galleryImageDeleteIconHover = {
-  transform: "scale(1.2)",
-};
-
-const VehiclesVoyagesTitle = {
-  fontSize: "1.6rem",
-  fontWeight: 800,
-  color: "#ffffff55",
-  backgroundColor: "#a4f4f411",
-  padding: ".3rem",
-  paddingLeft: "1rem",
-  paddingRight: "1rem",
-  borderRadius: "1.5rem",
-};
-
-const activeStyle = {
-  color: "white",
-  backgroundColor: "#a4f4f433",
-};
-
-const pageStateDisplay = {
-  display: "flex",
-  flexDirection: "row",
-  width: "28%",
-  margin: "auto",
-  justifyContent: "space-between",
-};
-
-const pageStateDisplayContainer = {};
-
-const registerVehicleButton = {
-  fontSize: "1.2rem",
-  fontWeight: 800,
-  color: "white",
-  borderRadius: "1.5rem",
-  marginTop: "0.3rem",
-  backgroundColor: "#007bff",
-  cursor: "pointer",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-};
-
-const completeVehicleButton = {
-  fontSize: "1.6rem",
-  fontWeight: 800,
-  color: "white",
-  borderRadius: "1.5rem",
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
-  marginTop: "0.3rem",
-  backgroundColor: "#007bff",
-  cursor: "pointer",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-  padding: "0.2rem",
-  width: "20rem",
+const s2PlaceholderCell = { backgroundColor: "#f9fafb", borderRadius: "1rem", display: "flex", alignItems: "center", justifyContent: "center", aspectRatio: "1", overflow: "hidden" };
+const s2PlaceholderImg = { width: "40%", height: "40%", objectFit: "contain", opacity: 0.3 };
+const s2BackBtn = {
+  padding: "0.6rem 1.2rem", borderRadius: "2rem", border: "1.5px solid #e5e7eb",
+  fontWeight: 700, fontSize: "0.95rem", color: "#374151", cursor: "pointer",
+  display: "flex", alignItems: "center", fontFamily: "Nunito",
 };
