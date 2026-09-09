@@ -13,9 +13,9 @@ const createColorIcon = (color) => {
 };
 
 export const VoyageDetailMarkerWithInfoWindow = ({ position, waypointTitle, index, total }) => {
-  let color = "#ffff00";
+  let color = "#0A77EA";
   if (index === 0) color = "#22C55E";
-  else if (index === total - 1) color = "red";
+  else if (index === total - 1) color = "#E0455B";
 
   const icon = createColorIcon(color);
 

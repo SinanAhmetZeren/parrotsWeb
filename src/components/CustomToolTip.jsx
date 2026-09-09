@@ -1,13 +1,15 @@
 import { parrotTextDarkBlue } from "../styles/colors";
 
 
-export function CustomToolTip({ isHovered, message, offsetLeft = "50%" }) {
+export function CustomToolTip({ isHovered, message, offsetLeft = "50%", direction = "up" }) {
     return (
         isHovered && (
             <div
                 style={{
                     position: "absolute",
-                    bottom: "calc(100% + 8px)",
+                    ...(direction === "down"
+                        ? { top: "calc(100% + 6px)" }
+                        : { bottom: "calc(100% + 8px)" }),
                     left: offsetLeft,
                     transform: "translateX(-50%)",
                     backgroundColor: "white",
@@ -18,6 +20,7 @@ export function CustomToolTip({ isHovered, message, offsetLeft = "50%" }) {
                     whiteSpace: "nowrap",
                     boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
                     zIndex: 1000,
+                    pointerEvents: "none",
                 }}
             >
                 {message}
