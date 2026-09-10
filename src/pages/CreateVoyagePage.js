@@ -46,7 +46,8 @@ export default function CreateVoyagePage() {
   const [voyageImage, setVoyageImage] = useState(null);
   const [addedVoyageImages, setAddedVoyageImages] = useState([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pageState, setPageState] = useState(2);
+  const [pageState, setPageState] = useState(1);
+  const [waypointsUnlocked, setWaypointsUnlocked] = useState(false);
   const [voyageBrief, setVoyageBrief] = useState("");
   const [voyageDescription, setVoyageDescription] = useState("");
   const [selectedVacancy, setSelectedVacancy] = useState("");
@@ -308,19 +309,24 @@ export default function CreateVoyagePage() {
             <div className="flex mainpage_TopRight"><TopBarMenu /></div>
           </div>
 
-          {/* Step bar */}
-          <div style={stepBarContainer}>
-            {["Voyage Details", "Voyage Images", "Waypoints"].map((label, i) => (
-              <span
-                key={label}
-                style={{ ...stepTitle, ...(pageState === i + 1 ? stepActive : stepInactive) }}
-                onClick={() => { if (i === 0 || voyageId) setPageState(i + 1); }}
-              >{label}</span>
-            ))}
-          </div>
-
           {pageState === 1 && (
             <div style={sheet}>
+              {/* Step bar — inside the card header */}
+              <div style={stepBarContainer}>
+                {[["Voyage Details", 1], ["Voyage Images", 2], ["Waypoints", 3]].map(([label, step], i) => {
+                  const active = pageState === step;
+                  const done = pageState > step;
+                  return (
+                    <React.Fragment key={label}>
+                      {i > 0 && <div style={stepConnector(done)} />}
+                      <div style={stepItem}>
+                        <div style={stepCircle(active, done)}>{step}</div>
+                        <span style={stepLabel(active, done)}>{label}</span>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
               <style>{`
                 .cv-input { font-family: Nunito, sans-serif; }
                 .cv-input:focus { border-color: #0A77EA !important; background: #fff !important; box-shadow: 0 0 0 3px rgba(10,119,234,0.14) !important; outline: none; }
@@ -367,72 +373,74 @@ export default function CreateVoyagePage() {
               <div style={{ ...grid }}>
                 {/* LEFT COLUMN */}
                 <div style={{ ...col, backgroundColor: "transparent" }}>
-                  {/* BASICS */}
-                  <div>
-                    <div style={sec}>Basics</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "10px" }}>
-                      <div style={field}>
-                        <label style={lbl}>Voyage name</label>
-                        <input className="cv-input" style={ctl} type="text" placeholder="Voyage name (max 30)" value={voyageName} maxLength={30} onChange={(e) => setVoyageName(e.target.value)} />
+                  {/* BASICS + PRICING */}
+                  <div style={{ border: "2px solid #eeeeee", padding: "1rem", borderRadius: "1rem", display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div>
+                      <div style={sec}>Basics</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "10px" }}>
+                        <div style={field}>
+                          <label style={lbl}>Voyage name</label>
+                          <input className="cv-input" style={ctl} type="text" placeholder="Voyage name (max 30)" value={voyageName} maxLength={30} onChange={(e) => setVoyageName(e.target.value)} />
 
-                      </div>
-                      <div style={field}>
-                        <label style={lbl}>Vehicle</label>
-                        <select className="cv-input" style={{ ...ctl, ...selectArrow, color: vehicleId ? "#0A2540" : "#5C6B7A" }} value={vehicleId} onChange={(e) => setVehicleId(e.target.value)}>
-                          <option value="" disabled>Select</option>
-                          {vehiclesList?.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
-                        </select>
-                      </div>
-                      <div style={field}>
-                        <label style={lbl}>Vacancy</label>
-                        <input className="cv-input" style={ctl} type="number" min={1} placeholder="0" value={selectedVacancy} onChange={(e) => {
-                          const raw = e.target.value;
-                          if (raw === "") { setSelectedVacancy(""); return; }
-                          setSelectedVacancy(Math.min(1000000, Math.max(1, parseInt(raw) || 1)));
-                        }} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* PRICING */}
-                  <div>
-                    <div style={sec}>Pricing</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr .75fr", gap: "10px", alignItems: "end" }}>
-                      <div style={field}>
-                        <label style={lbl}>Type</label>
-                        <div style={pmode}>
-                          <button style={{ ...(isAuction ? pmodeOn : pmodeOff), position: "relative" }} onClick={() => setIsAuction(!isAuction)} onMouseEnter={() => setHoveredAuction(true)} onMouseLeave={() => setHoveredAuction(false)}>
-                            Auction
-                            {hoveredAuction && <div style={cvTooltip}>{isAuction ? "This is an auction where the host will select the most suitable bids" : "This is not an auction where the host will select the most suitable bids"}</div>}
-                          </button>
-                          <button style={{ ...(isFixedPrice ? pmodeOn : pmodeOff), position: "relative" }} onClick={() => setIsFixedPrice(!isFixedPrice)} onMouseEnter={() => setHoveredFixedPrice(true)} onMouseLeave={() => setHoveredFixedPrice(false)}>
-                            Fixed price
-                            {hoveredFixedPrice && <div style={cvTooltip}>{isFixedPrice ? "This voyage has a fixed price set by the host" : "This voyage does not have a fixed price set by the host"}</div>}
-                          </button>
+                        </div>
+                        <div style={field}>
+                          <label style={lbl}>Vehicle</label>
+                          <select className="cv-input" style={{ ...ctl, ...selectArrow, color: vehicleId ? "#0A2540" : "#5C6B7A" }} value={vehicleId} onChange={(e) => setVehicleId(e.target.value)}>
+                            <option value="" disabled>Select</option>
+                            {vehiclesList?.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
+                          </select>
+                        </div>
+                        <div style={field}>
+                          <label style={lbl}>Vacancy</label>
+                          <input className="cv-input" style={ctl} type="number" min={1} placeholder="0" value={selectedVacancy} onChange={(e) => {
+                            const raw = e.target.value;
+                            if (raw === "") { setSelectedVacancy(""); return; }
+                            setSelectedVacancy(Math.min(1000000, Math.max(1, parseInt(raw) || 1)));
+                          }} />
                         </div>
                       </div>
-                      <div style={field}>
-                        <label style={lbl}>Min price</label>
-                        <input className="cv-input" style={ctl} type="number" placeholder="0" value={minPrice ?? ""} onChange={(e) => {
-                          const v = e.target.value === "" ? 0 : Number(e.target.value);
-                          if (isFixedPrice) { setMinPrice(v); setMaxPrice(v); } else setMinPrice(v);
-                        }} />
-                      </div>
-                      <div style={field}>
-                        <label style={lbl}>Max price {maxPrice != null && minPrice != null && maxPrice < minPrice && <span style={{ color: "#ef4444", fontWeight: 700, fontSize: "11px" }}>must be ≥ min</span>}</label>
-                        <input className="cv-input" style={ctl} type="number" placeholder="0" value={maxPrice ?? ""} onChange={(e) => {
-                          const v = e.target.value === "" ? 0 : Number(e.target.value);
-                          if (isFixedPrice) { setMinPrice(v); setMaxPrice(v); } else setMaxPrice(v);
-                        }} />
-                      </div>
-                      <div style={field}>
-                        <label style={lbl}>Currency</label>
-                        <select className="cv-input" style={{ ...ctl, ...selectArrow }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                          {["€", "$", "£"].map((c) => <option key={c} value={c}>{c}</option>)}
-                        </select>
+                    </div>
+
+                    {/* PRICING */}
+                    <div>
+                      <div style={sec}>Pricing</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr .75fr", gap: "10px", alignItems: "end" }}>
+                        <div style={field}>
+                          <label style={lbl}>Type</label>
+                          <div style={pmode}>
+                            <button style={{ ...(isAuction ? pmodeOn : pmodeOff), position: "relative" }} onClick={() => setIsAuction(!isAuction)} onMouseEnter={() => setHoveredAuction(true)} onMouseLeave={() => setHoveredAuction(false)}>
+                              Auction
+                              {hoveredAuction && <div style={cvTooltip}>{isAuction ? "This is an auction where the host will select the most suitable bids" : "This is not an auction where the host will select the most suitable bids"}</div>}
+                            </button>
+                            <button style={{ ...(isFixedPrice ? pmodeOn : pmodeOff), position: "relative" }} onClick={() => setIsFixedPrice(!isFixedPrice)} onMouseEnter={() => setHoveredFixedPrice(true)} onMouseLeave={() => setHoveredFixedPrice(false)}>
+                              Fixed price
+                              {hoveredFixedPrice && <div style={cvTooltip}>{isFixedPrice ? "This voyage has a fixed price set by the host" : "This voyage does not have a fixed price set by the host"}</div>}
+                            </button>
+                          </div>
+                        </div>
+                        <div style={field}>
+                          <label style={lbl}>Min price</label>
+                          <input className="cv-input" style={ctl} type="number" placeholder="0" value={minPrice ?? ""} onChange={(e) => {
+                            const v = e.target.value === "" ? 0 : Number(e.target.value);
+                            if (isFixedPrice) { setMinPrice(v); setMaxPrice(v); } else setMinPrice(v);
+                          }} />
+                        </div>
+                        <div style={field}>
+                          <label style={lbl}>Max price {maxPrice != null && minPrice != null && maxPrice < minPrice && <span style={{ color: "#ef4444", fontWeight: 700, fontSize: "11px" }}>must be ≥ min</span>}</label>
+                          <input className="cv-input" style={ctl} type="number" placeholder="0" value={maxPrice ?? ""} onChange={(e) => {
+                            const v = e.target.value === "" ? 0 : Number(e.target.value);
+                            if (isFixedPrice) { setMinPrice(v); setMaxPrice(v); } else setMaxPrice(v);
+                          }} />
+                        </div>
+                        <div style={field}>
+                          <label style={lbl}>Currency</label>
+                          <select className="cv-input" style={{ ...ctl, ...selectArrow }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                            {["€", "$", "£"].map((c) => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </div>{/* end BASICS+PRICING wrapper */}
 
                   {/* BRIEF */}
                   <div>
@@ -466,7 +474,7 @@ export default function CreateVoyagePage() {
                 {/* RIGHT COLUMN */}
                 <div style={{ ...col }}>
                   {/* Profile image */}
-                  <div>
+                  <div style={{ border: "2px solid #eeeeee", padding: "1rem", borderRadius: "1rem" }}>
                     <div style={sec}>Profile image</div>
                     <VoyageProfileImageUploader voyageImage={voyageImage} setVoyageImage={setVoyageImage} />
                     <div style={cap}>Square works best. You can add more photos on the next page.</div>
@@ -474,42 +482,39 @@ export default function CreateVoyagePage() {
 
 
                   {/* Dates */}
-                  <div>
-                    <div style={sec}>Dates</div>
-                    <div style={calBox}>
-                      <DayPicker
-                        mode="range"
-                        selected={range}
-                        onSelect={setRange}
-                        disabled={{ before: new Date() }}
-                        formatters={{ formatWeekdayName: (day) => "SMTWTFS"[day.getDay()] }}
-                        navLayout="around"
-                      />
-                      <div style={rangeRow}>
-                        <div style={{ ...rangeChip, ...rangeChipSet, color: range?.from ? "#0A5FBF" : "transparent" }}>{formatDay(range?.from || new Date())}</div>
-                        <span style={{ color: "#5C6B7A", fontWeight: 700, fontSize: "13px" }}>→</span>
-                        <div style={{ ...rangeChip, ...rangeChipSet, color: range?.to ? "#0A5FBF" : "transparent" }}>{formatDay(range?.to || new Date())}</div>
-                      </div>
-                      {(() => {
-                        const today = new Date(); today.setHours(0, 0, 0, 0);
-                        const end = range?.to || range?.from;
-                        const cost = isPublicOnMap && end ? Math.max(0, Math.round((end - today) / (1000 * 60 * 60 * 24)) + 1) : 0;
-                        const balance = crackerBalance?.balance ?? null;
-                        const notEnough = isPublicOnMap && balance != null && cost > 0 && balance < cost;
-                        const visible = !!range?.from;
-                        return (
-                          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "12px", fontWeight: 700, color: notEnough ? "#dc2626" : "#0A2540", fontFamily: "Nunito", opacity: visible ? 1 : 0, pointerEvents: "none" }}>
-                            <img src={parrotCracker} alt="" style={{ width: "18px", height: "18px" }} />
-                            {isPublicOnMap && cost > 0
-                              ? notEnough
-                                ? <span><strong>{cost} ParrotCrackers</strong> are needed, you have {balance ?? "?"}</span>
-                                : <span><strong>{cost}</strong> of your <strong>{balance ?? "?"}</strong> ParrotCrackers will be used</span>
-                              : <span>No ParrotCrackers will be used</span>
-                            }
-                          </div>
-                        );
-                      })()}
+                  <div style={calBox}><div style={{ ...sec, width: "100%", textAlign: "left" }}>Dates</div>
+                    <DayPicker
+                      mode="range"
+                      selected={range}
+                      onSelect={setRange}
+                      disabled={{ before: new Date() }}
+                      formatters={{ formatWeekdayName: (day) => "SMTWTFS"[day.getDay()] }}
+                      navLayout="around"
+                    />
+                    <div style={rangeRow}>
+                      <div style={{ ...rangeChip, ...rangeChipSet, color: range?.from ? "#0A5FBF" : "transparent" }}>{formatDay(range?.from || new Date())}</div>
+                      <span style={{ color: "#5C6B7A", fontWeight: 700, fontSize: "13px" }}>→</span>
+                      <div style={{ ...rangeChip, ...rangeChipSet, color: range?.to ? "#0A5FBF" : "transparent" }}>{formatDay(range?.to || new Date())}</div>
                     </div>
+                    {(() => {
+                      const today = new Date(); today.setHours(0, 0, 0, 0);
+                      const end = range?.to || range?.from;
+                      const cost = isPublicOnMap && end ? Math.max(0, Math.round((end - today) / (1000 * 60 * 60 * 24)) + 1) : 0;
+                      const balance = crackerBalance?.balance ?? null;
+                      const notEnough = isPublicOnMap && balance != null && cost > 0 && balance < cost;
+                      const visible = !!range?.from;
+                      return (
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "12px", fontWeight: 700, color: notEnough ? "#dc2626" : "#0A2540", fontFamily: "Nunito", opacity: visible ? 1 : 0, pointerEvents: "none" }}>
+                          <img src={parrotCracker} alt="" style={{ width: "18px", height: "18px" }} />
+                          {isPublicOnMap && cost > 0
+                            ? notEnough
+                              ? <span><strong>{cost} ParrotCrackers</strong> are needed, you have {balance ?? "?"}</span>
+                              : <span><strong>{cost}</strong> of your <strong>{balance ?? "?"}</strong> ParrotCrackers will be used</span>
+                            : <span>No ParrotCrackers will be used</span>
+                          }
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Visibility */}
@@ -539,9 +544,22 @@ export default function CreateVoyagePage() {
 
           {pageState === 2 && (
             <div style={{ backgroundColor: "white", borderRadius: "1.25rem", fontFamily: "Nunito", margin: "1rem auto", width: "75%", display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 8rem)", overflow: "hidden", boxShadow: "0 16px 40px rgba(0,14,30,0.2)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "1.5rem 2rem 1rem" }}>
-                <div style={{ fontFamily: "Nunito", fontWeight: 800, fontSize: "1.4rem", color: "#1e3a5f" }}>Voyage images</div>
-                <div style={{ fontFamily: "Nunito", fontWeight: 700, fontSize: "1rem", color: "#9ca3af" }}>{addedVoyageImages.length} / 8</div>
+              {/* Step bar */}
+              <div style={stepBarContainer}>
+                {[["Voyage Details", 1], ["Voyage Images", 2], ["Waypoints", 3]].map(([label, step], i) => {
+                  const active = pageState === step;
+                  const done = pageState > step;
+                  return (
+                    <React.Fragment key={label}>
+                      {i > 0 && <div style={stepConnector(done)} />}
+                      <div style={stepItem}>
+                        <div style={stepCircle(active, done)}>{step}</div>
+                        <span style={stepLabel(active, done)}>{label}</span>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+                <div style={{ marginLeft: "auto", fontFamily: "Nunito", fontWeight: 700, fontSize: "0.9rem", color: "#9ca3af" }}>{addedVoyageImages.length} / 8</div>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.75rem", padding: "0 2rem 1rem", overflowY: "auto" }}>
@@ -577,7 +595,7 @@ export default function CreateVoyagePage() {
                   <div style={{ padding: "0.6rem 1.2rem", borderRadius: "2rem", border: "1.5px solid #e5e7eb", fontWeight: 700, fontSize: "0.95rem", color: "#374151", cursor: "pointer", display: "flex", alignItems: "center", fontFamily: "Nunito" }}
                     onClick={() => setPageState(1)}>‹ Back</div>
                   <div style={{ padding: "0.6rem 1.5rem", borderRadius: "2rem", backgroundColor: "#007bff", fontWeight: 700, fontSize: "0.95rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", fontFamily: "Nunito" }}
-                    onClick={() => setPageState(3)}>
+                    onClick={() => { setWaypointsUnlocked(true); setPageState(3); }}>
                     {addedVoyageImages.length === 0 ? "Skip for now" : "Next: Waypoints ›"}
                   </div>
                 </div>
@@ -613,16 +631,29 @@ const CvSpinner = () => (
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
 const stepBarContainer = {
-  display: "flex", flexDirection: "row", width: "fit-content", margin: "0 auto 0.5rem",
-  backgroundColor: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)",
-  border: "1px solid rgba(255,255,255,0.2)", borderRadius: "2rem", padding: "0.3rem", gap: "0.2rem",
+  display: "flex", alignItems: "center", gap: 0,
+  padding: "11px 20px", borderBottom: "1px solid #E3E9F0",
+  background: "#FAFCFE",
 };
-const stepTitle = {
-  fontSize: "1.15rem", fontWeight: 800, padding: "0.4rem 1.2rem", borderRadius: "1.5rem",
-  cursor: "pointer", transition: "background 0.2s", fontFamily: "Nunito",
+const stepItem = {
+  display: "inline-flex", alignItems: "center", gap: "8px",
 };
-const stepActive = { color: "white", backgroundColor: "#3b82f6" };
-const stepInactive = { color: "rgba(255,255,255,0.45)", opacity: 0.4 };
+const stepCircle = (active, done) => ({
+  width: "21px", height: "21px", borderRadius: "50%", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  fontFamily: "Nunito", fontWeight: 900, fontSize: "11.5px",
+  backgroundColor: active || done ? "#0A77EA" : "#E3E9F0",
+  color: active || done ? "#fff" : "#5C6B7A",
+});
+const stepLabel = (active, done) => ({
+  fontFamily: "Nunito", fontWeight: 800, fontSize: "13px",
+  color: active || done ? "#0A5FBF" : "#5C6B7A",
+  whiteSpace: "nowrap",
+});
+const stepConnector = () => ({
+  width: "34px", height: "2px", margin: "0 12px",
+  backgroundColor: "#E3E9F0", borderRadius: "2px", flexShrink: 0,
+});
 
 const sheet = {
   backgroundColor: "#fff", borderRadius: "14px", overflow: "hidden",
@@ -664,7 +695,6 @@ const pmodeOn = {
 const pmodeOff = {
   fontFamily: "Nunito", border: "none", cursor: "pointer", padding: "6px calc(14px + 0.5rem)",
   borderRadius: "6px", fontSize: "12.5px", fontWeight: 800, color: "#5C6B7A",
-  backgroundColor: "transparent",
 };
 const editorWrap = {
   border: "0.5px solid #E3E9F0", borderRadius: "9px", overflow: "hidden",
@@ -674,7 +704,7 @@ const charCount = {
 };
 const cap = { fontSize: "12px", fontWeight: 700, color: "#5C6B7A", lineHeight: 1.4, marginTop: "7px" };
 const calBox = {
-  border: "1.5px solid #E3E9F0", borderRadius: "11px", padding: "10px",
+  border: "2px solid #E3E9F0", borderRadius: "11px", padding: "10px",
   display: "flex", flexDirection: "column", alignItems: "center",
 };
 const rangeRow = {

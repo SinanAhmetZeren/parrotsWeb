@@ -15,7 +15,7 @@ import {
 } from "../../styles/adminStyles";
 
 const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
-const tileUrl = `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerKey}`;
+const tileUrl = `https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`;
 const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
 
 const clickMarkerIcon = L.icon({

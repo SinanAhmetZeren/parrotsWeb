@@ -21,7 +21,7 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
   };
 
   return (
-    <div style={cardContainerStyle(dark)}>
+    <div style={{ ...cardContainerStyle(dark), cursor: cardData.brief ? "pointer" : "default" }} onClick={handleLinkClick}>
       {/* egg badge */}
       <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
         <img src={egg.image} alt="" style={eggBadgeImg} />
@@ -50,7 +50,7 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
           )}
           {cardData.waypoints?.[0] && (
             <button
-              onClick={() => panToLocation(cardData.waypoints[0].latitude, cardData.waypoints[0].longitude)}
+              onClick={(e) => { e.stopPropagation(); panToLocation(cardData.waypoints[0].latitude, cardData.waypoints[0].longitude); }}
               style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}
             >
               See on Map

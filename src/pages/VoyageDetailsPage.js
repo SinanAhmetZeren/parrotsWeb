@@ -80,6 +80,7 @@ function VoyageDetailsPage() {
   const [voyageReportOpen, setVoyageReportOpen] = useState(false);
   const [voyageSelectedReason, setVoyageSelectedReason] = useState("");
   const [voyageReportSubmitted, setVoyageReportSubmitted] = useState(false);
+  const [pendingDeleteBid, setPendingDeleteBid] = useState(null);
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const [reportVoyage] = useReportVoyageMutation();
@@ -409,7 +410,7 @@ function VoyageDetailsPage() {
               <span style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>Description</span>
               <div style={{ position: "relative", flex: 1, minHeight: 0, marginTop: "7px" }}>
                 <div style={{ position: "absolute", inset: 0, overflowY: "auto", paddingRight: "4px", scrollbarWidth: "none" }}>
-                  <p style={{ fontSize: "0.92rem", fontWeight: 700, color: "rgba(255,255,255,0.94)", lineHeight: 1.6, margin: 0, paddingBottom: "2rem" }}>{descriptionHtml}</p>
+                  <p style={{ fontSize: "1.125rem", fontWeight: 700, color: "rgba(255,255,255,0.94)", lineHeight: 1.6, margin: 0, paddingBottom: "2rem" }}>{descriptionHtml}</p>
                 </div>
                 <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "34px", background: "linear-gradient(180deg,rgba(8,32,56,0),#082038)", pointerEvents: "none" }} />
               </div>
@@ -430,7 +431,7 @@ function VoyageDetailsPage() {
                 scrollWheelZoom={true}
               >
                 <TileLayer
-                  url={`https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
+                  url={`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${maptilerKey}`}
                   attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                 />
                 <FitBoundsWithPadding bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]} />
@@ -452,7 +453,7 @@ function VoyageDetailsPage() {
             {sortedWaypoints.length > 0 && (
               <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "17rem", zIndex: 1000, display: "flex", flexDirection: "column" }}>
                 {/* Dark overlay — covers full panel width plus fade beyond */}
-                <div style={{ position: "absolute", inset: 0, width: "20rem", background: "linear-gradient(90deg, rgba(10,20,35,0.38) 80%, transparent)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", inset: 0, width: "20rem", background: "linear-gradient(90deg,rgba(0, 119, 234, 0.15) 85%, transparent)", pointerEvents: "none" }} />
                 {/* Header */}
                 <div style={{ position: "relative", padding: "0.75rem 0.75rem 0.4rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
                   <span style={{ fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>ROUTE</span>
@@ -506,7 +507,7 @@ function VoyageDetailsPage() {
                         bid={bid}
                         loadingBidId={loadingBidId}
                         onAccept={handleAcceptBid}
-                        onDelete={handleDeleteBid}
+                        onDelete={({ bidId, bidUserId }) => setPendingDeleteBid({ bidId, bidUserId })}
                       />
                     ))}
                   </div>
@@ -645,6 +646,27 @@ function VoyageDetailsPage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {pendingDeleteBid && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "1.75rem", width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", fontFamily: "Nunito" }}>
+            <div style={{ fontWeight: 800, fontSize: "1.5rem", color: "#ef4444", marginBottom: "0.5rem" }}>Delete this bid?</div>
+            <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#6b7280", marginBottom: "1.5rem", lineHeight: 1.5 }}>
+              This will permanently delete the bid. The traveller will be notified and the bid cannot be recovered.
+            </div>
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <div
+                style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: "1rem", color: "#6b7280", cursor: "pointer", border: "1.5px solid #e5e7eb", borderRadius: "1.875rem", padding: "0.75rem" }}
+                onClick={() => setPendingDeleteBid(null)}
+              >Cancel</div>
+              <div
+                style={{ flex: 1, backgroundColor: "#ef4444", borderRadius: "1.875rem", padding: "0.75rem", fontWeight: 700, fontSize: "1rem", color: "white", cursor: "pointer", textAlign: "center" }}
+                onClick={() => { handleDeleteBid(pendingDeleteBid); setPendingDeleteBid(null); }}
+              >Delete bid</div>
+            </div>
           </div>
         </div>
       )}
@@ -1049,5 +1071,4 @@ export const appStyle = { textAlign: "center" };
 export const appHeaderStyle = { backgroundColor: "transparent", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: "calc(10px + 2vmin)", color: "white" };
 export const mainPageContainerStyle = { flexDirection: "column", width: "100%", height: "100vh" };
 export const mainPageTopRowStyle = { padding: "0.1rem", flexDirection: "row", backgroundColor: "#011a32" };
-export const mainPageTopRightStyle = { height: "3rem", width: "65%", alignItems: "center", justifyContent: "flex-end" };
 export const mainPageBottomRowStyle = { flexGrow: 1, width: "100%" };

@@ -532,7 +532,7 @@ export default function AskParrotsPage() {
                     scrollWheelZoom
                   >
                     <TileLayer
-                      url={`https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=${process.env.REACT_APP_MAPTILER_KEY}`}
+                      url={`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${process.env.REACT_APP_MAPTILER_KEY}`}
                       attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
                     />
                     <MapCenterSetter center={mapCenter} />

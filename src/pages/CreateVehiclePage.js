@@ -54,7 +54,7 @@ function CreateVehiclePage() {
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
   const [isGalleryImageDeleteHovered, setIsGalleryImageDeleteHovered] = useState(false);
   const [addedVehicleImages, setAddedVehicleImages] = useState([]);
-  const [pageState, setPageState] = useState("s2");
+  const [pageState, setPageState] = useState("s1");
   const [vehicleId, setVehicleId] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
@@ -289,19 +289,19 @@ function CreateVehiclePage() {
             </div>
           </div>
 
-          <div style={vehicleStepBarContainer}>
-            <span
-              style={{ ...vehicleStepTitle, ...(pageState === "s1" ? vehicleStepActive : vehicleStepInactive), cursor: "pointer" }}
-              onClick={() => setPageState("s1")}
-            >Vehicle Details</span>
-            <span
-              style={{ ...vehicleStepTitle, ...(pageState === "s2" ? vehicleStepActive : vehicleStepInactive), cursor: vehicleId ? "pointer" : "default" }}
-              onClick={() => { if (vehicleId) setPageState("s2"); }}
-            >Vehicle Images</span>
-          </div>
-
           {pageState === "s1" && (
             <div style={s1Card}>
+              <div style={cvStepBarContainer}>
+                <div style={cvStepItem}>
+                  <div style={cvStepCircle(true, false)}>1</div>
+                  <span style={cvStepLabel(true, false)}>Vehicle Details</span>
+                </div>
+                <div style={cvStepConnector} />
+                <div style={cvStepItem}>
+                  <div style={cvStepCircle(false, false)}>2</div>
+                  <span style={cvStepLabel(false, false)}>Vehicle Images</span>
+                </div>
+              </div>
               <div style={s1Body}>
                 {/* Left column */}
                 <div style={s1Left}>
@@ -459,6 +459,17 @@ function CreateVehiclePage() {
           )}
           {pageState === "s2" && (
             <div style={s1Card}>
+              <div style={cvStepBarContainer}>
+                <div style={cvStepItem}>
+                  <div style={cvStepCircle(false, true)}>1</div>
+                  <span style={cvStepLabel(false, true)}>Vehicle Details</span>
+                </div>
+                <div style={cvStepConnector} />
+                <div style={cvStepItem}>
+                  <div style={cvStepCircle(true, false)}>2</div>
+                  <span style={cvStepLabel(true, false)}>Vehicle Images</span>
+                </div>
+              </div>
               <div style={s2HeaderRow}>
                 <div>
                   <div style={s2Title}>Vehicle images</div>
@@ -857,40 +868,6 @@ const galleryImageDeleteIconHover = {
   transform: "scale(1.2)",
 };
 
-const vehicleStepBarContainer = {
-  display: "flex",
-  flexDirection: "row",
-  width: "fit-content",
-  margin: "auto",
-  marginTop: "1rem",
-  marginBottom: "0.5rem",
-  backgroundColor: "rgba(255, 255, 255, 0.12)",
-  backdropFilter: "blur(12px)",
-  WebkitBackdropFilter: "blur(12px)",
-  border: "1px solid rgba(255,255,255,0.2)",
-  borderRadius: "2rem",
-  padding: "0.3rem",
-  gap: "0.2rem",
-};
-
-const vehicleStepTitle = {
-  fontSize: "1.15rem",
-  fontWeight: 800,
-  padding: "0.4rem 1.2rem",
-  borderRadius: "1.5rem",
-  cursor: "pointer",
-  transition: "background 0.2s",
-};
-
-const vehicleStepActive = {
-  color: "white",
-  backgroundColor: "#3b82f6",
-};
-
-const vehicleStepInactive = {
-  color: "rgba(255,255,255,0.45)",
-  opacity: 0.4,
-};
 
 const registerVehicleButton = {
   // position: "absolute",
@@ -1166,4 +1143,25 @@ const s2BackBtn = {
   border: "1.5px solid #e5e7eb", fontWeight: 700, fontSize: "0.95rem",
   color: "#374151", cursor: "pointer", display: "flex", alignItems: "center",
   fontFamily: "Nunito",
+};
+
+const cvStepBarContainer = {
+  display: "flex", alignItems: "center", gap: 0,
+  padding: "11px 20px", borderBottom: "1px solid #E3E9F0", background: "#FAFCFE",
+};
+const cvStepItem = { display: "inline-flex", alignItems: "center", gap: "8px" };
+const cvStepCircle = (active, done) => ({
+  width: "21px", height: "21px", borderRadius: "50%", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  fontFamily: "Nunito", fontWeight: 900, fontSize: "11.5px",
+  backgroundColor: active || done ? "#0A77EA" : "#E3E9F0",
+  color: active || done ? "#fff" : "#5C6B7A",
+});
+const cvStepLabel = (active, done) => ({
+  fontFamily: "Nunito", fontWeight: 800, fontSize: "13px",
+  color: active || done ? "#0A5FBF" : "#5C6B7A", whiteSpace: "nowrap",
+});
+const cvStepConnector = {
+  width: "34px", height: "2px", margin: "0 12px",
+  backgroundColor: "#E3E9F0", borderRadius: "2px", flexShrink: 0,
 };
