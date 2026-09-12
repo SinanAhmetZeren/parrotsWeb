@@ -2,8 +2,13 @@ import "../assets/css/App.css";
 import * as React from "react";
 import parrotEmojiIcon from "../assets/images/emojipickerparrot.jpg";
 import parrotEmojiIconBlue from "../assets/images/emojipickerblueparrot.jpg";
-import { parrotBlue, parrotCream } from "../styles/colors";
 import { EMOJI_CATEGORIES, EMOJIS_BY_CATEGORY, EMOJI_NAMES } from "../constants/emojiData";
+
+const blue = "#0A77EA";
+const navy = "#0A2540";
+const mid = "#5C6B7A";
+const line = "#E3E9F0";
+const tint = "#F4F7FB";
 
 export function DirectMessageSenderComponent({
   conversationUserId,
@@ -39,18 +44,20 @@ export function DirectMessageSenderComponent({
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
-  return (
-    <div style={inputContainerStyle(dark)}>
+  const canSend = !sendButtonDisabled && message.trim() !== "" && !hideSendLabel;
 
-      {/* Emoji button + panel */}
+  return (
+    <div style={compStyle}>
+
+      {/* Emoji / mark button */}
       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
         <button
           onClick={() => setEmojiOpen(o => !o)}
-          style={{ ...emojiBtnStyle(dark, emojiOpen || focused), opacity: hideSendLabel ? 0.2 : 1, pointerEvents: hideSendLabel ? "none" : "auto" }}
+          style={{ ...markStyle, border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid transparent", opacity: hideSendLabel ? 0.35 : 1, pointerEvents: hideSendLabel ? "none" : "auto" }}
           title=""
           disabled={hideSendLabel}
         >
-          <img src={emojiOpen || focused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 50, height: 50, objectFit: "cover", opacity: emojiOpen || focused ? (dark ? 0.35 : 1) : 0.2 }} />
+          <img src={emojiOpen || focused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 22, height: 22, objectFit: "cover", opacity: emojiOpen || focused ? 1 : 0.5, borderRadius: "50%" }} />
         </button>
         {emojiOpen && (
           <div style={emojiPanelStyle(dark)}>
@@ -66,11 +73,7 @@ export function DirectMessageSenderComponent({
             {!emojiSearch && (
               <div style={categoryRowStyle}>
                 {EMOJI_CATEGORIES.map(cat => (
-                  <button
-                    key={cat.key}
-                    onClick={() => setEmojiCategory(cat.key)}
-                    style={categoryBtnStyle(emojiCategory === cat.key, dark)}
-                  >{cat.icon}</button>
+                  <button key={cat.key} onClick={() => setEmojiCategory(cat.key)} style={categoryBtnStyle(emojiCategory === cat.key, dark)}>{cat.icon}</button>
                 ))}
               </div>
             )}
@@ -79,133 +82,103 @@ export function DirectMessageSenderComponent({
                 ? Object.values(EMOJIS_BY_CATEGORY).flat().filter(e => EMOJI_NAMES[e]?.includes(emojiSearch.toLowerCase()))
                 : (EMOJIS_BY_CATEGORY[emojiCategory] || [])
               ).map((emoji, i) => (
-                <button
-                  key={i}
-                  style={emojiItemStyle}
-                  onClick={() => setMessage(prev => prev + emoji)}
-                >{emoji}</button>
+                <button key={i} style={emojiItemStyle} onClick={() => setMessage(prev => prev + emoji)}>{emoji}</button>
               ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* Text input */}
-      <div style={{ ...textareaWrapperStyle, position: "relative", flex: 1 }}>
+      {/* Text field */}
+      <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
         {showLabel && (
-          <div style={labelStyle(dark)} onClick={() => setFocused(true)}>
-            Write a message to <span style={{ color: parrotBlue, fontWeight: "bold" }}>{conversationUserUsername}</span>
+          <div style={fldLabel} onClick={() => setFocused(true)}>
+            Write a message to <b style={{ color: "#0A5FBF", fontWeight: 800 }}>{conversationUserUsername}</b>
           </div>
         )}
         <textarea
           value={message}
           placeholder=""
-          style={{ ...messageInputStyle(dark), opacity: hideSendLabel ? 0.2 : 1, border: (emojiOpen || focused) ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070" }}
+          style={{
+            ...fldStyle,
+            border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid transparent",
+            background: (emojiOpen || focused) ? "#fff" : tint,
+            boxShadow: (emojiOpen || focused) ? "0 0 0 3px rgba(10,119,234,.1)" : "none",
+            opacity: hideSendLabel ? 0.35 : 1,
+          }}
           maxLength={500}
           disabled={!conversationUserId}
           onFocus={() => { setFocused(true); setEmojiOpen(false); }}
           onBlur={() => setFocused(false)}
           onInput={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
         />
       </div>
 
       {/* Send button */}
       <button
-        disabled={sendButtonDisabled || message.trim() === ""}
-        onClick={() => handleSendMessage()}
+        disabled={!canSend}
+        onClick={handleSendMessage}
         style={{
-          ...sendButtonStyle,
-          backgroundColor: hideSendLabel
-            ? (dark ? "#0d2b4e" : "white")
-            : (sendButtonDisabled || message.trim() === "") ? "gray" : "#007bff",
-          border: hideSendLabel
-            ? (dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070")
-            : "none",
-          opacity: hideSendLabel ? 0.2 : 1,
+          ...sendStyle,
+          background: canSend ? blue : "#fff",
+          borderColor: canSend ? blue : line,
+          color: canSend ? "#fff" : mid,
+          cursor: canSend ? "pointer" : "not-allowed",
+          opacity: hideSendLabel ? 0.35 : 1,
         }}
       >
-        {hideSendLabel ? "" : "Send"}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M21 4L3 10l7 3 3 7z"/></svg>
+        Send
       </button>
     </div>
   );
 }
 
-const inputContainerStyle = (dark) => ({
-  display: "flex",
-  flexDirection: "row",
-  gap: "0.6rem",
-  alignItems: "center",
-  width: "100%",
-  padding: "1rem",
-  backgroundColor: dark ? "rgba(10,34,64,0.8)" : parrotCream,
-});
-
-const textareaWrapperStyle = {
-  position: "relative",
-  width: "100%",
-};
-
-const labelStyle = (dark) => ({
-  position: "absolute",
-  top: "40%",
-  transform: "translateY(-30%)",
-  left: "2rem",
-  fontSize: "1.3rem",
-  color: dark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)",
-  pointerEvents: "none",
-  userSelect: "none",
-});
-
-const messageInputStyle = (dark) => ({
-  height: "4rem",
-  width: "100%",
-  padding: "1rem",
-  fontSize: "1.3rem",
-  color: dark ? "rgba(255,255,255,0.9)" : "black",
-  backgroundColor: dark ? "#0d2b4e" : "white",
-  overflowY: "hidden",
-  minHeight: "1rem",
-  maxHeight: "10rem",
-  resize: "none",
-  paddingLeft: "2rem",
-  paddingRight: "2rem",
-  borderRadius: "2rem",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
-});
-
-const sendButtonStyle = {
-  width: "7rem",
-  height: "4rem",
-  fontSize: "1rem",
-  fontWeight: "bold",
-  backgroundColor: "#007bff",
-  color: "white",
-  border: "none",
-  borderRadius: "2rem",
-  cursor: "pointer",
+const compStyle = {
+  display: "flex", alignItems: "center", gap: 11,
+  padding: "13px 18px",
+  background: "#FAFCFE",
+  borderTop: `1px solid ${line}`,
   flexShrink: 0,
 };
 
-const emojiBtnStyle = (dark, active) => ({
-  background: "none",
-  border: active ? "2px solid rgba(0,119,234,0.4)" : dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid #c0c0c070",
-  cursor: "pointer",
-  padding: 0,
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 48,
-  height: 48,
-  overflow: "hidden",
+const markStyle = {
+  width: 38, height: 38, borderRadius: "50%",
+  background: tint,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  flexShrink: 0, cursor: "pointer",
+};
+
+const fldLabel = {
+  position: "absolute", top: "50%", transform: "translateY(-50%)",
+  left: 14, right: 14,
+  fontSize: 14, fontWeight: 600, color: mid,
+  pointerEvents: "none", userSelect: "none",
+  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+};
+
+const fldStyle = {
+  width: "100%",
+  fontFamily: "Nunito, sans-serif",
+  fontSize: 14, fontWeight: 600, color: navy,
+  borderRadius: 10, padding: "11px 14px",
+  minHeight: "1rem", maxHeight: "10rem",
+  overflowY: "hidden", resize: "none",
+  outline: "none",
+  transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",
+};
+
+const sendStyle = {
+  fontFamily: "Nunito, sans-serif",
+  display: "inline-flex", alignItems: "center", gap: 7,
+  border: `1.5px solid ${line}`, background: "#fff",
+  fontSize: 13.5, fontWeight: 800,
+  padding: "11px 20px", borderRadius: 99,
   flexShrink: 0,
-});
+  transition: "background 0.15s, border-color 0.15s, color 0.15s",
+};
+
 
 const emojiPanelStyle = (dark) => ({
   position: "absolute",

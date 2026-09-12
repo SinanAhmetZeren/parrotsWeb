@@ -207,6 +207,10 @@ export default function AskParrotsPage() {
   const [userLocation, setUserLocation] = useState(null);
   const [showScrollArrow, setShowScrollArrow] = useState(true);
   const [showResponseArrow, setShowResponseArrow] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCollapse = () => setIsClosing(true);
 
   const currentUserId = useSelector((s) => s.users.userId);
   const [askParrots, { isLoading }] = useAskParrotsMutation();
@@ -247,6 +251,8 @@ export default function AskParrotsPage() {
   const handleAsk = async () => {
     if (!pin) return;
     setResponse(null);
+    setCollapsed(false);
+    setIsClosing(false);
     try {
       const result = await askParrots({
         vehicleType: vehicle,
@@ -280,7 +286,11 @@ export default function AskParrotsPage() {
   };
 
   const extractLocation = (text) => { const m = text.match(/^\[\[([^\]]+)\]\]/); return m ? m[1] : null; };
-  const stripLocation = (text) => text.replace(/^\[\[[^\]]+\]\]\s*/, "");
+  const stripLocation = (text) => {
+    const stripped = text.replace(/^\[\[[^\]]+\]\]\s*(\(localhost\))?/, "").trimStart();
+    const isLocalhost = /^\[\[[^\]]+\]\]\s*\(localhost\)/.test(text);
+    return { text: stripped, isLocalhost };
+  };
 
   const renderParagraph = (text, keyPrefix) =>
     text.split(/(\*\*[^*]+\*\*|\{\{[^}]+\}\})/).map((part, i) => {
@@ -300,6 +310,7 @@ export default function AskParrotsPage() {
 
   return (
     <div className="App">
+      <style>{`@keyframes parrotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}@keyframes expandCard{from{clip-path:inset(0 0 calc(100% - 54px) 0 round 13px)}to{clip-path:inset(0 round 13px)}}@keyframes collapseCard{from{clip-path:inset(0 round 13px)}to{clip-path:inset(0 0 calc(100% - 54px) 0 round 13px)}}`}</style>
       <header className="App-header">
         <div style={pageWrap}>
 
@@ -341,7 +352,6 @@ export default function AskParrotsPage() {
                 </div>
                 {showScrollArrow && (
                   <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
-                    <style>{`@keyframes parrotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}`}</style>
                     <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
                   </div>
                 )}
@@ -403,83 +413,107 @@ export default function AskParrotsPage() {
                 </MapContainer>
                 <span style={mapHint}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M4 4l7 16 2-7 7-2z" /></svg>
-                  Tap the map to move your start point
+                  Tap the map to select your start point
                 </span>
               </div>
 
-              {/* Result */}
-              <div style={resPanel}>
-
-                <div style={resHd}>
-                  {locationLabel
-                    ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 800, color: greenInk }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z" /><circle cx="12" cy="9" r="2.4" /></svg>
-                      {locationLabel}
-                    </span>
-                    : <span style={{ fontSize: 13, fontWeight: 700, color: faint }}>Response</span>
-                  }
-                  <span style={{ flex: 1 }} />
+              {/* Result — state 1: idle or collapsed */}
+              {(!response && !isLoading) || (response && collapsed) ? (
+                <div style={response ? resPanelCollapsed : resPanelIdle}>
+                  <img src={require("../assets/images/parrotslogoblueribbontransparent.png")} alt="" style={response ? logoFloating : { width: 56, height: 56, flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    {response
+                      ? <div style={{ fontSize: 14, paddingLeft: 8, fontWeight: 800, color: navy, textAlign: "left" }}>Enlarge to view your response</div>
+                      : <>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: navy }}>Your suggestion appears here</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: faint, marginTop: 3 }}>Pick your options, then ask.</div>
+                      </>
+                    }
+                  </div>
                   {response && (
-                    <button style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${line}`, backgroundColor: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: mid, flexShrink: 0 }} onClick={handleAsk} title="Refresh">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M20 11a8 8 0 1 0-2.3 6" /><path d="M20 4v7h-7" /></svg>
+                    <button style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${line}`, backgroundColor: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: mid, flexShrink: 0 }} onClick={() => setCollapsed(false)} title="Expand">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><line x1="5" y1="19" x2="19" y2="5" /><polyline points="13 5 19 5 19 11" /><polyline points="11 19 5 19 5 13" /></svg>
                     </button>
                   )}
                 </div>
+              ) : null}
 
-                {response && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "9px 18px", borderBottom: `1px solid ${line}`, flexShrink: 0 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 800, color: mid }}>
-                      <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: blue, display: "inline-block" }} />Places
-                    </span>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 800, color: mid }}>
-                      <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: purple, display: "inline-block" }} />Food &amp; drink
-                    </span>
-                  </div>
-                )}
+              {/* Result — state 2: loading / state 3: response */}
+              {(response || isLoading) && (!collapsed || isClosing) && (
+                <div
+                  style={{ ...resPanel, animation: isClosing ? "collapseCard 0.28s cubic-bezier(0.4,0,0.2,1) both" : resPanel.animation }}
+                  onAnimationEnd={isClosing ? () => { setIsClosing(false); setCollapsed(true); } : undefined}
+                >
 
-                <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
-                  {response ? (
-                    <>
-                      <div ref={responseScrollRef} style={{ padding: "15px 18px", fontSize: 14, fontWeight: 600, color: navy, lineHeight: 1.65, height: "100%", overflowY: "auto", scrollbarWidth: "thin", scrollbarColor: "#DDE4EC transparent", textAlign: "left" }}>
-                        {renderResponse(stripLocation(response))}
-                      </div>
-                      {showResponseArrow && (
-                        <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
-                          <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
-                        </div>
-                      )}
-                    </>
-                  ) : isLoading ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                      <PulsatingParrotLogoWithText size={150} />
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                      <img src={placeholderParrots} alt="" style={{ height: "8rem", objectFit: "contain", opacity: 0.4 }} />
+                  {/* Header — only shown when response exists */}
+                  {response && (
+                    <div style={resHd}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 800, color: greenInk }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z" /><circle cx="12" cy="9" r="2.4" /></svg>
+                        {locationLabel}
+                      </span>
+                      <span style={{ flex: 1 }} />
+                      <button style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${line}`, backgroundColor: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: mid, flexShrink: 0 }} onClick={handleCollapse} title="Collapse">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><line x1="19" y1="5" x2="5" y2="19" /><polyline points="11 19 5 19 5 13" /><polyline points="13 5 19 5 19 11" /></svg>
+                      </button>
                     </div>
                   )}
-                </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "11px 18px", borderTop: `1px solid ${line}`, backgroundColor: "#FAFCFE", flexShrink: 0 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: faint }}>Verify opening times before you go.</span>
-                  <span style={{ flex: 1 }} />
-                  <button
-                    style={{ fontFamily: "Nunito, sans-serif", display: "inline-flex", alignItems: "center", gap: 7, border: `1.5px solid ${line}`, backgroundColor: "#fff", color: mid, fontSize: 13, fontWeight: 800, padding: "9px 15px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}
-                    onClick={handleCopy} disabled={!response}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" style={{ width: 14, height: 14 }}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5h10" /></svg>
-                    {copied ? "Copied!" : "Copy"}
-                  </button>
-                  <button
-                    style={{ fontFamily: "Nunito, sans-serif", display: "inline-flex", alignItems: "center", gap: 7, border: `1.5px solid ${blue}`, backgroundColor: blue, color: "#fff", fontSize: 13, fontWeight: 800, padding: "9px 15px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap" }}
-                    onClick={handleSendMe} disabled={!response || sending}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M21 4L3 10l7 3 3 7z" /></svg>
-                    {sending ? "Sending…" : sent ? "Sent!" : "Send me this"}
-                  </button>
-                </div>
+                  {/* Legend — only shown when response exists */}
+                  {response && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 13, padding: "9px 16px", borderBottom: `1px solid ${line}`, flexShrink: 0 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 800, color: mid }}>
+                        <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: blue, display: "inline-block" }} />Places
+                      </span>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 800, color: mid }}>
+                        <span style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: purple, display: "inline-block" }} />Food &amp; drink
+                      </span>
+                    </div>
+                  )}
 
-              </div>
+                  {/* Body */}
+                  <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+                    {response ? (
+                      <>
+                        <div ref={responseScrollRef} style={{ padding: "14px 16px", fontSize: 13.5, fontWeight: 600, color: navy, lineHeight: 1.6, height: "100%", overflowY: "auto", scrollbarWidth: "thin", scrollbarColor: "#DDE4EC transparent", textAlign: "left" }}>
+                          {(() => { const { text, isLocalhost } = stripLocation(response); return (<>{isLocalhost && <div style={{ color: "#800020", fontWeight: 700, fontSize: 12, marginBottom: 8 }}>** From LocalHost, Google Places API blocked</div>}{renderResponse(text)}</>); })()}
+                        </div>
+                        {showResponseArrow && (
+                          <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
+                            <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                        <PulsatingParrotLogoWithText size={150} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "11px 16px", borderTop: `1px solid ${line}`, backgroundColor: "#F7FAFD", flexShrink: 0, opacity: isLoading ? 0.35 : 1 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: mid, textAlign: "left" }}>Verify opening times before you go.</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <button
+                        style={{ fontFamily: "Nunito, sans-serif", flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, border: `1.5px solid ${line}`, backgroundColor: "#fff", color: mid, fontSize: 13, fontWeight: 800, padding: "10px 0", borderRadius: 99, cursor: isLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}
+                        onClick={handleCopy} disabled={!response}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" style={{ width: 14, height: 14 }}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5h10" /></svg>
+                        {copied ? "Copied!" : "Copy"}
+                      </button>
+                      <button
+                        style={{ fontFamily: "Nunito, sans-serif", flex: 1.4, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, border: `1.5px solid ${blue}`, backgroundColor: blue, color: "#fff", fontSize: 13, fontWeight: 800, padding: "10px 0", borderRadius: 99, cursor: isLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}
+                        onClick={handleSendMe} disabled={!response || sending}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M21 4L3 10l7 3 3 7z" /></svg>
+                        {sending ? "Sending…" : sent ? "Sent!" : "Send me this"}
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -549,14 +583,14 @@ const panelFoot = {
 };
 
 const rightPanel = {
-  display: "flex", flexDirection: "column",
-  gap: 12, minHeight: 0,
+  position: "relative",
+  minHeight: 0,
 };
 
 const mapWrap = {
   position: "relative",
   borderRadius: 14, overflow: "hidden",
-  height: "22rem", flexShrink: 0,
+  height: "100%",
   boxShadow: "0 4px 20px rgba(0,14,30,.25)",
 };
 
@@ -571,19 +605,61 @@ const mapHint = {
   pointerEvents: "none",
 };
 
-const resPanel = {
-  flex: 1, minHeight: 0,
+const resPanelIdle = {
+  position: "absolute",
+  top: 16, right: 16,
+  width: 380,
+  zIndex: 1000,
   backgroundColor: "#fff",
   borderRadius: 14,
+  display: "flex", flexDirection: "row",
+  alignItems: "center", gap: 12,
+  padding: "14px 16px",
+  boxShadow: "0 4px 20px rgba(0,14,30,.25)",
+};
+
+const logoFloating = {
+  position: "absolute",
+  left: 12,
+  top: "50%",
+  transform: "translateY(-50%)",
+  width: 42,
+  height: 42,
+  flexShrink: 0,
+  pointerEvents: "none",
+};
+
+const resPanelCollapsed = {
+  position: "absolute",
+  top: 16, right: 16,
+  width: 380,
+  zIndex: 1000,
+  backgroundColor: "#F7FAFD",
+  borderRadius: 13,
+  display: "flex", flexDirection: "row",
+  alignItems: "center", gap: 9,
+  padding: "13px 16px 13px 62px",
+  borderBottom: `1px solid ${line}`,
+  overflow: "visible",
+};
+
+const resPanel = {
+  position: "absolute",
+  top: 16, right: 16, bottom: 16,
+  width: 380,
+  zIndex: 1000,
+  backgroundColor: "#fff",
+  borderRadius: 13,
   display: "flex", flexDirection: "column",
   overflow: "hidden",
-  boxShadow: "0 4px 20px rgba(0,14,30,.15)",
+  boxShadow: "0 12px 34px rgba(0,20,40,.26)",
+  animation: "expandCard 0.28s cubic-bezier(0.4,0,0.2,1) both",
 };
 
 const resHd = {
-  display: "flex", alignItems: "center", gap: 8,
-  padding: "12px 18px",
+  display: "flex", alignItems: "center", gap: 9,
+  padding: "13px 16px",
   borderBottom: `1px solid ${line}`,
-  backgroundColor: "#FAFCFE",
+  backgroundColor: "#F7FAFD",
   flexShrink: 0,
 };

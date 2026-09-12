@@ -257,10 +257,11 @@ img {
 }
 
 .mainpage_TopRight {
-  height: 3rem;
-  width: 65%;
+  height: auto;
+  width: 100%;
   align-items: center;
   justify-content: flex-end;
+  padding: 9px 12px;
 }
 
 @media (max-width: 640px) {
@@ -329,6 +330,7 @@ img {
   overflow: visible;
   position: relative;
   z-index: 1000;
+  width: 100%;
 }
 
 .leaflet-container {

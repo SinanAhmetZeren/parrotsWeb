@@ -1,29 +1,24 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { parrotBlue, parrotBlueDarkTransparent, parrotBlueDarkTransparent2, parrotBlueSemiTransparent, parrotBlueTransparent, parrotDarkBlue } from "../styles/colors";
 import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.png";
-import { use } from "react";
 import { invokeHub, isHubReady } from "../signalr/signalRHub";
 
-export function ConversationComponent({ currentUserId, messagesToDisplay, conversationUserId, isDarkMode = false
-}) {
-  const dark = isDarkMode;
+const mid = "#5C6B7A";
+const tint = "#F4F7FB";
+const line = "#E3E9F0";
+
+export function ConversationComponent({ currentUserId, messagesToDisplay, conversationUserId, isDarkMode = false }) {
   const messagesEndRef = useRef(null);
 
-  // Notify server when entering/leaving conversation
   useEffect(() => {
     if (!conversationUserId || !currentUserId) return;
-
-    // Enter conversation
     const enter = async () => {
       while (!isHubReady()) await new Promise(res => setTimeout(res, 50));
       invokeHub("EnterConversationPage", currentUserId, conversationUserId);
       console.log("--> entered conversation page:---", conversationUserId.slice(0, 5));
     };
     enter();
-
-    // Cleanup function: leave conversation
     return () => {
       if (isHubReady()) {
         invokeHub("LeaveConversationPage", currentUserId);
@@ -32,16 +27,13 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
     };
   }, [conversationUserId, currentUserId]);
 
-
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
-    }
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: "auto" });
   }, [messagesToDisplay]);
 
   return (
-    <div style={messagesContainerStyle}>
-      {messagesToDisplay?.length > 0 && messagesToDisplay?.map((message, index) => {
+    <div style={msgsContainer}>
+      {messagesToDisplay?.length > 0 && messagesToDisplay.map((message, index) => {
         const dateObj = new Date(message.dateTime);
         const time = dateObj.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
         const date = dateObj.toLocaleDateString("en-GB");
@@ -55,117 +47,91 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
           : isParrotsBid
             ? message.text.replace(/^\[parrots-bid\]\s*/, "")
             : message.text;
+
         return (
           <React.Fragment key={index}>
             {showDateSeparator && (
-              <div style={dateSeparatorStyle}>
-                <span style={dateSeparatorTextStyle(dark)}>{date}</span>
-              </div>
+              <span style={daySep}>{date}</span>
             )}
-            {isAskParrots ? (
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", marginBottom: 8, justifySelf: "start", textAlign: "left" }}>
-                <img src={parrotLogo} alt="Ask Parrots" style={{ width: 36, height: 36, borderRadius: "50%", marginRight: 8, flexShrink: 0 }} />
-                <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: 12, color: parrotBlue, fontWeight: 700, marginBottom: 2 }}>Ask Parrots</div>
-                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: 8, padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: "1rem", textAlign: "left", fontWeight: "bold" }}>
-                    {displayText}
-                  </div>
-                </div>
-              </div>
-            ) : isParrotsBid ? (
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", marginBottom: 8, justifySelf: "start", textAlign: "left" }}>
-                <img src={parrotLogo} alt="Parrots" style={{ width: 36, height: 36, borderRadius: "50%", marginRight: 8, flexShrink: 0 }} />
-                <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: 12, color: parrotBlue, fontWeight: 700, marginBottom: 2 }}>Parrots</div>
-                  <div style={{ backgroundColor: parrotBlue, color: "white", borderRadius: "4rem", padding: "8px 12px", maxWidth: 480, whiteSpace: "pre-wrap", fontSize: "1rem", textAlign: "left", fontWeight: "bold" }}>
-                    {displayText}
-                  </div>
-                </div>
+            {isAskParrots || isParrotsBid ? (
+              <div style={mSys}>
+                <span style={mAvSys}>
+                  <img src={parrotLogo} alt="Parrots" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </span>
+                <span style={sysw}>
+                  <span style={sysn}>{isAskParrots ? "Ask Parrots" : "Parrots"}</span>
+                  <span style={bubSys}>
+                    <span style={bubTx}>{displayText}</span>
+                  </span>
+                </span>
               </div>
             ) : (
-              <div
-                style={{
-                  ...containerStyle(dark),
-                  justifySelf: isCurrentUser ? "end" : "start",
-                }}
-              >
-                <div style={messageTextStyle}>
-                  <div>{displayText}</div>
-                </div>
-                <div style={dateAndTimeContainerStyle}>
-                  <span style={{ color: dark ? "rgba(255,255,255,0.6)" : parrotBlueDarkTransparent2 }}>
-                    {time}
-                  </span>
-                </div>
+              <div style={{ ...mWrap, alignSelf: isCurrentUser ? "flex-end" : "flex-start", flexDirection: isCurrentUser ? "row-reverse" : "row" }}>
+                <span style={{ ...bub, background: isCurrentUser ? "#E6EFFB" : tint }}>
+                  <span style={{ ...bubTx, color: isCurrentUser ? "#0A2540" : "#0A2540" }}>{displayText}</span>
+                  <span style={{ ...bubTm, color: isCurrentUser ? "#4A6C93" : mid }}>{time}</span>
+                </span>
               </div>
             )}
           </React.Fragment>
         );
       })}
       <div ref={messagesEndRef} />
-    </div >
+    </div>
   );
 }
 
-const messageTextStyle = {
-  textAlign: "justify",
-  display: "flex",
-  flexDirection: "column",
-  wordBreak: "break-word",
-  padding: ".5rem",
-  borderRadius: "1rem",
-  fontSize: "1rem",
-  fontWeight: "bold",
+const msgsContainer = {
+  display: "flex", flexDirection: "column", gap: 10,
+  width: "100%", padding: "16px 20px 20px",
 };
 
-
-const dateAndTimeContainerStyle = {
-  display: "flex",
-  alignItems: "flex-end",
-  justifyContent: "flex-end",
-  padding: "4px",
-  borderRadius: "0.5rem",
-  fontSize: "0.85rem",
-  fontWeight: "bold",
+const daySep = {
+  alignSelf: "center",
+  background: tint, color: mid,
+  fontSize: 10, fontWeight: 800,
+  letterSpacing: "0.1em", textTransform: "uppercase",
+  padding: "5px 13px", borderRadius: 99,
 };
 
-const dateSeparatorStyle = {
-  display: "flex",
-  justifyContent: "center",
-  margin: "0.8rem 0 0.4rem",
+const mWrap = {
+  display: "flex", alignItems: "flex-end", gap: 9, maxWidth: "72%",
 };
 
-const dateSeparatorTextStyle = (dark) => ({
-  backgroundColor: dark ? "rgba(0,119,234,0.08)" : "rgba(0,119,234,0.06)",
-  color: "rgba(0,119,234,0.5)",
-  borderRadius: "2rem",
-  padding: "0.2rem 1rem",
-  fontSize: "0.8rem",
-  fontWeight: "bold",
-});
-
-const messagesContainerStyle = {
-  display: "grid",
-  gap: "4px",
-  width: "100%",
-  // backgroundColor: "red"
+const bub = {
+  borderRadius: 14, padding: "10px 14px",
+  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0,
 };
 
-const containerStyle = (dark) => ({
-  fontSize: "1rem",
-  fontFamily: "Nunito, sans-serif",
-  margin: "4px 10px",
-  padding: "4px 10px",
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "flex-end",
-  gap: "0.6rem",
-  borderRadius: "4rem",
-  color: dark ? "rgba(255,255,255,0.85)" : "darkblue",
-  maxWidth: "80%",
-  wordBreak: "break-word",
-  backgroundColor: dark ? "#0a2745" : "rgb(246, 246, 246)",
-});
+const bubTx = {
+  fontSize: 14, fontWeight: 600, lineHeight: 1.45, wordBreak: "break-word",
+};
 
+const bubTm = {
+  fontSize: 11, fontWeight: 700, flexShrink: 0,
+};
 
+const mSys = {
+  display: "flex", alignItems: "flex-start", gap: 9, maxWidth: "78%",
+};
 
+const mAvSys = {
+  width: 32, height: 32, borderRadius: "50%",
+  overflow: "hidden", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center",
+};
+
+const sysw = {
+  display: "flex", flexDirection: "column", gap: 4, minWidth: 0,
+};
+
+const sysn = {
+  fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+  textTransform: "uppercase", color: mid,
+};
+
+const bubSys = {
+  background: "#FAFCFE", border: `1.5px solid ${line}`,
+  borderRadius: 14, padding: "10px 14px",
+  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0,
+};

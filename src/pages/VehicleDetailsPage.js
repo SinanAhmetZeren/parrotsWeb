@@ -127,7 +127,14 @@ function VehicleDetailsPage() {
                     <div style={s1DisplayField}>{VehicleData.capacity}</div>
                   </div>
                   {/* Type */}
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, position: "relative" }}>
+                    <button
+                      onClick={isFavorited ? handleDeleteVehicleFromFavorites : handleAddVehicleToFavorites}
+                      title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                      style={{ position: "absolute", top: 0, right: 0, width: "1.75rem", height: "1.75rem", borderRadius: "50%", border: `1.5px solid ${isFavorited ? "#ef4444" : "#f97316"}`, background: isFavorited ? "#ef4444" : "white", color: isFavorited ? "white" : "#f97316", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                    >
+                      <IoHeartSharp size={12} />
+                    </button>
                     <div style={s1FieldLabel}>Type</div>
                     <div style={s1DisplayField}>{VehicleTypes[VehicleData.type] ?? VehicleData.type}</div>
                   </div>
@@ -147,7 +154,7 @@ function VehicleDetailsPage() {
 
                 <div style={{ ...s1SectionHeader, marginTop: "1.5rem" }}>DESCRIPTION</div>
                 <div
-                  style={{ flex: 1, fontSize: "0.95rem", color: "#111827", lineHeight: 1.6, overflowY: "auto", scrollbarWidth: "none" }}
+                  style={{ flex: 1, fontSize: "1.15rem", color: "#111827", lineHeight: 1.6, overflowY: "auto", scrollbarWidth: "none" }}
                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(VehicleData.description) }}
                 />
 
@@ -168,17 +175,7 @@ function VehicleDetailsPage() {
 
             {/* Footer */}
             <div style={s1Footer}>
-              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                {!isOwnVehicle && (
-                  <div
-                    style={{ ...s1RegisterBtn, backgroundColor: isFavorited ? "#ef4444" : "#f97316", gap: "0.4rem" }}
-                    onClick={isFavorited ? handleDeleteVehicleFromFavorites : handleAddVehicleToFavorites}
-                  >
-                    <IoHeartSharp size="1rem" />
-                    {isFavorited ? "Remove favorite" : "Add to favorites"}
-                  </div>
-                )}
-              </div>
+              <div />
               {isOwnVehicle && (
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                   <div style={{ ...s1RegisterBtn, backgroundColor: "#007bff" }} onClick={() => navigate(`/edit-vehicle/${vehicleId}`)}>

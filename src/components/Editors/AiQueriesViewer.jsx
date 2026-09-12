@@ -201,8 +201,8 @@ function PlacesAudit({ spotsJson, auditJson }) {
 
     const rows = spots.length > 0 ? spots.map((s, i) => {
         const a = audit.find(a => a.spotName === s.Name) ?? audit[i] ?? {};
-        return { ...s, placeId: a.placeId ?? null };
-    }) : audit.map(a => ({ Name: a.spotName, placeId: a.placeId }));
+        return { ...s, placeId: a.placeId ?? null, rejectReason: a.rejectReason ?? null };
+    }) : audit.map(a => ({ Name: a.spotName, placeId: a.placeId, rejectReason: a.rejectReason ?? null }));
 
     if (!rows.length) return null;
 
@@ -218,7 +218,7 @@ function PlacesAudit({ spotsJson, auditJson }) {
                         <th style={auditTh}>Fallback Label</th>
                         <th style={auditTh}>Lat / Lng</th>
                         <th style={auditTh}>Place ID</th>
-                        <th style={{ ...auditTh, width: "4.5rem" }}>Verified</th>
+                        <th style={{ ...auditTh, width: "8rem" }}>Verified</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -239,7 +239,12 @@ function PlacesAudit({ spotsJson, auditJson }) {
                             <td style={auditTd}>
                                 {p.placeId
                                     ? <span style={{ color: "#16a34a", fontWeight: 700 }}>✓</span>
-                                    : <span style={{ color: "#dc2626", fontWeight: 700 }}>✗</span>}
+                                    : <span style={{ color: "#dc2626", fontWeight: 700 }} title={p.rejectReason ?? ""}>
+                                        ✗ {p.rejectReason === "no_results" ? <span style={{ fontSize: "0.68rem", fontWeight: 400 }}>no results</span>
+                                            : p.rejectReason?.startsWith("haversine:") ? <span style={{ fontSize: "0.68rem", fontWeight: 400 }}>{p.rejectReason.replace("haversine:", "")} off</span>
+                                                : p.rejectReason === "api_error" ? <span style={{ fontSize: "0.68rem", fontWeight: 400 }}>api error</span>
+                                                    : null}
+                                    </span>}
                             </td>
                         </tr>
                     ))}
@@ -270,16 +275,17 @@ function SectionLabel({ children }) {
 
 function parseNarrative(text) {
     const parts = [];
-    const re = /\[\[(.+?)\]\]|\*\*(.+?)\*\*|\{\{(.+?)\}\}/g;
+    const re = /\[\[(.+?)\]\](\s*\(localhost\))?|\*\*(.+?)\*\*|\{\{(.+?)\}\}/g;
     let last = 0, m, i = 0;
     while ((m = re.exec(text)) !== null) {
         if (m.index > last) parts.push(<span key={i++}>{text.slice(last, m.index)}</span>);
-        if (m[1] !== undefined)
+        if (m[1] !== undefined) {
             parts.push(<span key={i++} style={{ color: "#10B981", fontWeight: 800 }}>@ {m[1]} </span>);
-        else if (m[2] !== undefined)
-            parts.push(<span key={i++} style={{ color: "rgb(10, 119, 234)", fontWeight: 800 }}>{m[2]}</span>);
+            if (m[2]) parts.push(<span key={i++} style={{ color: "#800020", fontWeight: 700, fontSize: "0.78rem" }}>From LocalHost, Google Places API blocked</span>);
+        } else if (m[3] !== undefined)
+            parts.push(<span key={i++} style={{ color: "rgb(10, 119, 234)", fontWeight: 800 }}>{m[3]}</span>);
         else
-            parts.push(<span key={i++} style={{ color: "#8B5CF6", fontWeight: 800, textTransform: "capitalize" }}>{m[3]}</span>);
+            parts.push(<span key={i++} style={{ color: "#8B5CF6", fontWeight: 800, textTransform: "capitalize" }}>{m[4]}</span>);
         last = re.lastIndex;
     }
     if (last < text.length) parts.push(<span key={i++}>{text.slice(last)}</span>);

@@ -151,17 +151,6 @@
   height: 100vh;
 }
 
-.mainpage_toprow {
-  padding: 0.1rem;
-  flex-direction: row;
-}
-
-.mainpage_TopRight {
-  height: 3rem;
-  width: 65%;
-  align-items: center;
-  justify-content: flex-end;
-}
 
 .mainpage_BottomRow {
   flex-grow: 1;

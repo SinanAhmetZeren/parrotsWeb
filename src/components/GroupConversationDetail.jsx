@@ -58,7 +58,7 @@ export function GroupConversationDetail({ groupId, currentUserId, isDarkMode = f
   }, [hasAcknowledgedGroupHistory]);
 
   useEffect(() => {
-    if (groupMessagesData) setMessagesToDisplay(groupMessagesData);
+    if (Array.isArray(groupMessagesData)) setMessagesToDisplay(groupMessagesData);
   }, [groupMessagesData]);
 
   useEffect(() => {

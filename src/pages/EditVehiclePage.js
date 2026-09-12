@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css";
@@ -57,8 +57,7 @@ function EditVehiclePage() {
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [newProfileImageSelected, setNewProfileImageSelected] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [vehicleImage, setVehicleImage] = useState(null);
-  const [galleryImagePreview, setGalleryImagePreview] = useState(null);
+
   const fileInputRef = useRef();
   const galleryImageInputRef = useRef();
   const [isProfileImageDeleteHovered, setIsProfileImageDeleteHovered] = useState(false);
@@ -69,15 +68,19 @@ function EditVehiclePage() {
   const [isCompleting, setIsCompleting] = useState(false);
   const [honeyPotValue, setHoneyPotValue] = useState("");
 
+  const initializedRef = useRef(false);
   useEffect(() => {
     if (!VehicleData) return;
     setVehicleName(VehicleData.name ?? "");
     setVehicleDescription(VehicleData.description ?? "");
     setVehicleCapacity(VehicleData.capacity ?? null);
     setSelectedVehicleType(Object.entries(vehicles)?.[VehicleData.type]?.[0] ?? "");
-    setAddedVehicleImages(VehicleData.vehicleImages ?? []);
     setImagePreview(VehicleData.profileImageUrl ?? null);
     setProfileImageFile(VehicleData.profileImageUrl ?? null);
+    if (!initializedRef.current) {
+      setAddedVehicleImages(VehicleData.vehicleImages ?? []);
+      initializedRef.current = true;
+    }
   }, [VehicleData]);
 
   const isFormValid = useMemo(() => {
@@ -107,37 +110,24 @@ function EditVehiclePage() {
     setNewProfileImageSelected(false);
   };
 
-  const handleImageChange2 = (e) => {
+  const handleImageChange2 = async (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const file = files[0];
     if (file.size > 5 * 1024 * 1024) { toast.error("File size must be 5MB or less."); return; }
-    setVehicleImage(file);
-    setGalleryImagePreview(URL.createObjectURL(file));
-  };
-
-  const handleCancelUpload2 = () => {
-    if (galleryImagePreview) URL.revokeObjectURL(galleryImagePreview);
-    setVehicleImage(null);
-    setGalleryImagePreview(null);
-    if (galleryImageInputRef.current) galleryImageInputRef.current.value = "";
-  };
-
-  const handleUploadImage = useCallback(async () => {
-    if (!vehicleImage) return;
+    if (addedVehicleImages.length >= 8) return;
     setIsUploadingImage(true);
     try {
-      const response = await addVehicleImage({ vehicleImage, vehicleId }).unwrap();
+      const response = await addVehicleImage({ vehicleImage: file, vehicleId }).unwrap();
       const addedvehicleImageId = response.imagePath;
-      setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage }]);
-      setVehicleImage(null);
-      setGalleryImagePreview(null);
+      setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage: file }]);
     } catch (error) {
       console.error("Error uploading image", error);
       toast.error("Failed to upload image. Please check your connection and try again.");
     }
     setIsUploadingImage(false);
-  }, [vehicleImage, vehicleId, addVehicleImage]);
+  };
+
 
   const handleDeleteImage = async (imageId) => {
     const previousImages = [...addedVehicleImages];
@@ -393,7 +383,7 @@ function EditVehiclePage() {
 
               <div style={s2Grid}>
                 {/* Uploader cell */}
-                <div style={s2UploaderCell} onClick={!isUploadingImage && !vehicleImage ? () => galleryImageInputRef.current.click() : undefined}>
+                <div style={s2UploaderCell} onClick={!isUploadingImage ? () => galleryImageInputRef.current.click() : undefined}>
                   <input
                     type="file"
                     accept="image/*"
@@ -404,20 +394,6 @@ function EditVehiclePage() {
                   />
                   {isUploadingImage ? (
                     <div className="spinner" style={{ height: "2rem", width: "2rem", border: "3px solid #3b82f6", borderTop: "3px solid transparent" }} />
-                  ) : galleryImagePreview ? (
-                    <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                      <img src={galleryImagePreview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div
-                        style={{ ...s2DeleteBtn, backgroundColor: "rgba(239,68,68,0.85)" }}
-                        onClick={(e) => { e.stopPropagation(); handleCancelUpload2(); }}
-                      >✕</div>
-                      <div
-                        style={{ position: "absolute", bottom: "0.5rem", left: "50%", transform: "translateX(-50%)", backgroundColor: "#007bff", color: "white", fontSize: "0.75rem", fontWeight: 700, padding: "0.3rem 0.8rem", borderRadius: "1rem", cursor: "pointer", whiteSpace: "nowrap" }}
-                        onClick={(e) => { e.stopPropagation(); handleUploadImage(); }}
-                      >
-                        Add Image
-                      </div>
-                    </div>
                   ) : (
                     <div style={{ backgroundColor: "white", height: "85%", width: "85%", borderRadius: "1.25rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <img src={uploadImage} alt="Upload" style={{ width: "70%", height: "70%", objectFit: "cover", opacity: 0.45, borderRadius: "0.75rem" }} />

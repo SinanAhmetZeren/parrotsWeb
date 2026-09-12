@@ -2,14 +2,16 @@
 import "../assets/css/App.css";
 import * as React from "react";
 import { useGetUsersByUsernameQuery } from "../slices/UserSlice";
-import { CgProfile } from "react-icons/cg";
 import { TiMessages } from "react-icons/ti";
+import { CgProfile } from "react-icons/cg";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const userBaseUrl = ``;
+const blueDk = "#0A5FBF";
+const mid = "#5C6B7A";
+const line = "#E3E9F0";
+const tint = "#F4F7FB";
 
-
-export function SearchUserResultsComponent({ query, setQuery, userId,
+export function SearchUserResultsComponent({
+  query, setQuery, userId,
   setConversationUserId,
   setConversationUserUsername,
   handleGoToUser,
@@ -18,7 +20,6 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
   isDarkMode = false,
   staticUsers = null,
 }) {
-  const dark = isDarkMode;
   const {
     data: usersData,
     isLoading: isLoadingUsers,
@@ -26,7 +27,6 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
     isError: isErrorUsers,
     error: errorUser,
     isSuccess: isSuccessUsers,
-    refetch: refetchUsers,
   } = useGetUsersByUsernameQuery(query, { skip: staticUsers !== null || query.length < 3 });
 
   React.useEffect(() => {
@@ -34,171 +34,92 @@ export function SearchUserResultsComponent({ query, setQuery, userId,
   }, [isLoadingUsers, isFetchingUsers, onLoadingChange]);
 
   if (staticUsers !== null) {
-    return (
-      <div style={searchMainContainer}>
-        <div style={searchResultsContainer(dark)}>
-          {staticUsers?.length > 0
-            ? <RenderSearchResults
-                users={staticUsers}
-                userId={userId}
-                setConversationUserId={setConversationUserId}
-                setConversationUserUsername={setConversationUserUsername}
-                handleGoToUser={handleGoToUser}
-                setInputValue={setInputValue}
-                setQuery={setQuery}
-                dark={dark}
-              />
-            : <div style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", marginTop: "3rem", fontSize: "1rem" }}>
-                No saved users yet
-              </div>
-          }
-        </div>
-      </div>
-    );
+    return staticUsers?.length > 0
+      ? <Results users={staticUsers} userId={userId} setConversationUserId={setConversationUserId} setConversationUserUsername={setConversationUserUsername} handleGoToUser={handleGoToUser} setInputValue={setInputValue} setQuery={setQuery} />
+      : <p style={emptyText}>No saved users yet</p>;
   }
 
+  if (isLoadingUsers || isFetchingUsers) return <div style={{ marginTop: "20%", display: "flex", justifyContent: "center" }}><div className="spinner" /></div>;
+  if (isErrorUsers) return <div style={emptyText}>Error: {errorUser?.message}</div>;
+  if (isSuccessUsers && query.length > 2) return <Results users={usersData} userId={userId} setConversationUserId={setConversationUserId} setConversationUserUsername={setConversationUserUsername} handleGoToUser={handleGoToUser} setInputValue={setInputValue} setQuery={setQuery} />;
+  return null;
+}
+
+function Results({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser, setInputValue, setQuery }) {
+  if (!users?.length) return <p style={emptyText}>No users found</p>;
+
   return (
-    <div style={searchMainContainer}>
-      {isLoadingUsers || isFetchingUsers ? (
-        <div style={{ marginTop: "20%" }}>
-          <div className="spinner"></div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+      {users.map(user => (
+        <div
+          key={user.id}
+          style={thStyle}
+          onMouseEnter={e => Object.assign(e.currentTarget.style, thHover)}
+          onMouseLeave={e => Object.assign(e.currentTarget.style, { borderColor: "transparent", background: tint })}
+        >
+          <span
+            style={avStyle}
+            title={`See ${user.userName}'s profile`}
+            onClick={() => handleGoToUser(user.userId, user.userName, user.publicId)}
+          >
+            <img src={user.profileImageThumbnailUrl || user.profileImageUrl} style={avImg} alt="" />
+          </span>
+          <span style={nameStyle}>{user.userName}</span>
+          <button
+            style={iconBtn}
+            title={`Send message to ${user.userName}`}
+            onClick={() => { setConversationUserId(user.id); setConversationUserUsername(user.userName); setQuery(""); setInputValue(""); }}
+          ><TiMessages /></button>
+          <button
+            style={iconBtn}
+            title={`See ${user.userName}'s profile`}
+            onClick={() => handleGoToUser(user.userId, user.userName, user.publicId)}
+          ><CgProfile /></button>
         </div>
-      ) : isSuccessUsers && query.length > 2 ? (
-        <div style={searchResultsContainer(dark)}>
-          <RenderSearchResults
-            users={usersData}
-            userId={userId}
-            setConversationUserId={setConversationUserId}
-            setConversationUserUsername={setConversationUserUsername}
-            handleGoToUser={handleGoToUser}
-            setInputValue={setInputValue}
-            setQuery={setQuery}
-            dark={dark}
-          />
-        </div>
-      ) : isErrorUsers ? (
-        <div>Error: {errorUser.message}</div>
-      ) : null}
+      ))}
     </div>
   );
 }
 
-
-function RenderSearchResults({ users, userId, setConversationUserId, setConversationUserUsername, handleGoToUser, setInputValue, setQuery, dark }) {
-  const [hoveredUserImgID, setHoveredUserImgID] = React.useState("")
-  const [hoveredUserImgID2, setHoveredUserImgID2] = React.useState("")
-  const [hoveredUserImgID3, setHoveredUserImgID3] = React.useState("")
-
-  const StartConversationWithUser = (user) => {
-    setConversationUserId(user.id);
-    setConversationUserUsername(user.userName);
-    setQuery("");
-    setInputValue("");
-  }
-
-  if (!users) {
-    console.log("no users");
-    return null;
-  }
-  return <div style={searchResults}>
-    {users.map((user) => (
-      <div style={singleSearchResult(dark)} key={user.id}>
-        <img
-          title={`See ${user.userName}'s profile`}
-          style={{ ...userProfileImg, ...((hoveredUserImgID3 === user.id) ? userprofileimgHover : {}) }}
-          onMouseEnter={() => { setHoveredUserImgID3(user.id) }}
-          onMouseLeave={() => setHoveredUserImgID3("")}
-          onClick={() => { handleGoToUser(user.userId, user.userName, user.publicId); }}
-          src={userBaseUrl + (user.profileImageThumbnailUrl || user.profileImageUrl)} alt="" />
-
-        <div style={userNameText(dark)}>{user.userName}</div>
-        <div title={`Send Message to ${user.userName}`}
-          style={{ ...actionButtonStyle(dark), ...((hoveredUserImgID === user.id) ? actionButtonHover : {}) }}
-          onMouseEnter={() => { setHoveredUserImgID(user.id) }}
-          onMouseLeave={() => setHoveredUserImgID("")}
-          onClick={() => StartConversationWithUser(user)}><TiMessages />
-        </div>
-        <div title={`See ${user.userName}'s profile`}
-          style={{ ...actionButtonStyle(dark), ...((hoveredUserImgID2 === user.id) ? actionButtonHover : {}) }}
-          onMouseEnter={() => { setHoveredUserImgID2(user.id) }}
-          onMouseLeave={() => setHoveredUserImgID2("")}
-          onClick={() => handleGoToUser(user.userId, user.userName, user.publicId)}>
-          <CgProfile />
-        </div>
-      </div>
-    ))}
-  </div>
-}
-
-
-
-const actionButtonHover = {
-  transform: "scale(1.2)",
-};
-
-const actionButtonStyle = (dark) => ({
-  backgroundColor: dark ? "rgba(0,119,234,0.15)" : "rgba(0, 119, 234, 0.08)",
-  alignSelf: "center",
-  color: "#3c9dde",
-  borderRadius: "50%",
-  width: "2.4rem",
-  height: "2.4rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "1.45rem",
-  border: "none",
-  transition: "transform 0.2s",
-  marginRight: "0.3rem",
-})
-
-const searchResults = {
-  margin: "1rem",
-}
-
-const searchMainContainer = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  height: "93vh",
-}
-
-const searchResultsContainer = (_dark) => ({
-  height: "calc(100% - 5rem)",
-  backgroundColor: "transparent",
-})
-
-const singleSearchResult = (dark) => ({
-  width: "100%",
-  backgroundColor: dark ? "#0a2240" : "rgba(0, 119, 234, 0.03)",
-  marginBottom: "0.6rem",
-  display: "grid",
-  gridTemplateColumns: "4rem 1fr auto auto",
-  alignItems: "center",
-  borderRadius: "4rem",
-  padding: ".5rem",
-  gap: "0.5rem",
-  cursor: "pointer",
-});
-
-const userProfileImg = {
-  height: "3.4rem",
-  width: "3.4rem",
-  borderRadius: "50%",
-  marginRight: "1rem",
-  transition: "transform 0.3s ease-in-out",
-}
-
-const userprofileimgHover = {
-  transform: "scale(1.2)",
-};
-
-const userNameText = (dark) => ({
-  fontSize: "1.1rem",
+const thStyle = {
   fontFamily: "Nunito, sans-serif",
-  fontWeight: 800,
-  textAlign: "left",
-  alignSelf: "center",
-  paddingLeft: "0.6rem",
-  color: dark ? "rgba(255,255,255,0.9)" : "#3c9dde",
-})
+  display: "flex", alignItems: "center", gap: 10,
+  width: "100%",
+  border: "1.5px solid transparent",
+  background: tint, borderRadius: 11,
+  padding: "9px 10px 9px 9px",
+  cursor: "pointer",
+  transition: "border-color 0.15s, background 0.15s",
+};
+
+const thHover = { borderColor: "#C9DAF0", background: "#fff" };
+
+const avStyle = {
+  width: 42, height: 42, borderRadius: "50%",
+  overflow: "hidden", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  cursor: "pointer",
+};
+
+const avImg = { width: "100%", height: "100%", objectFit: "cover" };
+
+const nameStyle = {
+  flex: 1, minWidth: 0,
+  fontSize: 14.5, fontWeight: 800, color: blueDk,
+  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+  paddingLeft: 4,
+};
+
+const iconBtn = {
+  fontFamily: "Nunito, sans-serif",
+  width: 30, height: 30, borderRadius: 8,
+  border: `1px solid ${line}`, background: "#fff",
+  color: mid, display: "flex", alignItems: "center", justifyContent: "center",
+  fontSize: "1.1rem", cursor: "pointer", flexShrink: 0,
+  transition: "border-color 0.15s, color 0.15s",
+};
+
+const emptyText = {
+  color: mid, fontSize: "0.85rem", fontWeight: 700,
+  textAlign: "center", padding: "2rem 1rem",
+};

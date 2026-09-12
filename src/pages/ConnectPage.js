@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import "../assets/css/advancedmarker.css";
-import "../assets/css/ConnectPage.css";
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 import { TopBarMenu } from "../components/TopBarMenu";
@@ -35,26 +34,32 @@ import {
   unregister_ReceiveGroupMessageRefetch,
   register_ReceiveGroupMessage,
   unregister_ReceiveGroupMessage,
-} from "../signalr/signalRHub"; // your centralized hub module
+} from "../signalr/signalRHub";
 import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, markMessagesRead, setPendingChatUserId, useGetBookmarksQuery } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
 import parrotsLogo from "../assets/images/placeholderparrots.webp";
-import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
 
-
-//const API_URL = process.env.REACT_APP_API_URL;
+// ── Tokens ─────────────────────────────────────────────────────────────────────
+const blue = "#0A77EA";
+const blueDk = "#0A5FBF";
+const navy = "#0A2540";
+const deep = "#081E36";
+const mid = "#5C6B7A";
+const line = "#E3E9F0";
+const tint = "#F4F7FB";
 
 function ConnectPage() {
   const { conversationUserPublicId: paramConversationUserId } = useParams();
-  const { conversationUserUsername: paramConversationUserUsername } =
-    useParams();
+  const { conversationUserUsername: paramConversationUserUsername } = useParams();
   const currentUserId = localStorage.getItem("storedUserId");
   const navigate = useNavigate();
+
   const handleGoToUser = (userId, userName, userPublicId) => {
     navigate(`/profile-public/${userPublicId}/${userName}`);
   };
+
   const [inputValue, setInputValue] = useState("");
   const [query, setQuery] = useState("");
   const [conversationUserId, setConversationUserId] = useState("");
@@ -75,14 +80,15 @@ function ConnectPage() {
   const [createGroup] = useCreateGroupMutation();
 
   useEffect(() => {
-    // Delay before showing disconnect state to avoid false banner on initial load
     const delay = setTimeout(() => setHubState(getHubState()), 4000);
     const interval = setInterval(() => setHubState(getHubState()), 2000);
     return () => { clearTimeout(delay); clearInterval(interval); };
   }, []);
+
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const dark = isDarkMode;
+
   const { data: bookmarksRaw } = useGetBookmarksQuery(undefined, { skip: !showSaved });
   const bookmarksData = React.useMemo(() => bookmarksRaw?.map(b => ({
     id: b.bookmarkedUserId,
@@ -92,6 +98,7 @@ function ConnectPage() {
     profileImageThumbnailUrl: b.profileImageThumbnailUrl,
     publicId: b.publicId,
   })) ?? [], [bookmarksRaw]);
+
   const {
     data: messagePreviewsData,
     isLoading: isLoadingmessagePreviews,
@@ -99,44 +106,17 @@ function ConnectPage() {
     error: errorMessages,
     isSuccess: isSuccessmessagePreviews,
     refetch: refetchMessagePreviews,
-  } = useGetMessagePreviewsbyUserIdQuery(currentUserId,
-    { refetchOnMountOrArgChange: true }
-  );
+  } = useGetMessagePreviewsbyUserIdQuery(currentUserId, { refetchOnMountOrArgChange: true });
 
-  // const dummyGroups = [
-  //   { groupConversationId: 101, groupName: "Emei Voyage", text: "See you at the dock!", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 102, groupName: "Island Trip", text: "Who's bringing snacks?", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 103, groupName: "Crew Chat", text: "Departure at 08:00", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 104, groupName: "Mediterranean Adventure", text: "Weather looks great!", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 105, groupName: "Black Sea", text: "Route confirmed", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 106, groupName: "Sailing Club", text: "Next meetup Friday", dateTime: new Date().toISOString() },
-  //   { groupConversationId: 107, groupName: "Summer Voyage", text: "Spots available", dateTime: new Date().toISOString() },
-  // ];
   const safeMessagePreviewsData = messagePreviewsData ?? [];
   const [isPageReady, setIsPageReady] = useState(false);
 
   useEffect(() => {
-    if (
-      !isLoadingmessagePreviews &&
-      !isErrorMessages &&
-      isSuccessmessagePreviews
-    ) {
-      setIsPageReady(true);
-    } else {
-      setIsPageReady(false);
-    }
+    if (!isLoadingmessagePreviews && !isErrorMessages && isSuccessmessagePreviews) setIsPageReady(true);
+    else setIsPageReady(false);
   }, [isLoadingmessagePreviews, isErrorMessages, isSuccessmessagePreviews]);
 
-  const [
-    triggerGetMessages,
-    {
-      data: conversationData,
-      isLoading: isLoadingConversation,
-      isError: isErrorConversation,
-      error,
-      isSuccess: isSuccessConversation,
-    },
-  ] = useLazyGetMessagesBetweenUsersQuery();
+  const [triggerGetMessages, { data: conversationData, isLoading: isLoadingConversation, isError: isErrorConversation, error }] = useLazyGetMessagesBetweenUsersQuery();
 
   const pendingChatUserId = useSelector((state) => state.users.pendingChatUserId);
 
@@ -151,32 +131,15 @@ function ConnectPage() {
     }
   }, [paramConversationUserId, paramConversationUserUsername]);
 
-
-  // SignalR: EnterMessagesScreen and LeaveMessagesScreen on page load/unload
   useEffect(() => {
     if (!currentUserId) return;
-    // Enter 
-    if (isHubReady()) {
-      invokeHub("EnterMessagesScreen", currentUserId);
-      console.log("--> entered messages page");
-    }
-    // Cleanup function: leave 
-    return () => {
-      if (isHubReady()) {
-        invokeHub("LeaveMessagesScreen", currentUserId);
-        console.log("--> left messages page ");
-      }
-    };
+    if (isHubReady()) { invokeHub("EnterMessagesScreen", currentUserId); console.log("--> entered messages page"); }
+    return () => { if (isHubReady()) { invokeHub("LeaveMessagesScreen", currentUserId); console.log("--> left messages page "); } };
   }, [currentUserId]);
 
-  // refetch messages and message previews. 
   const refreshMessages = useCallback(() => {
     if (users?.currentUserId && users?.conversationUserId) {
-
-      triggerGetMessages({
-        currentUserId: users.currentUserId,
-        conversationUserId: users.conversationUserId,
-      });
+      triggerGetMessages({ currentUserId: users.currentUserId, conversationUserId: users.conversationUserId });
       refetchMessagePreviews();
     }
   }, [users, triggerGetMessages, refetchMessagePreviews]);
@@ -195,465 +158,411 @@ function ConnectPage() {
   const handleSetActiveGroupId = (groupId) => {
     setActiveGroupId(groupId);
     setActiveGroupData(null);
-    if (groupId) {
-      setConversationUserId("");
-      setConversationUserUsername("");
-    }
+    if (groupId) { setConversationUserId(""); setConversationUserUsername(""); }
   };
 
-  // Reset query when input is cleared
-  useEffect(() => {
-    if (inputValue.length === 0) setQuery("");
-  }, [inputValue]);
+  useEffect(() => { if (inputValue.length === 0) setQuery(""); }, [inputValue]);
+  useEffect(() => { setUsers({ currentUserId, conversationUserId }); }, [currentUserId, conversationUserId]);
 
-  // Update users state whenever IDs change
-  useEffect(() => {
-    setUsers({ currentUserId, conversationUserId });
-  }, [currentUserId, conversationUserId]);
-
-  //  send message + optimistic UI update + refetch previews. 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
-
-    // Frontend rate limit: block if 5 messages sent within 5 seconds
     const now = Date.now();
     sendTimestampsRef.current = sendTimestampsRef.current.filter(t => now - t < 5000);
     if (sendTimestampsRef.current.length >= 5) return;
     sendTimestampsRef.current.push(now);
-
     setSendButtonDisabled(true);
-    const formattedDateTime = new Date().toISOString();
-    const sentMessage = {
-      dateTime: formattedDateTime,
-      receiverId: conversationUserId,
-      senderId: currentUserId,
-      text: message,
-    };
-    // Optimistic UI Update
+    const sentMessage = { dateTime: new Date().toISOString(), receiverId: conversationUserId, senderId: currentUserId, text: message };
     setMessagesToDisplay((prev) => [...(prev ?? []), sentMessage]);
     const savedMessage = message;
     setMessage("");
-
     try {
-      if (!isHubReady()) {
-        setMessagesToDisplay((prev) =>
-          prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
-        );
-        setMessage(savedMessage);
-        setSendButtonDisabled(false);
-        toast.error("Not connected. Please wait and try again.");
-        return;
-      }
-
+      if (!isHubReady()) { setMessagesToDisplay(prev => prev.filter(m => m.dateTime !== sentMessage.dateTime)); setMessage(savedMessage); setSendButtonDisabled(false); toast.error("Not connected. Please wait and try again."); return; }
       await invokeHub("SendMessage", currentUserId, conversationUserId, message, false);
-
-      // Optionally refresh previews or other UI
       refetchMessagePreviews();
     } catch (err) {
       console.error("Failed to send message:", err);
-
-      // Rollback optimistic UI
-      setMessagesToDisplay((prev) =>
-        prev.filter((msg) => msg.dateTime !== sentMessage.dateTime)
-      );
+      setMessagesToDisplay(prev => prev.filter(m => m.dateTime !== sentMessage.dateTime));
       toast.error("Failed to send message. Check connection and try again.");
     }
-
     setSendButtonDisabled(false);
   };
 
-  // register_ReceiveMessage & register_ReceiveMessageRefetch  
-  // -> will refetch messages and previews. 
-  // -> will setMessagesToDisplay 
   useEffect(() => {
     if (!conversationUserId) return;
-    const handleIncomingMessage = (data) => {
-      setMessagesToDisplay((prev) => [...(prev ?? []), data]);
-    };
+    const handleIncomingMessage = (data) => setMessagesToDisplay(prev => [...(prev ?? []), data]);
     const handleRefetch = () => refreshMessages();
     register_ReceiveMessage(handleIncomingMessage);
     register_ReceiveMessageRefetch(handleRefetch);
-    return () => {
-      unregister_ReceiveMessage(handleIncomingMessage);
-      unregister_ReceiveMessageRefetch(handleRefetch);
-    };
+    return () => { unregister_ReceiveMessage(handleIncomingMessage); unregister_ReceiveMessageRefetch(handleRefetch); };
   }, [conversationUserId, refreshMessages]);
 
-
-  // Always refetch previews on any incoming message or group message
   useEffect(() => {
     const handler = () => refetchMessagePreviews();
     register_ReceiveMessageRefetch(handler);
     register_ReceiveGroupMessageRefetch(handler);
     register_ReceiveGroupMessage(handler);
-    return () => {
-      unregister_ReceiveMessageRefetch(handler);
-      unregister_ReceiveGroupMessageRefetch(handler);
-      unregister_ReceiveGroupMessage(handler);
-    };
+    return () => { unregister_ReceiveMessageRefetch(handler); unregister_ReceiveGroupMessageRefetch(handler); unregister_ReceiveGroupMessage(handler); };
   }, [refetchMessagePreviews]);
 
-  // Refresh messages and previews when conversation changes
   useEffect(() => {
     const { currentUserId, conversationUserId } = users;
-    if (currentUserId && conversationUserId) {
-      triggerGetMessages({ currentUserId, conversationUserId });
-      refetchMessagePreviews();
-    }
+    if (currentUserId && conversationUserId) { triggerGetMessages({ currentUserId, conversationUserId }); refetchMessagePreviews(); }
   }, [users, triggerGetMessages, refetchMessagePreviews]);
 
-  // Update messages to display when new conversation data arrives
-  useEffect(() => {
-    if (conversationData) {
-      setMessagesToDisplay(conversationData.data);
-    }
-  }, [conversationData]);
+  useEffect(() => { if (conversationData) setMessagesToDisplay(conversationData.data); }, [conversationData]);
 
-  // Update top bar badge based on preview unread counts
   useEffect(() => {
     if (!messagePreviewsData) return;
     const hasUnread = messagePreviewsData.some(m => m.unreadCount > 0);
-    if (hasUnread) dispatch(setUnreadMessages(true));
-    else dispatch(markMessagesRead());
+    if (hasUnread) dispatch(setUnreadMessages(true)); else dispatch(markMessagesRead());
   }, [messagePreviewsData, dispatch]);
 
-  // Refresh messages if conversationUserId changes
-  useEffect(() => {
-    if (conversationUserId) {
-      refreshMessages();
-    }
-  }, [conversationUserId, refreshMessages]);
+  useEffect(() => { if (conversationUserId) refreshMessages(); }, [conversationUserId, refreshMessages]);
 
-
-  // Refresh messages and previews when tab/window regains focus
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        console.log("--> Tab focused: refreshing messages...", new Date().toLocaleTimeString());
-        refreshMessages();
-      }
-    };
-    const handleWindowFocus = () => {
-      console.log("--> Window focused: refreshing messages...", new Date().toLocaleTimeString());
-      refreshMessages();
-    };
+    const handleVisibilityChange = () => { if (document.visibilityState === "visible") { console.log("--> Tab focused: refreshing messages...", new Date().toLocaleTimeString()); refreshMessages(); } };
+    const handleWindowFocus = () => { console.log("--> Window focused: refreshing messages...", new Date().toLocaleTimeString()); refreshMessages(); };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleWindowFocus);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleWindowFocus);
-    };
+    return () => { document.removeEventListener("visibilitychange", handleVisibilityChange); window.removeEventListener("focus", handleWindowFocus); };
   }, [refreshMessages]);
 
+  const { isError: isHealthCheckError } = useHealthCheckQuery();
+  if (isHealthCheckError) { console.log(".....Health check failed....."); return <SomethingWentWrong />; }
+  if (isErrorMessages || isErrorConversation || errorMessages || error) return <SomethingWentWrong />;
 
-  const { data: healthCheckData, isError: isHealthCheckError } =
-    useHealthCheckQuery();
-
-  if (isHealthCheckError) {
-    console.log(".....Health check failed.....");
-    return <SomethingWentWrong />;
-  }
-
-  if (isErrorMessages || isErrorConversation || errorMessages || error) {
-    return <SomethingWentWrong />;
-  }
+  if (isLoadingmessagePreviews || messagePreviewsData === undefined) return <ConnectPagePlaceHolder />;
 
   return (
-    // true ||
-    // isLoadingmessagePreviews || !messagePreviewsData ? 
-    isLoadingmessagePreviews || messagePreviewsData === undefined
-      //|| messagePreviewsData === null 
-      ?
-      (
-        <ConnectPagePlaceHolder />
-      ) : (
-        <div className="App">
-          <header className="App-header">
-            <div className="flex mainpage_Container">
-              <div className="flex mainpage_TopRow">
-                <TopLeftComponent />
-                <div className="flex mainpage_TopRight">
-                  <TopBarMenu />
-                </div>
-              </div>
-              {hubState !== "connected" && (
-                <div style={{
-                  backgroundColor: hubState === "reconnecting" ? "#78350f" : "#7f1d1d",
-                  color: hubState === "reconnecting" ? "#fcd34d" : "#fca5a5",
-                  fontSize: "0.75rem",
-                  padding: "4px 12px",
-                  textAlign: "center",
-                }}>
-                  {hubState === "reconnecting" ? "⚠ Reconnecting to chat..." : "✕ Disconnected from chat — messages may not send"}
-                </div>
-              )}
+    <div className="App">
+      <header className="App-header">
+        <div style={pageWrap}>
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight"><TopBarMenu /></div>
+          </div>
 
-              <div className="flex connectPage_Bottom">
-                <div className="flex connectPage_BottomLeft" style={dark ? { backgroundColor: "#011a32" } : {}}>
-                  <div style={tabRowStyle}>
-                    {["Chats", "Find", "Bookmarks", "Bids"].map((tab) => (
-                      <span key={tab} style={tabItemStyle(dark, activeTab === tab)} onClick={() => { setActiveTab(tab); if (tab === "Bookmarks") setShowSaved(true); else setShowSaved(false); if (tab === "Chats") { setQuery(""); setInputValue(""); } }}>{tab}</span>
-                    ))}
-                  </div>
-                  {activeTab !== "Bookmarks" && activeTab !== "Bids" && (
-                    <div style={dark ? { ...SearchBarContainer, backgroundColor: "#011a32" } : SearchBarContainer}>
-                      {activeTab === "Chats" ? (
-                        <div style={createGroupRowStyle}>
-                          <input
-                            type="text"
-                            value={newGroupName}
-                            onChange={e => setNewGroupName(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter" && newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
-                            style={createGroupInputStyle(dark)}
-                            placeholder="Group name..."
-                          />
-                          <button
-                            style={createGroupBtnStyle(!!newGroupName.trim())}
-                            disabled={!newGroupName.trim()}
-                            onClick={() => { if (newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
-                          >Create</button>
-                        </div>
-                      ) : (
-                        <SearchUserComponent
-                          inputValue={inputValue}
-                          setInputValue={setInputValue}
-                          onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
-                          isLoading={isSearchLoading}
-                          isDarkMode={isDarkMode}
-                          showSaved={showSaved}
-                          onToggleSaved={activeTab !== "Find" ? () => { setShowSaved(s => !s); setQuery(""); setInputValue(""); } : undefined}
-                          onCreateGroup={activeTab !== "Find" ? handleCreateGroup : undefined}
-                        />
-                      )}
-                    </div>
-                  )}
-                  {activeTab === "Bids" ? (
-                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
-                      <BidPillList bids={myBids} isDarkMode={isDarkMode} />
-                    </div>
-                  ) : showSaved ? (
-                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
-                      <SearchUserResultsComponent
-                        query=""
-                        setQuery={() => { }}
-                        userId={currentUserId}
-                        setConversationUserId={(id) => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
-                        setConversationUserUsername={setConversationUserUsername}
-                        handleGoToUser={handleGoToUser}
-                        setInputValue={setInputValue}
-                        isDarkMode={isDarkMode}
-                        staticUsers={bookmarksData}
-                      />
-                    </div>
-                  ) : query.length > 2 ? (
-                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
-                      <SearchUserResultsComponent
-                        query={query}
-                        setQuery={setQuery}
-                        userId={currentUserId}
-                        setConversationUserId={(id) => { setConversationUserId(id); setActiveGroupId(null); setActiveGroupData(null); }}
-                        setConversationUserUsername={setConversationUserUsername}
-                        handleGoToUser={handleGoToUser}
-                        setInputValue={setInputValue}
-                        onLoadingChange={setIsSearchLoading}
-                        isDarkMode={isDarkMode}
-                      />
-                    </div>
-                  ) : isSuccessmessagePreviews && activeTab === "Chats" && (
-                    <div style={MessagePreviewsContainer} className="hide-scrollbar">
-                      <MessagePreviewsComponent
-                        messagesData={safeMessagePreviewsData}
-                        userId={currentUserId}
-                        selectedUserId={conversationUserId}
-                        setConversationUserId={setConversationUserId}
-                        setConversationUserUsername={setConversationUserUsername}
-                        setActiveGroupId={handleSetActiveGroupId}
-                        handleGoToUser={handleGoToUser}
-                        isDarkMode={isDarkMode}
-                      />
-                    </div>
-                  )}
+          {hubState !== "connected" && (
+            <div style={{ backgroundColor: hubState === "reconnecting" ? "#78350f" : "#7f1d1d", color: hubState === "reconnecting" ? "#fcd34d" : "#fca5a5", fontSize: "0.75rem", padding: "4px 12px", textAlign: "center" }}>
+              {hubState === "reconnecting" ? "⚠ Reconnecting to chat..." : "✕ Disconnected from chat — messages may not send"}
+            </div>
+          )}
+
+          {/* ── Main body ── */}
+          <div style={bodyGrid}>
+
+            {/* ── Left panel ── */}
+            <div style={sidePanel}>
+              {/* Tabs + create row */}
+              <div style={sideTop}>
+                <div style={seg}>
+                  {["Chats", "Find", "Bookmarks", "Bids"].map(tab => (
+                    <button key={tab} style={{ ...segBtn, ...(activeTab === tab ? segBtnOn : {}) }} onClick={() => { setActiveTab(tab); if (tab === "Bookmarks") setShowSaved(true); else setShowSaved(false); if (tab === "Chats") { setQuery(""); setInputValue(""); } }}>{tab}</button>
+                  ))}
                 </div>
-                <div className="flex connectPage_BottomRight" style={dark ? { backgroundColor: "#011a32" } : {}}>
-                  {activeGroupId ? (
-                    <GroupConversationDetail
-                      groupId={activeGroupId}
-                      currentUserId={currentUserId}
-                      isDarkMode={isDarkMode}
-                      refetchPreviews={refetchMessagePreviews}
+                {activeTab === "Chats" && (
+                  <div style={mkRow}>
+                    <input
+                      type="text"
+                      value={newGroupName}
+                      onChange={e => setNewGroupName(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter" && newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                      style={mkInput}
+                      placeholder="Group name…"
                     />
-                  ) : (
-                    <>
-                      <div style={dark ? { ...ConversationComponentContainer, backgroundColor: "#011a32" } : ConversationComponentContainer} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
-                        {!conversationUserId &&
-                          <div style={imageWrapperWrapper}>
-                            <div style={imageWrapper}>
-                              <div style={imageCircle}>
-                                <img src={parrotsLogo} alt="logo" style={image} />
-                              </div>
-                            </div>
-                          </div>
-                        }
-                        <ConversationComponent
-                          conversationData={conversationData}
-                          messagesToDisplay={messagesToDisplay}
-                          currentUserId={currentUserId}
-                          conversationUserId={conversationUserId}
-                          isDarkMode={isDarkMode}
-                        />
-                      </div>
-                      <div style={{ width: "100%" }}>
-                        <DirectMessageSenderComponent
-                          conversationUserId={conversationUserId}
-                          conversationUserUsername={conversationUserUsername}
-                          currentUserId={currentUserId}
-                          message={message}
-                          setMessage={setMessage}
-                          handleSendMessage={handleSendMessage}
-                          sendButtonDisabled={!conversationUserId || sendButtonDisabled}
-                          isDarkMode={isDarkMode}
-                          placeholder={conversationUserId ? `Write a message to ${conversationUserUsername}` : ""}
-                          hideSendLabel={!conversationUserId}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
+                    <button
+                      style={{ ...mkBtn, ...(newGroupName.trim() ? mkBtnOn : {}) }}
+                      disabled={!newGroupName.trim()}
+                      onClick={() => { if (newGroupName.trim()) { handleCreateGroup(newGroupName); setNewGroupName(""); } }}
+                    >Create</button>
+                  </div>
+                )}
+                {activeTab === "Find" && (
+                  <div style={mkRow}>
+                    <SearchUserComponent
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                      onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
+                      isLoading={isSearchLoading}
+                      isDarkMode={isDarkMode}
+                      showSaved={showSaved}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Thread list */}
+              <div style={threads} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
+                {activeTab === "Bids" ? (
+                  <BidPillList bids={myBids} isDarkMode={isDarkMode} />
+                ) : showSaved ? (
+                  <SearchUserResultsComponent
+                    query=""
+                    setQuery={() => {}}
+                    userId={currentUserId}
+                    setConversationUserId={id => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
+                    setConversationUserUsername={setConversationUserUsername}
+                    handleGoToUser={handleGoToUser}
+                    setInputValue={setInputValue}
+                    isDarkMode={isDarkMode}
+                    staticUsers={bookmarksData}
+                  />
+                ) : query.length > 2 ? (
+                  <SearchUserResultsComponent
+                    query={query}
+                    setQuery={setQuery}
+                    userId={currentUserId}
+                    setConversationUserId={id => { setConversationUserId(id); setActiveGroupId(null); setActiveGroupData(null); }}
+                    setConversationUserUsername={setConversationUserUsername}
+                    handleGoToUser={handleGoToUser}
+                    setInputValue={setInputValue}
+                    onLoadingChange={setIsSearchLoading}
+                    isDarkMode={isDarkMode}
+                  />
+                ) : isSuccessmessagePreviews && activeTab === "Chats" ? (
+                  <MessagePreviewsComponent
+                    messagesData={safeMessagePreviewsData}
+                    userId={currentUserId}
+                    selectedUserId={conversationUserId}
+                    setConversationUserId={setConversationUserId}
+                    setConversationUserUsername={setConversationUserUsername}
+                    setActiveGroupId={handleSetActiveGroupId}
+                    handleGoToUser={handleGoToUser}
+                    isDarkMode={isDarkMode}
+                  />
+                ) : null}
               </div>
             </div>
-          </header>
+
+            {/* ── Right panel ── */}
+            <div style={convPanel}>
+              {activeGroupId ? (
+                <GroupConversationDetail
+                  groupId={activeGroupId}
+                  currentUserId={currentUserId}
+                  isDarkMode={isDarkMode}
+                  refetchPreviews={refetchMessagePreviews}
+                />
+              ) : (
+                <>
+                  {conversationUserId && (
+                    <div style={convHeader}>
+                      <div style={convHeaderAv}>
+                        {(() => {
+                          const preview = safeMessagePreviewsData.find(m =>
+                            (m.receiverId === currentUserId ? m.senderId : m.receiverId) === conversationUserId
+                          );
+                          const img = preview
+                            ? (preview.receiverId === currentUserId ? preview.senderProfileThumbnailUrl || preview.senderProfileUrl : preview.receiverProfileThumbnailUrl || preview.receiverProfileUrl)
+                            : null;
+                          return img ? <img src={img} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="" /> : null;
+                        })()}
+                      </div>
+                      <div>
+                        <div style={convHeaderName}>{conversationUserUsername}</div>
+                        <div style={convHeaderSub}>Direct message</div>
+                      </div>
+                      <span style={{ flex: 1 }} />
+                      <button style={convHeaderIco} title="Open profile" onClick={() => {
+                        const preview = safeMessagePreviewsData.find(m =>
+                          (m.receiverId === currentUserId ? m.senderId : m.receiverId) === conversationUserId
+                        );
+                        if (preview) {
+                          const publicId = preview.receiverId === currentUserId ? preview.senderPublicId : preview.receiverPublicId;
+                          handleGoToUser(conversationUserId, conversationUserUsername, publicId);
+                        }
+                      }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 19a6 6 0 0 1 11 0"/></svg>
+                      </button>
+                    </div>
+                  )}
+                  {!conversationUserId && (
+                    <div style={placeholderWrap}>
+                      <div style={placeholderCircle}>
+                        <img src={parrotsLogo} alt="logo" style={{ width: "19rem", height: "19rem" }} />
+                      </div>
+                    </div>
+                  )}
+                  <div style={msgsWrap} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
+                    <ConversationComponent
+                      conversationData={conversationData}
+                      messagesToDisplay={messagesToDisplay}
+                      currentUserId={currentUserId}
+                      conversationUserId={conversationUserId}
+                      isDarkMode={isDarkMode}
+                    />
+                  </div>
+                  <DirectMessageSenderComponent
+                    conversationUserId={conversationUserId}
+                    conversationUserUsername={conversationUserUsername}
+                    currentUserId={currentUserId}
+                    message={message}
+                    setMessage={setMessage}
+                    handleSendMessage={handleSendMessage}
+                    sendButtonDisabled={!conversationUserId || sendButtonDisabled}
+                    isDarkMode={isDarkMode}
+                    placeholder={conversationUserId ? `Write a message to ${conversationUserUsername}` : ""}
+                    hideSendLabel={!conversationUserId}
+                  />
+                </>
+              )}
+            </div>
+
+          </div>
         </div>
-      )
+      </header>
+    </div>
   );
 }
 
 export default ConnectPage;
 
-const MessagePreviewsContainer = {
+// ── Styles ─────────────────────────────────────────────────────────────────────
+
+const pageWrap = {
+  display: "flex", flexDirection: "column",
+  width: "100%", minHeight: "100vh",
+  fontFamily: "Nunito, sans-serif",
+  backgroundColor: deep,
+};
+
+const bodyGrid = {
+  maxWidth: 1240,
+  width: "100%",
+  margin: "0 auto",
+  padding: "0 14px 14px",
+  display: "grid",
+  gridTemplateColumns: "342px minmax(0,1fr)",
+  gap: 14,
+  height: 660,
+};
+
+const panelBase = {
+  backgroundColor: "#fff",
+  borderRadius: 14,
+  boxShadow: "0 8px 24px rgba(0,14,30,.18)",
   display: "flex",
   flexDirection: "column",
+  minHeight: 0,
+  overflow: "hidden",
+};
+
+const sidePanel = { ...panelBase };
+
+const sideTop = {
+  padding: "14px 14px 12px",
+  display: "flex", flexDirection: "column", gap: 11,
+  flexShrink: 0,
+  borderBottom: `1px solid ${line}`,
+};
+
+const seg = {
+  display: "flex", gap: 4,
+  backgroundColor: tint, padding: 4, borderRadius: 99,
+};
+
+const segBtn = {
+  flex: 1,
+  fontFamily: "Nunito, sans-serif",
+  border: "none", background: "none", cursor: "pointer",
+  fontSize: 12.5, fontWeight: 800, color: mid,
+  padding: "7px 0", borderRadius: 99, whiteSpace: "nowrap",
+};
+
+const segBtnOn = { backgroundColor: blue, color: "#fff" };
+
+const mkRow = {
+  display: "flex", alignItems: "center", gap: 8,
+};
+
+const mkInput = {
+  flex: 1, minWidth: 0,
+  fontFamily: "Nunito, sans-serif",
+  fontSize: 13.5, fontWeight: 700, color: navy,
+  backgroundColor: tint,
+  border: "1.5px solid transparent",
+  borderRadius: 8,
+  padding: "9px 11px",
+  outline: "none",
+};
+
+const mkBtn = {
+  fontFamily: "Nunito, sans-serif",
+  border: `1.5px solid ${line}`,
+  backgroundColor: "#fff",
+  color: mid,
+  fontSize: 13.5, fontWeight: 800,
+  padding: "9px 17px",
+  borderRadius: 99,
+  cursor: "not-allowed",
+  flexShrink: 0,
+};
+
+const mkBtnOn = {
+  backgroundColor: blue,
+  borderColor: blue,
+  color: "#fff",
+  cursor: "pointer",
+};
+
+const threads = {
+  flex: 1, minHeight: 0,
+  overflowY: "auto",
+  padding: "11px 12px 14px",
+  display: "flex", flexDirection: "column", gap: 7,
+};
+
+const convPanel = { ...panelBase };
+
+const msgsWrap = {
+  display: "flex", flexDirection: "column",
   width: "100%",
-  height: "100%",
   overflowY: "scroll",
+  flex: 1, minHeight: 0,
 };
 
-const ConversationComponentContainer = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-  overflowY: "scroll",
-  height: `calc(100vh - 10rem)`,
-  alignSelf: "flex-start",
+const convHeader = {
+  display: "flex", alignItems: "center", gap: 11,
+  padding: "13px 18px",
+  borderBottom: `1px solid ${line}`,
+  backgroundColor: "#FAFCFE",
+  flexShrink: 0,
 };
 
-const SearchBarContainer = {
-  // backgroundColor: "#f9f5f1",
-  backgroundColor: "rgba(0, 119, 234, 0.04)",
-  height: "9vh",
+const convHeaderAv = {
+  width: 34, height: 34, borderRadius: "50%",
+  overflow: "hidden", flexShrink: 0,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  backgroundColor: tint,
 };
 
-const imageWrapper = {
-  width: "100%",
-  height: "100%",
-  alignSelf: "center",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  // backgroundColor: "pink",
-}
+const convHeaderName = {
+  fontSize: 15.5, fontWeight: 800, color: navy, fontFamily: "Nunito, sans-serif",
+};
 
-const imageCircle = {
+const convHeaderSub = {
+  fontSize: 11, fontWeight: 800, letterSpacing: "0.1em",
+  textTransform: "uppercase", color: mid,
+  marginTop: 1, fontFamily: "Nunito, sans-serif",
+};
+
+const convHeaderIco = {
+  width: 30, height: 30, borderRadius: 8,
+  border: `1px solid ${line}`, background: "#fff",
+  color: mid, display: "flex", alignItems: "center", justifyContent: "center",
+  cursor: "pointer", flexShrink: 0,
+  fontFamily: "Nunito, sans-serif",
+};
+
+const placeholderWrap = {
+  width: "100%", flex: 1,
+  display: "flex", alignItems: "center", justifyContent: "center",
+};
+
+const placeholderCircle = {
   borderRadius: "50%",
-  // backgroundColor: "orange",
-  height: "22rem",
-  width: "22rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  height: "22rem", width: "22rem",
+  display: "flex", alignItems: "center", justifyContent: "center",
   padding: "1.5rem",
   boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-}
-
-const imageWrapperWrapper = {
-  width: "100%",
-  height: "100%",
-  // backgroundColor: "red"
-}
-
-const image = {
-  width: "19rem",
-  height: "19rem",
-  // margin: "auto",
-  alignSelf: "center",
-}
-
-const tabRowStyle = {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  gap: "2rem",
-  padding: "0.6rem 0 0.4rem",
 };
-
-const tabItemStyle = (dark, active) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 800,
-  fontSize: "1.5rem",
-  color: active ? (dark ? "rgba(255,255,255,0.9)" : "#0077ea") : (dark ? "rgba(255,255,255,0.35)" : "rgba(0, 119, 234, 0.35)"),
-  cursor: "pointer",
-  userSelect: "none",
-});
-
-const subText = {
-  fontSize: "24px",
-  color: parrotTextDarkBlue,
-  marginBottom: "20px",
-}
-
-const createGroupRowStyle = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  padding: "1rem 1rem",
-  gap: "0.5rem",
-};
-
-const createGroupInputStyle = (dark) => ({
-  flex: 1,
-  height: "3rem",
-  paddingLeft: "1.2rem",
-  paddingRight: "1.2rem",
-  borderRadius: "2rem",
-  fontSize: "1.2rem",
-  color: dark ? "rgba(255,255,255,0.9)" : "black",
-  backgroundColor: dark ? "#0d2b4e" : "white",
-  border: dark ? "2px solid rgba(255,255,255,0.15)" : "2px solid rgba(0, 119, 234, 0.25)",
-  outline: "none",
-});
-
-const createGroupBtnStyle = (enabled) => ({
-  height: "3rem",
-  paddingLeft: "1.2rem",
-  paddingRight: "1.2rem",
-  borderRadius: "2rem",
-  fontSize: "1.2rem",
-  fontWeight: "600",
-  backgroundColor: enabled ? "#0077ea" : "rgba(0, 119, 234, 0.25)",
-  color: "white",
-  border: "none",
-  cursor: enabled ? "pointer" : "default",
-  flexShrink: 0,
-});
-
-const createGroupBtn = (dark) => ({
-  background: "none",
-  border: "none",
-  fontSize: "2rem",
-  color: dark ? "rgba(255,255,255,0.7)" : "#3c9dde",
-  cursor: "pointer",
-  padding: "0 0.8rem",
-  lineHeight: 1,
-  alignSelf: "center",
-});
-
-
