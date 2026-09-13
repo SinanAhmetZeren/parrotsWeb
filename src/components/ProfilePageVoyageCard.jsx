@@ -199,8 +199,9 @@ const cardBriefStyle = (dark) => ({
 });
 
 function formatCustomDate(dateString) {
+  const [y, m, d] = String(dateString).split("T")[0].split("-");
   return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "2-digit" })
-    .format(new Date(dateString))
+    .format(new Date(+y, +m - 1, +d))
     .replace(/^(\d{2}) (\w+) (\d{2})$/, "$2-$1, $3");
 }
 

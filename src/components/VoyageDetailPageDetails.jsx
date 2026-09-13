@@ -135,7 +135,8 @@ export function VoyageDetailPageDetails({ voyageData }) {
 }
 
 function formatCustomDate(dateString) {
-  const date = new Date(dateString);
+  const [y, m, d] = String(dateString).split("T")[0].split("-");
+  const date = new Date(+y, +m - 1, +d);
   const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
   const day = String(date.getDate()).padStart(2, "0");
   const year = String(date.getFullYear()).slice(-2);

@@ -76,6 +76,7 @@ function ConnectPage() {
   const [activeGroupData, setActiveGroupData] = useState(null);
   const [activeTab, setActiveTab] = useState("Chats");
   const [newGroupName, setNewGroupName] = useState("");
+  const [bidFilter, setBidFilter] = useState("All");
   const { data: myBids } = useGetMyBidsQuery(undefined, { skip: activeTab !== "Bids" });
   const [createGroup] = useCreateGroupMutation();
 
@@ -277,6 +278,13 @@ function ConnectPage() {
                     >Create</button>
                   </div>
                 )}
+                {activeTab === "Bids" && (
+                  <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                    {["All", "Pending", "Accepted"].map(f => (
+                      <button key={f} style={{ fontFamily: "Nunito, sans-serif", border: `1.5px solid ${line}`, background: bidFilter === f ? blue : "#fff", color: bidFilter === f ? "#fff" : mid, fontSize: 12, fontWeight: 800, padding: "6px 13px", borderRadius: 99, cursor: "pointer", ...(bidFilter === f ? { borderColor: blue } : {}) }} onClick={() => setBidFilter(f)}>{f}</button>
+                    ))}
+                  </div>
+                )}
                 {activeTab === "Find" && (
                   <div style={mkRow}>
                     <SearchUserComponent
@@ -294,11 +302,11 @@ function ConnectPage() {
               {/* Thread list */}
               <div style={threads} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
                 {activeTab === "Bids" ? (
-                  <BidPillList bids={myBids} isDarkMode={isDarkMode} />
+                  <BidPillList bids={myBids} isDarkMode={isDarkMode} filter={bidFilter} />
                 ) : showSaved ? (
                   <SearchUserResultsComponent
                     query=""
-                    setQuery={() => {}}
+                    setQuery={() => { }}
                     userId={currentUserId}
                     setConversationUserId={id => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
                     setConversationUserUsername={setConversationUserUsername}
@@ -312,7 +320,7 @@ function ConnectPage() {
                     query={query}
                     setQuery={setQuery}
                     userId={currentUserId}
-                    setConversationUserId={id => { setConversationUserId(id); setActiveGroupId(null); setActiveGroupData(null); }}
+                    setConversationUserId={id => { setConversationUserId(id); setActiveGroupId(null); setActiveGroupData(null); setActiveTab("Chats"); setQuery(""); setInputValue(""); }}
                     setConversationUserUsername={setConversationUserUsername}
                     handleGoToUser={handleGoToUser}
                     setInputValue={setInputValue}
@@ -372,7 +380,7 @@ function ConnectPage() {
                           handleGoToUser(conversationUserId, conversationUserUsername, publicId);
                         }
                       }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 19a6 6 0 0 1 11 0"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="10" r="3" /><path d="M6.5 19a6 6 0 0 1 11 0" /></svg>
                       </button>
                     </div>
                   )}
@@ -421,7 +429,7 @@ export default ConnectPage;
 
 const pageWrap = {
   display: "flex", flexDirection: "column",
-  width: "100%", minHeight: "100vh",
+  width: "100%", height: "100vh", overflow: "hidden",
   fontFamily: "Nunito, sans-serif",
   backgroundColor: deep,
 };
@@ -433,8 +441,9 @@ const bodyGrid = {
   padding: "0 14px 14px",
   display: "grid",
   gridTemplateColumns: "342px minmax(0,1fr)",
+  gridTemplateRows: "46rem",
   gap: 14,
-  height: 660,
+  height: "46rem",
 };
 
 const panelBase = {
@@ -538,12 +547,14 @@ const convHeaderAv = {
 
 const convHeaderName = {
   fontSize: 15.5, fontWeight: 800, color: navy, fontFamily: "Nunito, sans-serif",
+  textAlign: "left",
 };
 
 const convHeaderSub = {
   fontSize: 11, fontWeight: 800, letterSpacing: "0.1em",
   textTransform: "uppercase", color: mid,
   marginTop: 1, fontFamily: "Nunito, sans-serif",
+  textAlign: "left",
 };
 
 const convHeaderIco = {

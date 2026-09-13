@@ -1,184 +1,68 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { parrotGreen, parrotBlue } from "../styles/colors";
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+const blueDk = "#0A5FBF";
+const mid = "#5C6B7A";
+const tint = "#F4F7FB";
+
+const formatDate = (d) => { if (!d) return ""; const [y, m, day] = String(d).split("T")[0].split("-"); return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(new Date(+y, +m - 1, +day)); };
+const timeAgo = (d) => {
+  if (!d) return "";
+  const days = Math.floor((Date.now() - new Date(d)) / 86400000);
+  return days === 0 ? "today" : days === 1 ? "1d ago" : `${days}d ago`;
 };
 
-const timeAgo = (dateStr) => {
-  if (!dateStr) return "";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return "today";
-  if (days === 1) return "1d ago";
-  return `${days}d ago`;
-};
-
-export function BidPill({ bid, onNavigate, dark }) {
+export function BidPill({ bid, onNavigate }) {
   const accepted = bid.accepted;
   return (
-    <div style={cardWrapper(dark)} onClick={onNavigate}>
-      <div style={contentRow}>
-        <img src={bid.profileImageThumbnail} alt={bid.voyageName} style={thumbnail} />
-        <div style={middleContent}>
-          <div style={middleInfo}>
-            <div style={voyageNameStyle(dark)}>{bid.voyageName}</div>
-            <div style={datesStyle(dark)}>{formatDate(bid.startDate)} – {formatDate(bid.endDate)}</div>
-            <div style={bidPlacedStyle(dark)}>Bid placed {timeAgo(bid.bidDateTime)}</div>
-          </div>
-        </div>
-        <div style={separator(dark)} />
-        <div style={rightSection(accepted, dark)}>
-          <div style={priceStyle(dark)}>€{bid.offerPrice}</div>
-          <div style={statusBadge(accepted)}>{accepted ? "ACCEPTED" : "PENDING"}</div>
-        </div>
-      </div>
+    <div style={bd} onClick={onNavigate}
+      onMouseEnter={e => Object.assign(e.currentTarget.style, bdHov)}
+      onMouseLeave={e => Object.assign(e.currentTarget.style, { borderColor: "transparent", background: tint })}>
+      <span style={bdIm}>
+        <img src={bid.profileImageThumbnail} alt={bid.voyageName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </span>
+      <span style={bb}>
+        <span style={bt}>{bid.voyageName}</span>
+        <span style={bs}>{formatDate(bid.startDate)} – {formatDate(bid.endDate)}</span>
+        <span style={bs}>Bid placed {timeAgo(bid.bidDateTime)}</span>
+      </span>
+      <span style={br}>
+        <span style={amt}>€{bid.offerPrice}</span>
+        <span style={{ ...tagp, ...(accepted ? tagAcc : tagPend) }}>{accepted ? "Accepted" : "Pending"}</span>
+      </span>
     </div>
   );
 }
 
-export function BidPillList({ bids, isDarkMode }) {
+export function BidPillList({ bids, isDarkMode, filter = "All" }) {
   const navigate = useNavigate();
-  const dark = isDarkMode;
-  if (!bids || bids.length === 0) {
-    return <div style={empty(dark)}>No bids yet</div>;
-  }
-  return (
-    <div style={list}>
-      {bids.map((bid) => (
-        <BidPill key={bid.bidId} bid={bid} dark={dark} onNavigate={() => navigate(`/voyage-details/${bid.voyagePublicId}`)} />
-      ))}
-    </div>
-  );
+  if (!bids || bids.length === 0) return <p style={empty}>No bids yet</p>;
+  const filtered = filter === "All" ? bids
+    : filter === "Accepted" ? bids.filter(b => b.accepted)
+      : bids.filter(b => !b.accepted);
+  if (filtered.length === 0) return <p style={empty}>No {filter.toLowerCase()} bids</p>;
+  return filtered.map(bid => (
+    <BidPill key={bid.bidId} bid={bid} onNavigate={() => navigate(`/voyage-details/${bid.voyagePublicId}`)} />
+  ));
 }
 
-const list = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.8rem",
-  padding: "0.8rem 1rem",
-  overflowY: "auto",
-  height: "100%",
+const bd = {
+  display: "flex", alignItems: "center", gap: 11,
+  background: tint, border: "1.5px solid transparent",
+  borderRadius: 11, padding: 9, cursor: "pointer",
+  transition: "border-color 0.15s, background 0.15s",
 };
-
-const cardWrapper = (dark) => ({
-  display: "flex",
-  flexDirection: "column",
-  borderRadius: "1rem",
-  overflow: "hidden",
-  boxShadow: dark ? "0 2px 12px rgba(0,0,0,0.35)" : "0 2px 10px rgba(0,0,0,0.08)",
-  backgroundColor: dark ? "#0a2745" : "white",
-  cursor: "pointer",
-  border: dark ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,0,0,0.06)",
-});
-
-const contentRow = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "stretch",
-  padding: "0",
-  overflow: "hidden",
-  minHeight: "6rem",
+const bdHov = { borderColor: "#C9DAF0", background: "#fff" };
+const bdIm = {
+  width: "3.25rem", height: "3.25rem", borderRadius: 9,
+  overflow: "hidden", flexShrink: 0, display: "block",
 };
-
-const middleContent = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  flex: 1,
-  padding: "0.7rem 0.9rem",
-  gap: "0.8rem",
-};
-
-const separator = (dark) => ({
-  width: "0",
-  borderLeft: dark ? "1px dashed rgba(255,255,255,0.15)" : "1px dashed rgba(0,0,0,0.15)",
-  flexShrink: 0,
-  alignSelf: "stretch",
-});
-
-const rightSection = (accepted, dark) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "0.35rem",
-  flexShrink: 0,
-  width: "6rem",
-  backgroundColor: accepted
-    ? (dark ? "rgba(42,200,152,0.15)" : "rgba(42,200,152,0.1)")
-    : (dark ? "rgba(245,158,11,0.15)" : "rgba(245,158,11,0.1)"),
-  padding: "0.7rem 0.5rem",
-});
-
-const statusBadge = (accepted) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 800,
-  fontSize: "0.68rem",
-  letterSpacing: "0.04em",
-  color: accepted ? parrotGreen : "#f59e0b",
-  backgroundColor: accepted ? "rgba(42,200,152,0.18)" : "rgba(245,158,11,0.18)",
-  borderRadius: "2rem",
-  padding: "0.2rem 0.55rem",
-});
-
-const thumbnail = {
-  width: "6rem",
-  alignSelf: "stretch",
-  objectFit: "cover",
-  flexShrink: 0,
-  display: "block",
-};
-
-const middleInfo = {
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
-  minWidth: 0,
-};
-
-const voyageNameStyle = (dark) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 900,
-  fontSize: "1.1rem",
-  color: dark ? "rgba(255,255,255,0.9)" : parrotBlue,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  textAlign: "left",
-});
-
-const datesStyle = (dark) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 700,
-  fontSize: "0.82rem",
-  color: dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.45)",
-  marginTop: "0.15rem",
-  textAlign: "left",
-});
-
-const bidPlacedStyle = (dark) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontSize: "0.75rem",
-  color: dark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)",
-  marginTop: "0.15rem",
-  textAlign: "left",
-});
-
-const priceStyle = (dark) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 900,
-  fontSize: "1.2rem",
-  color: dark ? "rgba(255,255,255,0.9)" : "#0d2b4e",
-});
-
-const empty = (dark) => ({
-  fontFamily: "Nunito, sans-serif",
-  fontWeight: 700,
-  fontSize: "1rem",
-  color: dark ? "rgba(255,255,255,0.3)" : "rgba(0,119,234,0.5)",
-  textAlign: "center",
-  marginTop: "2rem",
-});
+const bb = { width: "11rem", flexShrink: 0, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 };
+const bt = { fontSize: 14, fontWeight: 800, color: blueDk, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" };
+const bs = { fontSize: 11.5, fontWeight: 700, color: mid, textAlign: "left" };
+const br = { width: "5rem", flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 };
+const amt = { fontSize: 14.5, fontWeight: 900, color: "#0A2540" };
+const tagp = { fontSize: 9.5, fontWeight: 800, letterSpacing: "0.07em", textTransform: "uppercase", padding: "3px 9px", borderRadius: 99, whiteSpace: "nowrap" };
+const tagPend = { background: "#FDF0D5", color: "#96590A" };
+const tagAcc = { background: "#DDF3E7", color: "#0B6B4E" };
+const empty = { color: mid, fontSize: "0.85rem", fontWeight: 700, textAlign: "center", padding: "2rem 1rem" };

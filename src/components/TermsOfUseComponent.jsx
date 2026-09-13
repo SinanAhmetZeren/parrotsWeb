@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { parrotBlue, parrotDarkBlue } from "../styles/colors";
 import { TermsContent } from "./TermsContent";
 
-const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMode = false } = {}) => {
+const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMode = false, asMenuItem = false } = {}) => {
     const [isOpen, setIsOpen] = useState(false);
     const isControlled = controlledOpen !== undefined;
     const modalOpen = isControlled ? controlledOpen : isOpen;
@@ -43,7 +43,10 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
     return (
         <>
             {!isControlled && (
-                <button style={navigationButton} onClick={toggleModal}>
+                <button style={asMenuItem ? menuItemBtn : navigationButton} onClick={toggleModal}>
+                    {asMenuItem && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15, flexShrink: 0 }}><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h6M10 16h6"/></svg>
+                    )}
                     <span>Terms of Use</span>
                 </button>
             )}
@@ -53,6 +56,15 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
 };
 
 export default TermsOfUseComponent;
+
+const menuItemBtn = {
+    fontFamily: "Nunito, sans-serif",
+    width: "100%", textAlign: "left",
+    border: "none", background: "none",
+    fontSize: 13.5, fontWeight: 700, color: "#0A5FBF",
+    padding: "9px 11px", borderRadius: 7,
+    cursor: "pointer", display: "flex", alignItems: "center", gap: 9,
+};
 
 const navigationButton = {
     borderRadius: "1.5rem",

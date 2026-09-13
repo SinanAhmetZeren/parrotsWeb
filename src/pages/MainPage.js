@@ -27,38 +27,38 @@ import { MainPageV2VoyageCard } from "../components/MainPageV2VoyageCard";
 
 const tileAttribution = '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
 
-const navy   = "#0A2540";
-const blue   = "#0A77EA";
-const faint  = "#8B98A5";
-const dmid   = "#5C6B7A";
-const tint   = "#F4F7FB";
+const navy = "#0A2540";
+const blue = "#0A77EA";
+const faint = "#8B98A5";
+const dmid = "#5C6B7A";
+const tint = "#F4F7FB";
 
 function MainPage() {
   console.log("entered MainPage");
-  const userId      = localStorage.getItem("storedUserId");
+  const userId = localStorage.getItem("storedUserId");
   const maptilerKey = process.env.REACT_APP_MAPTILER_KEY;
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
 
-  const [initialLatitude,  setInitialLatitude]  = useState();
+  const [initialLatitude, setInitialLatitude] = useState();
   const [initialLongitude, setInitialLongitude] = useState();
-  const [calendarOpen,     setCalendarOpen]     = useState(false);
-  const [isLoading,        setIsLoading]        = useState(false);
-  const [initialVoyages,   setInitialVoyages]   = useState([]);
-  const [locationError,    setLocationError]    = useState(null);
-  const [targetLocation,   setTargetLocation]   = useState({});
-  const [dates,            setDates]            = useState({ from: undefined, to: undefined });
-  const [selectedVacancy,  setSelectedVacancy]  = useState();
-  const [selectedVehicle,  setSelectedVehicle]  = useState();
-  const [bounds,           setBounds]           = useState(null);
-  const [initialBounds,    setInitialBounds]    = useState(null);
-  const [locationReady,    setLocationReady]    = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialVoyages, setInitialVoyages] = useState([]);
+  const [locationError, setLocationError] = useState(null);
+  const [targetLocation, setTargetLocation] = useState({});
+  const [dates, setDates] = useState({ from: undefined, to: undefined });
+  const [selectedVacancy, setSelectedVacancy] = useState();
+  const [selectedVehicle, setSelectedVehicle] = useState();
+  const [bounds, setBounds] = useState(null);
+  const [initialBounds, setInitialBounds] = useState(null);
+  const [locationReady, setLocationReady] = useState(false);
 
   const dispatch = useDispatch();
 
-  const [getVoyagesByLocation, { isError: isErrorVoyages, isSuccess: isSuccessVoyages }]         = useLazyGetVoyagesByLocationQuery();
-  const [getFilteredVoyages,   { isError: isErrorVoyagesFiltered, isLoading: isLoadingFiltered }] = useLazyGetFilteredVoyagesQuery();
+  const [getVoyagesByLocation, { isError: isErrorVoyages, isSuccess: isSuccessVoyages }] = useLazyGetVoyagesByLocationQuery();
+  const [getFilteredVoyages, { isError: isErrorVoyagesFiltered, isLoading: isLoadingFiltered }] = useLazyGetFilteredVoyagesQuery();
   const [getFavoriteVehicleIdsByUserId, { data: favoriteVehiclesData, isError: isErrorFavVehicles }] = useLazyGetFavoriteVehicleIdsByUserIdQuery();
-  const [getFavoriteVoyageIdsByUserId,  { data: favoriteVoyagesData,  isError: isErrorFavVoyages  }] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
+  const [getFavoriteVoyageIdsByUserId, { data: favoriteVoyagesData, isError: isErrorFavVoyages }] = useLazyGetFavoriteVoyageIdsByUserIdQuery();
 
   useEffect(() => {
     const token = localStorage.getItem("storedToken");
@@ -73,14 +73,14 @@ function MainPage() {
   const runFilter = useCallback(async (filterDates, filterVehicle, filterVacancy) => {
     if (!bounds) return;
     const data = {
-      latitude:            (bounds.lat.northEast + bounds.lat.southWest) / 2,
-      longitude:           (bounds.lng.northEast + bounds.lng.southWest) / 2,
-      latitudeDelta:       (bounds.lat.northEast - bounds.lat.southWest) * 0.9,
-      longitudeDelta:      (bounds.lng.northEast - bounds.lng.southWest) * 0.9,
-      count:               filterVacancy ?? 1,
+      latitude: (bounds.lat.northEast + bounds.lat.southWest) / 2,
+      longitude: (bounds.lng.northEast + bounds.lng.southWest) / 2,
+      latitudeDelta: (bounds.lat.northEast - bounds.lat.southWest) * 0.9,
+      longitudeDelta: (bounds.lng.northEast - bounds.lng.southWest) * 0.9,
+      count: filterVacancy ?? 1,
       selectedVehicleType: filterVehicle,
-      formattedStartDate:  convertDateFormat(filterDates?.from, "startDate"),
-      formattedEndDate:    convertDateFormat(filterDates?.to,   "endDate"),
+      formattedStartDate: convertDateFormat(filterDates?.from, "startDate"),
+      formattedEndDate: convertDateFormat(filterDates?.to, "endDate"),
     };
     const result = await getFilteredVoyages(data);
     setInitialVoyages(result.data || []);
@@ -104,6 +104,11 @@ function MainPage() {
   const FALLBACK_LNG = 0.11798991656591876;
 
   useEffect(() => {
+    if (window.location.hostname === "localhost") {
+      setInitialLatitude(FALLBACK_LAT); setInitialLongitude(FALLBACK_LNG);
+      handlePanToLocation(FALLBACK_LAT, FALLBACK_LNG); setLocationReady(true);
+      return;
+    }
     if (!navigator.geolocation) {
       setInitialLatitude(FALLBACK_LAT); setInitialLongitude(FALLBACK_LNG);
       handlePanToLocation(FALLBACK_LAT, FALLBACK_LNG); setLocationReady(true);
@@ -285,7 +290,7 @@ const pageWrap = {
 
 const lowRow = {
   display: "grid",
-  gridTemplateColumns: "minmax(0,1fr) 380px",
+  gridTemplateColumns: "minmax(0,1fr) 28rem",
   gap: "11px",
   flex: 1,
   minHeight: 0,
@@ -300,7 +305,7 @@ const mapPanel = {
 };
 
 const listPanel = {
-  width: "380px",
+  width: "28rem",
   height: "100%",
   display: "flex",
   flexDirection: "column",

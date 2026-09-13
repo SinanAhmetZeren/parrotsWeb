@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 import MainPage from "./pages/MainPage";
 import VoyageDetailsPage from "./pages/VoyageDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
+import ProfilePageOld from "./pages/ProfilePage_old";
 import ConnectPage from "./pages/ConnectPage";
 import {
   BrowserRouter as Router,
@@ -109,69 +110,70 @@ function App() {
 
   return (
     <ErrorBoundary>
-<Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/privacy" element={<TermsPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        {!isLoggedIn ? (
-          <Route path="*" element={<Navigate to="/login" />} />
-        ) : (
-          <>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/parrotcrackerpage" element={<ParrotCrackerPage />} />
-            <Route path="/edit-profile" element={<EditProfilePage />} />
-            <Route path="/newVehicle" element={<CreateVehiclePage />} />
-            <Route path="/newVoyage" element={<CreateVoyagePage />} />
-            <Route path="/AskParrots" element={<AskParrotsPage />} />
-            <Route
-              path="/profile-public/:userId/:userName" // using publicId for userId
-              element={<ProfilePagePublic />}
-            />
-            <Route
-              path="/voyage-details/:voyageId"
-              element={<VoyageDetailsPage />}
-            />
-            <Route
-              path="/vehicle-details/:vehicleId"
-              element={<VehicleDetailsPage />}
-            />
-            <Route
-              path="/edit-vehicle/:vehicleId"
-              element={<EditVehiclePage />}
-            />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/connect" element={<ConnectPage />} />
-            <Route
-              path="/connect/:conversationUserPublicId/:conversationUserUsername"
-              element={<ConnectPage />}
-            />
-          </>
-        )}
-      </Routes>
-      <Modal
-        isOpen={requiresTermsAcceptance}
-        onRequestClose={() => dispatch(setRequiresTermsAcceptance(false))}
-        shouldCloseOnOverlayClick={false}
-        shouldCloseOnEsc={false}
-        style={termsModalStyle}
-      >
-        <TermsContent onAccept={async () => { try { await acceptTerms().unwrap(); } catch (_) {} dispatch(setRequiresTermsAcceptance(false)); }} />
-      </Modal>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={2500}
-        hideProgressBar
-        closeButton={false}
-        icon={false}
-        toastClassName="parrot-pill-toast"
-        bodyClassName="parrot-pill-toast-body"
-      />
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/privacy" element={<TermsPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          {!isLoggedIn ? (
+            <Route path="*" element={<Navigate to="/login" />} />
+          ) : (
+            <>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profileold" element={<ProfilePageOld />} />
+              <Route path="/parrotcrackerpage" element={<ParrotCrackerPage />} />
+              <Route path="/edit-profile" element={<EditProfilePage />} />
+              <Route path="/newVehicle" element={<CreateVehiclePage />} />
+              <Route path="/newVoyage" element={<CreateVoyagePage />} />
+              <Route path="/AskParrots" element={<AskParrotsPage />} />
+              <Route
+                path="/profile-public/:userId/:userName" // using publicId for userId
+                element={<ProfilePagePublic />}
+              />
+              <Route
+                path="/voyage-details/:voyageId"
+                element={<VoyageDetailsPage />}
+              />
+              <Route
+                path="/vehicle-details/:vehicleId"
+                element={<VehicleDetailsPage />}
+              />
+              <Route
+                path="/edit-vehicle/:vehicleId"
+                element={<EditVehiclePage />}
+              />
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/connect" element={<ConnectPage />} />
+              <Route
+                path="/connect/:conversationUserPublicId/:conversationUserUsername"
+                element={<ConnectPage />}
+              />
+            </>
+          )}
+        </Routes>
+        <Modal
+          isOpen={requiresTermsAcceptance}
+          onRequestClose={() => dispatch(setRequiresTermsAcceptance(false))}
+          shouldCloseOnOverlayClick={false}
+          shouldCloseOnEsc={false}
+          style={termsModalStyle}
+        >
+          <TermsContent onAccept={async () => { try { await acceptTerms().unwrap(); } catch (_) { } dispatch(setRequiresTermsAcceptance(false)); }} />
+        </Modal>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={2500}
+          hideProgressBar
+          closeButton={false}
+          icon={false}
+          toastClassName="parrot-pill-toast"
+          bodyClassName="parrot-pill-toast-body"
+        />
 
-    </Router>
+      </Router>
     </ErrorBoundary>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { FaAngleDoubleDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -23,6 +24,7 @@ import imgTiktok from "../assets/images/tiktok_logo.png";
 import he from "he";
 import DOMPurify from "dompurify";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import { MainPageV2VoyageCard } from "../components/MainPageV2VoyageCard";
 import "leaflet/dist/leaflet.css";
 
 function FitBoundsWithPadding({ bounds }) {
@@ -31,8 +33,16 @@ function FitBoundsWithPadding({ bounds }) {
     if (map && bounds) {
       map.fitBounds(bounds, { padding: [32, 32] });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  return null;
+}
+
+function MapPanner({ target }) {
+  const map = useMap();
+  useEffect(() => {
+    if (map && target) map.setView([target.lat, target.lng], 9, { animate: true });
+  }, [map, target]);
   return null;
 }
 
@@ -45,22 +55,20 @@ const mid = "#5C6B7A";
 const line = "#E3E9F0";
 const tint = "#F4F7FB";
 const green = "#2AC898";
-const greenInk = "#0B6B4E";
-const orange = "#E8620E";
 const red = "#C22F3D";
 
 // ── Contact icons (brand images) ──────────────────────────────────────────────
 const socialIconImg = { width: "3.45rem", height: "3.45rem", margin: 5, cursor: "pointer", borderRadius: "5rem", objectFit: "cover" };
 const ContactIcons = {
-  email:       <img src={imgEmail}     alt="Email"     style={socialIconImg} />,
-  instagram:   <img src={imgInstagram} alt="Instagram" style={socialIconImg} />,
-  twitter:     <img src={imgTwitter}   alt="X"         style={socialIconImg} />,
-  phoneNumber: <img src={imgPhone}     alt="Phone"     style={socialIconImg} />,
-  website:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: "3rem", height: "3rem", margin: 5 }}><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z" /></svg>,
-  youtube:     <img src={imgYoutube}   alt="YouTube"   style={socialIconImg} />,
-  facebook:    <img src={imgFacebook}  alt="Facebook"  style={socialIconImg} />,
-  linkedin:    <img src={imgLinkedin}  alt="LinkedIn"  style={socialIconImg} />,
-  tiktok:      <img src={imgTiktok}    alt="TikTok"    style={socialIconImg} />,
+  email: <img src={imgEmail} alt="Email" style={socialIconImg} />,
+  instagram: <img src={imgInstagram} alt="Instagram" style={socialIconImg} />,
+  twitter: <img src={imgTwitter} alt="X" style={socialIconImg} />,
+  phoneNumber: <img src={imgPhone} alt="Phone" style={socialIconImg} />,
+  website: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: "3rem", height: "3rem", margin: 5 }}><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z" /></svg>,
+  youtube: <img src={imgYoutube} alt="YouTube" style={socialIconImg} />,
+  facebook: <img src={imgFacebook} alt="Facebook" style={socialIconImg} />,
+  linkedin: <img src={imgLinkedin} alt="LinkedIn" style={socialIconImg} />,
+  tiktok: <img src={imgTiktok} alt="TikTok" style={socialIconImg} />,
 };
 
 const CONTACT_LABELS = {
@@ -81,56 +89,34 @@ function buildContacts(userData) {
   return rows;
 }
 
+const clean = (s) => s ? DOMPurify.sanitize(he.decode(s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())) : "";
+
 // ── Vehicle card ──────────────────────────────────────────────────────────────
 function VehicleCard({ vehicle }) {
   const navigate = useNavigate();
-  const clean = (s) => s ? DOMPurify.sanitize(he.decode(s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())) : "";
+  const [hov, setHov] = React.useState(false);
   return (
-    <article style={gc} onClick={() => navigate(`/vehicle-details/${vehicle?.id}`)}>
-      <div style={gcIm}>
-        <img src={vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        <span style={gcBdg}>Vehicle</span>
-      </div>
-      <div style={gcTx}>
-        <h3 style={gcH3}>{vehicle?.name}</h3>
-        <p style={gcP} dangerouslySetInnerHTML={{ __html: clean(vehicle?.description) }} />
-        <div style={metas}>
-          <span style={meta}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}><path d="M4 15h16v-3l-1.6-4.4A2 2 0 0 0 16.5 6h-9a2 2 0 0 0-1.9 1.6L4 12z" /><circle cx="7.5" cy="17.5" r="1.8" /><circle cx="16.5" cy="17.5" r="1.8" /></svg>{vehicle?.type}</span>
-          {vehicle?.capacity && <span style={meta}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}><circle cx="9" cy="8" r="3" /><path d="M3 19a6 6 0 0 1 12 0" /><path d="M16 11a3 3 0 0 0 0-6" /><path d="M18 19a5 5 0 0 0-2-4" /></svg>{vehicle?.capacity}</span>}
-        </div>
-      </div>
+    <article
+      style={{ ...vc, ...(hov ? vcHov : {}) }}
+      onClick={() => navigate(`/vehicle-details/${vehicle?.id}`)}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+    >
+      <span style={vcIm}>
+        <img src={vehicle?.profileImageThumbnailUrl || vehicle?.profileImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </span>
+      <span style={vcBd}>
+        <span style={vcT}>{vehicle?.name}</span>
+        <span style={vcS}>{clean(vehicle?.description)}</span>
+        <span style={mt2}>
+          {vehicle?.type && <span style={vtag}>{vehicle.type}</span>}
+          {vehicle?.capacity && <span style={{ ...vtag, display: "inline-flex", alignItems: "center", gap: 4 }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}><circle cx="9" cy="8" r="3" /><path d="M3 19a6 6 0 0 1 12 0" /><path d="M16 11a3 3 0 0 0 0-6" /><path d="M18 19a5 5 0 0 0-2-4" /></svg>{vehicle.capacity}</span>}
+        </span>
+      </span>
     </article>
   );
 }
 
 // ── Voyage card ───────────────────────────────────────────────────────────────
-function VoyageCard({ voyage }) {
-  const navigate = useNavigate();
-  const clean = (s) => s ? DOMPurify.sanitize(he.decode(s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())) : "";
-  const dateStr = voyage?.startDate ? new Date(voyage.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "";
-  return (
-    <article style={gc} onClick={() => navigate(`/voyage-details/${voyage?.publicId}`)}>
-      <div style={gcIm}>
-        <img src={voyage?.profileImageThumbnail || voyage?.profileImage} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        <span style={gcBdg}>Voyage</span>
-        {voyage?.publicOnMap && (
-          <span style={gcPub} title="Public on the map">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z" /></svg>
-          </span>
-        )}
-      </div>
-      <div style={gcTx}>
-        <h3 style={gcH3}>{voyage?.name || voyage?.title}</h3>
-        <p style={gcP} dangerouslySetInnerHTML={{ __html: clean(voyage?.description) }} />
-        <div style={metas}>
-          {voyage?.vehicleType && <span style={meta}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}><path d="M4 15h16v-3l-1.6-4.4A2 2 0 0 0 16.5 6h-9a2 2 0 0 0-1.9 1.6L4 12z" /><circle cx="7.5" cy="17.5" r="1.8" /><circle cx="16.5" cy="17.5" r="1.8" /></svg>{voyage?.vehicleType}</span>}
-          {voyage?.maxParticipants && <span style={meta}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}><circle cx="9" cy="8" r="3" /><path d="M3 19a6 6 0 0 1 12 0" /><path d="M16 11a3 3 0 0 0 0-6" /><path d="M18 19a5 5 0 0 0-2-4" /></svg>{voyage?.maxParticipants}</span>}
-          {dateStr && <span style={meta}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" style={{ width: 12, height: 12 }}><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>{dateStr}</span>}
-        </div>
-      </div>
-    </article>
-  );
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 function ProfilePage() {
@@ -146,7 +132,11 @@ function ProfilePage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [enlargedImg, setEnlargedImg] = useState(null);
+  const [panTarget, setPanTarget] = useState(null);
   const moreRef = useRef(null);
+  const bioRef = useRef(null);
+  const [bioOverflow, setBioOverflow] = useState(false);
 
   const handleLogout = () => {
     stopHubConnection();
@@ -167,6 +157,11 @@ function ProfilePage() {
     const token = localStorage.getItem("storedToken");
     if (userId && token && !isSuccessUser) triggerGetUserById(userId);
   }, [userId, triggerGetUserById]);
+
+  useEffect(() => {
+    const el = bioRef.current;
+    if (el) setBioOverflow(el.scrollHeight > el.clientHeight);
+  }, [userData?.bio]);
 
   const { isError: isHealthCheckError } = useHealthCheckQuery();
   if (isHealthCheckError) return <SomethingWentWrong />;
@@ -206,24 +201,33 @@ function ProfilePage() {
 
             {/* ── Cover ── */}
             <div style={coverCell}>
-              <img src={userData?.backgroundImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <img src={userData?.backgroundImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} onClick={() => setEnlargedImg(userData?.backgroundImageUrl)} />
               {/* Avatar bottom-left */}
               <div style={avatarWrap}>
-                <img src={userData?.profileImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={userData?.profileImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} onClick={() => setEnlargedImg(userData?.profileImageUrl)} />
               </div>
               {/* Action buttons bottom-right */}
               <div style={coverBtns}>
-                <button style={cbtn} onClick={() => navigate(`/profile-public/${userData?.publicId}/${userData?.userName}`)}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z" /><circle cx="12" cy="12" r="2.6" /></svg>
-                  <span>Public Profile</span>
+                <style>{`
+                  .pcb[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:0;background:rgba(8,30,54,.92);color:#fff;font-size:11.5px;font-weight:800;font-family:Nunito,sans-serif;padding:5px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .13s}
+                  .pcb[data-tip]:hover::after{opacity:1}
+                  .pcb:hover{background:#fff!important}
+                  .pcb.pri:hover{background:#0A5FBF!important}
+                `}</style>
+                <button className="pcb" data-tip={`${userData?.parrotCrackerBalance ?? "..."} ParrotCrackers`} style={{ ...cbtn, background: "#fff", padding: 0 }} onClick={() => navigate("/parrotCrackerPage")}>
+                  <span style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex" }}>
+                    <img src={parrotCracker} alt="ParrotCracker" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </span>
                 </button>
-                <button style={{ ...cbtn, backgroundColor: blue, color: "#fff" }} onClick={() => navigate("/edit-profile")}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
-                  <span>Edit Profile</span>
+                <button className="pcb" data-tip="Public Profile" style={{ ...cbtn, background: "#fff" }} onClick={() => navigate(`/profile-public/${userData?.publicId}/${userData?.userName}`)}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z" /><circle cx="12" cy="12" r="2.6" /></svg>
+                </button>
+                <button className="pcb" data-tip="Edit Profile" style={{ ...cbtn, background: "#fff" }} onClick={() => navigate("/edit-profile")}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
                 </button>
                 <div ref={moreRef} style={{ position: "relative" }}>
-                  <button style={{ ...cbtn, width: 36, padding: 0 }} onClick={() => setMoreOpen(o => !o)} aria-label="More">
-                    <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 15, height: 15 }}><circle cx="5" cy="12" r="1.9" /><circle cx="12" cy="12" r="1.9" /><circle cx="19" cy="12" r="1.9" /></svg>
+                  <button className="pcb" style={cbtn} onClick={() => setMoreOpen(o => !o)} aria-label="More">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 19, height: 19 }}><circle cx="5" cy="12" r="1.9" /><circle cx="12" cy="12" r="1.9" /><circle cx="19" cy="12" r="1.9" /></svg>
                   </button>
                   {moreOpen && (
                     <div style={moreMenu}>
@@ -264,6 +268,7 @@ function ProfilePage() {
                     </CircleMarker>
                   ))}
                   {pinBounds && <FitBoundsWithPadding bounds={pinBounds} />}
+                  <MapPanner target={panTarget} />
                 </MapContainer>
               ) : (
                 <div style={{ width: "100%", height: "100%", backgroundColor: "#d4e6f1", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -281,19 +286,21 @@ function ProfilePage() {
             {/* ── Identity ── */}
             <div style={{ ...panel, ...identCell }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "8px 14px" }}>
-                <h1 style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.02em", lineHeight: 1.1, color: navy }}>{userData?.userName}</h1>
-                {userData?.title && <span style={{ fontSize: 15.5, fontWeight: 800, color: orange }}>{userData?.title}</span>}
-                <span style={{ flex: 1 }} />
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                  <button style={chip} onClick={() => navigate("/parrotCrackerPage")}>
-                    <img src={parrotCracker} alt="" style={{ width: 15, height: 15 }} />
-                    Balance {userData?.parrotCrackerBalance ?? "…"}
-                  </button>
-                  <button style={{ ...chip, borderStyle: "dashed", color: blueDk, borderColor: "#C8D6E6" }} onClick={() => navigate("/parrotCrackerPage")}>Top up</button>
-                </div>
+                <h1 style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.02em", lineHeight: 1.1, color: blueDk }}>{userData?.userName}</h1>
+                {userData?.title && <span style={{ fontSize: 15.5, fontWeight: 800, color: blueDk }}>{userData?.title}</span>}
               </div>
               {userData?.bio && (
-                <p style={{ fontSize: 14.5, fontWeight: 600, lineHeight: 1.6, color: navy, textAlign: "left", display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 4, overflow: "hidden" }}>{userData?.bio}</p>
+                <div style={{ position: "relative" }}>
+                  <style>{`@keyframes parrotPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}`}</style>
+                  <p ref={bioRef} style={{ fontSize: 14.5, fontWeight: 600, lineHeight: 1.6, color: navy, textAlign: "left", margin: 0 }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(he.decode(userData.bio.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())) }}
+                  />
+                  {bioOverflow && (
+                    <div style={{ position: "absolute", bottom: 0, right: 0, pointerEvents: "none" }}>
+                      <FaAngleDoubleDown style={{ color: blue, fontSize: "1.2rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -319,11 +326,11 @@ function ProfilePage() {
 
             {/* ── Rail ── */}
             <div style={{ ...panel, ...railCell }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 9, flexWrap: "wrap" }}>
-                <h2 style={{ fontSize: 17, fontWeight: 900, letterSpacing: "-.01em", color: navy }}>Vehicles &amp; voyages</h2>
+              {/* <div style={{ display: "flex", alignItems: "center", gap: 9, flexWrap: "wrap" }}>
+                <h2 style={{ fontFamily: "Nunito, sans-serif", fontSize: 9.5, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", color: "#8B98A5", margin: 0 }}>Vehicles &amp; voyages</h2>
                 <span style={ct}>{totalCount}</span>
                 <span style={{ flex: 1 }} />
-              </div>
+              </div> */}
               <div style={filters}>
                 {[["all", `All ${totalCount}`], ["vehicles", `Vehicles ${vehicles.length}`], ["voyages", `Voyages ${voyages.length}`]].map(([k, label]) => (
                   <button key={k} style={{ ...filterBtn, ...(filter === k ? filterBtnOn : {}) }} onClick={() => setFilter(k)}>{label}</button>
@@ -339,7 +346,7 @@ function ProfilePage() {
                 {visibleVoyages.length > 0 && (
                   <>
                     <div style={sub}><span style={sec}>Voyages · {voyages.length}</span><span style={{ flex: 1, height: 1, background: line }} /></div>
-                    {visibleVoyages.map((v, i) => <VoyageCard key={v?.id ?? i} voyage={v} />)}
+                    {visibleVoyages.map((v, i) => <MainPageV2VoyageCard key={v?.id ?? i} cardData={v} panToLocation={v?.latitude && v?.longitude ? (lat, lng) => setPanTarget({ lat, lng }) : () => { }} />)}
                   </>
                 )}
                 {totalCount === 0 && (
@@ -349,15 +356,18 @@ function ProfilePage() {
                   </div>
                 )}
               </div>
-              <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
-                <button style={{ ...chip, borderStyle: "dashed", color: blueDk, borderColor: "#C8D6E6", flex: 1, justifyContent: "center" }} onClick={() => navigate("/newVehicle")}>+ Add vehicle</button>
-                <button style={{ ...chip, borderStyle: "dashed", color: blueDk, borderColor: "#C8D6E6", flex: 1, justifyContent: "center" }} onClick={() => navigate("/newVoyage")}>+ New voyage</button>
-              </div>
             </div>
 
           </div>
         </div>
       </header>
+
+      {/* Image enlarge modal */}
+      {enlargedImg && (
+        <div style={modalOverlay} onClick={() => setEnlargedImg(null)}>
+          <img src={enlargedImg} alt="" style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: 14, boxShadow: "0 16px 48px rgba(0,0,0,.5)", objectFit: "contain" }} onClick={e => e.stopPropagation()} />
+        </div>
+      )}
 
       {/* Logout modal */}
       {showLogoutModal && (
@@ -381,7 +391,7 @@ export default ProfilePage;
 
 const pageWrap = {
   display: "flex", flexDirection: "column",
-  width: "100%", minHeight: "100vh",
+  width: "100%", height: "100vh", overflow: "hidden",
   fontFamily: "Nunito, sans-serif",
   backgroundColor: deep,
 };
@@ -395,12 +405,15 @@ const panel = {
 const wrap = {
   maxWidth: 1500,
   width: "100%",
+  flex: 1,
+  minHeight: 0,
   margin: "0 auto",
-  padding: "0 20px 32px",
+  padding: "0 20px 16px",
   display: "grid",
-  gridTemplateColumns: "minmax(0,375px) minmax(0,1fr) minmax(0,375px) minmax(0,340px)",
-  gridTemplateRows: "375px auto",
+  gridTemplateColumns: "minmax(0,375px) minmax(0,1fr) minmax(0,375px) 28rem",
+  gridTemplateRows: "23rem 1fr",
   gap: 16,
+  overflow: "hidden",
 };
 
 const coverCell = {
@@ -414,8 +427,8 @@ const coverCell = {
 
 const avatarWrap = {
   position: "absolute",
-  left: 16, bottom: 16,
-  width: 118, height: 118,
+  right: ".25rem", bottom: ".25rem",
+  width: "10rem", height: "10rem",
   borderRadius: "50%",
   border: "4px solid #fff",
   overflow: "hidden",
@@ -424,23 +437,22 @@ const avatarWrap = {
 
 const coverBtns = {
   position: "absolute",
-  right: 14, bottom: 16,
+  left: ".5rem", bottom: ".5rem",
   display: "flex", gap: 7, flexWrap: "nowrap", justifyContent: "flex-end",
   maxWidth: "calc(100% - 156px)",
 };
 
 const cbtn = {
   fontFamily: "Nunito, sans-serif",
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-  height: 36,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  width: 44, height: 44,
   background: "rgba(255,255,255,.95)",
   border: "none",
   color: navy,
-  fontSize: 13, fontWeight: 800, lineHeight: 1,
-  padding: "0 14px",
-  borderRadius: 99,
-  cursor: "pointer", whiteSpace: "nowrap",
-  boxShadow: "0 3px 10px rgba(0,14,30,.2)",
+  borderRadius: "50%",
+  cursor: "pointer",
+  boxShadow: "0 3px 10px rgba(0,14,30,.24)",
+  position: "relative", padding: 0, flexShrink: 0,
 };
 
 const moreMenu = {
@@ -485,6 +497,7 @@ const identCell = {
   gridRow: 2,
   padding: "18px 20px",
   display: "flex", flexDirection: "column", gap: 10, minWidth: 0,
+  overflowY: "auto", minHeight: 0,
 };
 
 const socCell = {
@@ -492,6 +505,7 @@ const socCell = {
   gridRow: 2,
   padding: "16px 16px 18px",
   display: "flex", flexDirection: "column", gap: 10, minWidth: 0,
+  overflowY: "auto", minHeight: 0,
 };
 
 const railCell = {
@@ -499,7 +513,7 @@ const railCell = {
   gridRow: "1 / span 2",
   padding: "16px 16px 18px",
   display: "flex", flexDirection: "column", gap: 11, minHeight: 0,
-  maxHeight: 766,
+  overflowY: "auto",
 };
 
 const sec = {
@@ -510,14 +524,6 @@ const ct = {
   fontSize: 12, fontWeight: 800, color: mid, backgroundColor: tint, padding: "3px 9px", borderRadius: 99,
 };
 
-const chip = {
-  fontFamily: "Nunito, sans-serif",
-  display: "inline-flex", alignItems: "center", gap: 6,
-  border: `1.5px solid ${line}`, backgroundColor: "#fff",
-  borderRadius: 99, padding: "6px 12px",
-  fontSize: 12.5, fontWeight: 800, color: navy,
-  cursor: "pointer", whiteSpace: "nowrap",
-};
 
 const crow = {
   display: "flex", alignItems: "center", gap: 10,
@@ -552,56 +558,22 @@ const scroll = {
   margin: "0 -4px", padding: "0 4px 2px",
 };
 
-const gc = {
-  border: `1.5px solid ${line}`, borderRadius: 12,
-  overflow: "hidden", display: "flex", flexDirection: "column",
-  cursor: "pointer", backgroundColor: "#fff", flexShrink: 0,
+const vc = {
+  display: "flex", gap: 11, background: tint,
+  border: "1.5px solid transparent", borderRadius: 11,
+  padding: 9, cursor: "pointer", flexShrink: 0, minWidth: 0,
+  transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",
 };
-
-const gcIm = {
-  position: "relative", aspectRatio: "4/3", overflow: "hidden",
+const vcHov = { borderColor: blue, background: "#fff", boxShadow: "0 4px 14px rgba(10,119,234,.13)" };
+const vcIm = {
+  width: 96, height: 96, borderRadius: 9,
+  overflow: "hidden", flexShrink: 0, display: "block",
 };
-
-const gcBdg = {
-  position: "absolute", left: 9, top: 9,
-  backgroundColor: "rgba(8,30,54,.86)", color: "#fff",
-  fontSize: 9.5, fontWeight: 800, letterSpacing: ".09em", textTransform: "uppercase",
-  padding: "4px 9px", borderRadius: 99,
-};
-
-const gcPub = {
-  position: "absolute", right: 9, top: 9,
-  width: 24, height: 24, borderRadius: "50%",
-  backgroundColor: "#fff", color: greenInk,
-  display: "flex", alignItems: "center", justifyContent: "center",
-  boxShadow: "0 2px 7px rgba(0,14,30,.2)",
-};
-
-const gcTx = {
-  padding: "11px 13px 13px",
-  display: "flex", flexDirection: "column", gap: 7, flex: 1,
-};
-
-const gcH3 = {
-  fontSize: 15.5, fontWeight: 800, color: blueDk,
-  letterSpacing: "-.01em", lineHeight: 1.25,
-};
-
-const gcP = {
-  fontSize: 12.5, fontWeight: 600, color: mid, lineHeight: 1.45,
-  display: "-webkit-box", WebkitLineClamp: 2,
-  WebkitBoxOrient: "vertical", overflow: "hidden",
-};
-
-const metas = {
-  display: "flex", flexWrap: "wrap", gap: 6, marginTop: "auto",
-};
-
-const meta = {
-  display: "inline-flex", alignItems: "center", gap: 5,
-  backgroundColor: tint, borderRadius: 99, padding: "4px 9px",
-  fontSize: 11.5, fontWeight: 800, color: mid, whiteSpace: "nowrap",
-};
+const vcBd = { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 };
+const vcT = { fontSize: 14.5, fontWeight: 800, color: blueDk, letterSpacing: "-.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" };
+const vcS = { fontSize: 12, fontWeight: 600, color: mid, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", textAlign: "left" };
+const mt2 = { display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginTop: "auto" };
+const vtag = { fontSize: 9.5, fontWeight: 800, letterSpacing: ".06em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 99, background: "#E4F0FE", color: blueDk, whiteSpace: "nowrap" };
 
 const modalOverlay = {
   position: "fixed", top: 0, left: 0, width: "100%", height: "100%",

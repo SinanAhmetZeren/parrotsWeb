@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCalendar, FiUsers } from "react-icons/fi";
 import DOMPurify from "dompurify";
 
 // Design tokens matching the reference HTML
-const blue   = "#0A77EA";
+const blue = "#0A77EA";
 const blueDk = "#0A5FBF";
-const navy   = "#0A2540";
-const dmid   = "#5C6B7A";
-const faint  = "#8B98A5";
-const tint   = "#F4F7FB";
-const amber  = "#C2740A";
+const navy = "#0A2540";
+const dmid = "#5C6B7A";
+const faint = "#8B98A5";
+const tint = "#F4F7FB";
+const amber = "#C2740A";
 
 function fmtDate(d) {
   if (!d) return "";
@@ -19,7 +19,9 @@ function fmtDate(d) {
 
 export function MainPageV2VoyageCard({ cardData, panToLocation }) {
   const navigate = useNavigate();
-  const firstWaypoint = cardData.waypoints?.[0];
+  const [priceHov, setPriceHov] = useState(false);
+  const firstWaypoint = cardData.waypoints?.[0]
+    || (cardData.latitude && cardData.longitude ? { latitude: cardData.latitude, longitude: cardData.longitude } : null);
   const isPlace = cardData.placeType > 0;
 
   const handleCardClick = () => {
@@ -41,8 +43,10 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
       ? `${cur}${minP}`
       : `${cur}${minP} – ${maxP}`;
 
+  const priceTooltip = `${cardData.auction ? "Auction" : "No Auction"} & ${cardData.fixedPrice ? "Fixed Price" : "No Fixed Price"}`;
+
   const startStr = fmtDate(cardData.startDate);
-  const endStr   = fmtDate(cardData.endDate);
+  const endStr = fmtDate(cardData.endDate);
   const dateLabel = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
 
   return (
@@ -94,27 +98,31 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
 
         {/* Meta row */}
         {!isPlace && <div style={metaRow}>
-          {/* Auction tag */}
-          {cardData.auction && <span style={tagAuction}>AUCTION</span>}
-
           {/* Price */}
-          {priceLabel
-            ? <span style={priceStyle}>{priceLabel}</span>
-            : <span style={tagFree}>FREE</span>
-          }
+          <span
+            style={{ ...( cardData.auction ? priceAuction : priceLabel ? priceBlue : tagFree), position: "relative" }}
+            onMouseEnter={() => setPriceHov(true)}
+            onMouseLeave={() => setPriceHov(false)}
+            onClick={e => e.stopPropagation()}
+          >
+            {priceLabel || "FREE"}
+            {priceHov && (
+              <span style={priceTooltipStyle}>{priceTooltip}</span>
+            )}
+          </span>
 
           {/* Date */}
           {dateLabel && (
-            <span style={metaItem(navy)}>
-              <FiCalendar size={11} color={faint} />
+            <span style={tagGrey}>
+              <FiCalendar size={11} />
               {dateLabel}
             </span>
           )}
 
           {/* Vacancy */}
           {cardData.vacancy != null && (
-            <span style={metaItem(navy)}>
-              <FiUsers size={12} color={faint} />
+            <span style={tagBlueCount}>
+              <FiUsers size={11} />
               {cardData.vacancy}
             </span>
           )}
@@ -205,7 +213,7 @@ const briefStyle = {
 const metaRow = {
   display: "flex",
   alignItems: "center",
-  gap: "9px",
+  gap: "3px",
   marginTop: "auto",
   flexWrap: "wrap",
 };
@@ -238,7 +246,7 @@ const tagFree = {
   fontWeight: 800,
   letterSpacing: ".06em",
   textTransform: "uppercase",
-  padding: "3px 8px",
+  padding: "3px 4px",
   borderRadius: "99px",
   backgroundColor: "#D1FAE5",
   color: "#065F46",
@@ -246,25 +254,13 @@ const tagFree = {
   flexShrink: 0,
 };
 
-const priceStyle = {
-  fontSize: "11px",
-  fontWeight: 800,
-  letterSpacing: ".02em",
-  padding: "1px 8px",
-  borderRadius: "99px",
-  backgroundColor: "#D1FAE5",
-  color: "#065F46",
-  fontFamily: "Nunito, sans-serif",
-  whiteSpace: "nowrap",
-  flexShrink: 0,
-};
 
 const tagFixed = {
   fontSize: "9px",
   fontWeight: 800,
   letterSpacing: ".06em",
   textTransform: "uppercase",
-  padding: "3px 8px",
+  padding: "3px 4px",
   borderRadius: "99px",
   backgroundColor: "#E4F0FE",
   color: blueDk,
@@ -272,8 +268,51 @@ const tagFixed = {
   flexShrink: 0,
 };
 
-const tagAuction = {
+const priceBlue = {
   ...tagFixed,
+  fontSize: "11px",
+  letterSpacing: ".02em",
+  textTransform: "none",
+  padding: "1px 4px",
+  backgroundColor: "#E4F0FE",
+  color: blueDk,
+};
+
+const priceAuction = {
+  ...priceBlue,
   backgroundColor: "#FDF0D5",
   color: amber,
+};
+
+const tagGrey = {
+  display: "inline-flex", alignItems: "center", gap: 4,
+  fontSize: "11px", fontWeight: 800, color: "#5C6B7A",
+  padding: "2px 4px", borderRadius: "99px",
+  backgroundColor: "#F0F2F5", whiteSpace: "nowrap", flexShrink: 0,
+};
+
+const tagBlueCount = {
+  display: "inline-flex", alignItems: "center", gap: 4,
+  fontSize: "11px", fontWeight: 800, color: blueDk,
+  padding: "2px 4px", borderRadius: "99px",
+  backgroundColor: "#E4F0FE", whiteSpace: "nowrap", flexShrink: 0,
+};
+
+const priceTooltipStyle = {
+  position: "absolute",
+  bottom: "calc(100% + 6px)",
+  left: 0,
+  background: "rgba(8,30,54,.92)",
+  color: "#fff",
+  fontSize: 11.5,
+  fontWeight: 700,
+  fontFamily: "Nunito, sans-serif",
+  padding: "6px 10px",
+  borderRadius: 7,
+  whiteSpace: "nowrap",
+  pointerEvents: "none",
+  zIndex: 50,
+  lineHeight: 1.5,
+  textTransform: "none",
+  letterSpacing: "normal",
 };

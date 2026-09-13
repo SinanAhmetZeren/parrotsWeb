@@ -459,8 +459,8 @@ export function EditProfilePage() {
                     <ReactQuill
                       className="custom-quill"
                       value={userBio}
-                      onChange={(value) => setUserBio(value)}
-                      placeholder="Tell us about yourself... (max 500 characters)"
+                      onChange={(value) => { if (value.replace(/<[^>]+>/g, "").length <= 700) setUserBio(value); }}
+                      placeholder="Tell us about yourself... (max 700 characters)"
                       modules={{
                         toolbar: false,
                       }}
