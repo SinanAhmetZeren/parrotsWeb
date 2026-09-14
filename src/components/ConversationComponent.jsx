@@ -61,7 +61,7 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
                 <span style={sysw}>
                   <span style={sysn}>{isAskParrots ? "Ask Parrots" : "Parrots"}</span>
                   <span style={bubSys}>
-                    <span style={bubTx}>{displayText}</span>
+                    <span style={{ ...bubTx, color: "#fff" }}>{displayText}</span>
                   </span>
                 </span>
               </div>
@@ -82,7 +82,7 @@ export function ConversationComponent({ currentUserId, messagesToDisplay, conver
 }
 
 const msgsContainer = {
-  display: "flex", flexDirection: "column", gap: 10,
+  display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10,
   width: "100%", padding: "16px 20px 20px",
 };
 
@@ -100,7 +100,7 @@ const mWrap = {
 
 const bub = {
   borderRadius: 14, padding: "10px 14px",
-  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0,
+  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0, textAlign: "left",
 };
 
 const bubTx = {
@@ -116,7 +116,7 @@ const mSys = {
 };
 
 const mAvSys = {
-  width: 32, height: 32, borderRadius: "50%",
+  width: 42, height: 42, borderRadius: "50%",
   overflow: "hidden", flexShrink: 0,
   display: "flex", alignItems: "center", justifyContent: "center",
 };
@@ -128,10 +128,11 @@ const sysw = {
 const sysn = {
   fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
   textTransform: "uppercase", color: mid,
+  textAlign: "left",
 };
 
 const bubSys = {
-  background: "#FAFCFE", border: `1.5px solid ${line}`,
+  background: "#0A77EA",
   borderRadius: 14, padding: "10px 14px",
-  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0,
+  display: "flex", alignItems: "baseline", gap: 11, minWidth: 0, textAlign: "left",
 };

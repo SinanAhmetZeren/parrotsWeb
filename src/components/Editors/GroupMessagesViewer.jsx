@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLazyGetGroupMessagesQuery } from "../../slices/MetricsSlice";
+import { useLazyGetAdminGroupMessagesQuery } from "../../slices/MetricsSlice";
 import { adminPage, adminCard, adminTitle, adminBtnPrimary } from "../../styles/adminStyles";
 
 const PAGE_SIZE = 50;
@@ -33,7 +33,7 @@ export function GroupMessagesViewer() {
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [triggerGet] = useLazyGetGroupMessagesQuery();
+  const [triggerGet] = useLazyGetAdminGroupMessagesQuery();
 
   const totalPages = data ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE)) : 1;
 

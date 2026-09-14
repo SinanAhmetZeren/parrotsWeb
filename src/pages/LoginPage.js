@@ -1,10 +1,5 @@
 /* eslint-disable no-undef */
-import "../assets/css/App.css";
-import "../assets/css/LoginPage.css";
 import { useState } from "react";
-import { useGoogleLoginInternalMutation as googleLoginMutation } from "../slices/UserSlice";
-import { TopBarMenu } from "../components/TopBarMenu";
-import { TopLeftComponent } from "../components/TopLeftComponent";
 import {
   useRegisterUserMutation,
   useConfirmUserMutation,
@@ -17,1039 +12,520 @@ import {
 } from "../slices/UserSlice";
 import { useDispatch } from "react-redux";
 import { updateAsLoggedIn, setRequiresTermsAcceptance } from "../slices/UserSlice";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import {
-  parrotTextDarkBlue,
-} from "../styles/colors";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { TERMS_VERSION } from "../constants/TermsVersion";
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { toast } from "react-toastify";
-import welcomeImage from "../assets/images/WelcomeWeb.png";
-import almostThereImage from "../assets/images/AlmostWeb.png";
-import checkYourEmailImage from "../assets/images/CheckWeb.png";
-import letsGetStartedImage from "../assets/images/LetsWeb.png";
-import resetPasswordImage from "../assets/images/ResetWeb.png";
+import sailboatBg from "../assets/images/sailboat2.jpg";
 
+// ── tokens ────────────────────────────────────────────────────────────────────
+const C = {
+  blue:    "#0A77EA",
+  blueDk:  "#0A5FBF",
+  blueLt:  "#3B9BF5",
+  navy:    "#0A2540",
+  deep:    "#081E36",
+  frame:   "#123E74",
+  mid:     "#5C6B7A",
+  ph:      "#7A8896",
+  line:    "#D9E2EC",
+  tint:    "#F4F7FB",
+  green:   "#2AC898",
+  red:     "#C22F3D",
+};
+
+// ── eye toggle SVG ────────────────────────────────────────────────────────────
+function EyeBtn({ show, onToggle }) {
+  return (
+    <button type="button" onClick={onToggle} style={s.eye} aria-label={show ? "Hide password" : "Show password"}>
+      {show ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+          <path d="M4 4l16 16"/>
+          <path d="M9.6 6.1A9.6 9.6 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8"/>
+          <path d="M6.7 8.3A17 17 0 0 0 2 12s3.6 6.5 10 6.5c1 0 1.9-.1 2.7-.4"/>
+          <path d="M9.6 9.8a2.8 2.8 0 0 0 3.9 3.9"/>
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+          <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/>
+          <circle cx="12" cy="12" r="2.8"/>
+        </svg>
+      )}
+    </button>
+  );
+}
+
+// ── validation hint pill ──────────────────────────────────────────────────────
+function HintPill({ rules }) {
+  return (
+    <div style={s.hintPill}>
+      {rules.map(({ label, ok }) => (
+        <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: 13.5, fontWeight: 600 }}>
+          {ok ? "✓" : "✗"} {label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── page ──────────────────────────────────────────────────────────────────────
 function LoginPage() {
   const navigate = useNavigate();
-  const [triggerGoogleLogin, { isLoading: isLoadingGoogle, data, error }] =
-    googleLoginMutation();
-
-  const [pageState, setPageState] = useState("Login");
-  const [username, setUsername] = useState("");
-  const [usernameRegister, setUsernameRegister] = useState("");
-  const [emailRegister, setEmailRegister] = useState("");
-  const [emailForgotPassword, setEmailForgotPassword] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordRegister, setPasswordRegister] = useState("");
-  const [passwordRegister2, setPasswordRegister2] = useState("");
-  const [passwordUpdate1, setPasswordUpdate1] = useState("");
-  const [passwordUpdate2, setPasswordUpdate2] = useState("");
-  const [confirmationCode, setConfirmationCode] = useState("");
-  const [sixDigitCode, setSixDigitCode] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordRegister, setShowPasswordRegister] = useState(false);
-  const [showPasswordRegister2, setShowPasswordRegister2] = useState(false);
-  const [showPasswordUpdate1, setShowPasswordUpdate1] = useState(false);
-  const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isSendingCode, setIsSendingCode] = useState(false);
-  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [isConfirmingUser, setIsConfirmingUser] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [termsModalOpen, setTermsModalOpen] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
-  const [requiresTermsReAcceptance, setRequiresTermsReAcceptance] = useState(false);
-  const [pendingLoginData, setPendingLoginData] = useState(null);
-
   const dispatch = useDispatch();
-  const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
-    useLoginUserMutation();
+
+  const [loginUser] = useLoginUserMutation();
+  const [registerUser] = useRegisterUserMutation();
+  const [confirmUser] = useConfirmUserMutation();
   const [acceptTerms] = useAcceptTermsMutation();
   const [requestCode] = useRequestCodeMutation();
   const [resetPassword] = useResetPasswordMutation();
-  const [
-    registerUser,
-    { isLoading: isLoadingRegisterUser, isSuccess: isSuccessRegisterUser },
-  ] = useRegisterUserMutation();
 
-  const [
-    confirmUser,
-    { isLoading: isLoadingConfirmUser, isSuccess: isSuccessConfirmUser },
-  ] = useConfirmUserMutation();
+  // page states: Login | ForgotPassword | Register1 | Register2 | ResetPassword
+  const [page, setPage] = useState("Login");
+
+  // shared inputs
+  const [username,          setUsername]          = useState("");
+  const [password,          setPassword]          = useState("");
+  const [showPw,            setShowPw]            = useState(false);
+
+  const [usernameReg,       setUsernameReg]       = useState("");
+  const [emailReg,          setEmailReg]          = useState("");
+  const [passwordReg,       setPasswordReg]       = useState("");
+  const [passwordReg2,      setPasswordReg2]      = useState("");
+  const [showPwReg,         setShowPwReg]         = useState(false);
+  const [showPwReg2,        setShowPwReg2]        = useState(false);
+  const [termsAccepted,     setTermsAccepted]     = useState(false);
+  const [termsModalOpen,    setTermsModalOpen]    = useState(false);
+  const [focusedField,      setFocusedField]      = useState(null);
+
+  const [emailForgot,       setEmailForgot]       = useState("");
+
+  const [confirmCode,       setConfirmCode]       = useState("");
+  const [sixCode,           setSixCode]           = useState("");
+  const [pwUpdate1,         setPwUpdate1]         = useState("");
+  const [pwUpdate2,         setPwUpdate2]         = useState("");
+  const [showPwU1,          setShowPwU1]          = useState(false);
+  const [showPwU2,          setShowPwU2]          = useState(false);
+
+  const [busy,              setBusy]              = useState(false);
+  const [requiresReTerms,   setRequiresReTerms]   = useState(false);
+  const [pendingLogin,      setPendingLogin]       = useState(null);
+
+  const { isError: isHealthError } = useHealthCheckQuery();
+  if (isHealthError) return <SomethingWentWrong />;
 
   if (sessionStorage.getItem("sessionExpired")) {
     sessionStorage.removeItem("sessionExpired");
     toast.warning("Your session has expired. Please log in again.");
   }
 
-  const resetAllForms = () => {
-    setUsernameRegister("");
-    setEmailRegister("");
-    setEmailForgotPassword("");
-    setPasswordRegister("");
-    setPasswordRegister2("");
-    setPasswordUpdate1("");
-    setPasswordUpdate2("");
-    setConfirmationCode("");
-    setSixDigitCode("");
-    setTermsAccepted(false);
-    setFocusedField(null);
+  const resetForms = () => {
+    setUsernameReg(""); setEmailReg(""); setEmailForgot("");
+    setPasswordReg(""); setPasswordReg2("");
+    setPwUpdate1(""); setPwUpdate2("");
+    setConfirmCode(""); setSixCode("");
+    setTermsAccepted(false); setFocusedField(null);
   };
 
-  const handleForgotPassword = () => {
-    resetAllForms();
-    setPageState("ForgotPassword");
-  };
+  const go = (p) => { resetForms(); setPage(p); };
 
-  const handleSignup = () => {
-    resetAllForms();
-    setPageState("Register1");
-  };
-
-  const makeVisible = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const makeVisibleRegister = () => {
-    setShowPasswordRegister(!showPasswordRegister);
-  };
-  const makeVisibleRegister2 = () => {
-    setShowPasswordRegister2(!showPasswordRegister2);
-  };
-
-  const makeVisibleUpdate = () => {
-    setShowPasswordUpdate1(!showPasswordUpdate1);
-  };
-  const makeVisibleUpdate2 = () => {
-    setShowPasswordUpdate2(!showPasswordUpdate2);
-  };
-  const handleConfirmCode = async () => {
-    setIsConfirmingUser(true);
-    if (!confirmationCode) {
-      console.error("Confirmation code is required.");
-      return;
-    }
+  // ── handlers ────────────────────────────────────────────────────────────────
+  const handleLogin = async () => {
+    if (!username || !password) { toast.error("Please enter both email and password."); return; }
     try {
-      const confirmResponse = await confirmUser({
-        email: emailRegister,
-        code: confirmationCode,
-      }).unwrap();
-      setConfirmationCode("");
-      setEmailRegister("");
-
-      console.log("confirmResponse:...", confirmResponse);
-      console.log("confirmResponse token:...", confirmResponse.token);
-      if (confirmResponse.token) {
-        dispatch(
-          updateAsLoggedIn({
-            userId: confirmResponse.userId,
-            token: confirmResponse.token,
-            refreshToken: confirmResponse.refreshToken,
-            userName: confirmResponse.userName,
-            profileImageUrl: confirmResponse.profileImageUrl,
-            isAdmin: confirmResponse.isAdmin,
-            hasAcknowledgedPublicProfile: confirmResponse.hasAcknowledgedPublicProfile ?? false,
-          })
-        );
-        dispatch(updateUserFavorites({
-          favoriteVehicles: confirmResponse.favoriteVehicleIds,
-          favoriteVoyages: confirmResponse.favoriteVoyageIds,
-        }));
-        dispatch(setBookmarkedUserIds(confirmResponse.bookmarkedUserIds || []));
-        if (confirmResponse.requiresTermsAcceptance === true) {
-          dispatch(setRequiresTermsAcceptance(true));
-        }
-      }
-      setIsConfirmingUser(false);
-      setConfirmationCode("");
+      setBusy(true);
+      const r = await loginUser({ Email: username, Password: password }).unwrap();
+      if (!r?.token) { toast.error("Login failed: Invalid credentials."); return; }
+      localStorage.setItem("storedToken", r.token);
+      localStorage.setItem("storedRefreshToken", r.refreshToken);
+      dispatch(updateUserFavorites({ favoriteVehicles: r.favoriteVehicleIds, favoriteVoyages: r.favoriteVoyageIds }));
+      dispatch(setBookmarkedUserIds(r.bookmarkedUserIds || []));
+      dispatch(updateAsLoggedIn({ userId: r.userId, token: r.token, refreshToken: r.refreshToken, userName: r.userName, profileImageUrl: r.profileImageUrl, isAdmin: r.isAdmin, hasAcknowledgedPublicProfile: r.hasAcknowledgedPublicProfile ?? false, hasAcknowledgedGroupHistory: r.hasAcknowledgedGroupHistory ?? false }));
+      if (r.requiresTermsAcceptance) dispatch(setRequiresTermsAcceptance(true));
+      setUsername(""); setPassword("");
       navigate("/");
     } catch (err) {
-      console.log("Error confirming user:", err.originalStatus === 400);
-      toast.error("Error confirming user. Please check your confirmation code and try again.");
-      setIsConfirmingUser(false);
-    }
+      toast.error(err.status === 401 ? "Incorrect email or password." : "Login failed. Please try again.");
+    } finally { setBusy(false); }
   };
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      toast.error("Please enter both email and password.");
-      return;
-    }
-
+  const handleRegister = async () => {
+    if (!usernameReg || !emailReg || !passwordReg || !passwordReg2) { toast.error("All fields are required."); return; }
+    if (passwordReg !== passwordReg2) { toast.error("Passwords do not match."); return; }
+    const pwOk = passwordReg.length >= 8 && /[A-Z]/.test(passwordReg) && /[a-z]/.test(passwordReg) && /[0-9]/.test(passwordReg);
+    if (!pwOk) { toast.error("Password must be 8+ chars with uppercase, lowercase, and a number."); return; }
     try {
-      setIsLoggingIn(true);
-      const loginResponse = await loginUser({
-        Email: username,
-        Password: password,
-      }).unwrap();
-
-
-      console.log("---------->login response: ");
-      console.log(loginResponse.isAdmin);
-
-      if (!loginResponse?.token) {
-        setIsLoggingIn(false);
-        toast.error("Login failed: Invalid credentials.");
-        return; // prevent redirect
-      }
-
-      // Save tokens
-      localStorage.setItem("storedToken", loginResponse.token);
-      localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
-
-      dispatch(updateUserFavorites({
-        favoriteVehicles: loginResponse.favoriteVehicleIds,
-        favoriteVoyages: loginResponse.favoriteVoyageIds,
-      }));
-      dispatch(setBookmarkedUserIds(loginResponse.bookmarkedUserIds || []));
-
-      dispatch(
-        updateAsLoggedIn({
-          userId: loginResponse.userId,
-          token: loginResponse.token,
-          refreshToken: loginResponse.refreshToken,
-          userName: loginResponse.userName,
-          profileImageUrl: loginResponse.profileImageUrl,
-          isAdmin: loginResponse.isAdmin,
-          hasAcknowledgedPublicProfile: loginResponse.hasAcknowledgedPublicProfile ?? false,
-        })
-      );
-
-      if (loginResponse.requiresTermsAcceptance === true) {
-        dispatch(setRequiresTermsAcceptance(true));
-      }
-      // Reset input and navigate only on success
-      setUsername("");
-      setPassword("");
-      navigate("/"); // ✅ Only happens after success
+      setBusy(true);
+      const r = await registerUser({ Email: emailReg, UserName: usernameReg, Password: passwordReg, TermsVersion: TERMS_VERSION }).unwrap();
+      if (r?.token) { setUsernameReg(""); setPasswordReg(""); setPasswordReg2(""); setPage("Register2"); }
+      else toast.error("Registration failed: No token received.");
     } catch (err) {
-      setIsLoggingIn(false);
-      if (err.status === 401) {
-        toast.error("Incorrect email or password.");
-      } else {
-        toast.error("Login failed. Please try again.");
+      toast.error(err?.data?.message || "Registration failed. Please check your details.");
+    } finally { setBusy(false); }
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmCode) return;
+    try {
+      setBusy(true);
+      const r = await confirmUser({ email: emailReg, code: confirmCode }).unwrap();
+      setConfirmCode(""); setEmailReg("");
+      if (r.token) {
+        dispatch(updateAsLoggedIn({ userId: r.userId, token: r.token, refreshToken: r.refreshToken, userName: r.userName, profileImageUrl: r.profileImageUrl, isAdmin: r.isAdmin, hasAcknowledgedPublicProfile: r.hasAcknowledgedPublicProfile ?? false, hasAcknowledgedGroupHistory: r.hasAcknowledgedGroupHistory ?? false }));
+        dispatch(updateUserFavorites({ favoriteVehicles: r.favoriteVehicleIds, favoriteVoyages: r.favoriteVoyageIds }));
+        dispatch(setBookmarkedUserIds(r.bookmarkedUserIds || []));
+        if (r.requiresTermsAcceptance) dispatch(setRequiresTermsAcceptance(true));
       }
-      console.error("Login error:", err);
-    }
+      navigate("/");
+    } catch { toast.error("Invalid confirmation code. Please try again."); }
+    finally { setBusy(false); }
+  };
+
+  const handleSendCode = async () => {
+    if (!emailForgot) return;
+    try {
+      setBusy(true);
+      await requestCode(emailForgot).unwrap();
+      resetForms();
+      setPage("ResetPassword");
+    } catch { toast.error("Failed to send reset code. Please check your email."); }
+    finally { setBusy(false); }
+  };
+
+  const handleResetPassword = async () => {
+    if (!sixCode || !pwUpdate1 || !pwUpdate2) return;
+    try {
+      setBusy(true);
+      const r = await resetPassword({ email: emailForgot, password: pwUpdate1, confirmationCode: sixCode }).unwrap();
+      setPwUpdate1(""); setPwUpdate2(""); setSixCode("");
+      if (r.token) {
+        dispatch(updateAsLoggedIn({ userId: r.userId, token: r.token, refreshToken: r.refreshToken, userName: r.userName, profileImageUrl: r.profileImageUrl, isAdmin: r.isAdmin, hasAcknowledgedPublicProfile: r.hasAcknowledgedPublicProfile ?? false, hasAcknowledgedGroupHistory: r.hasAcknowledgedGroupHistory ?? false }));
+        dispatch(updateUserFavorites({ favoriteVehicles: r.favoriteVehicleIds, favoriteVoyages: r.favoriteVoyageIds }));
+        dispatch(setBookmarkedUserIds(r.bookmarkedUserIds || []));
+        if (r.requiresTermsAcceptance) dispatch(setRequiresTermsAcceptance(true));
+      }
+      navigate("/");
+    } catch { toast.error("Error resetting password. Please check your code."); }
+    finally { setBusy(false); }
   };
 
   const handleAcceptUpdatedTerms = async () => {
     try {
       await acceptTerms().unwrap();
-      dispatch(
-        updateAsLoggedIn({
-          userId: pendingLoginData.userId,
-          token: pendingLoginData.token,
-          refreshToken: pendingLoginData.refreshToken,
-          userName: pendingLoginData.userName,
-          profileImageUrl: pendingLoginData.profileImageUrl,
-          isAdmin: pendingLoginData.isAdmin,
-          hasAcknowledgedPublicProfile: pendingLoginData.hasAcknowledgedPublicProfile ?? false,
-        })
-      );
-      dispatch(updateUserFavorites({
-        favoriteVehicles: pendingLoginData.favoriteVehicleIds,
-        favoriteVoyages: pendingLoginData.favoriteVoyageIds,
-      }));
-      dispatch(setBookmarkedUserIds(pendingLoginData.bookmarkedUserIds || []));
-      setRequiresTermsReAcceptance(false);
-      setPendingLoginData(null);
-      setUsername("");
-      setPassword("");
+      const d = pendingLogin;
+      dispatch(updateAsLoggedIn({ userId: d.userId, token: d.token, refreshToken: d.refreshToken, userName: d.userName, profileImageUrl: d.profileImageUrl, isAdmin: d.isAdmin, hasAcknowledgedPublicProfile: d.hasAcknowledgedPublicProfile ?? false }));
+      dispatch(updateUserFavorites({ favoriteVehicles: d.favoriteVehicleIds, favoriteVoyages: d.favoriteVoyageIds }));
+      dispatch(setBookmarkedUserIds(d.bookmarkedUserIds || []));
+      setRequiresReTerms(false); setPendingLogin(null);
+      setUsername(""); setPassword("");
       navigate("/");
-    } catch (err) {
-      toast.error("Failed to accept terms. Please try again.");
-    }
+    } catch { toast.error("Failed to accept terms. Please try again."); }
   };
 
-  const handleRegister = async () => {
-    setIsRegistering(true);
-    if (
-      !usernameRegister ||
-      !emailRegister ||
-      !passwordRegister ||
-      !passwordRegister2
-    ) {
-      toast.error("All fields are required for registration.");
-      return;
-    }
-
-    if (passwordRegister !== passwordRegister2) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    const passwordValid =
-      passwordRegister.length >= 8 &&
-      /[A-Z]/.test(passwordRegister) &&
-      /[a-z]/.test(passwordRegister) &&
-      /[0-9]/.test(passwordRegister);
-
-    if (!passwordValid) {
-      toast.error("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.");
-      return;
-    }
-
-    try {
-      const registerResponse = await registerUser({
-        Email: emailRegister,
-        UserName: usernameRegister,
-        Password: passwordRegister,
-        TermsVersion: TERMS_VERSION,
-      }).unwrap();
-
-      if (registerResponse?.token) {
-        setUsernameRegister("");
-        setPasswordRegister("");
-        setPasswordRegister2("");
-        setPageState("Register2");
-        setIsRegistering(false);
-      } else {
-        toast.error("Registration failed: No token received.");
-        setIsRegistering(false);
-      }
-    } catch (err) {
-      console.error("Registration error:", err);
-      setIsRegistering(false);
-
-      toast.error(
-        err?.data?.message ||
-        err?.error ||
-        "Registration failed. Please check your details or try again later."
-      );
-    }
-  };
-
-  const handleSendResetCode = async () => {
-    console.log("calling reset code with email:", emailForgotPassword);
-    setIsSendingCode(true);
-    if (!emailForgotPassword) return;
-
-    try {
-      await requestCode(emailForgotPassword).unwrap(); // Await and unwrap to catch errors
-      resetAllForms();
-      setPageState("ResetPassword");
-      setIsSendingCode(false);
-    } catch (err) {
-      console.error("Failed to request reset code:", err);
-      toast.error("Failed to send reset code. Please check your email and try again.");
-    }
-  };
-
-  const handleResetPassword = async () => {
-    if (!sixDigitCode || !passwordUpdate1 || !passwordUpdate2) return;
-
-    setIsUpdatingPassword(true);
-    try {
-      const resetPasswordResponse = await resetPassword({
-        email: emailForgotPassword,
-        password: passwordUpdate1,
-        confirmationCode: sixDigitCode,
-      }).unwrap();
-
-      setPasswordUpdate1("");
-      setPasswordUpdate2("");
-      setSixDigitCode("");
-      if (resetPasswordResponse.token) {
-        dispatch(
-          updateAsLoggedIn({
-            userId: resetPasswordResponse.userId,
-            token: resetPasswordResponse.token,
-            refreshToken: resetPasswordResponse.refreshToken,
-            userName: resetPasswordResponse.userName,
-            profileImageUrl: resetPasswordResponse.profileImageUrl,
-            isAdmin: resetPasswordResponse.isAdmin,
-            hasAcknowledgedPublicProfile: resetPasswordResponse.hasAcknowledgedPublicProfile ?? false,
-          })
-        );
-        dispatch(updateUserFavorites({
-          favoriteVehicles: resetPasswordResponse.favoriteVehicleIds,
-          favoriteVoyages: resetPasswordResponse.favoriteVoyageIds,
-        }));
-        dispatch(setBookmarkedUserIds(resetPasswordResponse.bookmarkedUserIds || []));
-        if (resetPasswordResponse.requiresTermsAcceptance === true) {
-          dispatch(setRequiresTermsAcceptance(true));
-        }
-      }
-      setIsUpdatingPassword(false);
-
-      navigate("/");
-    } catch (err) {
-      console.log(err.status);
-      toast.error("Error resetting password. Please check your code and try again.");
-      setIsUpdatingPassword(false);
-    }
-  };
-
-  const LoginSpinner = () => {
-    return (
-      <div
-        style={{
-          backgroundColor: "rgba(0, 119, 234,0.1)",
-          borderRadius: "1.5rem",
-          position: "relative",
-          margin: "auto",
-          height: "1.7rem",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <div
-          className="spinner"
-          style={{
-            height: "1rem",
-            width: "1rem",
-            border: "3px solid white",
-            borderTop: "3px solid #1e90ff",
-          }}
-        ></div>
-      </div>
-    );
-  };
-
-  const { data: healthCheckData, isError: isHealthCheckError } =
-    useHealthCheckQuery();
-
-  if (isHealthCheckError) {
-    console.log(".....Health check failed.....");
-    return <SomethingWentWrong />;
-  }
-
-  // if (isLoginError) return <SomethingWentWrong />;
-
-  if (requiresTermsReAcceptance) {
+  if (requiresReTerms) {
     return (
       <div>
-        <TermsOfUseComponent
-          open={true}
-          onClose={() => { setRequiresTermsReAcceptance(false); setPendingLoginData(null); }}
-          onAccept={handleAcceptUpdatedTerms}
-        />
+        <TermsOfUseComponent open={true} onClose={() => { setRequiresReTerms(false); setPendingLogin(null); }} onAccept={handleAcceptUpdatedTerms} />
       </div>
     );
   }
 
+  // ── register validation ──────────────────────────────────────────────────────
+  const usernameRules = [
+    { label: "At least 3 characters", ok: usernameReg.length >= 3 },
+    { label: "Max 25 characters", ok: usernameReg.length <= 25 },
+    { label: "Letters, numbers, underscores only", ok: usernameReg.length === 0 || /^[a-zA-Z0-9_]+$/.test(usernameReg) },
+  ];
+  const emailRules = [{ label: "Valid email format", ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailReg) }];
+  const passwordRules = [
+    { label: "At least 8 characters", ok: passwordReg.length >= 8 },
+    { label: "One uppercase letter", ok: /[A-Z]/.test(passwordReg) },
+    { label: "One lowercase letter", ok: /[a-z]/.test(passwordReg) },
+    { label: "One number", ok: /[0-9]/.test(passwordReg) },
+    { label: "Passwords match", ok: passwordReg.length > 0 && passwordReg === passwordReg2 },
+  ];
+
+  const registerReady = usernameReg.length >= 3 && /^[a-zA-Z0-9_]+$/.test(usernameReg)
+    && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailReg)
+    && passwordReg.length >= 8 && /[A-Z]/.test(passwordReg) && /[a-z]/.test(passwordReg) && /[0-9]/.test(passwordReg)
+    && passwordReg === passwordReg2 && termsAccepted;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="flex mainpage_Container">
-          <div className="flex mainpage_TopRow">
-            <TopLeftComponent />
-            <div className="flex mainpage_TopRight">
-              <TopBarMenu />
-            </div>
-          </div>
-          <div style={mainWrapper}>
-            {pageState === "Login" ? (
+    <div style={s.root}>
+      {/* Hero / background */}
+      <div style={s.hero}>
+        <img src={sailboatBg} alt="" style={s.heroBg} />
+        <div style={s.heroOverlay} />
+
+        {/* Centered frame */}
+        <div style={s.frame}>
+          <div style={s.card}>
+
+            {/* ── Login ── */}
+            {page === "Login" && (
               <>
-                <div style={mainContainer}>
-                  <div style={wrapper}>
-                    <img src={welcomeImage} alt="Welcome to Parrots"
-                      style={{ width: "100%", height: "5rem" }}
-                    />
-                    <div
-                      style={{
-                        width: "73%",
-                        margin: "auto",
-                      }}
-                    >
-                      {/* <div style={welcomeStyle}> Welcome To Parrots!</div> */}
+                <h1 style={s.h1}>Welcome to Parrots</h1>
+                <div style={s.fields}>
+                  <div style={s.fld}>
+                    <input style={s.input} type="email" placeholder="Email" value={username} onChange={e => setUsername(e.target.value)} onKeyDown={e => e.key === "Enter" && handleLogin()} autoComplete="email" />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={s.input} type={showPw ? "text" : "password"} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handleLogin()} autoComplete="current-password" />
+                    <EyeBtn show={showPw} onToggle={() => setShowPw(v => !v)} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <button style={s.lnk} onClick={() => go("ForgotPassword")}>Forgot password?</button>
+                  </div>
+                  <button style={{ ...s.btn, opacity: username && password ? 1 : 0.55 }} onClick={handleLogin} disabled={busy || !username || !password}>
+                    {busy ? <Spinner /> : "Login"}
+                  </button>
+                  <div style={s.rowMid}>
+                    Don't have an account?
+                    <button style={s.lnk} onClick={() => go("Register1")}>Sign up</button>
+                  </div>
+                </div>
+                <Or />
+                <GoogleLoginButton />
+              </>
+            )}
 
-                      <div className="username-wrapper-login">
-                        <input
-                          type="text"
-                          placeholder="Email"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                          className="username-input-login"
-                          style={{ color: parrotTextDarkBlue }}
-                        />
-                      </div>
-                      <div className="password-wrapper-login">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                          className="password-input-login"
-                          style={{ color: parrotTextDarkBlue }}
-                        />
-                        <span
-                          style={{
-                            padding: "1rem",
-                            position: "absolute",
-                            marginLeft: "-4rem",
-                            marginTop: "-.3rem",
-                          }}
-                          onClick={() => makeVisible()}
-                        >
-                          {showPassword ? (
-                            <AiFillEyeInvisible
-                              size="2rem"
-                              color={parrotTextDarkBlue}
-                            />
-                          ) : (
-                            <AiFillEye
-                              size="2rem"
-                              color={parrotTextDarkBlue}
-                            />
-                          )}
-                        </span>
-                      </div>
-                      <div className="forgot-password">
-                        <span
-                          className="forgotPasswordSpan"
-                          style={{ color: parrotTextDarkBlue }}
-                          onClick={() => handleForgotPassword()}
-                        >
-                          Forgot password?
-                        </span>
-                      </div>
-                      <div
-                        className="login-button"
-                        style={{
-                          opacity: username && password ? 1 : 0.5,
-                        }}
-                        onClick={() => handleLogin()}
-                      >
-                        {" "}
-                        {isLoggingIn ? <LoginSpinner /> : "Login"}
-                      </div>
-
-                      <div className="signup">
-                        <span>
-                          <span
-                            style={{
-                              color: parrotTextDarkBlue,
-                            }}
-                          >
-                            Don't have an account?
-                          </span>
-                          <span
-                            onClick={() => { handleSignup(); }}
-                            style={{
-                              color: parrotTextDarkBlue,
-                              fontWeight: "bold",
-                              paddingLeft: "0.5rem",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Sign up
-                          </span>
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          marginTop: "2rem",
-                        }}
-                      >
-                        <div
-                          style={{
-                            margin: "auto",
-                            marginTop: "2rem",
-                            // width: "100%",
-                          }}
-                        >
-                          <GoogleLoginButton />
-                        </div>
-                      </div>
-                    </div>
+            {/* ── Forgot password ── */}
+            {page === "ForgotPassword" && (
+              <>
+                <h1 style={s.h1}>Reset your password</h1>
+                <div style={s.fields}>
+                  <div style={s.fld}>
+                    <input style={s.input} type="email" placeholder="Enter email" value={emailForgot} onChange={e => setEmailForgot(e.target.value)} autoComplete="email" />
+                  </div>
+                  <button style={{ ...s.btn, opacity: emailForgot ? 1 : 0.55 }} onClick={handleSendCode} disabled={busy || !emailForgot}>
+                    {busy ? <Spinner /> : "Send Code"}
+                  </button>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <button style={s.lnk} onClick={() => go("Login")}>Back to Login</button>
                   </div>
                 </div>
               </>
-            ) : pageState === "Register1" ? (
-              <div style={{ ...mainContainer, position: "relative" }}>
-                {focusedField === "username" && (
-                  <div style={registerPill}>
-                    {[
-                      { label: "At least 3 characters", ok: usernameRegister.length >= 3 },
-                      { label: "Max 25 characters", ok: usernameRegister.length <= 25 },
-                      { label: "Letters, numbers, underscores only", ok: usernameRegister.length === 0 || /^[a-zA-Z0-9_]+$/.test(usernameRegister) },
-                    ].map(({ label, ok }) => (
-                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
-                        {ok ? "✓" : "✗"} {label}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {focusedField === "email" && (
-                  <div style={registerPill}>
-                    {[
-                      { label: "Valid email format", ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) },
-                    ].map(({ label, ok }) => (
-                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
-                        {ok ? "✓" : "✗"} {label}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {(focusedField === "password" || focusedField === "confirmPassword") && (
-                  <div style={registerPill}>
-                    {[
-                      { label: "At least 8 characters", ok: passwordRegister.length >= 8 },
-                      { label: "One uppercase letter", ok: /[A-Z]/.test(passwordRegister) },
-                      { label: "One lowercase letter", ok: /[a-z]/.test(passwordRegister) },
-                      { label: "One number", ok: /[0-9]/.test(passwordRegister) },
-                      { label: "Passwords match", ok: passwordRegister.length > 0 && passwordRegister === passwordRegister2 },
-                    ].map(({ label, ok }) => (
-                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
-                        {ok ? "✓" : "✗"} {label}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div style={wrapper}>
-                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
-                  <img src={letsGetStartedImage} alt="Lets get started"
-                    style={{ width: "100%", height: "5rem" }}
-                  />
-                  <div
-                    style={{
-                      width: "80%",
-                      margin: "auto",
-                    }}
-                  >
-                    <div className="username-wrapper-register">
-                      <input
-                        type="text"
-                        placeholder="Username (3-25 characters)"
-                        value={usernameRegister}
-                        maxLength={25}
-                        onChange={(e) => setUsernameRegister(e.target.value)}
-                        onFocus={() => setFocusedField("username")}
-                        onBlur={() => setFocusedField(null)}
-                        className="username-input-register"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-                    <div className="username-wrapper-register">
-                      <input
-                        type="text"
-                        placeholder="Email"
-                        value={emailRegister}
-                        onChange={(e) => setEmailRegister(e.target.value)}
-                        onFocus={() => setFocusedField("email")}
-                        onBlur={() => setFocusedField(null)}
-                        className="username-input-register"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-
-                    <div className="password-wrapper-register">
-                      <input
-                        type={showPasswordRegister ? "text" : "password"}
-                        placeholder="Password"
-                        value={passwordRegister}
-                        onChange={(e) => setPasswordRegister(e.target.value)}
-                        onFocus={() => setFocusedField("password")}
-                        onBlur={() => setFocusedField(null)}
-                        className="password-input-register"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                      <span
-                        style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-4rem",
-                          marginTop: "-.3rem",
-                        }}
-                        onClick={() => makeVisibleRegister()}
-                      >
-                        {showPasswordRegister ? (
-                          <AiFillEyeInvisible
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        ) : (
-                          <AiFillEye
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        )}
-                      </span>
-                    </div>
-
-                    <div className="password-wrapper-register">
-                      <input
-                        type={showPasswordRegister2 ? "text" : "password"}
-                        placeholder="Re-enter Password"
-                        value={passwordRegister2}
-                        onChange={(e) => setPasswordRegister2(e.target.value)}
-                        onFocus={() => setFocusedField("confirmPassword")}
-                        onBlur={() => setFocusedField(null)}
-                        className="password-input-register"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                      <span
-                        style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-4rem",
-                          marginTop: "-.3rem",
-                        }}
-                        onClick={() => makeVisibleRegister2()}
-                      >
-                        {showPasswordRegister2 ? (
-                          <AiFillEyeInvisible
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        ) : (
-                          <AiFillEye
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        )}
-                      </span>
-                    </div>
-
-                    <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-                        <div
-                          onClick={() => setTermsAccepted(prev => !prev)}
-                          style={{
-                            width: "1.1rem", height: "1.1rem", borderRadius: "3px",
-                            border: "2px solid #007bff", backgroundColor: termsAccepted ? "#007bff" : "white",
-                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {termsAccepted && <span style={{ color: "white", fontSize: "0.8rem", fontWeight: "bold" }}>✓</span>}
-                        </div>
-                        <span style={{ color: parrotTextDarkBlue, fontSize: "0.9rem" }}>
-                          I have read and agree to the{" "}
-                          <span
-                            onClick={() => setTermsModalOpen(true)}
-                            style={{ color: "#007bff", fontWeight: "bold", cursor: "pointer", textDecoration: "underline" }}
-                          >
-                            Terms of Use
-                          </span>
-                        </span>
-                      </div>
-
-                      <TermsOfUseComponent
-                        open={termsModalOpen}
-                        onClose={() => setTermsModalOpen(false)}
-                      />
-
-                      <div
-                        className="register-button"
-                        onClick={() => termsAccepted && handleRegister()}
-                        style={{
-                          opacity:
-                            usernameRegister.length >= 3 &&
-                              /^[a-zA-Z0-9_]+$/.test(usernameRegister) &&
-                              emailRegister &&
-                              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) &&
-                              passwordRegister &&
-                              passwordRegister2 &&
-                              termsAccepted &&
-                              passwordRegister.length >= 8 &&
-                              /[A-Z]/.test(passwordRegister) &&
-                              /[a-z]/.test(passwordRegister) &&
-                              /[0-9]/.test(passwordRegister) &&
-                              passwordRegister === passwordRegister2
-                              ? 1
-                              : 0.5,
-                          cursor: termsAccepted ? "pointer" : "not-allowed",
-                        }}
-                      >
-                        {" "}
-                        {isRegistering ? <LoginSpinner /> : "Register"}
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ marginRight: "1rem" }}>
-                    <div className="signup-register">
-                      <span className="signupSpan">
-                        <span
-                          className="signupLinkSpan"
-                          onClick={() => { resetAllForms(); setPageState("Login"); }}
-                          style={{ color: parrotTextDarkBlue }}
-                        >
-                          Back to Login
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : pageState === "Register2" ? (
-              <div style={mainContainer}>
-                <div style={wrapper}>
-
-                  <img src={almostThereImage} alt="Almost there"
-                    style={{ width: "100%", height: "5rem" }}
-                  />
-
-                  <div style={{ width: "80%", margin: "auto" }}>
-                    <div className="username-wrapper-confirmationCode">
-                      <input
-                        type="text"
-                        placeholder="Confirmation Code"
-                        value={confirmationCode}
-                        onChange={(e) => setConfirmationCode(e.target.value)}
-                        className="username-input-confirmationCode"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-                    <div>
-                      <div
-                        className="confirmationCode-button"
-                        onClick={() => handleConfirmCode()}
-                        style={{
-                          opacity: confirmationCode ? 1 : 0.5,
-                        }}
-                      >
-                        {" "}
-                        {isConfirmingUser ? <LoginSpinner /> : "Confirm"}
-                      </div>
-                    </div>
-                    <div className="signup">
-                      <span
-                        className="signupSpan"
-                        style={{ marginTop: ".5rem" }}
-                      >
-                        <span
-                          className="signupLinkSpan"
-                          onClick={() => { resetAllForms(); setPageState("Login"); }}
-                          style={{ color: parrotTextDarkBlue }}
-                        >
-                          Back to Login
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : pageState === "ForgotPassword" ? (
-              <div style={mainContainer}>
-                <div style={wrapper}>
-
-
-                  <img src={resetPasswordImage} alt="Reset password"
-                    style={{ width: "100%", height: "5rem" }}
-                  />
-
-
-                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
-                  <div style={{ width: "80%", margin: "auto" }}>
-                    <div
-                      className="username-wrapper"
-                      style={{ width: "100%", padding: "0" }}
-                    >
-                      <input
-                        type="text"
-                        placeholder="Enter email"
-                        value={emailForgotPassword}
-                        onChange={(e) => setEmailForgotPassword(e.target.value)}
-                        className="username-input-sendcode"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-                    <div
-                      className="login-button-sendcode"
-                      style={{
-                        marginTop: "1rem",
-                        opacity: emailForgotPassword ? 1 : 0.5,
-                      }}
-                      onClick={() => handleSendResetCode()}
-                    >
-                      {isSendingCode ? <LoginSpinner /> : "Send Code"}
-                    </div>
-                  </div>
-                  <div className="signup-sendcode">
-                    <span className="signupSpan" style={{ marginTop: ".5rem" }}>
-                      <span
-                        className="signupLinkSpan"
-                        onClick={() => { resetAllForms(); setPageState("Login"); }}
-                        style={{ color: parrotTextDarkBlue }}
-                      >
-                        Back to Login
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : pageState === "ResetPassword" ? (
-              <div style={mainContainer}>
-                <div style={wrapper}>
-
-
-                  <img src={checkYourEmailImage} alt="check your email"
-                    style={{ width: "100%", height: "5rem" }}
-                  />
-
-
-                  <div style={{ width: "80%", margin: "auto" }}>
-                    <div style={welcomeStyle}> Welcome To Parrots! </div>
-                    <div className="password-wrapper-reset-pasword">
-                      <input
-                        type={showPasswordUpdate1 ? "text" : "password"}
-                        placeholder="Password"
-                        value={passwordUpdate1}
-                        onChange={(e) => setPasswordUpdate1(e.target.value)}
-                        className="password-input-resetPassword"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                      <span
-                        style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-4rem",
-                          marginTop: "-.3rem",
-                        }}
-                        onClick={() => makeVisibleUpdate()}
-                      >
-                        {showPasswordUpdate1 ? (
-                          <AiFillEyeInvisible
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        ) : (
-                          <AiFillEye
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        )}
-                      </span>
-                    </div>
-                    <div className="password-wrapper-reset-pasword">
-                      <input
-                        type={showPasswordUpdate2 ? "text" : "password"}
-                        placeholder="Re-enter Password"
-                        value={passwordUpdate2}
-                        onChange={(e) => setPasswordUpdate2(e.target.value)}
-                        className="password-input-resetPassword"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                      <span
-                        style={{
-                          padding: "1rem",
-                          position: "absolute",
-                          marginLeft: "-4rem",
-                          marginTop: "-.3rem",
-                        }}
-                        onClick={() => makeVisibleUpdate2()}
-                      >
-                        {showPasswordUpdate2 ? (
-                          <AiFillEyeInvisible
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        ) : (
-                          <AiFillEye
-                            size="2rem"
-                            color={parrotTextDarkBlue}
-                          />
-                        )}
-                      </span>
-                    </div>
-
-                    <div className="username-wrapper-reset-pasword">
-                      <input
-                        type="text"
-                        placeholder="Enter 6 digit code"
-                        value={sixDigitCode}
-                        onChange={(e) => setSixDigitCode(e.target.value)}
-                        className="username-input-resetPassword"
-                        style={{ color: parrotTextDarkBlue }}
-                      />
-                    </div>
-
-                    <div
-                      className="update-password-button"
-                      onClick={() => handleResetPassword()}
-                      style={{
-                        opacity:
-                          sixDigitCode && passwordUpdate1 && passwordUpdate2
-                            ? 1
-                            : 0.5,
-                      }}
-                    >
-                      {" "}
-                      {isUpdatingPassword ? (
-                        <LoginSpinner />
-                      ) : (
-                        "Update Password"
-                      )}
-                    </div>
-
-                    <div className="signup">
-                      <span className="signupSpan">
-                        <span
-                          className="signupLinkSpan"
-                          onClick={() => { resetAllForms(); setPageState("Login"); }}
-                          style={{ color: parrotTextDarkBlue }}
-                        >
-                          Back to Login
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <></>
             )}
+
+            {/* ── Register ── */}
+            {page === "Register1" && (
+              <>
+                <h1 style={s.h1}>Let's get started</h1>
+                <div style={{ ...s.fields, position: "relative" }}>
+                  {focusedField === "username" && <HintPill rules={usernameRules} />}
+                  {focusedField === "email" && <HintPill rules={emailRules} />}
+                  {(focusedField === "password" || focusedField === "password2") && <HintPill rules={passwordRules} />}
+                  <div style={s.fld}>
+                    <input style={s.input} type="text" placeholder="Username (3-25 characters)" value={usernameReg} maxLength={25} onChange={e => setUsernameReg(e.target.value)} onFocus={() => setFocusedField("username")} onBlur={() => setFocusedField(null)} autoComplete="username" />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={s.input} type="email" placeholder="Email" value={emailReg} onChange={e => setEmailReg(e.target.value)} onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} autoComplete="email" />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={s.input} type={showPwReg ? "text" : "password"} placeholder="Password" value={passwordReg} onChange={e => setPasswordReg(e.target.value)} onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} autoComplete="new-password" />
+                    <EyeBtn show={showPwReg} onToggle={() => setShowPwReg(v => !v)} />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={s.input} type={showPwReg2 ? "text" : "password"} placeholder="Re-enter Password" value={passwordReg2} onChange={e => setPasswordReg2(e.target.value)} onFocus={() => setFocusedField("password2")} onBlur={() => setFocusedField(null)} autoComplete="new-password" />
+                    <EyeBtn show={showPwReg2} onToggle={() => setShowPwReg2(v => !v)} />
+                  </div>
+                  <label style={s.terms}>
+                    <input type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} style={{ width: 19, height: 19, flexShrink: 0, accentColor: C.blue, margin: 0 }} />
+                    <span>I have read and agree to the{" "}
+                      <span onClick={() => setTermsModalOpen(true)} style={{ color: C.blue, fontWeight: 800, textDecoration: "underline", cursor: "pointer" }}>Terms of Use</span>
+                    </span>
+                  </label>
+                  <TermsOfUseComponent open={termsModalOpen} onClose={() => setTermsModalOpen(false)} />
+                  <button style={{ ...s.btn, opacity: registerReady ? 1 : 0.55 }} onClick={handleRegister} disabled={busy || !registerReady}>
+                    {busy ? <Spinner /> : "Register"}
+                  </button>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <button style={s.lnk} onClick={() => go("Login")}>Back to Login</button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ── Almost there (confirm code) ── */}
+            {page === "Register2" && (
+              <>
+                <h1 style={s.h1}>Almost there</h1>
+                <div style={s.fields}>
+                  <div style={s.fld}>
+                    <input style={{ ...s.input, letterSpacing: "0.3em" }} type="text" placeholder="Confirmation Code" value={confirmCode} onChange={e => setConfirmCode(e.target.value)} inputMode="numeric" maxLength={6} autoComplete="one-time-code" />
+                  </div>
+                  <button style={{ ...s.btn, opacity: confirmCode ? 1 : 0.55 }} onClick={handleConfirm} disabled={busy || !confirmCode}>
+                    {busy ? <Spinner /> : "Confirm"}
+                  </button>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <button style={s.lnk} onClick={() => go("Login")}>Back to Login</button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ── Check email (reset password) ── */}
+            {page === "ResetPassword" && (
+              <>
+                <h1 style={s.h1}>Check your email</h1>
+                <div style={s.fields}>
+                  <div style={s.fld}>
+                    <input style={s.input} type={showPwU1 ? "text" : "password"} placeholder="New Password" value={pwUpdate1} onChange={e => setPwUpdate1(e.target.value)} autoComplete="new-password" />
+                    <EyeBtn show={showPwU1} onToggle={() => setShowPwU1(v => !v)} />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={s.input} type={showPwU2 ? "text" : "password"} placeholder="Re-enter Password" value={pwUpdate2} onChange={e => setPwUpdate2(e.target.value)} autoComplete="new-password" />
+                    <EyeBtn show={showPwU2} onToggle={() => setShowPwU2(v => !v)} />
+                  </div>
+                  <div style={s.fld}>
+                    <input style={{ ...s.input, letterSpacing: "0.3em" }} type="text" placeholder="Enter 6 digit code" value={sixCode} onChange={e => setSixCode(e.target.value)} inputMode="numeric" maxLength={6} autoComplete="one-time-code" />
+                  </div>
+                  <button style={{ ...s.btn, opacity: sixCode && pwUpdate1 && pwUpdate2 ? 1 : 0.55 }} onClick={handleResetPassword} disabled={busy || !sixCode || !pwUpdate1 || !pwUpdate2}>
+                    {busy ? <Spinner /> : "Update Password"}
+                  </button>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <button style={s.lnk} onClick={() => go("Login")}>Back to Login</button>
+                  </div>
+                </div>
+              </>
+            )}
+
           </div>
         </div>
-      </header>
+      </div>
+
     </div>
   );
 }
 
 export default LoginPage;
 
-const mainWrapper = {};
+// ── helpers ───────────────────────────────────────────────────────────────────
+function Spinner() {
+  return <div style={{ width: 22, height: 22, border: "3px solid rgba(255,255,255,.35)", borderTop: "3px solid #fff", borderRadius: "50%", animation: "spin .7s linear infinite", margin: "0 auto" }} />;
+}
+function Or() {
+  return <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "18px 0 12px", fontSize: 11, fontWeight: 800, letterSpacing: ".11em", textTransform: "uppercase", color: C.mid }}>
+    <span style={{ flex: 1, height: 1, background: C.line }} />or<span style={{ flex: 1, height: 1, background: C.line }} />
+  </div>;
+}
 
-const wrapper = {
-  backgroundColor: "white",
-  width: "100%",
-  padding: "1rem",
-  paddingTop: "2rem",
-  paddingBottom: "3rem",
-  borderRadius: "1.5rem",
-};
-
-const mainContainer = {
-  backgroundColor: "rgba(10, 119, 234, 0.32)",
-  width: "40%",
-  margin: "auto",
-  borderRadius: "2rem",
-  padding: "1rem",
-  display: "flex",
-  justifyContent: "center",
-  marginTop: "3rem",
-};
-
-const registerPill = {
-  position: "absolute",
-  top: "50%",
-  left: "calc(100% + 16px)",
-  transform: "translateY(-50%)",
-  backgroundColor: "#1a56b0",
-  borderRadius: "20px",
-  padding: "0.75rem 1.4rem",
-  zIndex: 10,
-  whiteSpace: "nowrap",
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.3rem",
-};
-
-const welcomeStyle = {
-  color: "rgba(10, 119, 234,.7)",
-  margin: "0.5rem",
-  fontSize: "1.8rem",
-  fontWeight: "bold",
-  borderRadius: "2rem",
+// ── styles ────────────────────────────────────────────────────────────────────
+const s = {
+  root: {
+    fontFamily: "'Nunito', system-ui, sans-serif",
+    minHeight: "100vh",
+    background: C.deep,
+    display: "flex",
+    flexDirection: "column",
+  },
+  hero: {
+    position: "relative",
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "26px 18px 90px",
+    overflow: "hidden",
+  },
+  heroBg: {
+    position: "absolute", inset: 0,
+    width: "100%", height: "100%",
+    objectFit: "fill", objectPosition: "center",
+  },
+  heroOverlay: {
+    position: "absolute", inset: 0,
+    background: "linear-gradient(180deg,rgba(8,30,54,.44),rgba(8,30,54,.72))",
+  },
+  frame: {
+    position: "relative", zIndex: 2,
+    background: C.frame,
+    borderRadius: 24, padding: 11,
+    width: "100%", maxWidth: 498,
+    boxShadow: "0 22px 60px rgba(0,10,24,.5)",
+  },
+  card: {
+    background: "#fff",
+    borderRadius: 18,
+    padding: "34px 36px 32px",
+  },
+  h1: {
+    fontSize: 33, fontWeight: 900, letterSpacing: "-.025em",
+    color: C.blue, textAlign: "center", lineHeight: 1.1, margin: 0,
+  },
+  sub: {
+    fontSize: 19, fontWeight: 800, color: C.blueLt,
+    textAlign: "center", marginTop: 8,
+  },
+  fields: {
+    display: "flex", flexDirection: "column", gap: 11, marginTop: 22,
+  },
+  fld: {
+    position: "relative", display: "flex",
+  },
+  input: {
+    fontFamily: "inherit",
+    width: "100%", fontSize: 15, fontWeight: 700, color: C.navy,
+    background: "#fff", border: `1.5px solid ${C.line}`,
+    borderRadius: 99, padding: "10px 44px 10px 16px",
+    outline: "none",
+  },
+  eye: {
+    position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)",
+    width: 40, height: 40, border: "none", background: "none",
+    borderRadius: "50%", color: C.mid,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", padding: 0,
+  },
+  lnk: {
+    fontFamily: "inherit", background: "none", border: "none", padding: 0,
+    fontSize: 14.5, fontWeight: 800, color: C.blueDk, cursor: "pointer",
+  },
+  rowMid: {
+    display: "flex", justifyContent: "center", alignItems: "center", gap: 7,
+    fontSize: 14.5, fontWeight: 700, color: C.mid,
+  },
+  btn: {
+    fontFamily: "inherit", border: "none", width: "100%",
+    fontSize: 14, fontWeight: 700, color: "#fff",
+    background: C.blue, borderRadius: 20,
+    height: 40, padding: "0 12px", cursor: "pointer", marginTop: 5,
+    boxShadow: "0 6px 16px rgba(10,119,234,.25)",
+    transition: "background .15s",
+  },
+  terms: {
+    display: "flex", alignItems: "flex-start", gap: 10,
+    fontSize: 14, fontWeight: 700, color: C.navy,
+    lineHeight: 1.45, cursor: "pointer",
+  },
+  hintPill: {
+    position: "absolute",
+    top: "50%", left: "calc(100% + 16px)",
+    transform: "translateY(-50%)",
+    background: "#1a56b0",
+    borderRadius: 20, padding: "0.75rem 1.4rem",
+    zIndex: 10, whiteSpace: "nowrap",
+    display: "flex", flexDirection: "column", gap: "0.3rem",
+    boxShadow: "0 8px 24px rgba(0,0,0,.25)",
+  },
+  switcher: {
+    position: "fixed", left: "50%", bottom: 14,
+    transform: "translateX(-50%)", zIndex: 99,
+    display: "flex", gap: 4,
+    background: "rgba(8,30,54,.9)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,.16)",
+    borderRadius: 99, padding: 5,
+  },
+  switchBtn: {
+    fontFamily: "inherit", border: "none", background: "none",
+    color: "rgba(255,255,255,.66)", fontSize: 12.5, fontWeight: 800,
+    padding: "8px 14px", borderRadius: 99, cursor: "pointer", whiteSpace: "nowrap",
+  },
+  switchBtnOn: {
+    background: C.blue, color: "#fff",
+  },
 };

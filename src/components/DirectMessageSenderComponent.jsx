@@ -41,7 +41,10 @@ export function DirectMessageSenderComponent({
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    e.target.style.height = "3rem";
+    if (e.target.scrollHeight > e.target.clientHeight) {
+      e.target.style.height = `${e.target.scrollHeight}px`;
+    }
   };
 
   const canSend = !sendButtonDisabled && message.trim() !== "" && !hideSendLabel;
@@ -53,11 +56,15 @@ export function DirectMessageSenderComponent({
       <div style={{ position: "relative", flexShrink: 0 }} ref={emojiRef}>
         <button
           onClick={() => setEmojiOpen(o => !o)}
-          style={{ ...markStyle, border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid transparent", opacity: hideSendLabel ? 0.35 : 1, pointerEvents: hideSendLabel ? "none" : "auto" }}
+          style={{
+            ...markStyle,
+            border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid rgba(160,175,190,.2)", opacity: hideSendLabel ? 0.35 : 1, pointerEvents: hideSendLabel ? "none" : "auto",
+            boxShadow: (emojiOpen || focused) ? "0 0 0 3px rgba(10,119,234,.1)" : "0 0 0 3px rgba(160,175,190,.06)",
+          }}
           title=""
           disabled={hideSendLabel}
         >
-          <img src={emojiOpen || focused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 22, height: 22, objectFit: "cover", opacity: emojiOpen || focused ? 1 : 0.5, borderRadius: "50%" }} />
+          <img src={emojiOpen || focused ? parrotEmojiIconBlue : parrotEmojiIcon} alt="emoji" style={{ width: 40, height: 40, objectFit: "cover", opacity: emojiOpen || focused ? 1 : 0.5, borderRadius: "50%", border: "none" }} />
         </button>
         {emojiOpen && (
           <div style={emojiPanelStyle(dark)}>
@@ -101,9 +108,9 @@ export function DirectMessageSenderComponent({
           placeholder=""
           style={{
             ...fldStyle,
-            border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid transparent",
-            background: (emojiOpen || focused) ? "#fff" : tint,
-            boxShadow: (emojiOpen || focused) ? "0 0 0 3px rgba(10,119,234,.1)" : "none",
+            border: (emojiOpen || focused) ? `1.5px solid ${blue}` : "1.5px solid rgba(160,175,190,.2)",
+            background: "#fff",
+            boxShadow: (emojiOpen || focused) ? "0 0 0 3px rgba(10,119,234,.1)" : "0 0 0 3px rgba(160,175,190,.06)",
             opacity: hideSendLabel ? 0.35 : 1,
           }}
           maxLength={500}
@@ -128,7 +135,7 @@ export function DirectMessageSenderComponent({
           opacity: hideSendLabel ? 0.35 : 1,
         }}
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M21 4L3 10l7 3 3 7z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}><path d="M21 4L3 10l7 3 3 7z" /></svg>
         Send
       </button>
     </div>
@@ -144,8 +151,8 @@ const compStyle = {
 };
 
 const markStyle = {
-  width: 38, height: 38, borderRadius: "50%",
-  background: tint,
+  width: 42, height: 42, borderRadius: "50%",
+  background: "#fff",
   display: "flex", alignItems: "center", justifyContent: "center",
   flexShrink: 0, cursor: "pointer",
 };
@@ -156,14 +163,15 @@ const fldLabel = {
   fontSize: 14, fontWeight: 600, color: mid,
   pointerEvents: "none", userSelect: "none",
   whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+  textAlign: "left",
 };
 
 const fldStyle = {
   width: "100%",
   fontFamily: "Nunito, sans-serif",
   fontSize: 14, fontWeight: 600, color: navy,
-  borderRadius: 10, padding: "11px 14px",
-  minHeight: "1rem", maxHeight: "10rem",
+  borderRadius: 10, padding: "9px 14px",
+  height: "3rem", maxHeight: "10rem",
   overflowY: "hidden", resize: "none",
   outline: "none",
   transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",

@@ -39,7 +39,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUnreadMessages, markMessagesRead, setPendingChatUserId, useGetBookmarksQuery } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
-import parrotsLogo from "../assets/images/placeholderparrots.webp";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 
 // ── Tokens ─────────────────────────────────────────────────────────────────────
 const blue = "#0A77EA";
@@ -70,7 +70,7 @@ function ConnectPage() {
   const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
   const sendTimestampsRef = useRef([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [showSaved, setShowSaved] = useState(false);
+  // const [showSaved, setShowSaved] = useState(false);
   const [hubState, setHubState] = useState("connected");
   const [activeGroupId, setActiveGroupId] = useState(null);
   const [activeGroupData, setActiveGroupData] = useState(null);
@@ -90,15 +90,15 @@ function ConnectPage() {
   const isDarkMode = useSelector((state) => state.users.isDarkMode);
   const dark = isDarkMode;
 
-  const { data: bookmarksRaw } = useGetBookmarksQuery(undefined, { skip: !showSaved });
-  const bookmarksData = React.useMemo(() => bookmarksRaw?.map(b => ({
-    id: b.bookmarkedUserId,
-    userId: b.bookmarkedUserId,
-    userName: b.userName,
-    profileImageUrl: b.profileImageUrl,
-    profileImageThumbnailUrl: b.profileImageThumbnailUrl,
-    publicId: b.publicId,
-  })) ?? [], [bookmarksRaw]);
+  // const { data: bookmarksRaw } = useGetBookmarksQuery(undefined, { skip: !showSaved });
+  // const bookmarksData = React.useMemo(() => bookmarksRaw?.map(b => ({
+  //   id: b.bookmarkedUserId,
+  //   userId: b.bookmarkedUserId,
+  //   userName: b.userName,
+  //   profileImageUrl: b.profileImageUrl,
+  //   profileImageThumbnailUrl: b.profileImageThumbnailUrl,
+  //   publicId: b.publicId,
+  // })) ?? [], [bookmarksRaw]);
 
   const {
     data: messagePreviewsData,
@@ -207,8 +207,8 @@ function ConnectPage() {
 
   useEffect(() => {
     const { currentUserId, conversationUserId } = users;
-    if (currentUserId && conversationUserId) { triggerGetMessages({ currentUserId, conversationUserId }); refetchMessagePreviews(); }
-  }, [users, triggerGetMessages, refetchMessagePreviews]);
+    if (currentUserId && conversationUserId && !activeGroupId) { triggerGetMessages({ currentUserId, conversationUserId }); refetchMessagePreviews(); }
+  }, [users, triggerGetMessages, refetchMessagePreviews, activeGroupId]);
 
   useEffect(() => { if (conversationData) setMessagesToDisplay(conversationData.data); }, [conversationData]);
 
@@ -218,7 +218,7 @@ function ConnectPage() {
     if (hasUnread) dispatch(setUnreadMessages(true)); else dispatch(markMessagesRead());
   }, [messagePreviewsData, dispatch]);
 
-  useEffect(() => { if (conversationUserId) refreshMessages(); }, [conversationUserId, refreshMessages]);
+  useEffect(() => { if (conversationUserId && !activeGroupId) refreshMessages(); }, [conversationUserId, activeGroupId, refreshMessages]);
 
   useEffect(() => {
     const handleVisibilityChange = () => { if (document.visibilityState === "visible") { console.log("--> Tab focused: refreshing messages...", new Date().toLocaleTimeString()); refreshMessages(); } };
@@ -257,8 +257,8 @@ function ConnectPage() {
               {/* Tabs + create row */}
               <div style={sideTop}>
                 <div style={seg}>
-                  {["Chats", "Find", "Bookmarks", "Bids"].map(tab => (
-                    <button key={tab} style={{ ...segBtn, ...(activeTab === tab ? segBtnOn : {}) }} onClick={() => { setActiveTab(tab); if (tab === "Bookmarks") setShowSaved(true); else setShowSaved(false); if (tab === "Chats") { setQuery(""); setInputValue(""); } }}>{tab}</button>
+                  {["Chats", "Find", /*, "Bookmarks",*/ "Bids"].map(tab => (
+                    <button key={tab} style={{ ...segBtn, ...(activeTab === tab ? segBtnOn : {}) }} onClick={() => { setActiveTab(tab); if (tab === "Chats") { setQuery(""); setInputValue(""); } }}>{tab}</button>
                   ))}
                 </div>
                 {activeTab === "Chats" && (
@@ -290,10 +290,9 @@ function ConnectPage() {
                     <SearchUserComponent
                       inputValue={inputValue}
                       setInputValue={setInputValue}
-                      onSearch={() => { setShowSaved(false); setQuery(inputValue); }}
+                      onSearch={() => { setQuery(inputValue); }}
                       isLoading={isSearchLoading}
                       isDarkMode={isDarkMode}
-                      showSaved={showSaved}
                     />
                   </div>
                 )}
@@ -303,18 +302,18 @@ function ConnectPage() {
               <div style={threads} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
                 {activeTab === "Bids" ? (
                   <BidPillList bids={myBids} isDarkMode={isDarkMode} filter={bidFilter} />
-                ) : showSaved ? (
-                  <SearchUserResultsComponent
-                    query=""
-                    setQuery={() => { }}
-                    userId={currentUserId}
-                    setConversationUserId={id => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
-                    setConversationUserUsername={setConversationUserUsername}
-                    handleGoToUser={handleGoToUser}
-                    setInputValue={setInputValue}
-                    isDarkMode={isDarkMode}
-                    staticUsers={bookmarksData}
-                  />
+                  // ) : showSaved ? (
+                  //   <SearchUserResultsComponent
+                  //     query=""
+                  //     setQuery={() => { }}
+                  //     userId={currentUserId}
+                  //     setConversationUserId={id => { setConversationUserId(id); setShowSaved(false); setActiveGroupId(null); setActiveGroupData(null); }}
+                  //     setConversationUserUsername={setConversationUserUsername}
+                  //     handleGoToUser={handleGoToUser}
+                  //     setInputValue={setInputValue}
+                  //     isDarkMode={isDarkMode}
+                  //     staticUsers={bookmarksData}
+                  //   />
                 ) : query.length > 2 ? (
                   <SearchUserResultsComponent
                     query={query}
@@ -386,20 +385,20 @@ function ConnectPage() {
                   )}
                   {!conversationUserId && (
                     <div style={placeholderWrap}>
-                      <div style={placeholderCircle}>
-                        <img src={parrotsLogo} alt="logo" style={{ width: "19rem", height: "19rem" }} />
-                      </div>
+                      <img src={parrotLogo} alt="" style={{ width: "20rem", height: "20rem", objectFit: "contain", opacity: 0.25 }} />
                     </div>
                   )}
-                  <div style={msgsWrap} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
-                    <ConversationComponent
-                      conversationData={conversationData}
-                      messagesToDisplay={messagesToDisplay}
-                      currentUserId={currentUserId}
-                      conversationUserId={conversationUserId}
-                      isDarkMode={isDarkMode}
-                    />
-                  </div>
+                  {conversationUserId && (
+                    <div style={msgsWrap} className={dark ? "dark-scrollbar" : "cream-scrollbar"}>
+                      <ConversationComponent
+                        conversationData={conversationData}
+                        messagesToDisplay={messagesToDisplay}
+                        currentUserId={currentUserId}
+                        conversationUserId={conversationUserId}
+                        isDarkMode={isDarkMode}
+                      />
+                    </div>
+                  )}
                   <DirectMessageSenderComponent
                     conversationUserId={conversationUserId}
                     conversationUserUsername={conversationUserUsername}
@@ -566,14 +565,8 @@ const convHeaderIco = {
 };
 
 const placeholderWrap = {
-  width: "100%", flex: 1,
+  width: "100%", flex: 1, minHeight: 0,
   display: "flex", alignItems: "center", justifyContent: "center",
 };
 
-const placeholderCircle = {
-  borderRadius: "50%",
-  height: "22rem", width: "22rem",
-  display: "flex", alignItems: "center", justifyContent: "center",
-  padding: "1.5rem",
-  boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-};
+// const placeholderCircle = { ... }; // removed — placeholder replaced with PulsatingParrotLogo

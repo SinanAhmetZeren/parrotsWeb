@@ -146,7 +146,7 @@ export const extendedMetricsApi = apiSlice.injectEndpoints({
                 return `/api/Moderation/admin/direct-messages?${params}`;
             },
         }),
-        getGroupMessages: builder.query({
+        getAdminGroupMessages: builder.query({
             query: ({ from, to, groupId, page = 1, pageSize = 50 } = {}) => {
                 const params = new URLSearchParams({ page, pageSize });
                 if (from) params.append("from", from);
@@ -178,5 +178,5 @@ export const {
     useGetDeletedAccountsQuery,
     useGetModerationFeedQuery,
     useLazyGetDirectMessagesQuery,
-    useLazyGetGroupMessagesQuery,
+    useLazyGetAdminGroupMessagesQuery,
 } = extendedMetricsApi;
