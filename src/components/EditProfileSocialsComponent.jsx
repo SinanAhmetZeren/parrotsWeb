@@ -63,11 +63,13 @@ export function EditProfileSocialsComponent({
     <>
       <div style={{
         margin: "auto",
-        marginTop: "2rem", width: "80%",
-        backgroundColor: dark ? "#011a32" : "rgba(255, 255, 255, 0.08)",
-        paddingTop: "2rem",
-        paddingBottom: "2rem",
+        width: "80%",
+        backgroundColor: dark ? "#011a32" : "#F4F7FB",
+        paddingTop: "0.75rem",
+        paddingBottom: "0.75rem",
         borderRadius: "1.5rem",
+        marginLeft: 0,
+        height: "87%"
 
 
       }}>
@@ -86,58 +88,21 @@ export function EditProfileSocialsComponent({
                   value={state}
                   style={{
                     ...inputStyle,
-                    backgroundColor: dark ? "#011a32" : "#007bff21",
-                    color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
-                    border: dark ? "1px solid rgba(255,255,255,0.15)" : "none",
+                    backgroundColor: dark ? "#011a32" : "#fff",
+                    color: dark ? "rgba(255,255,255,0.9)" : "#0A2540",
+                    border: dark ? "1.5px solid rgba(255,255,255,0.15)" : "1.5px solid rgba(160,175,190,.3)",
                   }}
                   onChange={(e) => {
                     setter(e.target.value);
                   }}
                 />
               </div>
-              {key === "email" && (
-                <div
-                  style={{
-                    alignContent: "center",
-                    cursor: "pointer",
-                    position: "absolute",
-                    right: "1rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    backgroundColor: dark ? "#011a32" : "white",
-                    borderRadius: "50%",
-                    padding: "0.2rem",
-                  }}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-                  <IoMdInformationCircleOutline
-                    size="1.5rem"
-                    color={dark ? "white" : parrotTextDarkBlue}
-                  />
-                </div>
-              )}
             </div>
 
             {key === "email" && (
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  marginTop: "0.5rem",
-                  opacity: isHovered ? 1 : 0,
-                  maxHeight: isHovered ? "120px" : "0px",
-                  overflow: "hidden",
-                  transition: "opacity 1s ease, max-height .5s ease",
-                }}
-              >
+              <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
                 <div style={messageRow}>
-                  <EmailHiddenCheckBox
-                    emailHidden={emailHidden}
-                    setEmailHidden={setEmailHidden}
-                    dark={dark}
-                  />
+                  <EmailHiddenCheckBox emailHidden={emailHidden} setEmailHidden={setEmailHidden} dark={dark} />
                 </div>
               </div>
             )}
@@ -150,14 +115,18 @@ export function EditProfileSocialsComponent({
 
 const inputStyle = {
   width: "98%",
-  padding: ".3rem",
-  borderRadius: "1.5rem",
-  textAlign: "center",
-  cursor: "pointer",
-  height: "3rem",
-  fontSize: "1.1rem",
-  color: parrotTextDarkBlue,
-  backgroundColor: "#007bff21",
+  padding: "9px 14px",
+  borderRadius: 10,
+  textAlign: "left",
+  cursor: "text",
+  height: "2.6rem",
+  fontSize: "0.875rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 600,
+  color: "#0A2540",
+  backgroundColor: "#fff",
+  border: "1.5px solid rgba(160,175,190,.3)",
+  outline: "none",
 };
 
 const socialIcon = {
@@ -172,16 +141,13 @@ const socialIcon = {
 const socialRow = {
   backgroundColor: "white",
   display: "flex",
-  // width: "23rem",
-  width: "30rem",
-  boxShadow: `
-  0 2px 2px rgba(0, 0, 0, 0.31),
-  inset 0 -4px 6px rgba(0, 0, 0, 0.31)
-`,
-  borderRadius: "2rem",
+  width: "90%",
+  border: "1.5px solid #E3E9F0",
+  borderRadius: 14,
   margin: "auto",
   marginTop: ".5rem",
   position: "relative",
+  alignItems: "center",
 };
 
 const socialIconTextContainer = {
@@ -210,31 +176,23 @@ const EmailHiddenCheckBox = ({ emailHidden, setEmailHidden, dark }) => {
   return (
     <div
       style={{
-        height: "6rem",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        gap: "1rem",
-        borderRadius: "1rem",
-        backgroundColor: dark ? "#0a2745" : "white",
+        borderRadius: "0.75rem",
+        backgroundColor: dark ? "#0a2745" : "#F4F7FB",
+        padding: "0.4rem 0.75rem",
       }}
     >
       <label
-        className="text-lg font-bold"
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
-          cursor: "pointer",
-          fontSize: "1rem",
-          width: "95%",
-          fontWeight: "400",
+          color: dark ? "rgba(255,255,255,0.7)" : "#5C6B7A",
+          fontSize: "0.9rem",
+          fontFamily: "Nunito, sans-serif",
+          fontWeight: 600,
+          lineHeight: 1.4,
         }}
       >
-        This email address will be publicly visible on your profile. It may
-        differ from your login email and is optional to provide.
-
+        This email will be publicly visible on your profile. It may differ from your login email and is optional.
       </label>
     </div>
   );

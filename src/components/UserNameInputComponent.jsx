@@ -11,9 +11,9 @@ export const UserNameInputComponent = ({ userName, setUserName, isDarkMode = fal
       maxLength={25}
       style={{
         ...inputStyleUserName,
-        color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
-        backgroundColor: dark ? "#0a2240" : "#007bff21",
-        border: dark ? "1px solid rgba(255,255,255,0.15)" : "none",
+        color: dark ? "rgba(255,255,255,0.9)" : "#0A2540",
+        backgroundColor: dark ? "#0a2240" : "#fff",
+        border: dark ? "1.5px solid rgba(255,255,255,0.15)" : "1.5px solid rgba(160,175,190,.3)",
       }}
       value={userName}
       onChange={(e) => setUserName(e.target.value)}
@@ -21,12 +21,15 @@ export const UserNameInputComponent = ({ userName, setUserName, isDarkMode = fal
   );
 };
 const inputStyleUserName = {
-  width: "30rem",
-  padding: ".3rem",
-  borderRadius: "1.5rem",
-  paddingLeft: "1rem",
+  width: "100%",
+  padding: "9px 14px",
+  borderRadius: 10,
   textAlign: "left",
-  cursor: "pointer",
-  height: "3rem",
-  fontSize: "1.5rem",
+  cursor: "text",
+  height: "2.6rem",
+  fontSize: "0.95rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 700,
+  outline: "none",
+  transition: "border-color 0.15s",
 };

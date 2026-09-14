@@ -64,11 +64,41 @@ export function EditProfilePage() {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
   const userBaseUrl = ``;
+  const [savedSnapshot, setSavedSnapshot] = useState(null);
+  const [pendingNav, setPendingNav] = useState(null);
+
+  const stripHtml = (s) => (s || "").replace(/<[^>]+>/g, "").trim();
+
+  const hasChanges = savedSnapshot && (
+    userName !== savedSnapshot.userName ||
+    userTitle !== savedSnapshot.userTitle ||
+    stripHtml(userBio) !== stripHtml(savedSnapshot.userBio) ||
+    displayEmail !== savedSnapshot.displayEmail ||
+    phoneNumber !== savedSnapshot.phoneNumber ||
+    facebookProfile !== savedSnapshot.facebookProfile ||
+    instagramProfile !== savedSnapshot.instagramProfile ||
+    twitterProfile !== savedSnapshot.twitterProfile ||
+    tiktokProfile !== savedSnapshot.tiktokProfile ||
+    linkedinProfile !== savedSnapshot.linkedinProfile ||
+    youtubeProfile !== savedSnapshot.youtubeProfile ||
+    profileImage !== savedSnapshot.profileImage ||
+    backGroundImage !== savedSnapshot.backGroundImage
+  );
+
+  const takeSnapshot = () => setSavedSnapshot({ userName, userTitle, userBio, displayEmail, phoneNumber, facebookProfile, instagramProfile, twitterProfile, tiktokProfile, linkedinProfile, youtubeProfile, profileImage, backGroundImage });
+
   const handleGoToPublicProfilePage = () => {
+    if (hasChanges) { setPendingNav("public"); return; }
     navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
   };
   const handleGoToProfilePage = () => {
+    if (hasChanges) { setPendingNav("profile"); return; }
     navigate(`/profile`);
+  };
+  const confirmNav = () => {
+    if (pendingNav === "public") navigate(`/profile-public/${userData.publicId}/${userData.userName}`);
+    else navigate(`/profile`);
+    setPendingNav(null);
   };
 
   const [patchUser] = usePatchUserMutation();
@@ -114,6 +144,21 @@ export function EditProfilePage() {
       setLinkedinProfile(userData.linkedin || "");
       setTiktokProfile(userData.tiktok || "");
       setEmailHidden(!userData.emailVisible);
+      setSavedSnapshot({
+        userName: userData.userName,
+        userTitle: userData.title,
+        userBio: stripHtml(userData.bio),
+        displayEmail: userData.displayEmail || "",
+        phoneNumber: userData.phoneNumber || "",
+        facebookProfile: userData.facebook || "",
+        instagramProfile: userData.instagram || "",
+        twitterProfile: userData.twitter || "",
+        tiktokProfile: userData.tiktok || "",
+        linkedinProfile: userData.linkedin || "",
+        youtubeProfile: userData.youtube || "",
+        profileImage: userData.profileImageUrl,
+        backGroundImage: userData.backgroundImageUrl,
+      });
     }
   }, [userData, isSuccessUser]);
 
@@ -247,6 +292,7 @@ export function EditProfilePage() {
     }
     await handlePatchUser();
     await refetchUserData();
+    takeSnapshot();
     setIsUpdatingProfile(false);
   };
 
@@ -279,26 +325,6 @@ export function EditProfilePage() {
             <div className="flex profilePage_BottomLeft">
               <div className="flex profilePage_CoverAndProfile">
 
-                <div style={buttonsContainer}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <div onClick={() => handleGoToProfilePage()} style={navigationButton}>
-                      <span>Profile</span>
-                    </div>
-
-
-                    {local_userId === userId &&
-                      <div onClick={() => handleGoToPublicProfilePage()} style={navigationButton}>
-                        <span>Public Profile</span>
-                      </div>
-                    }
-                  </div>
-                </div>
 
 
                 <div className="flex profilePage_CoverImage">
@@ -344,26 +370,15 @@ export function EditProfilePage() {
                     />
                   )}
                   {backGroundImage !== userData.backgroundImageUrl ? (
-                    <div
-                      onClick={handleCancelUploadBackGroundImage}
-                      style={deleteImageIcon}
-                    >
-                      <IoRemoveCircleOutline
-                        color="rgb(0, 119, 234)"
-                        size={"2rem"}
-                      />
+                    <div onClick={handleCancelUploadBackGroundImage} style={imageActionBtn}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="rgb(0,119,234)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><circle cx="12" cy="12" r="9" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
                     </div>
                   ) : (
-                    <div
-                      onClick={handleBackGroundImageClick}
-                      style={clickToAddImage}
-                    >
-                      <IoCameraReverseOutline
-                        color="rgb(0, 119, 234)"
-                        size={"2rem"}
-                      />
+                    <div onClick={handleBackGroundImageClick} style={imageActionBtn}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="rgb(0,119,234)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                     </div>
                   )}
+                  <div style={imageLabelPill}>Background Image</div>
                 </div>
 
                 <div className="flex profilePage_ProfileImage">
@@ -411,49 +426,36 @@ export function EditProfilePage() {
                         </div>
                       )}
                       {profileImage !== userData.profileImageUrl ? (
-                        <div
-                          onClick={handleCancelUploadProfileImage}
-                          style={deleteImageIcon}
-                        >
-                          <IoRemoveCircleOutline
-                            color="rgb(0, 119, 234)"
-                            size={"2rem"}
-                          />
+                        <div onClick={handleCancelUploadProfileImage} style={imageActionBtn}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="rgb(0,119,234)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><circle cx="12" cy="12" r="9" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
                         </div>
                       ) : (
-                        <div
-                          onClick={handleProfileImageClick}
-                          style={clickToAddImage}
-                        >
-                          <IoCameraReverseOutline
-                            color="rgb(0, 119, 234)"
-                            size={"2rem"}
-                          />
+                        <div onClick={handleProfileImageClick} style={imageActionBtn}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="rgb(0,119,234)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                         </div>
                       )}
+                      <div style={imageLabelPill}>Profile Image</div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="flex editprofilePage_BioAndContactDetails">
                 <div className="flex editprofilePage_BioTitleUserName" style={dark ? { backgroundColor: "#011a32" } : {}}>
-                  <div className="flex profilePage_UserName">
-                    <span className="profilePage_UserName">
+                  <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", width: "100%" }}>
+                    <div style={{ flex: 1 }}>
                       <UserNameInputComponent
                         userName={userName}
                         setUserName={setUserName}
                         isDarkMode={isDarkMode}
                       />
-                    </span>
-                  </div>
-                  <div className="flex profilePage_Title">
-                    <span className="profilePage_Title">
+                    </div>
+                    <div style={{ flex: 1 }}>
                       <UserTitleInputComponent
                         userTitle={userTitle}
                         setUserTitle={setUserTitle}
                         isDarkMode={isDarkMode}
                       />
-                    </span>
+                    </div>
                   </div>
                   <div className="flex profilePage_Bio">
                     <ReactQuill
@@ -465,14 +467,16 @@ export function EditProfilePage() {
                         toolbar: false,
                       }}
                       style={{
-                        color: dark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+                        color: dark ? "rgba(255,255,255,0.9)" : "#0A2540",
                         fontFamily: "Nunito, sans-serif",
                         fontWeight: "600",
-                        fontSize: "1.2rem",
-                        borderRadius: "1.5rem",
+                        fontSize: "0.875rem",
+                        borderRadius: 10,
+                        border: "1.5px solid rgba(160,175,190,.3)",
                         padding: "0rem",
-                        backgroundColor: dark ? "#0a2745" : "#007bff21",
+                        backgroundColor: dark ? "#0a2745" : "#fff",
                         width: "100%",
+                        marginTop: "0.4rem",
                       }}
                     />
                     <style>
@@ -487,8 +491,8 @@ export function EditProfilePage() {
                               padding-top: 1rem !important;
                               font-family: "Nunito", sans-serif !important;
                               font-weight: 600;
-                              font-size: 1.2rem;
-                              line-height: 1.65rem;
+                              font-size: 0.875rem;
+                              line-height: 1.5rem;
                               letter-spacing: 0.015em;
                             }
                             .custom-quill .ql-editor.ql-blank::before {
@@ -501,7 +505,7 @@ export function EditProfilePage() {
                               width: 6px;
                             }
                             .custom-quill .ql-editor::-webkit-scrollbar-track {
-                              background: ${dark ? "#0a2745" : "#007bff21"};
+                              background: ${dark ? "#0a2745" : "#F4F7FB"};
                               border-radius: 3px;
                             }
                             .custom-quill .ql-editor::-webkit-scrollbar-thumb {
@@ -533,11 +537,11 @@ export function EditProfilePage() {
                   height: "calc(100vh - 3.5rem)",
                   width: "calc(100% - 0%)",
                   flexDirection: "column",
+                  paddingTop: "0.5rem",
                 }}
               >
                 <div
                   style={{
-                    // backgroundColor: dark ? "rgba(10,34,64,0.3)" : "rgba(255, 255, 255, 0.08)",
                     borderRadius: "1.5rem",
                     height: "100%",
                     flexDirection: "column",
@@ -572,40 +576,23 @@ export function EditProfilePage() {
                     />
                   ) : null}
 
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    position: "absolute",
-                    width: "20rem",
-                    height: "8rem",
-                    bottom: "0",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                  }}>
-                    <input
-                      type="text"
-                      value={honeyPotValue}
-                      onChange={(e) => setHoneyPotValue(e.target.value)}
-                      style={{ display: "none" }}
-                      autoComplete="off"
-                    />
-                    <span
-                      onClick={() => handleUpdateChanges()}
-                      style={UpdateChangesButton}
-                    >
-                      {isUpdatingProfile ? <UpdateProfileSpinner /> : "Save Changes"}
-                    </span>
-
-                    <span
-                      onClick={() => setShowDeleteModal(true)}
-                      style={DeleteAccountButton}
-                    >
-                      Delete Account
-                    </span>
-
-                  </div>
 
 
+
+                  {pendingNav && (
+                    <div style={deleteModalOverlayStyle}>
+                      <div style={deleteModalStyle}>
+                        <div style={{ fontSize: "1.2rem", fontWeight: 800, color: "#163A5F", marginBottom: "0.5rem" }}>Unsaved Changes</div>
+                        <div style={{ fontSize: "1rem", color: "#5C6B7A", marginBottom: "1.5rem", lineHeight: 1.5, textAlign: "left" }}>
+                          You have unsaved changes. If you leave now, your changes will be lost.
+                        </div>
+                        <div style={{ display: "flex", gap: "0.75rem" }}>
+                          <button onClick={() => setPendingNav(null)} style={deleteCancelBtnStyle}>Stay</button>
+                          <button onClick={confirmNav} style={deleteConfirmBtnStyle}>Leave Without Saving</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {showDeleteModal && (
                     <div style={deleteModalOverlayStyle}>
@@ -626,6 +613,36 @@ export function EditProfilePage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            gap: "2rem",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "0.6rem 1.5rem",
+            boxSizing: "border-box",
+            flexShrink: 0,
+          }}>
+            <input
+              type="text"
+              value={honeyPotValue}
+              onChange={(e) => setHoneyPotValue(e.target.value)}
+              style={{ display: "none" }}
+              autoComplete="off"
+            />
+            <span onClick={() => handleGoToProfilePage()} style={{ ...navigationButton, width: "9rem", textAlign: "center" }}>Go to Profile</span>
+            {local_userId === userId &&
+              <span onClick={() => handleGoToPublicProfilePage()} style={{ ...navigationButton, width: "12rem", textAlign: "center" }}>Go to Public Profile</span>
+            }
+            <span onClick={() => handleUpdateChanges()} style={{ ...UpdateChangesButton, width: "9rem", textAlign: "center" }}>
+              {isUpdatingProfile ? <UpdateProfileSpinner /> : "Save Changes"}
+            </span>
+            <span onClick={() => setShowDeleteModal(true)} style={{ ...DeleteAccountButton, width: "9rem", textAlign: "center" }}>
+              Delete Account
+            </span>
           </div>
         </div>
       </header>
@@ -659,68 +676,80 @@ const UpdateProfileSpinner = () => {
   );
 };
 
-const deleteImageIcon = {
-  // backgroundColor: " #3c9dee",
-  backgroundColor: "white",
+const imageActionBtn = {
+  backgroundColor: "rgba(255,255,255,.95)",
   position: "absolute",
   bottom: ".5rem",
   right: "0.5rem",
-  borderRadius: "4rem",
-  alignContent: "center",
-  justifyItems: "center",
-  lineHeight: "1.5rem",
-  padding: "1rem",
+  borderRadius: "50%",
+  width: 44,
+  height: 44,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   cursor: "pointer",
-  transition: "transform 0.3s ease-in-out",
+  boxShadow: "0 3px 10px rgba(0,14,30,.24)",
 };
 
-const clickToAddImage = {
-  backgroundColor: "white",
+const imageLabelPill = {
   position: "absolute",
-  bottom: ".5rem",
-  right: "0.5rem",
-  borderRadius: "4rem",
-  alignContent: "center",
-  justifyItems: "center",
-  lineHeight: "1.5rem",
-  padding: "1rem",
+  bottom: "0.5rem",
+  left: "0.5rem",
+  backgroundColor: "rgba(255,255,255,0.85)",
+  color: "#0A2540",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 700,
+  fontSize: "0.75rem",
+  borderRadius: 99,
+  padding: "3px 10px",
+  pointerEvents: "none",
+  backdropFilter: "blur(4px)",
+};
+
+const epBtn = {
+  fontFamily: "Nunito, sans-serif",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  width: 44, height: 44,
+  background: "rgba(255,255,255,.95)",
+  border: "none",
+  color: "#0A2540",
+  borderRadius: "50%",
+  cursor: "pointer",
+  boxShadow: "0 3px 10px rgba(0,14,30,.24)",
+  position: "relative", padding: 0, flexShrink: 0,
 };
 
 const UpdateChangesButton = {
-  position: "absolute",
-  fontSize: "1.4rem",
+  fontFamily: "Nunito, sans-serif",
+  fontSize: "0.8rem",
   fontWeight: 800,
   color: "white",
-  borderRadius: "1.5rem",
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
-  marginTop: "0.3rem",
-  backgroundColor: "#007bff",
+  borderRadius: 99,
+  backgroundColor: "#0A77EA",
   cursor: "pointer",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-  padding: "0.2rem",
-  width: "20rem",
+  border: "1.5px solid #0A77EA",
+  padding: "8px 20px",
+  textAlign: "center",
+  letterSpacing: "0.02em",
+  transition: "background 0.15s",
+  whiteSpace: "nowrap",
 };
 
 
 const DeleteAccountButton = {
-  position: "absolute",
-  fontSize: "1.4rem",
+  fontFamily: "Nunito, sans-serif",
+  fontSize: "0.8rem",
   fontWeight: 800,
-  color: "white",
-  borderRadius: "1.5rem",
-  paddingRight: "2rem",
-  paddingLeft: "2rem",
-  marginTop: "3.5rem",
-  backgroundColor: parrotRed,
+  color: "#cb0404",
+  borderRadius: 99,
+  backgroundColor: "#fff",
   cursor: "pointer",
-  border: "none",
-  boxShadow:
-    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
-  padding: "0.2rem",
-  width: "20rem",
+  border: "1.5px solid #cb0404",
+  padding: "8px 20px",
+  textAlign: "center",
+  letterSpacing: "0.02em",
+  transition: "background 0.15s",
+  whiteSpace: "nowrap",
 };
 
 const buttonsContainer = {
@@ -729,29 +758,28 @@ const buttonsContainer = {
   left: "0",
   width: "100%",
   display: "flex",
-  justifyContent: "flex-end", // single child aligned right
+  justifyContent: "flex-end",
   alignItems: "center",
   padding: "0.5rem",
-  // backgroundColor: "rgba(255, 255, 255, 0.54321) ",
   boxSizing: "border-box",
   borderTopLeftRadius: "1rem",
   borderTopRightRadius: "1rem",
+  zIndex: 10,
 }
 
 const navigationButton = {
-  borderRadius: "1.5rem",
+  fontFamily: "Nunito, sans-serif",
+  borderRadius: 99,
   backgroundColor: "white",
-  color: "#007bff",
-  padding: "0.2rem 0.8rem",
+  color: "#0A77EA",
+  padding: "7px 18px",
   textAlign: "center",
-  fontWeight: "bold",
+  fontWeight: 800,
   cursor: "pointer",
-  fontSize: "1.1rem",
-  border: "none",
-  boxShadow: "0 4px 6px rgba(0,0,0,0.3), inset 0 -4px 6px rgba(0,0,0,0.3)",
-  transition: "box-shadow 0.2s ease",
-  WebkitFontSmoothing: "antialiased",
-  MozOsxFontSmoothing: "grayscale",
+  fontSize: "0.85rem",
+  border: "1.5px solid #0A77EA",
+  letterSpacing: "0.02em",
+  transition: "background 0.15s",
 };
 
 const deleteAccountButtonStyle = {
@@ -783,31 +811,35 @@ const deleteModalOverlayStyle = {
 const deleteModalStyle = {
   backgroundColor: "#fff",
   borderRadius: "1.5rem",
-  padding: "2rem",
-  width: "40rem",
+  padding: "1.5rem",
+  width: "30rem",
   boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
 };
 
 const deleteCancelBtnStyle = {
   flex: 1,
-  padding: "0.75rem",
-  borderRadius: "2rem",
-  border: "none",
-  backgroundColor: "#f2f4f7",
-  color: "#9aa0aa",
-  fontWeight: 700,
-  fontSize: "0.95rem",
+  fontFamily: "Nunito, sans-serif",
+  padding: "8px 0",
+  borderRadius: 99,
+  border: "1.5px solid #E3E9F0",
+  backgroundColor: "#fff",
+  color: "#5C6B7A",
+  fontWeight: 800,
+  fontSize: "0.8rem",
   cursor: "pointer",
+  transition: "background 0.15s",
 };
 
 const deleteConfirmBtnStyle = {
   flex: 1,
-  padding: "0.75rem",
-  borderRadius: "2rem",
-  border: "none",
+  fontFamily: "Nunito, sans-serif",
+  padding: "8px 0",
+  borderRadius: 99,
+  border: "1.5px solid #cb0404",
   backgroundColor: "#cb0404",
   color: "white",
-  fontWeight: 700,
-  fontSize: "0.95rem",
+  fontWeight: 800,
+  fontSize: "0.8rem",
   cursor: "pointer",
+  transition: "background 0.15s",
 };
