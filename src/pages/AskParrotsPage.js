@@ -273,7 +273,7 @@ export default function AskParrotsPage() {
     setSending(true);
     const query = buildQueryText(vehicle, duration, vibe, spotType, pin);
     const clean = response.replace(/^\[\[([^\]]+)\]\]\s*/, "($1) ").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\{\{([^}]+)\}\}/g, "$1");
-    await invokeHub("SendMessage", currentUserId, currentUserId, `🦜 ${query}\n\n➡️ ${clean}`, true);
+    await invokeHub("SendMessage", currentUserId, currentUserId, `**🦜** ${query}\n\n➡️ ${clean}`, true);
     setSending(false); setSent(true); setTimeout(() => setSent(false), 2000);
   };
 
