@@ -1,0 +1,613 @@
+/* eslint-disable no-undef */
+import "../assets/css/VehicleDetails.css";
+import { toast } from "react-toastify";
+import "../assets/css/advancedmarker.css";
+import React, { useState, useEffect, useRef } from "react";
+import "swiper/css/pagination";
+import "swiper/css/effect-coverflow";
+import "swiper/css";
+import "swiper/css/navigation";
+import {
+  useDeleteVehicleMutation,
+  useGetVehicleByIdQuery,
+} from "../slices/VehicleSlice";
+import { TopBarMenu } from "../components/TopBarMenu";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import { VehiclePageImageSwiper } from "../components/VehiclePageImageSwiper";
+import { useParams, useNavigate } from "react-router-dom";
+import { IoHeartSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import DOMPurify from "dompurify";
+import Modal from "react-modal";
+
+import {
+  useAddVehicleToFavoritesMutation,
+  useDeleteVehicleFromFavoritesMutation,
+} from "../slices/VehicleSlice";
+import {
+  addVehicleToUserFavorites,
+  removeVehicleFromUserFavorites,
+  useGetFavoriteVehicleIdsByUserIdQuery,
+  updateUserFavoriteVehicles,
+} from "../slices/UserSlice";
+import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPlaceHolderComponent";
+import { parrotBlue, parrotDarkBlue, parrotRed } from "../styles/colors";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
+import VehicleVoyages from "../components/VehicleVoyages";
+
+function VehicleDetailsPage() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { vehicleId } = useParams();
+  const userId = localStorage.getItem("storedUserId");
+  const isDarkMode = useSelector((state) => state.users.isDarkMode);
+  const dark = isDarkMode;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(0);
+
+  const favoriteVehicles = useSelector((state) => state.users.userFavoriteVehicles);
+  const isInFavorites = favoriteVehicles?.includes(Number(vehicleId));
+  const { data: favoriteVehiclesData } =
+    useGetFavoriteVehicleIdsByUserIdQuery(userId);
+
+  useEffect(() => {
+    const updateFavoriteVehicles = () => {
+      dispatch(
+        updateUserFavoriteVehicles({
+          favoriteVehicles: favoriteVehiclesData,
+        })
+      );
+    };
+    updateFavoriteVehicles();
+  }, [favoriteVehiclesData, dispatch]);
+
+  const handleGoToUser = ({ userId, userName, userPublicId }) => {
+    navigate(`/profile-public/${userPublicId}/${userName}`);
+  };
+  const [isFavorited, setIsFavorited] = useState(isInFavorites);
+  const [addVehicleToFavorites] = useAddVehicleToFavoritesMutation();
+  const [deleteVehicleFromFavorites] = useDeleteVehicleFromFavoritesMutation();
+  const [deleteVehicle] = useDeleteVehicleMutation();
+
+
+
+
+
+  const handleAddVehicleToFavorites = () => {
+    const vehicleId_number = Number(vehicleId);
+    addVehicleToFavorites({ userId, vehicleId: vehicleId_number });
+    setIsFavorited(true);
+    dispatch(
+      addVehicleToUserFavorites({
+        favoriteVehicle: vehicleId_number,
+      })
+    );
+  };
+
+  const handleDeleteVehicleFromFavorites = () => {
+    const vehicleId_number = Number(vehicleId);
+    deleteVehicleFromFavorites({ userId, vehicleId: vehicleId_number });
+    setIsFavorited(false);
+    dispatch(
+      removeVehicleFromUserFavorites({
+        favoriteVehicle: vehicleId_number,
+      })
+    );
+  };
+
+  const handleDeleteVehicle = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteVehicle(vehicleId).unwrap();
+      navigate("/profile", { state: { refetch: true } });
+    } catch (err) {
+      console.error("Error deleting vehicle:", err);
+      toast.error("Failed to delete vehicle. Please try again.");
+    }
+    setIsDeleting(false);
+  };
+
+  const [hoveredUserImg, setHoveredUserImg] = useState(false);
+  const {
+    data: VehicleData,
+    isSuccess: isSuccessVehicle,
+    isLoading: isLoadingVehicle,
+    isError: isErrorVehicle,
+    refetch,
+  } = //useGetVehicleByIdQuery(vehicleId);
+    useGetVehicleByIdQuery(vehicleId, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  }
+
+  useEffect(() => {
+    if (isSuccessVehicle) {
+      // console.log("VehicleData", VehicleData?.user?.id);
+      console.log("--> VehicleData -->", VehicleData);
+
+    }
+  }, [VehicleData, isSuccessVehicle]);
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  if (isErrorVehicle) return <SomethingWentWrong />;
+
+  return (
+    // true ||
+    isLoadingVehicle ? (
+      <VehicleDetailPlaceHolderComponent />
+    ) : isSuccessVehicle && VehicleData ? (
+      <div className="App">
+        <header className="App-header">
+          <div className="flex mainpage_Container">
+            <div className="flex mainpage_TopRow">
+              <TopLeftComponent />
+              <div className="flex mainpage_TopRight">
+                <TopBarMenu />
+              </div>
+            </div>
+            <div className="vehiclePage1_vehicleContainer" style={dark ? { backgroundColor: "rgba(13,43,78,0.75)" } : {}}>
+              <div
+                className="vehiclePage1_dataContainer"
+                style={{
+                  position: "relative",
+                  height: "70vh",
+                  overflowY: "scroll",
+                  overflowX: "hidden",
+                  msOverflowStyle: "none",
+                  scrollbarWidth: "none",
+                  ...(dark ? { backgroundColor: "rgba(255,255,255,0.05)" } : {}),
+                }}
+              >
+                {isFavorited ? (
+                  <div
+                    onClick={() => handleDeleteVehicleFromFavorites()}
+                    style={{
+                      ...heartIcon,
+                      border: "2px red solid",
+                    }}
+                  >
+                    <IoHeartSharp size="2.5rem" color="red" />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => handleAddVehicleToFavorites()}
+                    style={{
+                      ...heartIcon,
+                      border: "2px orange solid",
+                    }}
+                  >
+                    <IoHeartSharp size="2.5rem" color="orange" />
+                  </div>
+                )}
+
+                <div className="vehiclePage1_detailsContainer" style={dark ? { backgroundColor: "#0d2b4e", color: "rgba(255,255,255,0.9)" } : {}}>
+                  <div className="vehiclePage1_nameContainer">
+                    <div style={dark ? cellLabelDark : {}}>
+                      <span>Name</span>
+                    </div>
+                    <div style={dark ? cellValueDark : {}}>
+                      <span>{VehicleData.name}</span>
+                    </div>
+                  </div>
+                  <div className="vehiclePage1_vacancyContainer">
+                    <div style={dark ? cellLabelDark : {}}>
+                      <span>Capacity</span>
+                    </div>
+                    <div style={dark ? cellValueDark : {}}>
+                      <span>{VehicleData.capacity}</span>
+                    </div>
+                  </div>
+                  <div className="vehiclePage1_typeContainer">
+                    <div style={dark ? cellLabelDark : {}}>
+                      <span>Type</span>
+                    </div>
+                    <div style={dark ? cellValueDark : {}}>
+                      <span>{VehicleTypes[VehicleData.type]}</span>
+                    </div>
+                  </div>
+
+                  <div className="vehiclePage1_hostContainer">
+                    <div style={dark ? cellLabelDark : {}}>
+                      <span>Host</span>
+                    </div>
+                    <div
+                      className=" "
+                      style={dark ? cellValueDark : {}}
+                      onClick={() =>
+                        handleGoToUser({
+                          userId: VehicleData?.user?.id,
+                          userName: VehicleData?.user?.userName,
+                          userPublicId: VehicleData?.user?.publicId,
+                        })
+                      }
+                    >
+                      <div
+                        style={userNameStyle}
+                        onClick={() => {
+                          console.log("message");
+                        }}
+                      >
+                        <img
+                          src={
+                            VehicleData?.user?.profileImageUrl
+                          }
+                          style={{
+                            ...userImageStyle,
+                            ...(hoveredUserImg ? userImageStyleHover : {}),
+                          }}
+                          onMouseEnter={() => {
+                            setHoveredUserImg(true);
+                          }}
+                          onMouseLeave={() => setHoveredUserImg(false)}
+                          alt=""
+                          onClick={() =>
+                            handleGoToUser({
+                              userId: VehicleData?.user?.id,
+                              userName: VehicleData?.user?.userName,
+                              userPublicId: VehicleData?.user?.publicId,
+                            })
+                          }
+                        />
+                        <span style={userNameTextStyle}>
+                          {VehicleData?.user?.userName}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="vehiclePage1_descriptionContainer" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                  <div className="vehiclePage1_descriptionContainer_inner" style={dark ? { backgroundColor: "#0d2b4e", color: "rgba(255,255,255,0.85)" } : {}}>
+                    <div className="vehiclePage1_descriptionContainer_descriptionTitle" style={dark ? { color: "rgba(255,255,255,0.9)" } : {}}>
+                      <span style={{ fontWeight: "bold" }}>Description</span>
+                    </div>
+                    <div className="vehiclePage1_descriptionContainer_descriptionContent" style={dark ? { color: "rgba(255,255,255,0.85)" } : {}}>
+                      {/* <span> {VehicleData.description}</span> */}
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(VehicleData.description),
+                        }}
+                      />
+
+                    </div>
+                  </div>
+                </div>
+                {VehicleData.voyages?.length > 0 && (
+                  <div className="vehicleVoyagesContainer" style={dark ? { backgroundColor: "#0d2b4e" } : {}}>
+                    <VehicleVoyages voyages={VehicleData.voyages} isDarkMode={dark} />
+                  </div>
+                )}
+              </div>
+
+              <div className="vehiclePage1_swiperContainer" style={dark ? { backgroundColor: "rgba(255,255,255,0.05)" } : {}}>
+                <VehiclePageImageSwiper vehicleData={VehicleData} />
+              </div>
+            </div>
+
+            {VehicleData?.user.id === userId ? (
+              <div style={editVehicleButtonContainer}>
+                <div
+                  onClick={() => {
+                    navigate(`/edit-vehicle/${vehicleId}`);
+                  }}
+                >
+                  <span style={editVehicleButton}>Edit Vehicle</span>
+                </div>
+                <div
+                  onClick={() => {
+                    // handleDeleteVehicle();
+                    setIsDeleteModalOpen(true);
+                  }}
+                >
+                  {isDeleting ? (
+                    <div
+                      style={{
+                        backgroundColor: parrotRed,
+                        borderRadius: "1.5rem",
+                        padding: "0.25rem 1.5rem",
+                        boxShadow:
+                          "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+                        fontSize: "1.4rem",
+                        fontWeight: 800,
+                        color: "white",
+                        marginTop: "0.3rem",
+                        cursor: "pointer",
+                        border: "none",
+                        height: "2.1rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginLeft: "0.5rem",
+                        width: "13.5rem",
+                      }}
+                    >
+                      <div
+                        className="spinner"
+                        style={{
+                          height: "1.5rem",
+                          width: "1.5rem",
+                          border: "5px solid white",
+                          borderTop: "5px solid orange",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{}}>
+                      <span style={deleteVehicleButton}>Delete Vehicle</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            <Modal
+              isOpen={isDeleteModalOpen}
+              onRequestClose={closeDeleteModal}
+              style={modalStyle}
+            >
+              <div style={titleWrapperStyle}>
+                <span className="text-xl font-bold" style={titleTextStyle}>
+                  Really delete vehicle and all its voyages?
+                </span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
+                {/* Buttons */}
+                <button
+                  onClick={() => closeDeleteModal()}
+                  style={{
+                    ...buttonStyle,
+                    ...actionButtonStyle,
+                    backgroundColor: "grey",
+
+                  }}
+                >
+                  No Thanks
+                </button>
+                <button
+                  onClick={() => handleDeleteVehicle()}
+                  style={{
+                    ...buttonStyle,
+                    ...actionButtonStyle,
+                    backgroundColor: "rgba(220, 53, 69,1)",
+                  }}
+                >
+                  Delete Vehicle
+                </button>
+              </div>
+            </Modal>
+
+          </div>
+        </header>
+      </div>
+    ) : null
+  );
+}
+
+export default VehicleDetailsPage;
+
+const deletingVehicleButton = {
+  backgroundColor: parrotRed,
+  borderRadius: "1.5rem",
+  padding: "0.25rem 1.5rem",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+};
+
+const editVehicleButtonContainer = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  margin: "auto",
+};
+
+const editVehicleButton = {
+  backgroundColor: parrotBlue,
+  borderRadius: "1.5rem",
+  padding: "0.25rem 1.5rem",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  // fontWeight: "bold",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+  width: "100%",
+};
+
+const deleteVehicleButton = {
+  backgroundColor: parrotRed,
+  borderRadius: "1.5rem",
+  padding: "0.25rem 1.5rem",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  fontSize: "1.4rem",
+  fontWeight: 800,
+  color: "white",
+  paddingRight: "2rem",
+  paddingLeft: "2rem",
+  marginTop: "0.3rem",
+  cursor: "pointer",
+  border: "none",
+};
+
+const heartIcon = {
+  position: "absolute",
+  backgroundColor: "white",
+  right: "0rem",
+  top: "0rem",
+  borderRadius: "3rem",
+  padding: "0.5rem",
+};
+
+const userNameStyle = {
+  borderRadius: "1.5rem", // Keep this as the final value for border-radius
+  backgroundColor: "#007bff",
+  color: "white",
+  textAlign: "center",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1rem",
+  border: "none",
+  boxShadow:
+    "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3)",
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  height: "1.8rem",
+  display: "flex",
+  flexDirection: "row",
+};
+
+const userNameTextStyle = {
+  // backgroundColor: "red"
+};
+
+const userImageStyleHover = {
+  transform: "scale(1.2)", // Enlarge on hover
+};
+
+const userImageStyle = {
+  height: "2rem",
+  width: "2rem",
+  borderRadius: "3rem",
+  transition: "transform 0.3s ease-in-out", // Smooth transition
+  cursor: "pointer",
+};
+
+const spinnerContainer = {
+  marginTop: "20%",
+  backgroundColor: "red",
+};
+
+const VehicleTypes = [
+  "Boat",
+  "Car",
+  "Caravan",
+  "Bus",
+  "Walk",
+  "Run",
+  "Motorcycle",
+  "Bicycle",
+  "TinyHouse",
+  "Airplane",
+  "Train",
+];
+
+const DeleteVehicleSpinner = () => {
+  return (
+    <div
+      style={{
+        backgroundColor: "rgba(0, 119, 234,0.1)",
+        borderRadius: "1.5rem",
+        position: "relative",
+        margin: "auto",
+        display: "flex",
+        alignItems: "center",
+        height: "1.7rem",
+      }}
+    >
+      <div
+        className="spinner"
+        style={{
+          height: "1rem",
+          width: "1rem",
+          border: "3px solid white",
+          borderTop: "3px solid #1e90ff",
+        }}
+      ></div>
+    </div>
+  );
+};
+
+const actionButtonStyle = {
+  width: "45%",
+};
+
+const buttonStyle = {
+  padding: "0.5rem",
+  paddingLeft: "1rem",
+  paddingRight: "1rem",
+  // marginBottom: "1rem",
+  borderRadius: "1.5rem",
+  textAlign: "center",
+  color: "white",
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "1rem",
+  border: "none",
+  boxShadow: `
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      inset 0 -4px 6px rgba(0, 0, 0, 0.3)
+    `,
+  transition: "box-shadow 0.2s ease",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  right: 0,
+};
+
+const modalStyle = {
+  content: {
+    top: "50%",
+    left: "35%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    padding: "2rem",
+    borderRadius: "1rem",
+    zIndex: 1050,
+    backgroundColor: "#f8f9fa",
+  },
+};
+
+const cellLabelDark = {
+  backgroundColor: "rgba(255,255,255,0.08)",
+  color: "rgba(255,255,255,0.6)",
+  fontWeight: 700,
+  marginBottom: "0.3rem",
+  borderRadius: ".4rem",
+  textAlign: "start",
+  paddingLeft: "0.3rem",
+};
+
+const cellValueDark = {
+  backgroundColor: "rgba(255,255,255,0.05)",
+  color: "rgba(255,255,255,0.9)",
+  borderRadius: ".4rem",
+  textAlign: "start",
+  paddingLeft: "0.3rem",
+};
+
+const titleWrapperStyle = {
+  display: "flex",
+  justifyContent: "center",
+  marginBottom: "1.5rem",
+};
+
+const titleTextStyle = {
+  color: "#163A5F",
+  color: "darkred",
+  fontWeight: "900",
+};

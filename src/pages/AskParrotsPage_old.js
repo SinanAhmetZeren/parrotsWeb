@@ -1,0 +1,638 @@
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, CircleMarker, useMapEvents, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { TopBarMenu } from "../components/TopBarMenu";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import { useAskParrotsMutation } from "../slices/AiSlice";
+import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
+import { PulsatingParrotLogoWithText } from "../components/PulsatingParrotLogoWithText";
+import { FaAngleDoubleDown } from "react-icons/fa";
+import { invokeHub } from "../signalr/signalRHub";
+import { useSelector } from "react-redux";
+import { useLazyGetUserByIdQuery } from "../slices/UserSlice";
+import parrotCracker from "../assets/images/parrotCracker.png";
+import {
+  parrotBoatPurple, parrotCarRed, parrotCaravanOrangeRed, parrotBusYellowGreen,
+  parrotWalkTurquoise, parrotRunLightOrange, parrotMotorcycleDarkRed,
+  parrotBicycleTealGreen, parrotTinyHouseLightYellow, parrotAirplaneLightGreen,
+  parrotTrainPink, parrotBlue, parrotPlaceholderGrey, parrotDarkBlue, parrotTextDarkBlue,
+  parrotLightBlue,
+  parrotBlueSemiTransparent,
+  parrotBlueTransparent,
+  parrotBlueDarkTransparent,
+} from "../styles/colors";
+import scoutingLight from "../assets/images/scouting_lightmode.jpeg";
+import scoutingDark from "../assets/images/scouting_darkmode.jpeg";
+import placeholderParrots from "../assets/images/placeholderparrots.png";
+
+const VEHICLES = ["Boat", "Car", "Caravan", "Bus", "Walk", "Run", "Motorcycle", "Bicycle", "TinyHouse", "Airplane", "Train"];
+const DURATIONS = ["Half day", "1 day", "2-3 days", "1 week", "2 weeks"];
+const VIBES = ["Culture", "Food", "Nature", "Chill", "Adventure", "Budget", "Scenic", "Any"];
+const ON_FOOT = ["Walk", "Run"];
+const TRANSIT = ["Bus", "Train", "Airplane"];
+
+const VIBES_CONFIG = {
+  Culture: { label: "culture-focused", detail: "cultural sights and history" },
+  Food: { label: "food-focused", detail: "local food and dining" },
+  Nature: { label: "nature-focused", detail: "outdoor scenery and nature" },
+  Chill: { label: "relaxed", detail: "laid-back pace" },
+  Adventure: { label: "adventurous", detail: "off the beaten path" },
+  Budget: { label: "budget-friendly", detail: "low-cost spots" },
+  Scenic: { label: "scenic", detail: "landscapes and views" },
+  Any: { label: "any vibe", detail: "" },
+};
+
+const SPOT_TYPES = ["Popular Spots", "Local Favorites", "Hidden Gems", "Mixed Picks"];
+const SPOT_TYPES_CONFIG = {
+  "Popular Spots": { label: "popular spots", detail: "iconic landmarks and high-profile highlights" },
+  "Local Favorites": { label: "local favorites", detail: "authentic neighborhood staples where locals actually go" },
+  "Hidden Gems": { label: "hidden gems", detail: "lesser-known, off-the-beaten-path secret spots" },
+  "Mixed Picks": { label: "mixed picks", detail: "a curated mix of popular spots, local favorites, and hidden gems" },
+};
+const SPOT_TYPE_COLORS = { "Popular Spots": "#8B5CF6", "Local Favorites": "#8B5CF6", "Hidden Gems": "#8B5CF6", "Mixed Picks": "#8B5CF6" };
+
+const VEHICLE_COLORS = {
+  Boat: parrotBoatPurple, Car: parrotCarRed, Caravan: parrotCaravanOrangeRed,
+  Bus: parrotBusYellowGreen, Walk: parrotWalkTurquoise, Run: parrotRunLightOrange,
+  Motorcycle: parrotMotorcycleDarkRed, Bicycle: parrotBicycleTealGreen,
+  TinyHouse: parrotTinyHouseLightYellow, Airplane: parrotAirplaneLightGreen, Train: parrotTrainPink,
+};
+
+const VIBE_COLORS = {
+  Culture: "#F5A623", Food: "#F5A623", Nature: "#F5A623", Chill: "#F5A623",
+  Adventure: "#F5A623", Budget: "#F5A623", Scenic: "#F5A623", Any: "#F5A623",
+};
+
+
+const DURATION_COLORS = {
+  "Half day": "#2ac898", "1 day": "#2ac898", "2-3 days": "#2ac898",
+  "1 week": "#2ac898", "2 weeks": "#2ac898",
+};
+
+
+const purpleIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
+});
+
+function MapClickHandler({ onMapClick }) {
+  useMapEvents({ click: (e) => onMapClick(e.latlng) });
+  return null;
+}
+
+function MapCenterSetter({ center }) {
+  const map = useMap();
+  React.useEffect(() => { map.setView(center); }, [center, map]);
+  return null;
+}
+
+function getIndefiniteArticle(word) { return /^[aeiou]/i.test(word) ? "an" : "a"; }
+function formatDuration(d) { return d === "Half day" ? "half a day" : d; }
+function formatVehicleName(v) { return v === "TinyHouse" ? "tiny house" : v.toLowerCase(); }
+
+function buildQueryText(vehicle, duration, vibe, spotType, pin) {
+  const displayDuration = formatDuration(duration);
+  const displayVehicle = formatVehicleName(vehicle);
+
+  let vehiclePart;
+  if (ON_FOOT.includes(vehicle)) {
+    vehiclePart = `I want to go for a ${displayVehicle} for ${displayDuration}.`;
+  } else if (TRANSIT.includes(vehicle)) {
+    vehiclePart = `I'm traveling by ${displayVehicle} for ${displayDuration}.`;
+  } else {
+    vehiclePart = `I have ${getIndefiniteArticle(displayVehicle)} ${displayVehicle} and ${displayDuration} available.`;
+  }
+
+  let vibePart;
+  if (vibe === "Any") {
+    vibePart = "I'm looking for a voyage of any vibe";
+  } else {
+    const { label, detail } = VIBES_CONFIG[vibe];
+    const detailStr = detail ? ` (${detail})` : "";
+    vibePart = `I'm looking for ${getIndefiniteArticle(label)} ${label} experience${detailStr}`;
+  }
+
+  const spotConfig = SPOT_TYPES_CONFIG[spotType];
+  const spotPart = spotConfig ? `, focusing on ${spotConfig.label} (${spotConfig.detail})` : "";
+
+  const locationPart = pin ? "starting from this location" : "";
+  return `${vehiclePart} ${vibePart}${spotPart}, ${locationPart}.`;
+}
+
+function PillSelector({ options, selected, onSelect, colorMap, isDark }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+      {options.map((opt) => {
+        const color = colorMap[opt] || parrotBlue;
+        const isSelected = selected === opt;
+        return (
+          <button
+            key={opt}
+            onClick={() => onSelect(opt)}
+            style={{
+              padding: "0.3rem 0.75rem",
+              borderRadius: "999rem",
+              border: `0.09rem solid ${isSelected ? color : isDark ? "rgba(255,255,255,0.25)" : parrotPlaceholderGrey}`,
+              backgroundColor: isSelected ? color : isDark ? `${color}30` : `${color}15`,
+              color: isSelected ? "white" : isDark ? "rgba(255,255,255,0.85)" : "#444",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            {opt === "TinyHouse" ? "Tiny House" : opt}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function SectionCard({ label, children, style, isDark }) {
+  return (
+    <div style={{
+      backgroundColor: isDark ? "#011a32" : "white",
+      borderRadius: "0.875rem",
+      padding: ".75rem 1rem",
+      marginBottom: "0.5rem",
+      boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
+      ...style,
+    }}>
+      {label ? (
+        <div style={{
+          fontSize: "0.85rem", fontWeight: 800,
+          color: isDark ? "rgba(255,255,255,0.9)" : parrotTextDarkBlue,
+          letterSpacing: "0.08em", marginBottom: "0.6rem",
+        }}>{label}</div>
+      ) : null}
+      {children}
+    </div>
+  );
+}
+
+function QueryPreview({ vehicle, duration, vibe, spotType, pin, isDark }) {
+  if (!vehicle || !duration || !vibe || !pin) return null;
+  const isOnFoot = ON_FOOT.includes(vehicle);
+  const isTransit = TRANSIT.includes(vehicle);
+  const displayDuration = formatDuration(duration);
+  const displayVehicle = formatVehicleName(vehicle);
+  const vibeConf = VIBES_CONFIG[vibe];
+  const vibeLabel = vibeConf.label;
+  const vibeDetail = vibeConf.detail;
+  const vibeArticle = vibe === "Any" ? "a" : getIndefiniteArticle(vibeLabel);
+  const spotConf = spotType ? SPOT_TYPES_CONFIG[spotType] : null;
+  const vc = VEHICLE_COLORS[vehicle] || parrotBlue;
+  const dc = DURATION_COLORS[duration] || parrotBlue;
+  const vibeC = VIBE_COLORS[vibe] || parrotBlue;
+  const sc = "#8B5CF6";
+
+  return (
+    <p style={{ fontSize: "1.1rem", lineHeight: 1.6, margin: 0, color: isDark ? "rgba(255,255,255,0.85)" : "#333" }}>
+      {isOnFoot && "I want to go for a "}
+      {isTransit && "I'm traveling by "}
+      {!isOnFoot && !isTransit && `I have ${getIndefiniteArticle(displayVehicle)} `}
+      <span style={{ color: vc, fontWeight: 800 }}>{displayVehicle}</span>
+      {(isOnFoot || isTransit) ? " for " : " and "}
+      <span style={{ color: dc, fontWeight: 800 }}>{displayDuration}</span>
+      {(!isOnFoot && !isTransit) ? " available. " : ". "}
+      {vibe === "Any" ? "I'm looking for a voyage of " : `I'm looking for ${vibeArticle} `}
+      <span style={{ color: vibeC, fontWeight: 800 }}>{vibe === "Any" ? "any vibe" : vibeLabel}</span>
+      {vibe === "Any" ? " voyage" : " experience"}
+      {vibe !== "Any" && vibeDetail && <span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${vibeDetail})`}</span>}
+      {spotConf && <span>{", focusing on "}<span style={{ color: sc, fontWeight: 800 }}>{spotConf.label}</span><span style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#888" }}>{` (${spotConf.detail})`}</span></span>}
+      {", starting from this location."}
+
+    </p>
+  );
+}
+
+export default function AskParrotsPage() {
+  const [vehicle, setVehicle] = useState(null);
+  const [duration, setDuration] = useState(null);
+  const [vibe, setVibe] = useState(null);
+  const [spotType, setSpotType] = useState(null);
+  const [pin, setPin] = useState(null);
+  const [response, setResponse] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const currentUserId = useSelector((state) => state.users.userId);
+  const isDark = useSelector((state) => state.users.isDarkMode);
+  const [mapCenter, setMapCenter] = useState([52.2053, 0.1218]); // Cambridge UK fallback
+  const [userLocation, setUserLocation] = useState(null);
+  const [askParrots, { isLoading }] = useAskParrotsMutation();
+  const scrollRef = useRef(null);
+  const [showScrollArrow, setShowScrollArrow] = useState(true);
+  const responseScrollRef = useRef(null);
+  const [showResponseArrow, setShowResponseArrow] = useState(false);
+
+
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setShowScrollArrow(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
+    check();
+    el.addEventListener("scroll", check);
+    return () => el.removeEventListener("scroll", check);
+  }, []);
+
+  useEffect(() => {
+    const el = responseScrollRef.current;
+    if (!el) return;
+    const check = () => setShowResponseArrow(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
+    check();
+    el.addEventListener("scroll", check);
+    return () => el.removeEventListener("scroll", check);
+  }, [response]);
+  const navigate = useNavigate();
+  const [crackerBalance, setCrackerBalance] = useState(null);
+  const [isCrackerHovered, setIsCrackerHovered] = useState(false);
+  const [triggerGetUser] = useLazyGetUserByIdQuery();
+
+  React.useEffect(() => {
+    if (currentUserId) {
+      triggerGetUser(currentUserId).then((res) => {
+        if (res?.data) setCrackerBalance(res.data.parrotCrackerBalance ?? 0);
+      });
+    }
+  }, [currentUserId]);
+
+  React.useEffect(() => {
+    navigator.geolocation?.getCurrentPosition(
+      (pos) => {
+        const loc = [pos.coords.latitude, pos.coords.longitude];
+        setMapCenter(loc);
+        setUserLocation(loc);
+      },
+      () => { }
+    );
+  }, []);
+
+  const handleMapClick = useCallback((latlng) => setPin(latlng), []);
+
+  const handleAsk = async () => {
+    if (!pin) return;
+    setResponse(null);
+    try {
+      const result = await askParrots({
+        vehicleType: vehicle,
+        duration: duration === "Half day" ? "Half a Day" : duration,
+        vibe,
+        spotType,
+        latitude: pin.lat,
+        longitude: pin.lng,
+      }).unwrap();
+      setResponse(result.response);
+      if (result.remainingBalance !== undefined) setCrackerBalance(result.remainingBalance);
+    } catch (err) {
+      if (err?.status === 402) {
+        setCrackerBalance(0);
+        setResponse(null);
+      } else {
+        setResponse("Something went wrong. Please try again.");
+      }
+    }
+  };
+
+  const handleSendMe = async () => {
+    if (!response) return;
+    setSending(true);
+    const query = buildQueryText(vehicle, duration, vibe, spotType, pin);
+    const clean = response.replace(/^\[\[([^\]]+)\]\]\s*/, "($1) ").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\{\{([^}]+)\}\}/g, "$1");
+    const text = `🦜 ${query}\n\n➡️ ${clean}`;
+    await invokeHub("SendMessage", currentUserId, currentUserId, text, true);
+    setSending(false);
+    setSent(true);
+    setTimeout(() => setSent(false), 2000);
+  };
+
+  const handleCopy = () => {
+    if (!response) return;
+    const query = buildQueryText(vehicle, duration, vibe, spotType, pin);
+    const clean = response.replace(/^\[\[([^\]]+)\]\]\s*/, "($1) ").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\{\{([^}]+)\}\}/g, "$1");
+    navigator.clipboard.writeText(`${query}\n\n${clean}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const extractLocation = (text) => {
+    const match = text.match(/^\[\[([^\]]+)\]\]/);
+    return match ? match[1] : null;
+  };
+
+  const stripLocation = (text) => text.replace(/^\[\[[^\]]+\]\]\s*/, "");
+
+  const renderParagraph = (text, keyPrefix) => {
+    const tokens = text.split(/(\*\*[^*]+\*\*|\{\{[^}]+\}\})/);
+    return tokens.map((part, i) => {
+      if (/^\*\*[^*]+\*\*$/.test(part))
+        return <span key={`${keyPrefix}-${i}`} style={{ color: isDark ? "#60A5FA" : parrotBlue, fontWeight: 700 }}>{part.slice(2, -2)}</span>;
+      if (/^\{\{[^}]+\}\}$/.test(part))
+        return <span key={`${keyPrefix}-${i}`} style={{ color: "#8B5CF6", fontWeight: 700, textTransform: "capitalize" }}>{part.slice(2, -2)}</span>;
+      return <span key={`${keyPrefix}-${i}`}>{part}</span>;
+    });
+  };
+
+  const renderResponse = (text) => {
+    const paragraphs = text.split(/\n\n+/);
+    return paragraphs.map((para, i) => (
+      <p key={i} style={{ margin: i === 0 ? "0 0 0.75rem 0" : "0.75rem 0 0 0" }}>
+        {renderParagraph(para, i)}
+      </p>
+    ));
+  };
+
+  const canAsk = !!vehicle && !!duration && !!vibe && !!spotType && !!pin;
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "1.25rem", padding: ".5rem 1.25rem", flex: 1, width: "100%", margin: "auto", minHeight: 0, overflow: "hidden" }}>
+
+            {/* Left panel — 2 parts */}
+            <div style={{ flex: 2, display: "flex", flexDirection: "column", minHeight: 0 }}>
+              {crackerBalance === 0 ? (
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  backgroundColor: isDark ? "#011a32" : "white",
+                  borderRadius: "0.875rem", padding: "0.75rem 1rem", marginBottom: "0.75rem",
+                  boxShadow: isDark ? "0 0.125rem 0.5rem rgba(0,0,0,0.4)" : "0 0.125rem 0.5rem rgba(0,0,0,0.06)",
+                  gap: "1rem",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <img src={parrotCracker} alt="cracker" style={{ width: "3rem", height: "3rem" }} />
+                    <span style={{ fontWeight: 700, fontSize: "0.9rem", color: isDark ? "rgba(255,255,255,0.9)" : "#003366", textAlign: "left", paddingLeft: "1.5rem" }}>
+                      You're out of ParrotCrackers.<br />Get more before you configure your voyage.
+                    </span>
+                  </div>
+                  <style>{`@keyframes parrotPulse { 0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.5;transform:scale(1.5)} }`}</style>
+                  <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                </div>
+              ) : (
+                <div style={{
+                  backgroundColor: "#011a32",
+                  borderRadius: "0.875rem", padding: "0.5rem 0.75rem",
+                  display: "flex", flexDirection: "column",
+                  boxShadow: "0 0.125rem 0.5rem rgba(0,0,0,0.25)",
+                  marginBottom: "0.75rem",
+                }}>
+                  {/* top row: logo + title/subtitle */}
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.75rem" }}>
+                    <div style={{
+                      width: "4.5rem", height: "3.5rem", borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center", marginLeft: "-.75rem"
+                    }}>
+                      <img src={require("../assets/images/parrotsiconpaddedtransparent.png")} alt="parrot"
+                        style={{ width: "5rem", height: "5rem" }} />
+                    </div>
+                    <div style={{
+                      display: "flex", flexDirection: "column",
+                      alignItems: "flex-start", gap: "0.1rem", marginLeft: "-1rem"
+                    }}>
+                      <span style={{ fontSize: "1.3rem", fontWeight: 800, color: parrotCaravanOrangeRed }}>Ask Parrots</span>
+                      <span style={{ fontSize: ".95rem", color: "rgba(255,255,255,0.85)", textAlign: "left" }}>
+                        Pick your preferences, set the vibe, and explore recommendations.
+                      </span>
+                      <span style={{ fontSize: ".9rem", color: parrotLightBlue, textAlign: "left" }}>
+                        These tips are for inspiration, so please verify before you go.
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+              <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+                <div ref={scrollRef} style={{ height: "100%", overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                  <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+                  <SectionCard label="I WANT TO TRAVEL BY..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={VEHICLES} selected={vehicle} onSelect={setVehicle} colorMap={VEHICLE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="FOR..." isDark={isDark}>
+                    <PillSelector options={DURATIONS} selected={duration} onSelect={setDuration} colorMap={DURATION_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="WITH A VIBE OF..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={VIBES} selected={vibe} onSelect={setVibe} colorMap={VIBE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                  <SectionCard label="FOCUSING ON..." isDark={isDark} style={{ paddingTop: "0.5rem" }}>
+                    <PillSelector options={SPOT_TYPES} selected={spotType} onSelect={setSpotType} colorMap={SPOT_TYPE_COLORS} isDark={isDark} />
+                  </SectionCard>
+                </div>
+                {showScrollArrow && (
+                  <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
+                    <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                  </div>
+                )}
+              </div>
+              <SectionCard label="" style={{
+                minHeight: "10rem",
+                padding: ".5rem", paddingLeft: "1.5rem", paddingRight: "1.5rem",
+                marginTop: ".5rem"
+              }} isDark={isDark}>
+                <QueryPreview vehicle={vehicle} duration={duration} vibe={vibe} spotType={spotType} pin={pin} isDark={isDark} />
+              </SectionCard>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem", gap: "0.75rem" }}>
+                {crackerBalance !== null && (
+                  <div style={{ position: "relative" }}>
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => navigate("/parrotCrackerPage")}>
+                      <div style={{
+                        width: "3.75rem", height: "3.75rem", borderRadius: "4rem",
+                        backgroundColor: "#cad8ec5d", display: "flex", alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <img
+                          src={parrotCracker}
+                          alt="cracker"
+                          style={{
+                            width: "3.5rem", height: "3.5rem", transform: isCrackerHovered ? "scale(1.3)" : "scale(1)", transition: "transform 0.3s ease-in-out", display: "block", marginTop: "1px"
+                          }}
+                          onMouseEnter={() => setIsCrackerHovered(true)}
+                          onMouseLeave={() => setIsCrackerHovered(false)}
+                        />
+                      </div>
+                    </div>
+                    {isCrackerHovered && (
+                      <div style={{
+                        position: "absolute", bottom: "4.5rem", left: "0",
+                        backgroundColor: isDark ? "#0d2a45" : "#faf7f2",
+                        color: isDark ? "rgba(255,245,220,0.9)" : "#003366",
+                        borderRadius: "0.75rem", padding: "0.75rem 1rem",
+                        boxShadow: "0 0.25rem 1rem rgba(0,0,0,0.2)",
+                        fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap",
+                        zIndex: 100,
+                      }}>
+                        {crackerBalance === 0 ? (
+                          <>
+                            You have no ParrotCrackers left.<br />
+                            You need at least 1 ParrotCracker to ask the Parrots.<br />
+                            <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to top up your ParrotCrackers.</span>
+                          </>
+                        ) : (
+                          <>
+                            You have {crackerBalance} ParrotCracker{crackerBalance !== 1 ? "s" : ""}.<br />
+                            1 ParrotCracker will be deducted per query.<br />
+                            <span style={{ opacity: 0.65, fontWeight: 400 }}>Click to manage your ParrotCrackers.</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+                <button
+                  onClick={crackerBalance === 0 ? () => navigate("/parrotCrackerPage") : handleAsk}
+                  disabled={crackerBalance !== 0 && (!canAsk || isLoading)}
+                  style={{
+                    width: "60%", padding: "0.75rem",
+                    backgroundColor: crackerBalance === 0 ? parrotCaravanOrangeRed : canAsk && !isLoading ? parrotDarkBlue : isDark ? "#555" : "#ccc",
+                    color: "white", fontWeight: 800, fontSize: "1rem",
+                    border: "none", borderRadius: "999rem", cursor: crackerBalance === 0 ? "pointer" : canAsk && !isLoading ? "pointer" : "not-allowed",
+                    boxShadow: canAsk ? "0 0.25rem 0.625rem rgba(0,0,0,0.15)" : "none",
+                    transition: "all 0.2s ease",
+
+                  }}
+                >
+                  {isLoading ? "Asking Parrots..." : crackerBalance === 0 ? "Get ParrotCrackers" : "Ask Parrots"}
+                </button>
+              </div>
+            </div>
+
+            {/* Right panel — 4 parts */}
+            <div style={{ flex: 4, display: "flex", flexDirection: "column", gap: "0", minHeight: 0 }}>
+              <SectionCard label="" style={{ padding: 0, overflow: "hidden" }} isDark={isDark}>
+                <div style={{ position: "relative" }}>
+                  <span style={{
+                    position: "absolute", bottom: "0.75rem", left: "0.75rem",
+                    zIndex: 1000, pointerEvents: "none",
+                    fontSize: "0.78rem", fontWeight: 800,
+                    color: "#003366",
+                    backgroundColor: "rgba(255,255,255,0.9)",
+                    borderRadius: "1.5rem",
+                    padding: "0.35rem 1rem",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                    letterSpacing: "0.08em",
+                    whiteSpace: "nowrap",
+                  }}>AROUND...</span>
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={11}
+                    style={{ height: "23rem", width: "100%" }}
+                    scrollWheelZoom
+                  >
+                    <TileLayer
+                      url={`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${process.env.REACT_APP_MAPTILER_KEY}`}
+                      attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                    />
+                    <MapCenterSetter center={mapCenter} />
+                    <MapClickHandler onMapClick={handleMapClick} />
+                    {userLocation && (
+                      <CircleMarker
+                        center={userLocation}
+                        radius={5}
+                        pathOptions={{ color: "#1a73e8", fillColor: "#1a73e8", fillOpacity: 1, weight: 2 }}
+                      />
+                    )}
+                    {pin && <Marker position={pin} icon={purpleIcon} />}
+                  </MapContainer>
+                  <span style={{
+                    position: "absolute", bottom: "0.75rem", left: "8rem",
+                    zIndex: 1000, pointerEvents: "none",
+                    fontSize: "0.78rem", fontWeight: 700,
+                    color: "#003366",
+                    backgroundColor: "rgba(255,255,255,0.9)",
+                    borderRadius: "1.5rem",
+                    padding: "0.35rem 1rem",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                    whiteSpace: "nowrap",
+                  }}>click to set location</span>
+                </div>
+              </SectionCard>
+
+              <SectionCard label="" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }} isDark={isDark}>
+                {response ? (
+                  <>
+                    <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+                      <style>{`.response-scroll::-webkit-scrollbar { display: none; }`}</style>
+                      <p ref={responseScrollRef} className="response-scroll" style={{
+                        fontSize: "1.1rem", lineHeight: 1.6,
+                        color: isDark ? "rgba(255,255,255,0.9)" : "#333",
+                        margin: 0, textAlign: "left", paddingLeft: "1.5rem",
+                        paddingRight: "1.5rem", height: "100%", overflowY: "auto",
+                        scrollbarWidth: "none", msOverflowStyle: "none"
+                      }}>
+                        {extractLocation(response) && (
+                          <span style={{ fontWeight: 700, color: "#10B981", marginRight: "0.5rem" }}>
+                            <span style={{ color: "#10B981" }}>@</span> {extractLocation(response)}
+                          </span>
+                        )}
+                        {renderResponse(stripLocation(response))}
+                      </p>
+                      {showResponseArrow && (
+                        <div style={{ position: "absolute", bottom: "0.5rem", right: "0.5rem", pointerEvents: "none" }}>
+                          <FaAngleDoubleDown style={{ color: parrotCaravanOrangeRed, fontSize: "1.5rem", animation: "parrotPulse 1.8s ease-in-out infinite" }} />
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem", marginBottom: "0.25rem", justifyContent: "center", flexShrink: 0 }}>
+                      <button onClick={handleCopy} style={btnStyle(parrotBlue)}>
+                        {copied ? "Copied!" : "Copy"}
+                      </button>
+                      <button onClick={handleSendMe} disabled={sending} style={{ ...btnStyle("#089ADE"), minWidth: "7rem" }}>
+                        {sending ? <span style={{ display: "inline-block", width: 16, height: 16, border: "2px solid white", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite", verticalAlign: "middle" }} /> : sent ? "Sent!" : "Send Me"}
+                      </button>
+                    </div>
+                  </>
+                ) : isLoading ? (
+                  <div style={{ display: "flex", margin: "auto" }}>
+                    <PulsatingParrotLogoWithText size={192} isDark={isDark} />
+                    {/* <img
+                      src={placeholderParrots}
+                      alt="Scouting"
+                      style={{ height: "10rem", objectFit: "contain", display: "block", margin: "auto", marginTop: "0.2rem" }} /> */}
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", margin: "auto" }}>
+                    {/* <PulsatingParrotLogoWithText size={192} isDark={isDark} /> */}
+                    <img
+                      src={placeholderParrots}
+                      alt="Scouting"
+                      style={{
+                        height: "10rem", objectFit: "contain", display: "block", margin: "auto",
+                        marginTop: "-1rem", opacity: 0.5
+                      }} />
+                  </div>
+                )}
+
+              </SectionCard>
+            </div>
+
+          </div>
+        </div>
+      </header>
+    </div>
+  );
+}
+
+const btnStyle = (bg) => ({
+  padding: "0.6rem 1.6rem",
+  backgroundColor: bg,
+  color: "white",
+  fontWeight: 700,
+  fontSize: "0.95rem",
+  border: "none",
+  borderRadius: "999rem",
+  cursor: "pointer",
+  boxShadow: "0 0.125rem 0.375rem rgba(0,0,0,0.15)",
+});

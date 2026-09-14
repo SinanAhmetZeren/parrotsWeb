@@ -1,0 +1,1055 @@
+/* eslint-disable no-undef */
+import "../assets/css/App.css";
+import "../assets/css/LoginPage.css";
+import { useState } from "react";
+import { useGoogleLoginInternalMutation as googleLoginMutation } from "../slices/UserSlice";
+import { TopBarMenu } from "../components/TopBarMenu";
+import { TopLeftComponent } from "../components/TopLeftComponent";
+import {
+  useRegisterUserMutation,
+  useConfirmUserMutation,
+  useLoginUserMutation,
+  useAcceptTermsMutation,
+  useRequestCodeMutation,
+  useResetPasswordMutation,
+  updateUserFavorites,
+  setBookmarkedUserIds,
+} from "../slices/UserSlice";
+import { useDispatch } from "react-redux";
+import { updateAsLoggedIn, setRequiresTermsAcceptance } from "../slices/UserSlice";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import {
+  parrotTextDarkBlue,
+} from "../styles/colors";
+import GoogleLoginButton from "../components/GoogleLoginButton";
+import { SomethingWentWrong } from "../components/SomethingWentWrong";
+import { TERMS_VERSION } from "../constants/TermsVersion";
+import TermsOfUseComponent from "../components/TermsOfUseComponent";
+import { useHealthCheckQuery } from "../slices/HealthSlice";
+import { toast } from "react-toastify";
+import welcomeImage from "../assets/images/WelcomeWeb.png";
+import almostThereImage from "../assets/images/AlmostWeb.png";
+import checkYourEmailImage from "../assets/images/CheckWeb.png";
+import letsGetStartedImage from "../assets/images/LetsWeb.png";
+import resetPasswordImage from "../assets/images/ResetWeb.png";
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const [triggerGoogleLogin, { isLoading: isLoadingGoogle, data, error }] =
+    googleLoginMutation();
+
+  const [pageState, setPageState] = useState("Login");
+  const [username, setUsername] = useState("");
+  const [usernameRegister, setUsernameRegister] = useState("");
+  const [emailRegister, setEmailRegister] = useState("");
+  const [emailForgotPassword, setEmailForgotPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordRegister, setPasswordRegister] = useState("");
+  const [passwordRegister2, setPasswordRegister2] = useState("");
+  const [passwordUpdate1, setPasswordUpdate1] = useState("");
+  const [passwordUpdate2, setPasswordUpdate2] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
+  const [sixDigitCode, setSixDigitCode] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordRegister, setShowPasswordRegister] = useState(false);
+  const [showPasswordRegister2, setShowPasswordRegister2] = useState(false);
+  const [showPasswordUpdate1, setShowPasswordUpdate1] = useState(false);
+  const [showPasswordUpdate2, setShowPasswordUpdate2] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isConfirmingUser, setIsConfirmingUser] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsModalOpen, setTermsModalOpen] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+  const [requiresTermsReAcceptance, setRequiresTermsReAcceptance] = useState(false);
+  const [pendingLoginData, setPendingLoginData] = useState(null);
+
+  const dispatch = useDispatch();
+  const [loginUser, { isLoading, isSuccess, isError: isLoginError }] =
+    useLoginUserMutation();
+  const [acceptTerms] = useAcceptTermsMutation();
+  const [requestCode] = useRequestCodeMutation();
+  const [resetPassword] = useResetPasswordMutation();
+  const [
+    registerUser,
+    { isLoading: isLoadingRegisterUser, isSuccess: isSuccessRegisterUser },
+  ] = useRegisterUserMutation();
+
+  const [
+    confirmUser,
+    { isLoading: isLoadingConfirmUser, isSuccess: isSuccessConfirmUser },
+  ] = useConfirmUserMutation();
+
+  if (sessionStorage.getItem("sessionExpired")) {
+    sessionStorage.removeItem("sessionExpired");
+    toast.warning("Your session has expired. Please log in again.");
+  }
+
+  const resetAllForms = () => {
+    setUsernameRegister("");
+    setEmailRegister("");
+    setEmailForgotPassword("");
+    setPasswordRegister("");
+    setPasswordRegister2("");
+    setPasswordUpdate1("");
+    setPasswordUpdate2("");
+    setConfirmationCode("");
+    setSixDigitCode("");
+    setTermsAccepted(false);
+    setFocusedField(null);
+  };
+
+  const handleForgotPassword = () => {
+    resetAllForms();
+    setPageState("ForgotPassword");
+  };
+
+  const handleSignup = () => {
+    resetAllForms();
+    setPageState("Register1");
+  };
+
+  const makeVisible = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const makeVisibleRegister = () => {
+    setShowPasswordRegister(!showPasswordRegister);
+  };
+  const makeVisibleRegister2 = () => {
+    setShowPasswordRegister2(!showPasswordRegister2);
+  };
+
+  const makeVisibleUpdate = () => {
+    setShowPasswordUpdate1(!showPasswordUpdate1);
+  };
+  const makeVisibleUpdate2 = () => {
+    setShowPasswordUpdate2(!showPasswordUpdate2);
+  };
+  const handleConfirmCode = async () => {
+    setIsConfirmingUser(true);
+    if (!confirmationCode) {
+      console.error("Confirmation code is required.");
+      return;
+    }
+    try {
+      const confirmResponse = await confirmUser({
+        email: emailRegister,
+        code: confirmationCode,
+      }).unwrap();
+      setConfirmationCode("");
+      setEmailRegister("");
+
+      console.log("confirmResponse:...", confirmResponse);
+      console.log("confirmResponse token:...", confirmResponse.token);
+      if (confirmResponse.token) {
+        dispatch(
+          updateAsLoggedIn({
+            userId: confirmResponse.userId,
+            token: confirmResponse.token,
+            refreshToken: confirmResponse.refreshToken,
+            userName: confirmResponse.userName,
+            profileImageUrl: confirmResponse.profileImageUrl,
+            isAdmin: confirmResponse.isAdmin,
+            hasAcknowledgedPublicProfile: confirmResponse.hasAcknowledgedPublicProfile ?? false,
+          })
+        );
+        dispatch(updateUserFavorites({
+          favoriteVehicles: confirmResponse.favoriteVehicleIds,
+          favoriteVoyages: confirmResponse.favoriteVoyageIds,
+        }));
+        dispatch(setBookmarkedUserIds(confirmResponse.bookmarkedUserIds || []));
+        if (confirmResponse.requiresTermsAcceptance === true) {
+          dispatch(setRequiresTermsAcceptance(true));
+        }
+      }
+      setIsConfirmingUser(false);
+      setConfirmationCode("");
+      navigate("/");
+    } catch (err) {
+      console.log("Error confirming user:", err.originalStatus === 400);
+      toast.error("Error confirming user. Please check your confirmation code and try again.");
+      setIsConfirmingUser(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!username || !password) {
+      toast.error("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      setIsLoggingIn(true);
+      const loginResponse = await loginUser({
+        Email: username,
+        Password: password,
+      }).unwrap();
+
+
+      console.log("---------->login response: ");
+      console.log(loginResponse.isAdmin);
+
+      if (!loginResponse?.token) {
+        setIsLoggingIn(false);
+        toast.error("Login failed: Invalid credentials.");
+        return; // prevent redirect
+      }
+
+      // Save tokens
+      localStorage.setItem("storedToken", loginResponse.token);
+      localStorage.setItem("storedRefreshToken", loginResponse.refreshToken);
+
+      dispatch(updateUserFavorites({
+        favoriteVehicles: loginResponse.favoriteVehicleIds,
+        favoriteVoyages: loginResponse.favoriteVoyageIds,
+      }));
+      dispatch(setBookmarkedUserIds(loginResponse.bookmarkedUserIds || []));
+
+      dispatch(
+        updateAsLoggedIn({
+          userId: loginResponse.userId,
+          token: loginResponse.token,
+          refreshToken: loginResponse.refreshToken,
+          userName: loginResponse.userName,
+          profileImageUrl: loginResponse.profileImageUrl,
+          isAdmin: loginResponse.isAdmin,
+          hasAcknowledgedPublicProfile: loginResponse.hasAcknowledgedPublicProfile ?? false,
+        })
+      );
+
+      if (loginResponse.requiresTermsAcceptance === true) {
+        dispatch(setRequiresTermsAcceptance(true));
+      }
+      // Reset input and navigate only on success
+      setUsername("");
+      setPassword("");
+      navigate("/"); // ✅ Only happens after success
+    } catch (err) {
+      setIsLoggingIn(false);
+      if (err.status === 401) {
+        toast.error("Incorrect email or password.");
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
+      console.error("Login error:", err);
+    }
+  };
+
+  const handleAcceptUpdatedTerms = async () => {
+    try {
+      await acceptTerms().unwrap();
+      dispatch(
+        updateAsLoggedIn({
+          userId: pendingLoginData.userId,
+          token: pendingLoginData.token,
+          refreshToken: pendingLoginData.refreshToken,
+          userName: pendingLoginData.userName,
+          profileImageUrl: pendingLoginData.profileImageUrl,
+          isAdmin: pendingLoginData.isAdmin,
+          hasAcknowledgedPublicProfile: pendingLoginData.hasAcknowledgedPublicProfile ?? false,
+        })
+      );
+      dispatch(updateUserFavorites({
+        favoriteVehicles: pendingLoginData.favoriteVehicleIds,
+        favoriteVoyages: pendingLoginData.favoriteVoyageIds,
+      }));
+      dispatch(setBookmarkedUserIds(pendingLoginData.bookmarkedUserIds || []));
+      setRequiresTermsReAcceptance(false);
+      setPendingLoginData(null);
+      setUsername("");
+      setPassword("");
+      navigate("/");
+    } catch (err) {
+      toast.error("Failed to accept terms. Please try again.");
+    }
+  };
+
+  const handleRegister = async () => {
+    setIsRegistering(true);
+    if (
+      !usernameRegister ||
+      !emailRegister ||
+      !passwordRegister ||
+      !passwordRegister2
+    ) {
+      toast.error("All fields are required for registration.");
+      return;
+    }
+
+    if (passwordRegister !== passwordRegister2) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    const passwordValid =
+      passwordRegister.length >= 8 &&
+      /[A-Z]/.test(passwordRegister) &&
+      /[a-z]/.test(passwordRegister) &&
+      /[0-9]/.test(passwordRegister);
+
+    if (!passwordValid) {
+      toast.error("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.");
+      return;
+    }
+
+    try {
+      const registerResponse = await registerUser({
+        Email: emailRegister,
+        UserName: usernameRegister,
+        Password: passwordRegister,
+        TermsVersion: TERMS_VERSION,
+      }).unwrap();
+
+      if (registerResponse?.token) {
+        setUsernameRegister("");
+        setPasswordRegister("");
+        setPasswordRegister2("");
+        setPageState("Register2");
+        setIsRegistering(false);
+      } else {
+        toast.error("Registration failed: No token received.");
+        setIsRegistering(false);
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setIsRegistering(false);
+
+      toast.error(
+        err?.data?.message ||
+        err?.error ||
+        "Registration failed. Please check your details or try again later."
+      );
+    }
+  };
+
+  const handleSendResetCode = async () => {
+    console.log("calling reset code with email:", emailForgotPassword);
+    setIsSendingCode(true);
+    if (!emailForgotPassword) return;
+
+    try {
+      await requestCode(emailForgotPassword).unwrap(); // Await and unwrap to catch errors
+      resetAllForms();
+      setPageState("ResetPassword");
+      setIsSendingCode(false);
+    } catch (err) {
+      console.error("Failed to request reset code:", err);
+      toast.error("Failed to send reset code. Please check your email and try again.");
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!sixDigitCode || !passwordUpdate1 || !passwordUpdate2) return;
+
+    setIsUpdatingPassword(true);
+    try {
+      const resetPasswordResponse = await resetPassword({
+        email: emailForgotPassword,
+        password: passwordUpdate1,
+        confirmationCode: sixDigitCode,
+      }).unwrap();
+
+      setPasswordUpdate1("");
+      setPasswordUpdate2("");
+      setSixDigitCode("");
+      if (resetPasswordResponse.token) {
+        dispatch(
+          updateAsLoggedIn({
+            userId: resetPasswordResponse.userId,
+            token: resetPasswordResponse.token,
+            refreshToken: resetPasswordResponse.refreshToken,
+            userName: resetPasswordResponse.userName,
+            profileImageUrl: resetPasswordResponse.profileImageUrl,
+            isAdmin: resetPasswordResponse.isAdmin,
+            hasAcknowledgedPublicProfile: resetPasswordResponse.hasAcknowledgedPublicProfile ?? false,
+          })
+        );
+        dispatch(updateUserFavorites({
+          favoriteVehicles: resetPasswordResponse.favoriteVehicleIds,
+          favoriteVoyages: resetPasswordResponse.favoriteVoyageIds,
+        }));
+        dispatch(setBookmarkedUserIds(resetPasswordResponse.bookmarkedUserIds || []));
+        if (resetPasswordResponse.requiresTermsAcceptance === true) {
+          dispatch(setRequiresTermsAcceptance(true));
+        }
+      }
+      setIsUpdatingPassword(false);
+
+      navigate("/");
+    } catch (err) {
+      console.log(err.status);
+      toast.error("Error resetting password. Please check your code and try again.");
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const LoginSpinner = () => {
+    return (
+      <div
+        style={{
+          backgroundColor: "rgba(0, 119, 234,0.1)",
+          borderRadius: "1.5rem",
+          position: "relative",
+          margin: "auto",
+          height: "1.7rem",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className="spinner"
+          style={{
+            height: "1rem",
+            width: "1rem",
+            border: "3px solid white",
+            borderTop: "3px solid #1e90ff",
+          }}
+        ></div>
+      </div>
+    );
+  };
+
+  const { data: healthCheckData, isError: isHealthCheckError } =
+    useHealthCheckQuery();
+
+  if (isHealthCheckError) {
+    console.log(".....Health check failed.....");
+    return <SomethingWentWrong />;
+  }
+
+  // if (isLoginError) return <SomethingWentWrong />;
+
+  if (requiresTermsReAcceptance) {
+    return (
+      <div>
+        <TermsOfUseComponent
+          open={true}
+          onClose={() => { setRequiresTermsReAcceptance(false); setPendingLoginData(null); }}
+          onAccept={handleAcceptUpdatedTerms}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <div className="flex mainpage_Container">
+          <div className="flex mainpage_TopRow">
+            <TopLeftComponent />
+            <div className="flex mainpage_TopRight">
+              <TopBarMenu />
+            </div>
+          </div>
+          <div style={mainWrapper}>
+            {pageState === "Login" ? (
+              <>
+                <div style={mainContainer}>
+                  <div style={wrapper}>
+                    <img src={welcomeImage} alt="Welcome to Parrots"
+                      style={{ width: "100%", height: "5rem" }}
+                    />
+                    <div
+                      style={{
+                        width: "73%",
+                        margin: "auto",
+                      }}
+                    >
+                      {/* <div style={welcomeStyle}> Welcome To Parrots!</div> */}
+
+                      <div className="username-wrapper-login">
+                        <input
+                          type="text"
+                          placeholder="Email"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                          className="username-input-login"
+                          style={{ color: parrotTextDarkBlue }}
+                        />
+                      </div>
+                      <div className="password-wrapper-login">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                          className="password-input-login"
+                          style={{ color: parrotTextDarkBlue }}
+                        />
+                        <span
+                          style={{
+                            padding: "1rem",
+                            position: "absolute",
+                            marginLeft: "-4rem",
+                            marginTop: "-.3rem",
+                          }}
+                          onClick={() => makeVisible()}
+                        >
+                          {showPassword ? (
+                            <AiFillEyeInvisible
+                              size="2rem"
+                              color={parrotTextDarkBlue}
+                            />
+                          ) : (
+                            <AiFillEye
+                              size="2rem"
+                              color={parrotTextDarkBlue}
+                            />
+                          )}
+                        </span>
+                      </div>
+                      <div className="forgot-password">
+                        <span
+                          className="forgotPasswordSpan"
+                          style={{ color: parrotTextDarkBlue }}
+                          onClick={() => handleForgotPassword()}
+                        >
+                          Forgot password?
+                        </span>
+                      </div>
+                      <div
+                        className="login-button"
+                        style={{
+                          opacity: username && password ? 1 : 0.5,
+                        }}
+                        onClick={() => handleLogin()}
+                      >
+                        {" "}
+                        {isLoggingIn ? <LoginSpinner /> : "Login"}
+                      </div>
+
+                      <div className="signup">
+                        <span>
+                          <span
+                            style={{
+                              color: parrotTextDarkBlue,
+                            }}
+                          >
+                            Don't have an account?
+                          </span>
+                          <span
+                            onClick={() => { handleSignup(); }}
+                            style={{
+                              color: parrotTextDarkBlue,
+                              fontWeight: "bold",
+                              paddingLeft: "0.5rem",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Sign up
+                          </span>
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          marginTop: "2rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            margin: "auto",
+                            marginTop: "2rem",
+                            // width: "100%",
+                          }}
+                        >
+                          <GoogleLoginButton />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : pageState === "Register1" ? (
+              <div style={{ ...mainContainer, position: "relative" }}>
+                {focusedField === "username" && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "At least 3 characters", ok: usernameRegister.length >= 3 },
+                      { label: "Max 25 characters", ok: usernameRegister.length <= 25 },
+                      { label: "Letters, numbers, underscores only", ok: usernameRegister.length === 0 || /^[a-zA-Z0-9_]+$/.test(usernameRegister) },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {focusedField === "email" && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "Valid email format", ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {(focusedField === "password" || focusedField === "confirmPassword") && (
+                  <div style={registerPill}>
+                    {[
+                      { label: "At least 8 characters", ok: passwordRegister.length >= 8 },
+                      { label: "One uppercase letter", ok: /[A-Z]/.test(passwordRegister) },
+                      { label: "One lowercase letter", ok: /[a-z]/.test(passwordRegister) },
+                      { label: "One number", ok: /[0-9]/.test(passwordRegister) },
+                      { label: "Passwords match", ok: passwordRegister.length > 0 && passwordRegister === passwordRegister2 },
+                    ].map(({ label, ok }) => (
+                      <div key={label} style={{ color: ok ? "#a8e6cf" : "#ffb3b3", fontSize: "0.95rem", fontWeight: 500 }}>
+                        {ok ? "✓" : "✗"} {label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={wrapper}>
+                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
+                  <img src={letsGetStartedImage} alt="Lets get started"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+                  <div
+                    style={{
+                      width: "80%",
+                      margin: "auto",
+                    }}
+                  >
+                    <div className="username-wrapper-register">
+                      <input
+                        type="text"
+                        placeholder="Username (3-25 characters)"
+                        value={usernameRegister}
+                        maxLength={25}
+                        onChange={(e) => setUsernameRegister(e.target.value)}
+                        onFocus={() => setFocusedField("username")}
+                        onBlur={() => setFocusedField(null)}
+                        className="username-input-register"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+                    <div className="username-wrapper-register">
+                      <input
+                        type="text"
+                        placeholder="Email"
+                        value={emailRegister}
+                        onChange={(e) => setEmailRegister(e.target.value)}
+                        onFocus={() => setFocusedField("email")}
+                        onBlur={() => setFocusedField(null)}
+                        className="username-input-register"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+
+                    <div className="password-wrapper-register">
+                      <input
+                        type={showPasswordRegister ? "text" : "password"}
+                        placeholder="Password"
+                        value={passwordRegister}
+                        onChange={(e) => setPasswordRegister(e.target.value)}
+                        onFocus={() => setFocusedField("password")}
+                        onBlur={() => setFocusedField(null)}
+                        className="password-input-register"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                      <span
+                        style={{
+                          padding: "1rem",
+                          position: "absolute",
+                          marginLeft: "-4rem",
+                          marginTop: "-.3rem",
+                        }}
+                        onClick={() => makeVisibleRegister()}
+                      >
+                        {showPasswordRegister ? (
+                          <AiFillEyeInvisible
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        ) : (
+                          <AiFillEye
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="password-wrapper-register">
+                      <input
+                        type={showPasswordRegister2 ? "text" : "password"}
+                        placeholder="Re-enter Password"
+                        value={passwordRegister2}
+                        onChange={(e) => setPasswordRegister2(e.target.value)}
+                        onFocus={() => setFocusedField("confirmPassword")}
+                        onBlur={() => setFocusedField(null)}
+                        className="password-input-register"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                      <span
+                        style={{
+                          padding: "1rem",
+                          position: "absolute",
+                          marginLeft: "-4rem",
+                          marginTop: "-.3rem",
+                        }}
+                        onClick={() => makeVisibleRegister2()}
+                      >
+                        {showPasswordRegister2 ? (
+                          <AiFillEyeInvisible
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        ) : (
+                          <AiFillEye
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        )}
+                      </span>
+                    </div>
+
+                    <div style={{ paddingTop: "0.5rem", paddingLeft: "0.5rem", marginTop: "1rem", marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
+                        <div
+                          onClick={() => setTermsAccepted(prev => !prev)}
+                          style={{
+                            width: "1.1rem", height: "1.1rem", borderRadius: "3px",
+                            border: "2px solid #007bff", backgroundColor: termsAccepted ? "#007bff" : "white",
+                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {termsAccepted && <span style={{ color: "white", fontSize: "0.8rem", fontWeight: "bold" }}>✓</span>}
+                        </div>
+                        <span style={{ color: parrotTextDarkBlue, fontSize: "0.9rem" }}>
+                          I have read and agree to the{" "}
+                          <span
+                            onClick={() => setTermsModalOpen(true)}
+                            style={{ color: "#007bff", fontWeight: "bold", cursor: "pointer", textDecoration: "underline" }}
+                          >
+                            Terms of Use
+                          </span>
+                        </span>
+                      </div>
+
+                      <TermsOfUseComponent
+                        open={termsModalOpen}
+                        onClose={() => setTermsModalOpen(false)}
+                      />
+
+                      <div
+                        className="register-button"
+                        onClick={() => termsAccepted && handleRegister()}
+                        style={{
+                          opacity:
+                            usernameRegister.length >= 3 &&
+                              /^[a-zA-Z0-9_]+$/.test(usernameRegister) &&
+                              emailRegister &&
+                              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRegister) &&
+                              passwordRegister &&
+                              passwordRegister2 &&
+                              termsAccepted &&
+                              passwordRegister.length >= 8 &&
+                              /[A-Z]/.test(passwordRegister) &&
+                              /[a-z]/.test(passwordRegister) &&
+                              /[0-9]/.test(passwordRegister) &&
+                              passwordRegister === passwordRegister2
+                              ? 1
+                              : 0.5,
+                          cursor: termsAccepted ? "pointer" : "not-allowed",
+                        }}
+                      >
+                        {" "}
+                        {isRegistering ? <LoginSpinner /> : "Register"}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ marginRight: "1rem" }}>
+                    <div className="signup-register">
+                      <span className="signupSpan">
+                        <span
+                          className="signupLinkSpan"
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
+                          style={{ color: parrotTextDarkBlue }}
+                        >
+                          Back to Login
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "Register2" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+
+                  <img src={almostThereImage} alt="Almost there"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
+                  <div style={{ width: "80%", margin: "auto" }}>
+                    <div className="username-wrapper-confirmationCode">
+                      <input
+                        type="text"
+                        placeholder="Confirmation Code"
+                        value={confirmationCode}
+                        onChange={(e) => setConfirmationCode(e.target.value)}
+                        className="username-input-confirmationCode"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+                    <div>
+                      <div
+                        className="confirmationCode-button"
+                        onClick={() => handleConfirmCode()}
+                        style={{
+                          opacity: confirmationCode ? 1 : 0.5,
+                        }}
+                      >
+                        {" "}
+                        {isConfirmingUser ? <LoginSpinner /> : "Confirm"}
+                      </div>
+                    </div>
+                    <div className="signup">
+                      <span
+                        className="signupSpan"
+                        style={{ marginTop: ".5rem" }}
+                      >
+                        <span
+                          className="signupLinkSpan"
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
+                          style={{ color: parrotTextDarkBlue }}
+                        >
+                          Back to Login
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "ForgotPassword" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+
+
+                  <img src={resetPasswordImage} alt="Reset password"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
+
+                  {/* <div style={welcomeStyle}> Welcome To Parrots! </div> */}
+                  <div style={{ width: "80%", margin: "auto" }}>
+                    <div
+                      className="username-wrapper"
+                      style={{ width: "100%", padding: "0" }}
+                    >
+                      <input
+                        type="text"
+                        placeholder="Enter email"
+                        value={emailForgotPassword}
+                        onChange={(e) => setEmailForgotPassword(e.target.value)}
+                        className="username-input-sendcode"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+                    <div
+                      className="login-button-sendcode"
+                      style={{
+                        marginTop: "1rem",
+                        opacity: emailForgotPassword ? 1 : 0.5,
+                      }}
+                      onClick={() => handleSendResetCode()}
+                    >
+                      {isSendingCode ? <LoginSpinner /> : "Send Code"}
+                    </div>
+                  </div>
+                  <div className="signup-sendcode">
+                    <span className="signupSpan" style={{ marginTop: ".5rem" }}>
+                      <span
+                        className="signupLinkSpan"
+                        onClick={() => { resetAllForms(); setPageState("Login"); }}
+                        style={{ color: parrotTextDarkBlue }}
+                      >
+                        Back to Login
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : pageState === "ResetPassword" ? (
+              <div style={mainContainer}>
+                <div style={wrapper}>
+
+
+                  <img src={checkYourEmailImage} alt="check your email"
+                    style={{ width: "100%", height: "5rem" }}
+                  />
+
+
+                  <div style={{ width: "80%", margin: "auto" }}>
+                    <div style={welcomeStyle}> Welcome To Parrots! </div>
+                    <div className="password-wrapper-reset-pasword">
+                      <input
+                        type={showPasswordUpdate1 ? "text" : "password"}
+                        placeholder="Password"
+                        value={passwordUpdate1}
+                        onChange={(e) => setPasswordUpdate1(e.target.value)}
+                        className="password-input-resetPassword"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                      <span
+                        style={{
+                          padding: "1rem",
+                          position: "absolute",
+                          marginLeft: "-4rem",
+                          marginTop: "-.3rem",
+                        }}
+                        onClick={() => makeVisibleUpdate()}
+                      >
+                        {showPasswordUpdate1 ? (
+                          <AiFillEyeInvisible
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        ) : (
+                          <AiFillEye
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        )}
+                      </span>
+                    </div>
+                    <div className="password-wrapper-reset-pasword">
+                      <input
+                        type={showPasswordUpdate2 ? "text" : "password"}
+                        placeholder="Re-enter Password"
+                        value={passwordUpdate2}
+                        onChange={(e) => setPasswordUpdate2(e.target.value)}
+                        className="password-input-resetPassword"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                      <span
+                        style={{
+                          padding: "1rem",
+                          position: "absolute",
+                          marginLeft: "-4rem",
+                          marginTop: "-.3rem",
+                        }}
+                        onClick={() => makeVisibleUpdate2()}
+                      >
+                        {showPasswordUpdate2 ? (
+                          <AiFillEyeInvisible
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        ) : (
+                          <AiFillEye
+                            size="2rem"
+                            color={parrotTextDarkBlue}
+                          />
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="username-wrapper-reset-pasword">
+                      <input
+                        type="text"
+                        placeholder="Enter 6 digit code"
+                        value={sixDigitCode}
+                        onChange={(e) => setSixDigitCode(e.target.value)}
+                        className="username-input-resetPassword"
+                        style={{ color: parrotTextDarkBlue }}
+                      />
+                    </div>
+
+                    <div
+                      className="update-password-button"
+                      onClick={() => handleResetPassword()}
+                      style={{
+                        opacity:
+                          sixDigitCode && passwordUpdate1 && passwordUpdate2
+                            ? 1
+                            : 0.5,
+                      }}
+                    >
+                      {" "}
+                      {isUpdatingPassword ? (
+                        <LoginSpinner />
+                      ) : (
+                        "Update Password"
+                      )}
+                    </div>
+
+                    <div className="signup">
+                      <span className="signupSpan">
+                        <span
+                          className="signupLinkSpan"
+                          onClick={() => { resetAllForms(); setPageState("Login"); }}
+                          style={{ color: parrotTextDarkBlue }}
+                        >
+                          Back to Login
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+      </header>
+    </div>
+  );
+}
+
+export default LoginPage;
+
+const mainWrapper = {};
+
+const wrapper = {
+  backgroundColor: "white",
+  width: "100%",
+  padding: "1rem",
+  paddingTop: "2rem",
+  paddingBottom: "3rem",
+  borderRadius: "1.5rem",
+};
+
+const mainContainer = {
+  backgroundColor: "rgba(10, 119, 234, 0.32)",
+  width: "40%",
+  margin: "auto",
+  borderRadius: "2rem",
+  padding: "1rem",
+  display: "flex",
+  justifyContent: "center",
+  marginTop: "3rem",
+};
+
+const registerPill = {
+  position: "absolute",
+  top: "50%",
+  left: "calc(100% + 16px)",
+  transform: "translateY(-50%)",
+  backgroundColor: "#1a56b0",
+  borderRadius: "20px",
+  padding: "0.75rem 1.4rem",
+  zIndex: 10,
+  whiteSpace: "nowrap",
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.3rem",
+};
+
+const welcomeStyle = {
+  color: "rgba(10, 119, 234,.7)",
+  margin: "0.5rem",
+  fontSize: "1.8rem",
+  fontWeight: "bold",
+  borderRadius: "2rem",
+};

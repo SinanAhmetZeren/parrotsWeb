@@ -231,7 +231,7 @@ function MainPage() {
               {/* Cards */}
               <div style={listScroll}>
                 {isLoadingList ? (
-                  <div style={{ display: "flex", justifyContent: "center", paddingTop: "3rem" }}>
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <PulsatingParrotLogo size={80} />
                   </div>
                 ) : initialVoyages.length === 0 ? (

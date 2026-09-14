@@ -1,0 +1,448 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: transparent;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  margin: 0;
+  height: 100vh;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  background-size: 3rem 3rem;
+  width: 3rem;
+  height: 3rem;
+  background-repeat: no-repeat;
+}
+
+.swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.7;
+  filter: brightness(0.8);
+  transition: all 5s ease-in-out;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border-left-color: #09f;
+  animation: spin 1s ease infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.card-container {
+  transform: scale(0.3) translateY(0%);
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out,
+    visibility 0s linear 0.3s;
+  transform-origin: bottom center;
+}
+
+.card-container.visible {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.card-container {
+  position: relative;
+  z-index: 9999;
+  /* Ensure the card is in front */
+}
+
+.custom-pin {
+  position: relative;
+  z-index: 0;
+  /* Ensure the image is behind the card */
+}
+
+/* Remove default InfoWindow styles */
+.gm-style-iw,
+.gm-style-iw-d,
+.gm-ui-hover-effect {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  color: transparent !important;
+}
+
+.gm-ui-hover-effect {
+  display: none !important;
+}
+
+/* Custom content container for the InfoWindow */
+.info-window-custom {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  overflow: visible;
+}
+
+.buttonStyle {
+  width: 40%;
+  background-color: #007bff;
+  padding: 0.6rem;
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.4rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mainpage_Container {
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+}
+
+
+.mainpage_BottomRow {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.profilePage_Bottom {
+  background-color: "";
+}
+
+.profilePage_BottomRight {
+  height: calc(100vh - 3rem);
+  width: 34%;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.profilePage_BottomRight::-webkit-scrollbar {
+  display: none;
+}
+
+.profilePage_MapContainer {
+  width: 100%;
+  padding: 0.2rem;
+  height: 58vh;
+}
+
+.profilePage_waypointsContainer {
+  flex-grow: 1;
+  margin: 0.2rem;
+  height: auto;
+}
+
+.profilePage_BottomLeft {
+  height: calc(100vh - 3rem);
+  width: 60%;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.profilePage_BottomRight {
+  height: calc(100vh - 3rem);
+  width: 40%;
+  flex-direction: column;
+  /* background-color: slateblue; */
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.profilePage_Vehicles {
+  width: 100%;
+  /* background-color: lightgreen; */
+  flex-direction: column;
+  scrollbar-width: none;
+}
+
+.profilePage_Vehicles::-webkit-scrollbar {
+  display: none;
+}
+
+.profilePage_Voyages {
+  width: 100%;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+
+.profilePage_Voyages::-webkit-scrollbar {
+  display: none;
+}
+
+.profilePage_CoverAndProfile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 60%;
+  width: 100%;
+  position: relative;
+}
+
+.profilePage_BioAndContactDetails {
+  display: flex;
+  flex-direction: row;
+  height: 40%;
+  width: 100%;
+}
+
+.editprofilePage_BioAndContactDetails {
+  display: flex;
+  flex-direction: row;
+  height: 40%;
+  width: calc(100% - 1rem);
+  background-color: rgba(255, 255, 255, 0.08);
+  margin: 0.5rem;
+  border-radius: 2rem;
+}
+
+.profilePage_CoverImage {
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+}
+
+.profilePage_ContactDetails {
+  height: calc(100% - 1rem);
+  width: 40%;
+  overflow: scroll;
+  scrollbar-width: none;
+  color: #007bff;
+  margin-top: 0.5rem;
+}
+
+.editProfilePage_ContactDetails {
+  height: calc(100% - 1rem);
+  width: 40%;
+  overflow: scroll;
+  scrollbar-width: none;
+  color: #007bff;
+  margin-top: 0.5rem;
+  /* background-color: orange; */
+}
+
+.profilePage_ContactDetails::-webkit-scrollbar {
+  display: none;
+}
+
+.profilePage_BioTitleUserName {
+  height: calc(100%- 2rem);
+  width: 60%;
+  background-color: white;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 0.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.2);
+}
+
+.editprofilePage_BioTitleUserName {
+  height: calc(100% - 2rem);
+  width: 98%;
+  background-color: white;
+  flex-direction: column;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.2);
+  margin: auto;
+}
+
+.profilePage_UserName {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.profilePage_Title {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.profilePage_Bio {
+  flex-grow: 1;
+  width: 100%;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  text-align: left;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.profilePage_Bio::-webkit-scrollbar {
+  display: none;
+}
+
+.profilePage_CoverImage_Img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.profilePage_ProfileImage {
+  position: absolute;
+  height: 16rem;
+  width: 16rem;
+  left: 0;
+  margin-right: 2rem;
+  margin-bottom: 1rem;
+  border-radius: 10rem;
+}
+
+.profilePage_ProfileImage_Img_Container {
+  height: 17rem;
+  width: 17rem;
+  background-color: #cad8ec77;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 40rem;
+}
+
+.profilePage_ProfileImage_Img {
+  height: 16rem;
+  width: 16rem;
+  object-fit: fill;
+  border-radius: 50rem;
+  overflow: hidden;
+}
+
+.profilePage_SendMessage {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  border-radius: 1rem;
+  background-color: white;
+  color: #007bff;
+  padding: 0.2rem;
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.editProfilePage_gotoPublicProfileButton {
+  position: absolute;
+  right: 5rem;
+  bottom: 0.5rem;
+  border-radius: 1rem;
+  background-color: white;
+  color: #007bff;
+  padding: 0.2rem;
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.editProfilePage_gotoProfileButton {
+  position: absolute;
+  right: 5rem;
+  bottom: 3rem;
+  border-radius: 1rem;
+  background-color: white;
+  color: #007bff;
+  padding: 0.2rem;
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.profilePage_gotoPublicProfileButton {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 3rem;
+  border-radius: 1rem;
+  background-color: white;
+  color: #007bff;
+  padding: 0.2rem;
+  padding-right: 0.8rem;
+  padding-left: 0.8rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
