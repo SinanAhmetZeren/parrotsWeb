@@ -291,8 +291,26 @@ export function EditProfilePage() {
       await handleUploadProfileImage();
     }
     await handlePatchUser();
-    await refetchUserData();
-    takeSnapshot();
+    const { data: freshData } = await refetchUserData();
+    if (freshData) {
+      setSavedSnapshot({
+        userName: freshData.userName,
+        userTitle: freshData.title,
+        userBio: stripHtml(freshData.bio),
+        displayEmail: freshData.displayEmail || "",
+        phoneNumber: freshData.phoneNumber || "",
+        facebookProfile: freshData.facebook || "",
+        instagramProfile: freshData.instagram || "",
+        twitterProfile: freshData.twitter || "",
+        tiktokProfile: freshData.tiktok || "",
+        linkedinProfile: freshData.linkedin || "",
+        youtubeProfile: freshData.youtube || "",
+        profileImage: freshData.profileImageUrl,
+        backGroundImage: freshData.backgroundImageUrl,
+      });
+    } else {
+      takeSnapshot();
+    }
     setIsUpdatingProfile(false);
   };
 
@@ -457,7 +475,7 @@ export function EditProfilePage() {
                       />
                     </div>
                   </div>
-                  <div className="flex profilePage_Bio">
+                  <div className="flex editprofilePage_Bio">
                     <ReactQuill
                       className="custom-quill"
                       value={userBio}

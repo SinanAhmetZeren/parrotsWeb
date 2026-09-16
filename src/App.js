@@ -1,43 +1,44 @@
 /* eslint-disable no-undef */
 import "./assets/css/App.css";
 import "./assets/css/advancedmarker.css";
-import React, { useEffect } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import Modal from "react-modal";
 import { TermsContent } from "./components/TermsContent";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/css";
 import "swiper/css/navigation";
-import MainPage from "./pages/MainPage";
-import VoyageDetailsPage from "./pages/VoyageDetailsPage";
-import ProfilePage from "./pages/ProfilePage";
-import ProfilePageOld from "./pages/ProfilePage_old";
-import ConnectPage from "./pages/ConnectPage";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import VehicleDetailsPage from "./pages/VehicleDetailsPage";
-import ProfilePagePublic from "./pages/ProfilePagePublic";
-import FavoritesPage from "./pages/FavoritesPage";
-import LoginPage from "./pages/LoginPage";
-import CreateVehiclePage from "./pages/CreateVehiclePage";
-import CreateVoyagePage from "./pages/CreateVoyagePage";
-import AskParrotsPage from "./pages/AskParrotsPage";
-import { EditProfilePage } from "./pages/EditProfilePage";
-import EditVehiclePage from "./pages/EditVehiclePage";
 import { useDispatch, useSelector } from "react-redux";
 import { initHubConnection } from "./signalr/signalRHub";
-import { ParrotCrackerPage } from "./pages/ParrotCrackerPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsPage from "./pages/TermsPage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdminPage from "./pages/AdminPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useAcceptTermsMutation, setRequiresTermsAcceptance } from "./slices/UserSlice";
+
+const MainPage = lazy(() => import("./pages/MainPage"));
+const VoyageDetailsPage = lazy(() => import("./pages/VoyageDetailsPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const ProfilePageOld = lazy(() => import("./pages/ProfilePage_old"));
+const ConnectPage = lazy(() => import("./pages/ConnectPage"));
+const VehicleDetailsPage = lazy(() => import("./pages/VehicleDetailsPage"));
+const ProfilePagePublic = lazy(() => import("./pages/ProfilePagePublic"));
+const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const CreateVehiclePage = lazy(() => import("./pages/CreateVehiclePage"));
+const CreateVoyagePage = lazy(() => import("./pages/CreateVoyagePage"));
+const AskParrotsPage = lazy(() => import("./pages/AskParrotsPage"));
+const EditProfilePage = lazy(() => import("./pages/EditProfilePage").then(m => ({ default: m.EditProfilePage })));
+const EditVehiclePage = lazy(() => import("./pages/EditVehiclePage"));
+const ParrotCrackerPage = lazy(() => import("./pages/ParrotCrackerPage").then(m => ({ default: m.ParrotCrackerPage })));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
@@ -111,6 +112,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <Suspense fallback={null}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/privacy" element={<TermsPage />} />
@@ -154,6 +156,7 @@ function App() {
             </>
           )}
         </Routes>
+        </Suspense>
         <Modal
           isOpen={requiresTermsAcceptance}
           onRequestClose={() => dispatch(setRequiresTermsAcceptance(false))}

@@ -321,7 +321,8 @@
   font-weight: 700;
 }
 
-.profilePage_Bio {
+.profilePage_Bio,
+.editprofilePage_Bio {
   flex-grow: 0.8;
   width: 100%;
   font-size: 1.2rem;
@@ -331,7 +332,8 @@
   max-height: 70%;
 }
 
-.profilePage_Bio::-webkit-scrollbar {
+.profilePage_Bio::-webkit-scrollbar,
+.editprofilePage_Bio::-webkit-scrollbar {
   display: none;
 }
 
