@@ -189,7 +189,6 @@ function LoginPage() {
     try {
       setBusy(true);
       await requestCode(emailForgot).unwrap();
-      resetForms();
       setPage("ResetPassword");
     } catch { toast.error("Failed to send reset code. Please check your email."); }
     finally { setBusy(false); }
@@ -200,7 +199,7 @@ function LoginPage() {
     try {
       setBusy(true);
       const r = await resetPassword({ email: emailForgot, password: pwUpdate1, confirmationCode: sixCode }).unwrap();
-      setPwUpdate1(""); setPwUpdate2(""); setSixCode("");
+      resetForms();
       if (r.token) {
         dispatch(updateAsLoggedIn({ userId: r.userId, token: r.token, refreshToken: r.refreshToken, userName: r.userName, profileImageUrl: r.profileImageUrl, isAdmin: r.isAdmin, hasAcknowledgedPublicProfile: r.hasAcknowledgedPublicProfile ?? false, hasAcknowledgedGroupHistory: r.hasAcknowledgedGroupHistory ?? false }));
         dispatch(updateUserFavorites({ favoriteVehicles: r.favoriteVehicleIds, favoriteVoyages: r.favoriteVoyageIds }));
