@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { CropModal } from "../components/CropModal";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css";
@@ -60,6 +61,11 @@ function CreateVehiclePage() {
   const [isRegisteringVehicle, setIsRegisteringVehicle] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+  // Crop state
+  const [cropModalSrc, setCropModalSrc] = useState(null);
+  const [cropModalTarget, setCropModalTarget] = useState(null); // "profile" | "gallery"
   const [savedSnapshot, setSavedSnapshot] = useState(null);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
 
@@ -93,30 +99,52 @@ function CreateVehiclePage() {
     console.log("useffect added images: ", addedVehicleImages);
   }, [addedVehicleImages]);
 
-  const handleImageChange = async (e) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const resized = await resizeImage(files[0]);
+  const openCropModal = (file, target) => {
+    setCropModalSrc(URL.createObjectURL(file));
+    setCropModalTarget(target);
+  };
+
+  const handleCropConfirm = async (blob) => {
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    const resized = await resizeImage(file);
+    URL.revokeObjectURL(cropModalSrc);
+    setCropModalSrc(null);
+
+    if (cropModalTarget === "profile") {
       setProfileImageFile(resized);
       setImagePreview(URL.createObjectURL(resized));
+    } else {
+      if (addedVehicleImages.length >= 8) return;
+      setIsUploadingImage(true);
+      try {
+        const response = await addVehicleImage({ vehicleImage: resized, vehicleId }).unwrap();
+        const addedvehicleImageId = response.imagePath;
+        setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage: resized }]);
+      } catch (error) {
+        console.error("Error uploading image", error);
+        toast.error("Failed to upload image. Please check your connection and try again.");
+      }
+      setIsUploadingImage(false);
     }
   };
 
-  const handleImageChange2 = async (e) => {
+  const handleCropCancel = () => {
+    URL.revokeObjectURL(cropModalSrc);
+    setCropModalSrc(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (galleryImageInputRef.current) galleryImageInputRef.current.value = "";
+  };
+
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) openCropModal(files[0], "profile");
+  };
+
+  const handleImageChange2 = (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     if (addedVehicleImages.length >= 8) return;
-    const resized = await resizeImage(files[0]);
-    setIsUploadingImage(true);
-    try {
-      const response = await addVehicleImage({ vehicleImage: resized, vehicleId }).unwrap();
-      const addedvehicleImageId = response.imagePath;
-      setAddedVehicleImages((prev) => [...prev, { addedvehicleImageId, vehicleImage: resized }]);
-    } catch (error) {
-      console.error("Error uploading image", error);
-      toast.error("Failed to upload image. Please check your connection and try again.");
-    }
-    setIsUploadingImage(false);
+    openCropModal(files[0], "gallery");
   };
 
   const handleCancelUpload = () => {
@@ -447,7 +475,7 @@ function CreateVehiclePage() {
                   ) : (
                     <div
                       style={{ ...s1RegisterBtn, ...(!isFormValid && !isRegisteringVehicle ? { opacity: 0.6, cursor: "not-allowed" } : {}), position: "relative" }}
-                      onClick={!isRegisteringVehicle && isFormValid ? () => { console.log("--->> creating vehicle"); handleCreateVehicle(); } : undefined}
+                      onClick={!isRegisteringVehicle && isFormValid ? () => setShowConfirmModal(true) : undefined}
                     >
                       <span style={{ opacity: isRegisteringVehicle ? 0 : 1 }}>Register vehicle</span>
                       {isRegisteringVehicle && <RegisterSpinner style={{ position: "absolute" }} />}
@@ -522,11 +550,9 @@ function CreateVehiclePage() {
                   <div style={s2BackBtn} onClick={() => setPageState("s1")}>‹ Back</div>
                   <div
                     style={{ ...s1RegisterBtn, position: "relative" }}
-                    onClick={!isCompleting ? () => setShowConfirmModal(true) : undefined}
+                    onClick={!isCompleting ? () => setShowCompleteModal(true) : undefined}
                   >
-                    <span style={{ opacity: isCompleting ? 0 : 1 }}>
-                      {addedVehicleImages.length === 0 ? "Skip for now" : "Register vehicle"}
-                    </span>
+                    <span style={{ opacity: isCompleting ? 0 : 1 }}>Complete</span>
                     {isCompleting && <CompleteSpinner />}
                   </div>
                 </div>
@@ -535,6 +561,8 @@ function CreateVehiclePage() {
           )}
         </div>
       </header>
+
+      <CropModal src={cropModalSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} />
 
       {showConfirmModal && (
         <div style={confirmModalOverlay}>
@@ -552,7 +580,20 @@ function CreateVehiclePage() {
             </div>
             <div style={confirmModalButtonRow}>
               <div style={confirmModalCancelBtn} onClick={() => setShowConfirmModal(false)}>Cancel</div>
-              <div style={confirmModalConfirmBtn} onClick={() => { setShowConfirmModal(false); completeVehicleCreate(); }}>Register vehicle</div>
+              <div style={confirmModalConfirmBtn} onClick={() => { setShowConfirmModal(false); handleCreateVehicle(); }}>Register vehicle</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCompleteModal && (
+        <div style={confirmModalOverlay}>
+          <div style={confirmModalBox}>
+            <div style={confirmModalTitle}>All done?</div>
+            <div style={{ ...confirmModalDesc, marginBottom: "1.5rem" }}>Your vehicle is registered. You can add more photos any time from your profile.</div>
+            <div style={confirmModalButtonRow}>
+              <div style={confirmModalCancelBtn} onClick={() => setShowCompleteModal(false)}>Cancel</div>
+              <div style={confirmModalConfirmBtn} onClick={() => { setShowCompleteModal(false); completeVehicleCreate(); }}>Complete</div>
             </div>
           </div>
         </div>

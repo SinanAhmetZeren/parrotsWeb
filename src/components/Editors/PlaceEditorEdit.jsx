@@ -139,12 +139,44 @@ export function PlaceEditorEdit() {
             </div>
 
             <div style={adminRow}>
+              <span style={adminLabel}>Category</span>
+              <input
+                style={adminInput}
+                placeholder="Restaurant, Café, Guest house…"
+                value={(p.brief ?? "").split("|")[0]}
+                onChange={(e) => {
+                  const parts = (p.brief ?? "").split("|");
+                  parts[0] = e.target.value;
+                  handleChange("brief", parts.join("|"));
+                }}
+              />
+            </div>
+
+            <div style={adminRow}>
+              <span style={adminLabel}>Location</span>
+              <input
+                style={adminInput}
+                placeholder="Sapanca, Kartepe…"
+                value={(p.brief ?? "").split("|")[1] ?? ""}
+                onChange={(e) => {
+                  const parts = (p.brief ?? "").split("|");
+                  parts[1] = e.target.value;
+                  handleChange("brief", parts.join("|"));
+                }}
+              />
+            </div>
+
+            <div style={adminRow}>
               <span style={adminLabel}>Website</span>
               <input
                 style={adminInput}
-                placeholder="https://www.instagram.com/..."
-                value={p.brief ?? ""}
-                onChange={(e) => handleChange("brief", e.target.value)}
+                placeholder="https://www.instagram.com/…"
+                value={(p.brief ?? "").split("|")[2] ?? ""}
+                onChange={(e) => {
+                  const parts = (p.brief ?? "").split("|");
+                  parts[2] = e.target.value;
+                  handleChange("brief", parts.join("|"));
+                }}
               />
             </div>
 

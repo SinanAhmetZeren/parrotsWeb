@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiCalendar, FiUsers } from "react-icons/fi";
+import { FiCalendar, FiUsers, FiMapPin } from "react-icons/fi";
 import DOMPurify from "dompurify";
 
 // Design tokens matching the reference HTML
@@ -23,11 +23,15 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
   const firstWaypoint = cardData.waypoints?.[0]
     || (cardData.latitude && cardData.longitude ? { latitude: cardData.latitude, longitude: cardData.longitude } : null);
   const isPlace = cardData.placeType > 0;
+  const briefParts = (cardData.brief || "").split("|");
+  const placeCategory = briefParts[0] || "";
+  const placeLocation = briefParts[1] || "";
+  const placeUrl = briefParts[2] || "";
 
   const handleCardClick = () => {
     if (isPlace) {
-      if (!cardData.brief) return;
-      const url = cardData.brief.startsWith("http") ? cardData.brief : `https://${cardData.brief}`;
+      if (!placeUrl) return;
+      const url = placeUrl.startsWith("http") ? placeUrl : `https://${placeUrl}`;
       window.open(url, "_blank", "noopener,noreferrer");
     } else {
       navigate(`/voyage-details/${cardData.publicId}`);
@@ -75,8 +79,8 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
 
       {/* Content */}
       <div style={body}>
-        {/* Title */}
-        <div style={titleStyle}>{cardData.name}</div>
+        {/* Title row */}
+        <div style={{ ...titleStyle, color: isPlace ? navy : blueDk }}>{cardData.name}</div>
 
         {/* Host */}
         {!isPlace && cardData.user && (
@@ -88,13 +92,25 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
 
         {/* Brief / Description */}
         <div
-          style={{ ...briefStyle, WebkitLineClamp: isPlace ? 5 : 3 }}
+          style={{ ...briefStyle, WebkitLineClamp: isPlace ? 3 : 3 }}
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(
               (isPlace ? (cardData.description || "") : (cardData.brief || "")).replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, " ").trim()
             ),
           }}
         />
+
+        {/* Place pills */}
+        {isPlace && (placeCategory || placeLocation) && (
+          <div style={metaRow}>
+            {placeCategory && (
+              <span style={placeCategoryTag}>{placeCategory}</span>
+            )}
+            {placeLocation && (
+              <span style={tagGrey}><FiMapPin size={11} />{placeLocation}</span>
+            )}
+          </div>
+        )}
 
         {/* Meta row */}
         {!isPlace && <div style={metaRow}>
@@ -296,6 +312,32 @@ const tagBlueCount = {
   fontSize: "11px", fontWeight: 800, color: blueDk,
   padding: "2px 4px", borderRadius: "99px",
   backgroundColor: "#E4F0FE", whiteSpace: "nowrap", flexShrink: 0,
+};
+
+const placeLabelStyle = {
+  fontSize: "9px",
+  fontWeight: 800,
+  letterSpacing: ".12em",
+  textTransform: "uppercase",
+  color: "#5C6B7A",
+  fontFamily: "Nunito, sans-serif",
+  paddingRight: "0.5rem",
+  alignSelf: "flex-start",
+  marginTop: "-4px",
+};
+
+const placeCategoryTag = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  fontSize: "11px",
+  fontWeight: 800,
+  padding: "2px 6px",
+  borderRadius: "99px",
+  backgroundColor: "#F5F2EC",
+  color: "#6F6455",
+  whiteSpace: "nowrap",
+  flexShrink: 0,
 };
 
 const priceTooltipStyle = {

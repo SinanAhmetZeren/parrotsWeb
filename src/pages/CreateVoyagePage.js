@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState, useEffect, useRef } from "react";
+import { CropModal } from "../components/CropModal";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
 import "../assets/css/CreateVehicle.css";
@@ -73,12 +74,20 @@ export default function CreateVoyagePage() {
   const [range, setRange] = useState({ from: undefined, to: undefined });
 
   const galleryInputRef = useRef(null);
+  const [galleryCropSrc, setGalleryCropSrc] = useState(null);
 
-  const handleGalleryImageChange = async (e) => {
+  const handleGalleryImageChange = (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    setGalleryCropSrc(URL.createObjectURL(files[0]));
+  };
+
+  const handleGalleryCropConfirm = async (blob) => {
     const { resizeImage } = await import("../utils/resizeImage");
-    const resized = await resizeImage(files[0]);
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    const resized = await resizeImage(file);
+    URL.revokeObjectURL(galleryCropSrc);
+    setGalleryCropSrc(null);
     setIsUploadingImage(true);
     try {
       const res = await addVoyageImage({ voyageImage: resized, voyageId }).unwrap();
@@ -87,7 +96,13 @@ export default function CreateVoyagePage() {
       toast.error("Failed to upload image.");
     }
     setIsUploadingImage(false);
-    e.target.value = null;
+    if (galleryInputRef.current) galleryInputRef.current.value = null;
+  };
+
+  const handleGalleryCropCancel = () => {
+    URL.revokeObjectURL(galleryCropSrc);
+    setGalleryCropSrc(null);
+    if (galleryInputRef.current) galleryInputRef.current.value = null;
   };
 
   const handleDeleteGalleryImage = async (imageId) => {
@@ -618,6 +633,7 @@ export default function CreateVoyagePage() {
           )}
         </div>
       </header></div>
+      <CropModal src={galleryCropSrc} onConfirm={handleGalleryCropConfirm} onCancel={handleGalleryCropCancel} />
     </div>
   );
 }

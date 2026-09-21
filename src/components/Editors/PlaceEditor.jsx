@@ -35,7 +35,9 @@ function MapClickHandler({ onMapClick }) {
 
 export function PlaceEditor() {
   const [name, setName] = useState("");
-  const [brief, setBrief] = useState("");
+  const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -86,7 +88,9 @@ export function PlaceEditor() {
 
   const handleReset = () => {
     setName("");
-    setBrief("");
+    setCategory("");
+    setLocation("");
+    setWebsite("");
     setDescription("");
     setLatitude(null);
     setLongitude(null);
@@ -96,7 +100,8 @@ export function PlaceEditor() {
     handleCancelImage();
   };
 
-  const canSubmit = name && brief && latitude && longitude;
+  const brief = [category, location, website].join("|");
+  const canSubmit = name && category && latitude && longitude;
 
   const compressImage = (file) =>
     new Promise((resolve) => {
@@ -153,12 +158,32 @@ export function PlaceEditor() {
         </div>
 
         <div style={adminRow}>
+          <span style={adminLabel}>Category</span>
+          <input
+            style={adminInput}
+            placeholder="Restaurant, Café, Guest house…"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+        </div>
+
+        <div style={adminRow}>
+          <span style={adminLabel}>Location</span>
+          <input
+            style={adminInput}
+            placeholder="Sapanca, Kartepe…"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+
+        <div style={adminRow}>
           <span style={adminLabel}>Website</span>
           <input
             style={adminInput}
-            placeholder="https://www.instagram.com/..."
-            value={brief}
-            onChange={(e) => setBrief(e.target.value)}
+            placeholder="https://www.instagram.com/…"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
           />
         </div>
 

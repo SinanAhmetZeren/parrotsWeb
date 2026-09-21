@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import "../assets/css/ProfilePage.css";
 import React, { useState, useEffect, useRef, createRef } from "react";
+import { CropModal } from "../components/CropModal";
 import { useNavigate } from "react-router-dom";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
@@ -42,6 +43,8 @@ export function EditProfilePage() {
   const dispatch = useDispatch();
   const fileInputRef_ProfileImage = createRef();
   const fileInputRef_BackgroundImage = createRef();
+  const [profileCropSrc, setProfileCropSrc] = useState(null);
+  const [bgCropSrc, setBgCropSrc] = useState(null);
   const [backGroundImage, setBackGroundImage] = useState(null);
   const [backGroundImagePreview, setBackGroundImagePreview] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
@@ -190,37 +193,45 @@ export function EditProfilePage() {
   const handleBackGroundImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-
-      setBackGroundImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setBackGroundImagePreview(previewUrl);
+      if (files[0].size > 5 * 1024 * 1024) { toast.error("File size must be 5MB or less."); return; }
+      setBgCropSrc(URL.createObjectURL(files[0]));
     }
+  };
+
+  const handleBgCropConfirm = (blob) => {
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    URL.revokeObjectURL(bgCropSrc);
+    setBgCropSrc(null);
+    setBackGroundImage(file);
+    setBackGroundImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleBgCropCancel = () => {
+    URL.revokeObjectURL(bgCropSrc);
+    setBgCropSrc(null);
+    if (fileInputRef_BackgroundImage.current) fileInputRef_BackgroundImage.current.value = "";
   };
 
   const handleProfileImageChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-
-      const maxSizeMB = 5;
-      const maxSizeBytes = maxSizeMB * 1024 * 1024;
-      if (file.size > maxSizeBytes) {
-        toast.error("File size must be 5MB or less.");
-        return;
-      }
-
-      setProfileImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setProfileImagePreview(previewUrl);
+      if (files[0].size > 5 * 1024 * 1024) { toast.error("File size must be 5MB or less."); return; }
+      setProfileCropSrc(URL.createObjectURL(files[0]));
     }
+  };
+
+  const handleProfileCropConfirm = (blob) => {
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    URL.revokeObjectURL(profileCropSrc);
+    setProfileCropSrc(null);
+    setProfileImage(file);
+    setProfileImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleProfileCropCancel = () => {
+    URL.revokeObjectURL(profileCropSrc);
+    setProfileCropSrc(null);
+    if (fileInputRef_ProfileImage.current) fileInputRef_ProfileImage.current.value = "";
   };
 
   const handleBackGroundImageClick = () => {
@@ -664,6 +675,8 @@ export function EditProfilePage() {
           </div>
         </div>
       </header>
+      <CropModal src={profileCropSrc} onConfirm={handleProfileCropConfirm} onCancel={handleProfileCropCancel} />
+      <CropModal src={bgCropSrc} onConfirm={handleBgCropConfirm} onCancel={handleBgCropCancel} />
     </div>
   ) : null;
 }

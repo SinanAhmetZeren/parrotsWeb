@@ -1,11 +1,6 @@
 /* eslint-disable no-undef */
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useState, useRef } from "react";
+import { CropModal } from "./CropModal";
 import "../assets/css/CreateVehicle.css";
 import "react-quill/dist/quill.snow.css"; // Import styles
 import { IoRemoveCircleOutline } from "react-icons/io5";
@@ -37,28 +32,35 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage, size =
     transform: "scale(1.2)",
   };
 
-  const fileInputRef = React.createRef();
+  const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [hoveredUserImg, setHoveredUserImg] = useState(false);
+  const [cropSrc, setCropSrc] = useState(null);
 
-  const handleImageChange = async (e) => {
+  const handleImageChange = (e) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      const resized = await resizeImage(files[0]);
-      setVoyageImage(resized);
-      setImagePreview(URL.createObjectURL(resized));
-    }
+    if (files && files.length > 0) setCropSrc(URL.createObjectURL(files[0]));
+  };
+
+  const handleCropConfirm = async (blob) => {
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    const resized = await resizeImage(file);
+    URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    setVoyageImage(resized);
+    setImagePreview(URL.createObjectURL(resized));
+  };
+
+  const handleCropCancel = () => {
+    URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleCancelUpload = () => {
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-    }
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setVoyageImage(null);
     setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleImageClick = () => {
@@ -66,6 +68,8 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage, size =
   };
 
   return (
+    <>
+    <CropModal src={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} />
     <div style={{ backgroundColor: "transparent", borderRadius: "1.5rem" }}>
       <div style={{}}>
         <div>
@@ -110,5 +114,6 @@ export const VoyageProfileImageUploader = ({ voyageImage, setVoyageImage, size =
         </div>
       </div>
     </div>
+    </>
   );
 };

@@ -1,31 +1,23 @@
-import { useSelector } from "react-redux";
-import { parrotBlue, parrotTextDarkBlue } from "../styles/colors";
-import whiteegg from "../assets/images/whiteegg.png";
-import silveregg from "../assets/images/silveregg.png";
-import goldenegg from "../assets/images/goldenegg.png";
+import { IoLocationOutline } from "react-icons/io5";
 
-const eggConfig = {
-  1: { image: whiteegg, background: "#e8e8e8" },
-  2: { image: silveregg, background: "#b0b7c3" },
-  3: { image: goldenegg, background: "#FFD700" },
-};
+const PLACE_INK = "#6F6455";
+const PLACE_BG = "#F5F2EC";
+const PLACE_BORDER = "rgba(150,131,94,0.26)";
 
 export function MainPagePlaceCard({ cardData, panToLocation }) {
-  const dark = useSelector((state) => state.users.isDarkMode);
-  const egg = eggConfig[cardData.placeType] || eggConfig[1];
+const parts = (cardData.brief || "").split("|");
+  const category = parts[0] || "";
+  const location = parts[1] || "";
+  const url = parts[2] || "";
 
   const handleLinkClick = () => {
-    if (!cardData.brief) return;
-    const url = cardData.brief.startsWith("http") ? cardData.brief : `https://${cardData.brief}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    if (!url) return;
+    const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+    window.open(fullUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div style={{ ...cardContainerStyle(dark), cursor: cardData.brief ? "pointer" : "default" }} onClick={handleLinkClick}>
-      {/* egg badge */}
-      <div style={{ ...eggBadgeClip, backgroundColor: egg.background }}>
-        <img src={egg.image} alt="" style={eggBadgeImg} />
-      </div>
+    <div style={cardContainerStyle} onClick={handleLinkClick}>
 
       {/* image */}
       <div style={cardImageStyle}>
@@ -38,22 +30,38 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
 
       {/* content */}
       <div style={cardContentStyle}>
-        <div style={cardTitleStyle(dark)}>{cardData.name}</div>
-        <div style={cardDescriptionStyle(dark)}>{cardData.description}</div>
+        <div style={cardTitleStyle}>{cardData.name}</div>
 
-        {/* buttons */}
+        {cardData.description && (
+          <div style={cardDescriptionStyle}>{cardData.description}</div>
+        )}
+
+        <div style={pillRowStyle}>
+          {category && (
+            <span style={{ ...pillStyle, backgroundColor: PLACE_BG, color: PLACE_INK }}>
+              {category}
+            </span>
+          )}
+          {location && (
+            <span style={pillStyle}>
+              <IoLocationOutline size={11} style={{ flexShrink: 0 }} />
+              {location}
+            </span>
+          )}
+        </div>
+
         <div style={buttonContainerStyle}>
-          {cardData.brief && (
-            <button onClick={handleLinkClick} style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}>
+          {url && (
+            <button onClick={handleLinkClick} style={visitButtonStyle}>
               Visit
             </button>
           )}
           {cardData.waypoints?.[0] && (
             <button
               onClick={(e) => { e.stopPropagation(); panToLocation(cardData.waypoints[0].latitude, cardData.waypoints[0].longitude); }}
-              style={{ ...buttonStyle, backgroundColor: dark ? "rgba(255,255,255,0.08)" : "#00336615", color: dark ? "rgba(255,255,255,0.85)" : parrotTextDarkBlue }}
+              style={mapButtonStyle}
             >
-              See on Map
+              View on map
             </button>
           )}
         </div>
@@ -62,38 +70,25 @@ export function MainPagePlaceCard({ cardData, panToLocation }) {
   );
 }
 
-const cardContainerStyle = (dark) => ({
+const cardContainerStyle = {
   position: "relative",
   display: "flex",
   flexDirection: "column",
-  borderRadius: "8px",
+  borderRadius: "1rem",
   overflow: "hidden",
   width: "24rem",
   maxWidth: "600px",
-  maxHeight: "700px",
-  backgroundColor: dark ? "#011a32" : "#fffdf8",
+  backgroundColor: "white",
+  border: `1.5px solid ${PLACE_BORDER}`,
   margin: "1rem",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3), inset 0 -8px 6px rgba(0, 0, 0, 0.1)",
-});
-
-const eggBadgeClip = {
-  position: "absolute",
-  top: "16rem",
-  right: 8,
-  width: 34,
-  height: 34,
-  borderRadius: "50%",
-  zIndex: 10,
-  overflow: "hidden",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  cursor: "pointer",
+  boxShadow: "0 2px 10px rgba(12,30,48,0.06)",
 };
 
-const eggBadgeImg = {
-  width: 34,
-  height: 38,
-  objectFit: "contain",
+const cardImageStyle = {
+  width: "100%",
+  height: "16rem",
+  overflow: "hidden",
 };
 
 const imageStyle = {
@@ -102,59 +97,96 @@ const imageStyle = {
   objectFit: "cover",
 };
 
-const cardImageStyle = {
-  width: "100%",
-  height: "16rem",
-  objectFit: "cover",
-  borderBottom: "1px solid #ddd",
-};
-
 const cardContentStyle = {
   display: "flex",
-  height: "16rem",
   flexDirection: "column",
-  padding: "0.5rem 1rem",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.4), inset 0 -6px 6px rgba(0, 0, 0, 0.4)",
+  padding: "0.75rem 1rem 0.75rem",
+  gap: "0.4rem",
 };
 
-const cardTitleStyle = (dark) => ({
-  fontSize: "1.3rem",
-  fontWeight: "bold",
-  color: dark ? "#2ac898" : "rgba(10, 119, 234,1)",
-  marginBottom: "0.3rem",
-});
-
-const cardDescriptionStyle = (dark) => ({
-  fontSize: "1.05rem",
+const placeLabelStyle = {
+  fontSize: "9px",
+  fontWeight: 800,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: "#5C6B7A",
   fontFamily: "Nunito, sans-serif",
-  fontWeight: "600",
-  color: dark ? "rgba(255,255,255,0.8)" : parrotTextDarkBlue,
+};
+
+const cardTitleStyle = {
+  fontSize: "1rem",
+  fontWeight: 800,
+  color: "#0A2540",
+  letterSpacing: "-0.015em",
+  lineHeight: 1.22,
+  fontFamily: "Nunito, sans-serif",
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+};
+
+const pillRowStyle = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "5px",
+  marginTop: "2px",
+};
+
+const pillStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "4px",
+  borderRadius: "999px",
+  padding: "4px 9px",
+  fontSize: "11px",
+  fontWeight: 800,
+  fontFamily: "Nunito, sans-serif",
+  backgroundColor: "#F4F7FB",
+  color: "#4A5A6A",
+  whiteSpace: "nowrap",
+};
+
+const cardDescriptionStyle = {
+  fontSize: "0.75rem",
+  fontFamily: "Nunito, sans-serif",
+  fontWeight: 600,
+  color: "#4A5A6A",
   display: "-webkit-box",
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
-  WebkitLineClamp: 5,
-  textOverflow: "ellipsis",
-  lineHeight: "1.55rem",
-  flex: 1,
-});
+  WebkitLineClamp: 3,
+  lineHeight: 1.45,
+  marginTop: "2px",
+};
 
 const buttonContainerStyle = {
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "flex-end",
   alignItems: "center",
-  gap: "1rem",
-  marginTop: "auto",
-  paddingBottom: "1rem",
+  gap: "0.75rem",
+  marginTop: "0.4rem",
 };
 
-const buttonStyle = {
-  width: "35%",
-  padding: "0.2rem",
-  borderRadius: "1.5rem",
-  textAlign: "center",
-  fontWeight: "bold",
+const visitButtonStyle = {
+  padding: "4px 14px",
+  borderRadius: "999px",
+  fontWeight: 800,
+  fontFamily: "Nunito, sans-serif",
+  fontSize: "11.5px",
   cursor: "pointer",
-  fontSize: "1rem",
+  border: `1.5px solid ${PLACE_BORDER}`,
+  backgroundColor: PLACE_BG,
+  color: PLACE_INK,
+};
+
+const mapButtonStyle = {
+  padding: "4px 0",
+  fontWeight: 700,
+  fontFamily: "Nunito, sans-serif",
+  fontSize: "11.5px",
+  cursor: "pointer",
   border: "none",
-  boxShadow: "none",
+  background: "none",
+  color: "#5C6B7A",
 };
