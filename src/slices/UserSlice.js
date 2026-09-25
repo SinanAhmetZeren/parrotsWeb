@@ -549,6 +549,22 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
+    blockUser: builder.mutation({
+      query: (publicId) => ({
+        url: `/api/Moderation/block/${publicId}`,
+        method: "POST",
+      }),
+    }),
+    unblockUser: builder.mutation({
+      query: (publicId) => ({
+        url: `/api/Moderation/unblock/${publicId}`,
+        method: "POST",
+      }),
+    }),
+    isBlocked: builder.query({
+      query: (publicId) => `/api/Moderation/isBlocked/${publicId}`,
+      transformResponse: (res) => res.data,
+    }),
   }),
   overrideExisting: true,
 });
@@ -594,4 +610,7 @@ export const {
   useReportUserMutation,
   useReportVoyageMutation,
   useDeleteAccountMutation,
+  useBlockUserMutation,
+  useUnblockUserMutation,
+  useIsBlockedQuery,
 } = extendedApiSlice;

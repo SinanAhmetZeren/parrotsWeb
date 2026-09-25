@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useGetUserByPublicIdQuery, useReportUserMutation } from "../slices/UserSlice";
+import { useGetUserByPublicIdQuery, useReportUserMutation, useBlockUserMutation, useUnblockUserMutation, useIsBlockedQuery } from "../slices/UserSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
@@ -129,6 +129,7 @@ function ProfilePagePublic() {
   const [selectedReason, setSelectedReason] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const [blockModalOpen, setBlockModalOpen] = useState(false);
   const moreRef = useRef(null);
   const bioRef = useRef(null);
   const [bioOverflow, setBioOverflow] = useState(false);
@@ -137,6 +138,10 @@ function ProfilePagePublic() {
   const [addBookmark] = useAddBookmarkMutation();
   const [removeBookmark] = useRemoveBookmarkMutation();
   const [reportUser] = useReportUserMutation();
+  const [blockUser] = useBlockUserMutation();
+  const [unblockUser] = useUnblockUserMutation();
+  const { data: isBlockedData, refetch: refetchIsBlocked } = useIsBlockedQuery(publicId, { skip: !local_userId });
+  const isBlocked = isBlockedData ?? false;
   const { isError: isHealthCheckError } = useHealthCheckQuery();
 
   const internalUserId = userData?.id ?? null;
@@ -179,6 +184,19 @@ function ProfilePagePublic() {
       setReportSubmitted(true);
     } catch (err) {
       console.error("Report failed:", err);
+    }
+  };
+
+  const handleBlockToggle = async () => {
+    try {
+      if (isBlocked) {
+        await unblockUser(publicId).unwrap();
+      } else {
+        await blockUser(publicId).unwrap();
+      }
+      refetchIsBlocked();
+    } catch (err) {
+      console.error("Block toggle failed:", err);
     }
   };
 
@@ -254,6 +272,10 @@ function ProfilePagePublic() {
                     </button>
                     {moreOpen && (
                       <div style={moreMenu}>
+                        <button style={{ ...moreItem, color: "#D97706" }} onClick={() => { setMoreOpen(false); setBlockModalOpen(true); }}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>
+                          {isBlocked ? "Unblock user" : "Block user"}
+                        </button>
                         <button style={{ ...moreItem, color: red }} onClick={() => { setMoreOpen(false); setReportModalOpen(true); setReportSubmitted(false); setSelectedReason(""); }}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15 }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                           Report user
@@ -376,6 +398,26 @@ function ProfilePagePublic() {
         </div>
       )}
 
+      {/* Block modal */}
+      {blockModalOpen && (
+        <div style={modalOverlay} onClick={() => setBlockModalOpen(false)}>
+          <div style={modalBox} onClick={e => e.stopPropagation()}>
+            <div style={modalTitle}>{isBlocked ? `Unblock ${userData?.userName}` : `Block ${userData?.userName}`}</div>
+            <div style={modalSubtitle}>
+              {isBlocked
+                ? `${userData?.userName} will be able to message you and bid on your voyages again.`
+                : `Their messages won't be shown to you and they won't be able to bid on your voyages. They won't be notified.`}
+            </div>
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
+              <button onClick={() => setBlockModalOpen(false)} style={modalCancelBtn}>Cancel</button>
+              <button onClick={() => { setBlockModalOpen(false); handleBlockToggle(); }} style={{ ...modalPrimaryBtn, backgroundColor: "#D97706" }}>
+                {isBlocked ? "Unblock" : "Block"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Report modal */}
       {reportModalOpen && (
         <div style={modalOverlay} onClick={() => setReportModalOpen(false)}>
@@ -464,7 +506,7 @@ const cbtn = {
 };
 
 const moreMenu = {
-  position: "absolute", right: 0, bottom: "calc(100% + 7px)",
+  position: "absolute", left: 0, bottom: "calc(100% + 7px)",
   minWidth: 168, backgroundColor: "#fff",
   border: `1px solid ${line}`, borderRadius: 11,
   boxShadow: "0 12px 30px rgba(0,14,30,.24)",

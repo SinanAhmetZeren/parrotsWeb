@@ -599,6 +599,7 @@ function VoyageDetailsPage() {
                     ))}
                   </div>
                   {/* Send a bid button */}
+                  {!VoyageData?.isBlockedByOrganizer && (
                   <div style={{ marginTop: "0.75rem" }}>
                     <VoyageDetailBidButton
                       ownVoyage={false}
@@ -614,6 +615,7 @@ function VoyageDetailsPage() {
                       endDate={VoyageData?.endDate}
                     />
                   </div>
+                  )}
                 </div>
               </>
             )}
