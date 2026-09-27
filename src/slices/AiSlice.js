@@ -57,7 +57,14 @@ export const aiApiSlice = createApi({
         body,
       }),
     }),
+    voyageAdvice: builder.mutation({
+      query: (body) => ({
+        url: "/api/Ai/voyage-advice",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useAskParrotsMutation } = aiApiSlice;
+export const { useAskParrotsMutation, useVoyageAdviceMutation } = aiApiSlice;

@@ -209,8 +209,9 @@ export const VoyageDetailBidButton = ({
 
         <textarea
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Add a message (optional)"
+          onChange={(e) => setMessage(e.target.value.slice(0, 100))}
+          placeholder="Add a message (optional, max 100)"
+          maxLength={100}
           style={messageInputStyle}
         />
 
@@ -270,8 +271,9 @@ export const VoyageDetailBidButton = ({
 
         <textarea
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Add a message (optional)"
+          onChange={(e) => setMessage(e.target.value.slice(0, 100))}
+          placeholder="Add a message (optional, max 100)"
+          maxLength={100}
           style={messageInputStyle}
         />
 

@@ -460,6 +460,7 @@ export default function CreateVoyagePage() {
                   {/* BRIEF */}
                   <div>
                     <div style={sec}>Brief</div>
+                    <div style={{ fontSize: 12, color: "#5A6874", marginBottom: 4, textAlign: "left" }}>A brief that will be visible on voyage cards</div>
                     <div className="brief-editor-wrap" style={editorWrap}>
                       <ReactQuill
                         value={voyageBrief}
@@ -474,6 +475,7 @@ export default function CreateVoyagePage() {
                   {/* DESCRIPTION */}
                   <div>
                     <div style={sec}>Description</div>
+                    <div style={{ fontSize: 12, color: "#5A6874", marginBottom: 4, textAlign: "left" }}>Route, what to expect, who it suits</div>
                     <div className="desc-editor-wrap" style={editorWrap}>
                       <ReactQuill
                         value={voyageDescription}
@@ -629,6 +631,8 @@ export default function CreateVoyagePage() {
               endDate={range?.to}
               isPublicOnMap={isPublicOnMap}
               crackerBalance={crackerBalance}
+              savedSnapshot={savedSnapshot}
+              usersVehiclesData={usersVehiclesData}
             />
           )}
         </div>

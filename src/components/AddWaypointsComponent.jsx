@@ -7,6 +7,8 @@ import L from "leaflet";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import uploadImage from "../assets/images/ParrotsLogoPlus.jpg";
 import { useAddWaypointMutation, useAddWaypointNoImageMutation, useConfirmVoyageMutation, useDeleteWaypointMutation } from "../slices/VoyageSlice";
+import { useVoyageAdviceMutation } from "../slices/AiSlice";
+import parrotCracker from "../assets/images/parrotCracker.png";
 import { CreateVoyageWaypointsMarkers } from "./CreateVoyageWaypointsMarkers";
 import { CreateVoyagePolyLineComponent } from "./CreateVoyagePolyLineComponent";
 import { useNavigate } from "react-router-dom";
@@ -103,6 +105,8 @@ export const AddWaypointsPage = ({
     endDate,
     isPublicOnMap,
     crackerBalance,
+    savedSnapshot,
+    usersVehiclesData,
 }) => {
     const [waypointTitle, setWaypointTitle] = useState("");
     const [waypointLatitude, setWaypointLatitude] = useState(null);
@@ -112,11 +116,11 @@ export const AddWaypointsPage = ({
     const [initialLatitude, setInitialLatitude] = useState();
     const [initialLongitude, setInitialLongitude] = useState();
     const [addedWaypoints, setAddedWaypoints] = useState([
-        { waypointId: "dummy-1", waypointImage: null, latitude: 48.8566, longitude: 2.3522, title: "Paris", description: "Starting point in the heart of Paris.", voyageId, order: 1 },
-        { waypointId: "dummy-2", waypointImage: null, latitude: 46.2044, longitude: 6.1432, title: "Geneva", description: "Overnight stop by the lake.", voyageId, order: 2 },
-        { waypointId: "dummy-3", waypointImage: null, latitude: 45.0703, longitude: 7.6869, title: "Turin", description: "Refuel and a long lunch.", voyageId, order: 3 },
-        { waypointId: "dummy-4", waypointImage: null, latitude: 43.7696, longitude: 11.2558, title: "Florence", description: "Two nights, museums and pasta.", voyageId, order: 4 },
-        { waypointId: "dummy-5", waypointImage: null, latitude: 41.9028, longitude: 12.4964, title: "Rome", description: "Final stop, three nights.", voyageId, order: 5 },
+        // { waypointId: "dummy-1", waypointImage: null, latitude: 48.8566, longitude: 2.3522, title: "Paris", description: "Starting point in the heart of Paris.", voyageId, order: 1 },
+        // { waypointId: "dummy-2", waypointImage: null, latitude: 46.2044, longitude: 6.1432, title: "Geneva", description: "Overnight stop by the lake.", voyageId, order: 2 },
+        // { waypointId: "dummy-3", waypointImage: null, latitude: 45.0703, longitude: 7.6869, title: "Turin", description: "Refuel and a long lunch.", voyageId, order: 3 },
+        // { waypointId: "dummy-4", waypointImage: null, latitude: 43.7696, longitude: 11.2558, title: "Florence", description: "Two nights, museums and pasta.", voyageId, order: 4 },
+        // { waypointId: "dummy-5", waypointImage: null, latitude: 41.9028, longitude: 12.4964, title: "Rome", description: "Final stop, three nights.", voyageId, order: 5 },
     ]);
     const [imagePreview, setImagePreview] = useState("");
     const [isAddingWaypoint, setIsAddingWaypoint] = useState(false);
@@ -129,6 +133,10 @@ export const AddWaypointsPage = ({
     const [addWaypointNoImage] = useAddWaypointNoImageMutation();
     const [deleteWaypoint] = useDeleteWaypointMutation();
     const [confirmVoyage] = useConfirmVoyageMutation();
+    const [voyageAdvice, { isLoading: isAdviceLoading }] = useVoyageAdviceMutation();
+    const [askParrotsConfirmVisible, setAskParrotsConfirmVisible] = useState(false);
+    const [adviceModalVisible, setAdviceModalVisible] = useState(false);
+    const [adviceText, setAdviceText] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -208,6 +216,42 @@ export const AddWaypointsPage = ({
 
     const [hoveredWaypoint, setHoveredWaypoint] = useState(null);
 
+    const handleAskParrots = async () => {
+        if (!savedSnapshot) return;
+        const selectedVehicle = usersVehiclesData?.find((v) => String(v.id) === String(savedSnapshot.vehicleId));
+        const payload = {
+            name: savedSnapshot.voyageName,
+            brief: savedSnapshot.voyageBrief,
+            description: savedSnapshot.voyageDescription,
+            vacancy: Number(savedSnapshot.selectedVacancy),
+            currency: savedSnapshot.currency,
+            minPrice: Number(savedSnapshot.minPrice),
+            maxPrice: Number(savedSnapshot.maxPrice),
+            isAuction: savedSnapshot.isAuction,
+            isFixedPrice: savedSnapshot.isFixedPrice,
+            startDate: savedSnapshot.from ? new Date(savedSnapshot.from).toISOString() : "",
+            endDate: savedSnapshot.to ? new Date(savedSnapshot.to).toISOString() : "",
+            lastBidDate: "",
+            vehicleType: selectedVehicle?.type ?? "",
+            vehicleCapacity: selectedVehicle?.capacity ?? 0,
+            waypoints: addedWaypoints
+                .filter(wp => !wp.waypointId?.startsWith("dummy-"))
+                .map((wp) => ({ order: wp.order, title: wp.title, description: wp.description ?? "", latitude: wp.latitude, longitude: wp.longitude })),
+            categories: ["thingsToDo", "crewTips", "timing", "bidGuidance"],
+        };
+        try {
+            const result = await voyageAdvice(payload).unwrap();
+            setAdviceText(result.advice);
+            setAdviceModalVisible(true);
+        } catch (err) {
+            if (err?.status === 402) {
+                toast.error("Not enough ParrotCrackers.");
+            } else {
+                toast.error("Could not get advice right now. Please try again.");
+            }
+        }
+    };
+
     const canAdd = !!(waypointTitle && waypointLatitude && waypointLongitude && waypointBrief);
 
     return (
@@ -256,14 +300,14 @@ export const AddWaypointsPage = ({
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "7px" }}>
                             <input
                                 type="text"
-                                placeholder="Waypoint title"
+                                placeholder="Waypoint title (max 25)"
                                 maxLength={25}
                                 value={waypointTitle}
                                 onChange={(e) => setWaypointTitle(e.target.value)}
                                 style={{ fontFamily: "Nunito", fontSize: "13px", fontWeight: 600, color: "#0A2540", border: "none", borderRadius: "8px", padding: "9px 12px", outline: "none", width: "100%", backgroundColor: "#F3F4F6", boxSizing: "border-box", textAlign: "left" }}
                             />
                             <textarea
-                                placeholder="What happens here"
+                                placeholder="What happens here (max 300)"
                                 maxLength={300}
                                 value={waypointBrief}
                                 onChange={(e) => setWaypointBrief(e.target.value)}
@@ -344,11 +388,18 @@ export const AddWaypointsPage = ({
                 </div>
 
                 {/* Footer */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1rem", borderTop: "1px solid #E3E9F0" }}>
-                    <button onClick={() => setPageState(2)} style={{ fontFamily: "Nunito", border: "1.5px solid #E3E9F0", fontSize: "13px", fontWeight: 700, padding: "7px 16px", borderRadius: "99px", cursor: "pointer", backgroundColor: "white", color: "#374151" }}>‹ Images</button>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem 1rem", borderTop: "1px solid #E3E9F0", gap: "8px" }}>
+                    <button onClick={() => setPageState(2)} style={{ fontFamily: "Nunito", border: "1.5px solid #E3E9F0", fontSize: "13px", fontWeight: 700, padding: "7px 16px", borderRadius: "99px", cursor: "pointer", backgroundColor: "white", color: "#374151", flexShrink: 0 }}>‹ Images</button>
+                    <button
+                        onClick={() => savedSnapshot && setAskParrotsConfirmVisible(true)}
+                        disabled={isAdviceLoading}
+                        style={{ fontFamily: "Nunito", border: "none", fontSize: "13px", fontWeight: 800, padding: "7px 14px", borderRadius: "99px", cursor: savedSnapshot ? "pointer" : "not-allowed", backgroundColor: "#E8620E", color: "white", opacity: (!savedSnapshot || isAdviceLoading) ? 0.45 : 1 }}
+                    >
+                        {isAdviceLoading ? "Asking…" : "Ask Parrots"}
+                    </button>
                     <button
                         onClick={() => addedWaypoints.length > 0 && setShowConfirmModal(true)}
-                        style={{ fontFamily: "Nunito", border: "none", fontSize: "13px", fontWeight: 800, padding: "7px 18px", borderRadius: "99px", cursor: addedWaypoints.length > 0 ? "pointer" : "not-allowed", backgroundColor: addedWaypoints.length > 0 ? "#22C55E" : "#E3E9F0", color: addedWaypoints.length > 0 ? "white" : "#9CA3AF" }}
+                        style={{ fontFamily: "Nunito", border: "none", fontSize: "13px", fontWeight: 800, padding: "7px 18px", borderRadius: "99px", cursor: addedWaypoints.length > 0 ? "pointer" : "not-allowed", backgroundColor: addedWaypoints.length > 0 ? "#22C55E" : "#E3E9F0", color: addedWaypoints.length > 0 ? "white" : "#9CA3AF", flexShrink: 0 }}
                     >Complete voyage</button>
                 </div>
             </div>
@@ -388,6 +439,62 @@ export const AddWaypointsPage = ({
             </div>
 
             {showConfirmModal && <ConfirmModal voyageName={voyageName} startDate={startDate} endDate={endDate} isPublicOnMap={isPublicOnMap} setShowConfirmModal={setShowConfirmModal} handleGoToProfilePage={handleGoToProfilePage} isConfirming={isConfirming} voyageCreated={voyageCreated} />}
+
+            {/* Ask Parrots — confirmation modal */}
+            {askParrotsConfirmVisible && (
+                <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+                    <div style={{ backgroundColor: "white", borderRadius: "22px", padding: "24px 22px 20px", width: "100%", maxWidth: "420px", display: "flex", flexDirection: "column", gap: "14px", boxShadow: "0 20px 48px rgba(0,14,30,0.3)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "11px" }}>
+                            <img src={parrotsLogo} alt="" style={{ width: "42px", height: "42px", borderRadius: "50%" }} />
+                            <div>
+                                <div style={{ fontFamily: "Nunito", fontSize: "19px", fontWeight: 900, color: "#E8620E", letterSpacing: "-0.3px" }}>Ask Parrots</div>
+                                <div style={{ fontFamily: "Nunito", fontSize: "12.5px", fontWeight: 700, color: "#3C4A57", marginTop: "2px" }}>Parrots will review your voyage and give you advice on:</div>
+                            </div>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7px" }}>
+                            {[
+                                { label: "Things to Do, See, and Eat Nearby", color: "#0A77EA" },
+                                { label: "Practical Crew Tips", color: "#1E9E6A" },
+                                { label: "Optimal Departure Timing", color: "#7C4DE0" },
+                                { label: "Pricing Assessment", color: "#C2306B" },
+                            ].map(item => (
+                                <div key={item.label} style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#F4F7FB", borderRadius: "12px", padding: "9px 10px" }}>
+                                    <div style={{ width: "26px", height: "26px", borderRadius: "8px", backgroundColor: item.color, flexShrink: 0 }} />
+                                    <span style={{ fontFamily: "Nunito", fontSize: "12px", fontWeight: 800, color: "#1F2933", lineHeight: 1.3 }}>{item.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ fontFamily: "Nunito", fontSize: "11.5px", fontWeight: 700, color: "#5A6874", lineHeight: 1.5 }}>These tips are for inspiration, so please verify before you go.</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "9px", backgroundColor: "#FDF0D5", borderRadius: "12px", padding: "9px 12px" }}>
+                            <img src={parrotCracker} alt="" style={{ width: "20px", height: "20px", flexShrink: 0 }} />
+                            <span style={{ fontFamily: "Nunito", fontSize: "12.5px", fontWeight: 900, color: "#8A5300" }}>1 ParrotCracker</span>
+                            <span style={{ fontFamily: "Nunito", fontSize: "12.5px", fontWeight: 800, color: "#8A5300", marginLeft: "auto" }}>Balance {crackerBalance?.balance ?? "?"}</span>
+                        </div>
+                        {crackerBalance?.balance === 0 && (
+                            <div style={{ fontFamily: "Nunito", fontSize: "12px", fontWeight: 700, color: "#DC2626", textAlign: "center" }}>You don't have enough ParrotCrackers.</div>
+                        )}
+                        <div style={{ display: "flex", gap: "9px" }}>
+                            <button onClick={() => setAskParrotsConfirmVisible(false)} style={{ fontFamily: "Nunito", width: "100px", flexShrink: 0, height: "44px", borderRadius: "999px", border: "1.5px solid #E3E9F0", backgroundColor: "white", fontSize: "14px", fontWeight: 800, color: "#3C4A57", cursor: "pointer" }}>Cancel</button>
+                            <button
+                                disabled={crackerBalance?.balance === 0}
+                                onClick={() => { setAskParrotsConfirmVisible(false); handleAskParrots(); }}
+                                style={{ fontFamily: "Nunito", flex: 1, height: "44px", borderRadius: "999px", border: "none", backgroundColor: crackerBalance?.balance === 0 ? "rgba(10,95,191,0.35)" : "#0A5FBF", fontSize: "14px", fontWeight: 800, color: "white", cursor: crackerBalance?.balance === 0 ? "not-allowed" : "pointer" }}
+                            >Ask Parrots</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Ask Parrots — advice result modal */}
+            {adviceModalVisible && (
+                <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+                    <div style={{ backgroundColor: "white", borderRadius: "20px", padding: "24px 22px 20px", width: "100%", maxWidth: "520px", maxHeight: "80vh", display: "flex", flexDirection: "column", gap: "14px", boxShadow: "0 20px 48px rgba(0,14,30,0.3)" }}>
+                        <div style={{ fontFamily: "Nunito", fontSize: "16px", fontWeight: 800, color: "#0A5FBF", textAlign: "center" }}>Ask Parrots — Voyage Advice</div>
+                        <div style={{ overflowY: "auto", flex: 1, fontFamily: "Nunito", fontSize: "13.5px", fontWeight: 600, color: "#374151", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{adviceText}</div>
+                        <button onClick={() => setAdviceModalVisible(false)} style={{ fontFamily: "Nunito", height: "44px", borderRadius: "999px", border: "none", backgroundColor: "#0A5FBF", fontSize: "14px", fontWeight: 800, color: "white", cursor: "pointer" }}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
