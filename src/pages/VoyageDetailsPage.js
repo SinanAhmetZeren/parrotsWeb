@@ -83,6 +83,7 @@ function VoyageDetailsPage() {
   const [pendingDeleteBid, setPendingDeleteBid] = useState(null);
   const [voyageStateLoading, setVoyageStateLoading] = useState(false);
   const [pendingVoyageState, setPendingVoyageState] = useState(null);
+  const [bidsExpanded, setBidsExpanded] = useState(false);
 
   const handleSetVoyageState = async (state) => {
     setVoyageStateLoading(true);
@@ -301,9 +302,9 @@ function VoyageDetailsPage() {
         </div>
 
         {/* Top banner wrapper — dark background with padding */}
-        <div style={{ backgroundColor: "#011a32", height: "15rem", boxSizing: "border-box" }}>
+        <div style={{ backgroundColor: "rgb(1, 26, 50)", height: "15rem", boxSizing: "border-box", paddingLeft: "0.75rem", paddingRight: "0.75rem" }}>
           {/* Top banner — 3-col grid matching HTML spec */}
-          <div style={{ display: "grid", gridTemplateColumns: "250px minmax(0,1fr) minmax(340px,1.05fr)", background: "linear-gradient(112deg,#0A2A48,#071F38)", borderRadius: "12px", boxShadow: "0 12px 32px rgba(0,14,30,0.34)", overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "20vw minmax(0,1fr) minmax(27vw,1.05fr)", background: "linear-gradient(112deg,#0A2A48,#071F38)", borderRadius: "12px", boxShadow: "0 12px 32px rgba(0,14,30,0.34)", overflow: "hidden", height: "100%" }}>
 
             {/* Col 1: Image gallery */}
             <ImageGallery images={images} />
@@ -330,8 +331,9 @@ function VoyageDetailsPage() {
                             <button
                               disabled={voyageStateLoading}
                               onClick={() => { setDotMenuOpen(false); setPendingVoyageState("BidsClosed"); }}
-                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#1D4ED8", cursor: "pointer", fontFamily: "Nunito" }}
+                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#C2410C", cursor: "pointer", fontFamily: "Nunito", display: "flex", alignItems: "center", gap: "0.5rem" }}
                             >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15, flexShrink: 0 }}><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                               Close bids
                             </button>
                           )}
@@ -339,8 +341,9 @@ function VoyageDetailsPage() {
                             <button
                               disabled={voyageStateLoading}
                               onClick={() => { setDotMenuOpen(false); setPendingVoyageState("Cancelled"); }}
-                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#DC2626", cursor: "pointer", fontFamily: "Nunito" }}
+                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#DC2626", cursor: "pointer", fontFamily: "Nunito", display: "flex", alignItems: "center", gap: "0.5rem" }}
                             >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15, flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
                               Cancel voyage
                             </button>
                           )}
@@ -382,8 +385,8 @@ function VoyageDetailsPage() {
 
               {/* Pills */}
               <div style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "9px" }}>
-                {VoyageData.publicOnMap && (
-                  <span style={bnrPill("#2AC898", "#05372A")}>
+                {(VoyageData.publicOnMap || (!VoyageData.fixedPrice && !VoyageData.auction)) && (
+                  <span style={{ ...bnrPill("#2AC898", "#05372A"), opacity: VoyageData.publicOnMap ? 1 : 0 }}>
                     <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 10, height: 10 }}><circle cx="12" cy="12" r="5" /></svg>
                     Live on map
                   </span>
@@ -462,6 +465,17 @@ function VoyageDetailsPage() {
 
           {/* Map area */}
           <div style={{ flex: 1, minWidth: 0, position: "relative", borderRadius: "1rem", overflow: "hidden" }}>
+            {(VoyageData?.voyageState === "Cancelled" || VoyageData?.voyageState === "BidsClosed") && (
+              <div style={{
+                position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
+                zIndex: 1000, padding: "6px 16px", borderRadius: "999px",
+                fontSize: "12px", fontWeight: 700, color: "white",
+                backgroundColor: VoyageData.voyageState === "Cancelled" ? "rgba(220,38,38,0.88)" : "rgba(194,65,12,0.88)",
+                backdropFilter: "blur(6px)", whiteSpace: "nowrap", pointerEvents: "none",
+              }}>
+                {VoyageData.voyageState === "Cancelled" ? "This voyage has been cancelled." : "Bids are closed for this voyage."}
+              </div>
+            )}
             {latLngBoundsLiteral?.east ? (
               <MapContainer
                 bounds={[[latLngBoundsLiteral.south, latLngBoundsLiteral.west], [latLngBoundsLiteral.north, latLngBoundsLiteral.east]]}
@@ -530,17 +544,17 @@ function VoyageDetailsPage() {
                 <div style={sideCard}>
                   <div style={cardHeader}>
                     <span style={cardHeaderTitle}>BIDS</span>
-                    {pendingBidsCount > 0 && (
-                      <span style={{ backgroundColor: "#10B981", color: "white", borderRadius: "99px", fontSize: "0.7rem", fontWeight: 800, padding: "0.1rem 0.5rem" }}>
-                        {pendingBidsCount} new
-                      </span>
-                    )}
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      {bidsData.length > 3 && (
+                        <span onClick={() => setBidsExpanded(true)} style={{ color: "#3B82F6", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "Nunito" }}>See all</span>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "260px", overflowY: "auto", scrollbarWidth: "none" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {bidsData.length === 0 && (
                       <div style={{ color: "#94A3B8", fontSize: "0.82rem", padding: "0.5rem 0" }}>No bids yet.</div>
                     )}
-                    {bidsData.map((bid) => (
+                    {bidsData.slice(0, 3).map((bid) => (
                       <OwnerBidRow
                         key={bid.id}
                         bid={bid}
@@ -625,29 +639,24 @@ function VoyageDetailsPage() {
                 <div style={{ ...sideCard, flex: 1 }}>
                   <div style={cardHeader}>
                     <span style={cardHeaderTitle}>BIDS</span>
-                    <span style={{ backgroundColor: "#F1F5F9", color: "#64748B", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, padding: "0.15rem 0.55rem" }}>
-                      {bidsData.length}
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ backgroundColor: "#F1F5F9", color: "#64748B", borderRadius: "99px", fontSize: "0.75rem", fontWeight: 700, padding: "0.15rem 0.55rem" }}>
+                        {bidsData.length}
+                      </span>
+                      {bidsData.length > 5 && (
+                        <span onClick={() => setBidsExpanded(true)} style={{ color: "#3B82F6", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "Nunito" }}>See all</span>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", flex: 1, overflowY: "auto", scrollbarWidth: "none" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                     {bidsData.length === 0 && (
                       <div style={{ color: "#94A3B8", fontSize: "0.82rem" }}>No bids yet. Be the first!</div>
                     )}
-                    {bidsData.map((bid) => (
+                    {bidsData.slice(0, 5).map((bid) => (
                       <GuestBidRow key={bid.id} bid={bid} isMyBid={bid.userId === userId} />
                     ))}
                   </div>
                   {/* Send a bid button */}
-                  {VoyageData?.voyageState === "Cancelled" && (
-                  <div style={{ marginTop: "0.75rem", padding: "0.6rem 0.9rem", backgroundColor: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, color: "#DC2626", fontFamily: "Nunito" }}>
-                    This voyage has been cancelled.
-                  </div>
-                )}
-                {VoyageData?.voyageState === "BidsClosed" && (
-                  <div style={{ marginTop: "0.75rem", padding: "0.6rem 0.9rem", backgroundColor: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, color: "#C2410C", fontFamily: "Nunito" }}>
-                    Bids are closed for this voyage.
-                  </div>
-                )}
                 {!VoyageData?.isBlockedByOrganizer && VoyageData?.voyageState === "Active" && (
                   <div style={{ marginTop: "0.75rem" }}>
                     <VoyageDetailBidButton
@@ -709,8 +718,8 @@ function VoyageDetailsPage() {
             </div>
             <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#6b7280", marginBottom: "1.5rem", lineHeight: 1.5 }}>
               {pendingVoyageState === "Cancelled"
-                ? "The voyage will remain visible but marked as cancelled. New bids will be blocked."
-                : "No new bids will be accepted."}
+                ? "The voyage will remain visible but marked as cancelled. New bids will be blocked. You will need help of a ParrotsVoyages admin to reinstate it."
+                : "No new bids will be accepted. You will need help of a ParrotsVoyages admin to reopen bids."}
             </div>
             <div style={{ display: "flex", gap: "0.75rem" }}>
               <div
@@ -721,6 +730,23 @@ function VoyageDetailsPage() {
                 style={{ flex: 1, backgroundColor: pendingVoyageState === "Cancelled" ? "#ef4444" : "#1D4ED8", borderRadius: "1.875rem", padding: "0.75rem", fontWeight: 700, fontSize: "1rem", color: "white", cursor: "pointer", textAlign: "center" }}
                 onClick={() => { const s = pendingVoyageState; setPendingVoyageState(null); handleSetVoyageState(s); }}
               >Confirm</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {bidsExpanded && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setBidsExpanded(false)}>
+          <div style={{ backgroundColor: "white", borderRadius: "1rem", padding: "1.5rem", width: "28rem", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", fontFamily: "Nunito" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <span style={{ fontWeight: 800, fontSize: "1rem", color: "#0F172A" }}>All Bids ({bidsData.length})</span>
+              <button onClick={() => setBidsExpanded(false)} style={{ background: "none", border: "none", fontSize: "1.2rem", color: "#94A3B8", cursor: "pointer" }}>✕</button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", overflowY: "auto", scrollbarWidth: "none" }}>
+              {bidsData.map((bid) => ownVoyage
+                ? <OwnerBidRow key={bid.id} bid={bid} loadingBidId={loadingBidId} onAccept={handleAcceptBid} onDelete={({ bidId, bidUserId }) => { setBidsExpanded(false); setPendingDeleteBid({ bidId, bidUserId }); }} />
+                : <GuestBidRow key={bid.id} bid={bid} isMyBid={bid.userId === userId} />
+              )}
             </div>
           </div>
         </div>
@@ -886,28 +912,24 @@ function UpdatesCard({ updates, voyageId, isOwner }) {
     }
   };
 
-  const preview = localUpdates.slice(0, 2);
+  const preview = localUpdates.slice(0, 1);
 
   return (
     <>
       <div style={{ ...sideCard, display: "flex", flexDirection: "column" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.6rem", flexShrink: 0 }}>
-          <span style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B" }}>Updates</span>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+            <span style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B" }}>Updates</span>
             {localUpdates.length > 0 && (
-              <span style={{ backgroundColor: "#E2E8F0", color: "#475569", borderRadius: "99px", fontSize: "0.72rem", fontWeight: 700, padding: "0.1rem 0.55rem", minWidth: "1.4rem", textAlign: "center" }}>
-                {localUpdates.length}
-              </span>
-            )}
-            {localUpdates.length > 2 && (
-              <button onClick={() => setExpanded(true)} style={{ width: "1.8rem", height: "1.8rem", borderRadius: "0.4rem", border: "1.5px solid #E2E8F0", backgroundColor: "#F8FAFC", color: "#475569", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem" }}>
-                ⤢
-              </button>
+              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#94A3B8" }}>{localUpdates.length}</span>
             )}
           </div>
+          {localUpdates.length > 0 && (
+            <span onClick={() => setExpanded(true)} style={{ color: "#3B82F6", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "Nunito" }}>See all</span>
+          )}
         </div>
-        {/* Preview: last 2 updates */}
+        {/* Preview: 1 update */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem", flex: 1, overflow: "hidden" }}>
           {localUpdates.length === 0 && (
             <div style={{ color: "#94A3B8", fontSize: "0.82rem" }}>No updates yet.</div>
