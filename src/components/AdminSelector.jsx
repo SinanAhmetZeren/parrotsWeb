@@ -51,6 +51,7 @@ const sections = [
             { key: "directMessagesViewer", label: "Direct Messages" },
             { key: "groupMessagesViewer", label: "Group Messages" },
             { key: "deletedAccountsViewer", label: "Deleted Accounts" },
+            { key: "voyageStateEditor", label: "Voyage State" },
         ]
     },
     {

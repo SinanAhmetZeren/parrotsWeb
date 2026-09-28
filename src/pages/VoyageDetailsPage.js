@@ -4,7 +4,7 @@ import "../assets/css/advancedmarker.css";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useGetVoyageByIdQuery, useAddVoyageUpdateMutation, useAcceptBidMutation, useDeleteBidMutation } from "../slices/VoyageSlice";
+import { useGetVoyageByIdQuery, useAddVoyageUpdateMutation, useAcceptBidMutation, useDeleteBidMutation, useSetVoyageStateMutation } from "../slices/VoyageSlice";
 import { invokeHub } from "../signalr/signalRHub";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
@@ -81,6 +81,20 @@ function VoyageDetailsPage() {
   const [voyageSelectedReason, setVoyageSelectedReason] = useState("");
   const [voyageReportSubmitted, setVoyageReportSubmitted] = useState(false);
   const [pendingDeleteBid, setPendingDeleteBid] = useState(null);
+  const [voyageStateLoading, setVoyageStateLoading] = useState(false);
+  const [pendingVoyageState, setPendingVoyageState] = useState(null);
+
+  const handleSetVoyageState = async (state) => {
+    setVoyageStateLoading(true);
+    try {
+      await setVoyageState({ voyageId: VoyageData?.id, state }).unwrap();
+      refetch();
+    } catch (e) {
+      console.error("Failed to set voyage state", e);
+    } finally {
+      setVoyageStateLoading(false);
+    }
+  };
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const [reportVoyage] = useReportVoyageMutation();
@@ -88,6 +102,7 @@ function VoyageDetailsPage() {
   const [deleteVoyageFromFavorites] = useDeleteVoyageFromFavoritesMutation();
   const [acceptBid] = useAcceptBidMutation();
   const [deleteBid] = useDeleteBidMutation();
+  const [setVoyageState] = useSetVoyageStateMutation();
 
   const VOYAGE_REPORT_REASONS = [
     "Inappropriate Content",
@@ -308,13 +323,37 @@ function VoyageDetailsPage() {
                   </button>
                   <CustomToolTip isHovered={hoveredIcon === "more" && !dotMenuOpen} message="More" direction="down" />
                   {dotMenuOpen && (
-                    <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, backgroundColor: "white", borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.18)", minWidth: "150px", zIndex: 10, overflow: "hidden" }}>
-                      <button
-                        onClick={() => { setDotMenuOpen(false); setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
-                        style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#EF4444", cursor: "pointer", fontFamily: "Nunito" }}
-                      >
-                        Report voyage
-                      </button>
+                    <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, backgroundColor: "white", borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.18)", minWidth: "170px", zIndex: 10, overflow: "hidden" }}>
+                      {ownVoyage && (
+                        <>
+                          {VoyageData?.voyageState === "Active" && (
+                            <button
+                              disabled={voyageStateLoading}
+                              onClick={() => { setDotMenuOpen(false); setPendingVoyageState("BidsClosed"); }}
+                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#1D4ED8", cursor: "pointer", fontFamily: "Nunito" }}
+                            >
+                              Close bids
+                            </button>
+                          )}
+                          {VoyageData?.voyageState !== "Cancelled" && (
+                            <button
+                              disabled={voyageStateLoading}
+                              onClick={() => { setDotMenuOpen(false); setPendingVoyageState("Cancelled"); }}
+                              style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#DC2626", cursor: "pointer", fontFamily: "Nunito" }}
+                            >
+                              Cancel voyage
+                            </button>
+                          )}
+                        </>
+                      )}
+                      {!ownVoyage && (
+                        <button
+                          onClick={() => { setDotMenuOpen(false); setVoyageReportOpen(true); setVoyageReportSubmitted(false); setVoyageSelectedReason(""); }}
+                          style={{ width: "100%", padding: "0.6rem 1rem", background: "none", border: "none", textAlign: "left", fontSize: "0.85rem", fontWeight: 600, color: "#EF4444", cursor: "pointer", fontFamily: "Nunito" }}
+                        >
+                          Report voyage
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -599,7 +638,17 @@ function VoyageDetailsPage() {
                     ))}
                   </div>
                   {/* Send a bid button */}
-                  {!VoyageData?.isBlockedByOrganizer && (
+                  {VoyageData?.voyageState === "Cancelled" && (
+                  <div style={{ marginTop: "0.75rem", padding: "0.6rem 0.9rem", backgroundColor: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, color: "#DC2626", fontFamily: "Nunito" }}>
+                    This voyage has been cancelled.
+                  </div>
+                )}
+                {VoyageData?.voyageState === "BidsClosed" && (
+                  <div style={{ marginTop: "0.75rem", padding: "0.6rem 0.9rem", backgroundColor: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, color: "#C2410C", fontFamily: "Nunito" }}>
+                    Bids are closed for this voyage.
+                  </div>
+                )}
+                {!VoyageData?.isBlockedByOrganizer && VoyageData?.voyageState === "Active" && (
                   <div style={{ marginTop: "0.75rem" }}>
                     <VoyageDetailBidButton
                       ownVoyage={false}
@@ -615,7 +664,7 @@ function VoyageDetailsPage() {
                       endDate={VoyageData?.endDate}
                     />
                   </div>
-                  )}
+                )}
                 </div>
               </>
             )}
@@ -648,6 +697,31 @@ function VoyageDetailsPage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {pendingVoyageState && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "1.75rem", width: "100%", maxWidth: "26rem", display: "flex", flexDirection: "column", fontFamily: "Nunito" }}>
+            <div style={{ fontWeight: 800, fontSize: "1.5rem", color: pendingVoyageState === "Cancelled" ? "#ef4444" : "#1D4ED8", marginBottom: "0.5rem" }}>
+              {pendingVoyageState === "Cancelled" ? "Cancel this voyage?" : "Close bids?"}
+            </div>
+            <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#6b7280", marginBottom: "1.5rem", lineHeight: 1.5 }}>
+              {pendingVoyageState === "Cancelled"
+                ? "The voyage will remain visible but marked as cancelled. New bids will be blocked."
+                : "No new bids will be accepted."}
+            </div>
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <div
+                style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: "1rem", color: "#6b7280", cursor: "pointer", border: "1.5px solid #e5e7eb", borderRadius: "1.875rem", padding: "0.75rem" }}
+                onClick={() => setPendingVoyageState(null)}
+              >Cancel</div>
+              <div
+                style={{ flex: 1, backgroundColor: pendingVoyageState === "Cancelled" ? "#ef4444" : "#1D4ED8", borderRadius: "1.875rem", padding: "0.75rem", fontWeight: 700, fontSize: "1rem", color: "white", cursor: "pointer", textAlign: "center" }}
+                onClick={() => { const s = pendingVoyageState; setPendingVoyageState(null); handleSetVoyageState(s); }}
+              >Confirm</div>
+            </div>
           </div>
         </div>
       )}

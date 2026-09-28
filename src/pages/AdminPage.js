@@ -30,6 +30,7 @@ import { ReportsViewer } from "../components/Editors/ReportsViewer";
 import { DirectMessagesViewer } from "../components/Editors/DirectMessagesViewer";
 import { GroupMessagesViewer } from "../components/Editors/GroupMessagesViewer";
 import { DeletedAccountsViewer } from "../components/Editors/DeletedAccountsViewer";
+import { VoyageStateEditor } from "../components/Editors/VoyageStateEditor";
 
 
 function AdminPage() {
@@ -68,6 +69,8 @@ function AdminPage() {
           <GroupMessagesViewer />
         ) : adminView === "deletedAccountsViewer" ? (
           <DeletedAccountsViewer />
+        ) : adminView === "voyageStateEditor" ? (
+          <VoyageStateEditor />
         ) : (
           <div style={{ width: "100%", maxWidth: 1200, margin: "0 auto" }}>
             {adminView === "voyageEditor" && <VoyageEditor />}
