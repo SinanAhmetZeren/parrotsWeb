@@ -16,6 +16,7 @@ import { MainPageV2VoyageCard } from "../components/MainPageV2VoyageCard";
 import "leaflet/dist/leaflet.css";
 import he from "he";
 import DOMPurify from "dompurify";
+import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, FaMotorcycle, FaBicycle, FaHouse, FaPlane, FaTrain } from "react-icons/fa6";
 import imgEmail from "../assets/images/email_logo.png";
 import imgInstagram from "../assets/images/instagram_icon.png";
 import imgTwitter from "../assets/images/twitter_logo.png";
@@ -87,9 +88,24 @@ const clean = (s) => s ? DOMPurify.sanitize(he.decode(s.replace(/<[^>]+>/g, " ")
 const USER_REPORT_REASONS = ["Spam", "Inappropriate behavior", "Harassment", "Scam"];
 
 // ── Vehicle card ──────────────────────────────────────────────────────────────
+const vehicleTypeData = {
+  Boat:       { label: "Sailboat",   color: "#3b2697", icon: <FaSailboat size={11} /> },
+  Car:        { label: "Car",        color: "#D53E4F", icon: <FaCar size={11} /> },
+  Caravan:    { label: "Caravan",    color: "#F46D43", icon: <FaCaravan size={11} /> },
+  Bus:        { label: "Bus",        color: "#8aaa00", icon: <FaBus size={11} /> },
+  Walk:       { label: "Walk",       color: "#06B6D4", icon: <FaPersonWalking size={11} /> },
+  Run:        { label: "Run",        color: "#FDAE61", icon: <FaPersonRunning size={11} /> },
+  Motorcycle: { label: "Motorcycle", color: "#9E0142", icon: <FaMotorcycle size={11} /> },
+  Bicycle:    { label: "Bicycle",    color: "#66C2A5", icon: <FaBicycle size={11} /> },
+  TinyHouse:  { label: "Tiny House", color: "#c4a800", icon: <FaHouse size={11} /> },
+  Airplane:   { label: "Airplane",   color: "#ABDDA4", icon: <FaPlane size={11} /> },
+  Train:      { label: "Train",      color: "#F781BF", icon: <FaTrain size={11} /> },
+};
+
 function VehicleCard({ vehicle }) {
   const navigate = useNavigate();
   const [hov, setHov] = React.useState(false);
+  const vt = vehicleTypeData[vehicle?.type];
   return (
     <article
       style={{ ...vc, ...(hov ? vcHov : {}) }}
@@ -103,7 +119,11 @@ function VehicleCard({ vehicle }) {
         <span style={vcT}>{vehicle?.name}</span>
         <span style={vcS}>{clean(vehicle?.description)}</span>
         <span style={mt2}>
-          {vehicle?.type && <span style={vtag}>{vehicle.type}</span>}
+          {vt && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 6px", borderRadius: 99, backgroundColor: vt.color + "20", fontSize: 10.5, fontWeight: 800, color: vt.color, whiteSpace: "nowrap" }}>
+              {vt.icon}{vt.label}
+            </span>
+          )}
           {vehicle?.capacity && <span style={{ ...vtag, display: "inline-flex", alignItems: "center", gap: 4 }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}><circle cx="9" cy="8" r="3" /><path d="M3 19a6 6 0 0 1 12 0" /><path d="M16 11a3 3 0 0 0 0-6" /><path d="M18 19a5 5 0 0 0-2-4" /></svg>{vehicle.capacity}</span>}
         </span>
       </span>

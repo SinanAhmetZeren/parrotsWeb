@@ -11,6 +11,7 @@ import { MainPageV2VoyageCard } from "../components/MainPageV2VoyageCard";
 import { useGetBookmarksQuery } from "../slices/UserSlice";
 import he from "he";
 import DOMPurify from "dompurify";
+import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, FaMotorcycle, FaBicycle, FaHouse, FaPlane, FaTrain } from "react-icons/fa6";
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 const blue = "#0A77EA";
@@ -25,17 +26,29 @@ const clean = (s) =>
   s ? DOMPurify.sanitize(he.decode(s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())) : "";
 
 // ── Vehicle card (profile rail style) ────────────────────────────────────────
+const vehicleTypeData = [
+  { label: "Sailboat",   color: "#3b2697", icon: <FaSailboat size={11} /> },
+  { label: "Car",        color: "#D53E4F", icon: <FaCar size={11} /> },
+  { label: "Caravan",    color: "#F46D43", icon: <FaCaravan size={11} /> },
+  { label: "Bus",        color: "#8aaa00", icon: <FaBus size={11} /> },
+  { label: "Walk",       color: "#06B6D4", icon: <FaPersonWalking size={11} /> },
+  { label: "Run",        color: "#FDAE61", icon: <FaPersonRunning size={11} /> },
+  { label: "Motorcycle", color: "#9E0142", icon: <FaMotorcycle size={11} /> },
+  { label: "Bicycle",    color: "#66C2A5", icon: <FaBicycle size={11} /> },
+  { label: "Tiny House", color: "#c4a800", icon: <FaHouse size={11} /> },
+  { label: "Airplane",   color: "#ABDDA4", icon: <FaPlane size={11} /> },
+  { label: "Train",      color: "#F781BF", icon: <FaTrain size={11} /> },
+];
+
 function VehicleCard({ vehicle }) {
   const navigate = useNavigate();
-  const [hov, setHov] = useState(false);
-  const VEHICLE_EMOJIS = ["⛵", "🚗", "🚐", "🚌", "🚶", "🏃", "🏍️", "🚲", "🏠", "✈️", "🚄"];
-  const emoji = VEHICLE_EMOJIS[vehicle?.type] ?? "❓";
+  const vt = vehicleTypeData[vehicle?.type];
   return (
     <article
-      style={{ ...vc, ...(hov ? vcHov : {}) }}
+      style={vc}
       onClick={() => navigate(`/vehicle-details/${vehicle?.id}`)}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = blue; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(10,119,234,.13)"; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.background = tint; e.currentTarget.style.boxShadow = "none"; }}
     >
       <span style={vcIm}>
         <img
@@ -48,7 +61,11 @@ function VehicleCard({ vehicle }) {
         <span style={vcT}>{vehicle?.name}</span>
         <span style={vcS}>{clean(vehicle?.description)}</span>
         <span style={mt2}>
-          {vehicle?.type !== undefined && <span style={vtag}>{emoji}</span>}
+          {vt && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 6px", borderRadius: 99, backgroundColor: vt.color + "20", fontSize: 10.5, fontWeight: 800, color: vt.color, whiteSpace: "nowrap" }}>
+              {vt.icon}{vt.label}
+            </span>
+          )}
           {vehicle?.capacity && (
             <span style={{ ...vtag, display: "inline-flex", alignItems: "center", gap: 4 }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
@@ -101,14 +118,14 @@ export default function FavoritePage() {
     isError: isFavoriteVoyagesError,
     isSuccess: isFavoriteVoyagesSuccess,
     isLoading: isFavoriteVoyagesLoading,
-  } = useGetFavoriteVoyagesByUserIdQuery(userId);
+  } = useGetFavoriteVoyagesByUserIdQuery(userId, { refetchOnFocus: true, refetchOnReconnect: true });
 
   const {
     data: FavoriteVehiclesData,
     isError: isFavoriteVehiclesError,
     isSuccess: isFavoriteVehiclesSuccess,
     isLoading: isFavoriteVehiclesLoading,
-  } = useGetFavoriteVehiclesByUserByIdQuery(userId);
+  } = useGetFavoriteVehiclesByUserByIdQuery(userId, { refetchOnFocus: true, refetchOnReconnect: true });
 
   const { isError: isHealthCheckError } = useHealthCheckQuery();
   if (isHealthCheckError) return <SomethingWentWrong />;
@@ -169,7 +186,7 @@ export default function FavoritePage() {
                   <EmptyState label="No favorite voyages yet." />
                 ) : (
                   voyages.map((v, i) => (
-                    <MainPageV2VoyageCard key={v?.id ?? i} cardData={v} panToLocation={() => { }} />
+                    <MainPageV2VoyageCard key={v?.id ?? i} cardData={v} panToLocation={() => { }} hideSeeOnMap />
                   ))
                 )}
               </div>
@@ -217,27 +234,42 @@ function BookmarkCard({ user, navigate }) {
     ? DOMPurify.sanitize(he.decode(user.bio.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()))
     : "";
   return (
-    <div style={bmCard}>
+    <div style={bmCard}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = blue; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(10,119,234,.13)"; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.background = tint; e.currentTarget.style.boxShadow = "none"; }}
+    >
+      {/* Left col: avatar */}
       <span style={bmAv} onClick={() => navigate(`/profile-public/${user.publicId}/${user.userName}`)}>
         <img src={user.profileImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </span>
+      {/* Right col */}
       <span style={bmTx}>
-        <span style={bmName}>{user.userName}</span>
-        {user.title && <span style={bmRole}>{user.title}</span>}
+        {/* Top row: name+title on left, buttons on right */}
+        <span style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+            <span style={bmName}>{user.userName}</span>
+            {user.title && (
+              <span style={{ display: "inline-flex", alignItems: "center", padding: "1px 6px", borderRadius: 99, backgroundColor: "#E8620E20", fontSize: 10.5, fontWeight: 800, color: "#E8620E", alignSelf: "flex-start" }}>
+                {user.title}
+              </span>
+            )}
+          </span>
+          <span style={{ display: "flex", gap: 7, flexShrink: 0 }}>
+            <Tip text="Message">
+              <button style={bmBtn} onClick={() => navigate(`/connect/${user.publicId}/${user.userName}`)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+              </button>
+            </Tip>
+            <Tip text="View profile">
+              <button style={bmBtn} onClick={() => navigate(`/profile-public/${user.publicId}/${user.userName}`)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="10" r="3" /><path d="M6.5 19a6 6 0 0 1 11 0" /></svg>
+              </button>
+            </Tip>
+          </span>
+        </span>
+        {/* Bottom row: bio full width */}
         {cleanBio && <span style={bmBio}>{cleanBio}</span>}
       </span>
-      <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
-        <Tip text="Message">
-          <button style={bmBtn} onClick={() => navigate(`/connect/${user.publicId}/${user.userName}`)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
-          </button>
-        </Tip>
-        <Tip text="View profile">
-          <button style={bmBtn} onClick={() => navigate(`/profile-public/${user.publicId}/${user.userName}`)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="10" r="3" /><path d="M6.5 19a6 6 0 0 1 11 0" /></svg>
-          </button>
-        </Tip>
-      </div>
     </div>
   );
 }
@@ -330,10 +362,12 @@ const vtag = { fontSize: 9.5, fontWeight: 800, letterSpacing: ".06em", textTrans
 const bmCard = {
   fontFamily: "Nunito, sans-serif",
   display: "flex", alignItems: "flex-start", gap: 13,
-  background: "#fff", borderRadius: 14,
-  padding: "13px 14px",
-  boxShadow: "0 4px 14px rgba(0,14,30,.12)",
+  background: tint, borderRadius: 11,
+  border: "1.5px solid transparent",
+  padding: "9px 14px",
   flexShrink: 0,
+  transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",
+  cursor: "default",
 };
 const bmAv = {
   width: 54, height: 54, borderRadius: "50%",
@@ -346,16 +380,16 @@ const bmTx = {
   display: "flex", flexDirection: "column", gap: 2,
 };
 const bmName = {
-  fontSize: 16.5, fontWeight: 800, color: blueDk,
+  fontSize: 13.5, fontWeight: 800, color: blueDk,
   letterSpacing: "-.01em",
   overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
   textAlign: "left",
 };
 const bmRole = {
-  fontSize: 12.5, fontWeight: 800, color: "#E8620E", textAlign: "left",
+  fontSize: 11, fontWeight: 800, color: "#E8620E", textAlign: "left",
 };
 const bmBio = {
-  fontSize: 13, fontWeight: 600, color: mid, lineHeight: 1.45, marginTop: 3,
+  fontSize: 11.5, fontWeight: 600, color: mid, lineHeight: 1.45, marginTop: 3,
   display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
   overflow: "hidden", textAlign: "left",
 };

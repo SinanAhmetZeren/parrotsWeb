@@ -12,12 +12,46 @@ const faint = "#8B98A5";
 const tint = "#F4F7FB";
 const amber = "#C2740A";
 
+const vehicleTypeColors = {
+  0: "#3b2697", // sailboat — purple
+  1: "#D53E4F", // car — red
+  2: "#F46D43", // caravan — orange-red
+  3: "#E6F598", // bus — yellow-green
+  4: "#06B6D4", // walk — turquoise
+  5: "#FDAE61", // run — light orange
+  6: "#9E0142", // motorcycle — dark red
+  7: "#66C2A5", // bicycle — teal green
+  8: "#FEE08B", // tiny house — light yellow
+  9: "#ABDDA4", // airplane — light green
+  10: "#F781BF", // train — pink
+};
+
+const vehicleTypeEmojis = {
+  0: "⛵", 1: "🚗", 2: "🚐", 3: "🚌",
+  4: "🚶", 5: "🏃", 6: "🏍️", 7: "🚲",
+  8: "🏠", 9: "✈️", 10: "🚄",
+};
+
+function VehiclePill({ type, image, name }) {
+  const color = vehicleTypeColors[type] ?? blue;
+  const bg = color + "20";
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "2px 6px", borderRadius: "99px", backgroundColor: bg, fontSize: "10.5px", fontWeight: 800, color, flexShrink: 0 }}>
+      {[4, 5, 10].includes(type)
+        ? <span>{vehicleTypeEmojis[type]}</span>
+        : image ? <img src={image} alt="" style={{ width: 13, height: 13, borderRadius: "50%", objectFit: "cover" }} /> : null
+      }
+      {name}
+    </span>
+  );
+}
+
 function fmtDate(d) {
   if (!d) return "";
   return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(new Date(d));
 }
 
-export function MainPageV2VoyageCard({ cardData, panToLocation }) {
+export function MainPageV2VoyageCard({ cardData, panToLocation, hideSeeOnMap }) {
   const navigate = useNavigate();
   const [priceHov, setPriceHov] = useState(false);
   const firstWaypoint = cardData.waypoints?.[0]
@@ -65,7 +99,7 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
         <div style={imgWrap}>
           <img src={cardData.profileImageThumbnail || cardData.profileImage} alt="" style={imgStyle} />
         </div>
-        {firstWaypoint && (
+        {firstWaypoint && !hideSeeOnMap && (
           <div
             style={seeOnMapBadge}
             onClick={e => { e.stopPropagation(); panToLocation(firstWaypoint.latitude, firstWaypoint.longitude); }}
@@ -82,11 +116,21 @@ export function MainPageV2VoyageCard({ cardData, panToLocation }) {
         {/* Title row */}
         <div style={{ ...titleStyle, color: isPlace ? navy : blueDk }}>{cardData.name}</div>
 
-        {/* Host */}
-        {!isPlace && cardData.user && (
+        {/* Host + Vehicle */}
+        {!isPlace && (cardData.user || cardData.vehicle || cardData.vehicleId) && (
           <div style={hostRow}>
-            <img src={cardData.user.profileImageUrl} alt="" style={hostAvatar} />
-            <span>Hosted by <b style={{ fontWeight: 800, color: navy }}>{cardData.user.userName}</b></span>
+            {cardData.user && (
+              <span style={userPill}>
+                <img src={cardData.user.profileImageThumbnailUrl || cardData.user.profileImageUrl} alt="" style={hostAvatar} />
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cardData.user.userName}</span>
+              </span>
+            )}
+            {cardData.vehicle
+              ? <VehiclePill type={cardData.vehicle.type} image={cardData.vehicle.profileImageThumbnailUrl || cardData.vehicle.profileImageUrl} name={cardData.vehicle.name} />
+              : cardData.vehicleId
+                ? <VehiclePill type={cardData.vehicleType} image={cardData.vehicleImageThumbnail} name={cardData.vehicleName} />
+                : null
+            }
           </div>
         )}
 
@@ -206,6 +250,30 @@ const hostRow = {
   minWidth: 0,
 };
 
+const userPill = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "4px",
+  padding: "2px 6px",
+  borderRadius: "99px",
+  backgroundColor: "#DDE2E8",
+  fontSize: "10.5px",
+  fontWeight: 800,
+  color: dmid,
+  flexShrink: 0,
+  minWidth: 0,
+};
+
+const vehiclePill = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "4px",
+  fontSize: "10.5px",
+  fontWeight: 700,
+  color: dmid,
+  flexShrink: 0,
+};
+
 const hostAvatar = {
   width: "15px",
   height: "15px",
@@ -224,6 +292,7 @@ const briefStyle = {
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
   WebkitLineClamp: 3,
+  height: `${11.5 * 1.45 * 3}px`,
 };
 
 const metaRow = {
