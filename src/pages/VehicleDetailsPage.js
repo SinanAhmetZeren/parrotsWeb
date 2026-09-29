@@ -25,6 +25,8 @@ import { VehicleDetailPlaceHolderComponent } from "../components/VehicleDetailPl
 import VehicleVoyages from "../components/VehicleVoyages";
 import { IoHeartSharp } from "react-icons/io5";
 import { ImageGallery } from "../components/ImageGallery";
+import parrotsLogo from "../assets/images/ParrotsLogo.png";
+import { parrotTextDarkBlue } from "../styles/colors";
 
 const VehicleTypes = ["Boat", "Car", "Caravan", "Bus", "Walk", "Run", "Motorcycle", "Bicycle", "TinyHouse", "Airplane", "Train"];
 
@@ -87,7 +89,32 @@ function VehicleDetailsPage() {
 
   const { data: healthCheckData, isError: isHealthCheckError } = useHealthCheckQuery();
   if (isHealthCheckError) return <SomethingWentWrong />;
-  if (isErrorVehicle) return <SomethingWentWrong />;
+  if (isErrorVehicle || VehicleData?.isDeleted) {
+    setTimeout(() => navigate("/"), 2500);
+    return (
+      <div className="App" style={{ position: "relative" }}>
+        <header className="App-header">
+          <div className="flex mainpage_Container">
+            <div className="flex mainpage_TopRow">
+              <TopLeftComponent />
+              <div className="flex mainpage_TopRight">
+                <TopBarMenu />
+              </div>
+            </div>
+          </div>
+          <div style={{ position: "absolute" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "90vh", width: "100vw", textAlign: "center", padding: "20px", backgroundColor: "#f9f9f9" }}>
+              <div style={{ width: "25rem", height: "25rem", borderRadius: "50%", overflow: "hidden", marginBottom: "20px" }}>
+                <img src={parrotsLogo} alt="Removed" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+              <h2 style={{ fontSize: "24px", margin: "0", color: parrotTextDarkBlue }}>This vehicle has been removed.</h2>
+              <p style={{ fontSize: "16px", color: parrotTextDarkBlue, marginBottom: "20px", opacity: 0.6 }}>Taking you back to home...</p>
+            </div>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   const isOwnVehicle = VehicleData?.user?.id === userId;
   const galleryImages = VehicleData?.vehicleImages || [];
