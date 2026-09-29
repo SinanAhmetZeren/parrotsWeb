@@ -99,7 +99,11 @@ export function MainPageV2VoyageCard({ cardData, panToLocation, hideSeeOnMap }) 
         <div style={imgWrap}>
           <img src={cardData.profileImageThumbnail || cardData.profileImage} alt="" style={imgStyle} />
         </div>
-        {firstWaypoint && !hideSeeOnMap && (
+        {cardData.voyageState === "Cancelled" ? (
+          <div style={{ ...seeOnMapBadge, backgroundColor: "#FEE2E2", color: "#B91C1C", cursor: "default" }}>Cancelled</div>
+        ) : cardData.voyageState === "BidsClosed" ? (
+          <div style={{ ...seeOnMapBadge, backgroundColor: "#FDF0D5", color: "#E07B0A", cursor: "default" }}>Bids Closed</div>
+        ) : firstWaypoint && !hideSeeOnMap ? (
           <div
             style={seeOnMapBadge}
             onClick={e => { e.stopPropagation(); panToLocation(firstWaypoint.latitude, firstWaypoint.longitude); }}
@@ -108,7 +112,7 @@ export function MainPageV2VoyageCard({ cardData, panToLocation, hideSeeOnMap }) 
           >
             See on Map
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Content */}

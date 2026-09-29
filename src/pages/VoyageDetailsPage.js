@@ -419,12 +419,15 @@ function VoyageDetailsPage() {
                     <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.user?.userName}</span>
                   </span>
                 </div>
-                {VoyageData.vehicle && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", overflow: "hidden" }}>
-                    <img src={VoyageData.vehicle.profileImageUrl} alt="" style={avatarSpec} />
+                {VoyageData.vehicleId && (
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", overflow: "hidden", cursor: "pointer" }}
+                    onClick={() => navigate(`/vehicle-details/${VoyageData.vehicleId}`)}
+                  >
+                    {VoyageData.vehicle && <img src={VoyageData.vehicle.profileImageUrl} alt="" style={avatarSpec} />}
                     <span style={{ minWidth: 0 }}>
                       <span style={specLabel}>Vehicle</span>
-                      <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.vehicle.name}</span>
+                      <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.vehicle?.name}</span>
                     </span>
                   </div>
                 )}
