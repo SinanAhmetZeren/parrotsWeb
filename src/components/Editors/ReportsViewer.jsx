@@ -5,6 +5,7 @@ import {
     useSuspendUserMutation,
     useUnsuspendUserMutation,
 } from "../../slices/MetricsSlice";
+import { useSetVoyageStateMutation } from "../../slices/VoyageSlice";
 
 const PAGE_SIZE = 50;
 
@@ -40,9 +41,26 @@ export function ReportsViewer() {
         setFetching(false);
     }
 
+    const [voyageCancelStatus, setVoyageCancelStatus] = useState({});
+
     const [markReviewed] = useMarkReportReviewedMutation();
     const [suspendUser] = useSuspendUserMutation();
     const [unsuspendUser] = useUnsuspendUserMutation();
+    const [setVoyageState] = useSetVoyageStateMutation();
+
+    async function handleCancelVoyage(voyageId) {
+        setVoyageCancelStatus(p => ({ ...p, [voyageId]: "cancelling" }));
+        await setVoyageState({ voyageId, state: "Cancelled" });
+        setVoyageCancelStatus(p => ({ ...p, [voyageId]: "cancelled" }));
+        refetch();
+    }
+
+    async function handleActivateVoyage(voyageId) {
+        setVoyageCancelStatus(p => ({ ...p, [voyageId]: "activating" }));
+        await setVoyageState({ voyageId, state: "Active" });
+        setVoyageCancelStatus(p => ({ ...p, [voyageId]: "active" }));
+        refetch();
+    }
 
     const totalPages = data ? Math.ceil(data.totalCount / PAGE_SIZE) : 1;
 
@@ -177,7 +195,8 @@ export function ReportsViewer() {
                             <tbody>
                                 {data.items.map((row, i) => {
                                     const isDeleted = row.rowType === "deleted";
-                                    const st = suspendStatus[row.reportedUserId];
+                                    const suspendTargetId = row.reportedVoyageId ? row.voyageOwnerUserId : row.reportedUserId;
+                                    const st = suspendStatus[suspendTargetId];
                                     const busy = st === "suspending" || st === "unsuspending";
 
                                     return (
@@ -193,7 +212,7 @@ export function ReportsViewer() {
                                             <td style={td}>
                                                 {row.reportedUsername ? (
                                                     <>
-                                                        <div style={{ fontWeight: 600, color: (row.isUserSuspended || st === "suspended") ? "#dc2626" : "#0f172a" }}>{row.reportedUsername}</div>
+                                                        <div style={{ fontWeight: 600, color: (st === "unsuspended" ? false : (row.isUserSuspended || st === "suspended")) ? "#dc2626" : "#0f172a" }}>{row.reportedUsername}</div>
                                                         {row.reportedUserId && <CopyId id={row.reportedUserId} />}
                                                     </>
                                                 ) : row.reportedVoyageId ? (
@@ -256,9 +275,9 @@ export function ReportsViewer() {
                                                     }
                                                     {/* User report actions */}
                                                     {!isDeleted && row.reportedUserId && !row.reportedVoyageId && (() => {
-                                                        const isSuspended = row.isUserSuspended || st === "suspended";
+                                                        const isSuspended = st === "unsuspended" ? false : (row.isUserSuspended || st === "suspended");
                                                         return (
-                                                            <>
+                                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                                                                 <input
                                                                     placeholder="Suspend reason…"
                                                                     value={suspendReason[row.reportedUserId] ?? ""}
@@ -266,47 +285,63 @@ export function ReportsViewer() {
                                                                     style={{ ...reasonInput, opacity: isSuspended ? 0.4 : 1 }}
                                                                     disabled={busy || isSuspended}
                                                                 />
-                                                                <button onClick={() => handleSuspend(row.reportedUserId)} disabled={busy || isSuspended} style={{ ...suspendBtn, opacity: isSuspended || busy ? 0.4 : 1 }}>
-                                                                    {st === "suspending" ? "Suspending…" : "Suspend User"}
-                                                                </button>
-                                                                <button onClick={() => handleUnsuspend(row.reportedUserId)} disabled={busy || !isSuspended} style={{ ...unsuspendBtn, opacity: (busy || !isSuspended) ? 0.4 : 1, display: "flex", alignItems: "center", gap: "0.3rem", cursor: !isSuspended ? "default" : "pointer" }}>
-                                                                    {st === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
-                                                                    {st === "unsuspending" ? "" : st === "unsuspended" ? "Restored" : "Restore"}
-                                                                </button>
-                                                            </>
+                                                                {isSuspended
+                                                                    ? <button onClick={() => handleUnsuspend(row.reportedUserId)} disabled={busy} style={{ ...unsuspendBtn, display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                                                        {st === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
+                                                                        {st === "unsuspending" ? "Restoring…" : "Restore Owner"}
+                                                                      </button>
+                                                                    : <button onClick={() => handleSuspend(row.reportedUserId)} disabled={busy} style={{ ...suspendBtn }}>
+                                                                        {st === "suspending" ? "Suspending…" : "Suspend Owner"}
+                                                                      </button>
+                                                                }
+                                                            </div>
                                                         );
                                                     })()}
-                                                    {/* Voyage report actions — suspend the owner */}
+                                                    {/* Voyage report actions — suspend the owner + cancel voyage */}
                                                     {!isDeleted && row.reportedVoyageId && row.voyageOwnerUserId && (() => {
                                                         const vst = suspendStatus[row.voyageOwnerUserId];
                                                         const vbusy = vst === "suspending" || vst === "unsuspending";
-                                                        const isSuspended = row.isVoyageOwnerSuspended || vst === "suspended";
+                                                        const isSuspended = vst === "unsuspended" ? false : (row.isVoyageOwnerSuspended || vst === "suspended");
+                                                        const cst = voyageCancelStatus[row.reportedVoyageId];
+                                                        const cbusy = cst === "cancelling" || cst === "activating";
+                                                        const isCancelled = cst === "cancelled" || (row.voyageState === "Cancelled" && cst !== "active");
                                                         return (
-                                                            <>
-                                                                <input
-                                                                    placeholder="Suspend reason…"
-                                                                    value={suspendReason[row.voyageOwnerUserId] ?? ""}
-                                                                    onChange={e => setSuspendReason(p => ({ ...p, [row.voyageOwnerUserId]: e.target.value }))}
-                                                                    style={{ ...reasonInput, opacity: isSuspended ? 0.4 : 1 }}
-                                                                    disabled={vbusy || isSuspended}
-                                                                />
-                                                                <button onClick={() => handleSuspend(row.voyageOwnerUserId)} disabled={vbusy || isSuspended} style={{ ...suspendBtn, opacity: isSuspended || vbusy ? 0.4 : 1 }}>
-                                                                    {vst === "suspending" ? "Suspending…" : "Suspend User"}
-                                                                </button>
-                                                                <button onClick={() => handleUnsuspend(row.voyageOwnerUserId)} disabled={vbusy || !isSuspended} style={{ ...unsuspendBtn, opacity: (vbusy || !isSuspended) ? 0.4 : 1, display: "flex", alignItems: "center", gap: "0.3rem", cursor: !isSuspended ? "default" : "pointer" }}>
-                                                                    {vst === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
-                                                                    {vst === "unsuspending" ? "" : vst === "unsuspended" ? "Restored" : "Restore"}
-                                                                </button>
-                                                            </>
+                                                            <div style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start" }}>
+                                                                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                                                    <input
+                                                                        placeholder="Suspend reason…"
+                                                                        value={suspendReason[row.voyageOwnerUserId] ?? ""}
+                                                                        onChange={e => setSuspendReason(p => ({ ...p, [row.voyageOwnerUserId]: e.target.value }))}
+                                                                        style={{ ...reasonInput, opacity: isSuspended ? 0.4 : 1 }}
+                                                                        disabled={vbusy || isSuspended}
+                                                                    />
+                                                                    {isSuspended
+                                                                        ? <button onClick={() => handleUnsuspend(row.voyageOwnerUserId)} disabled={vbusy} style={{ ...unsuspendBtn, display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                                                            {vst === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
+                                                                            {vst === "unsuspending" ? "Restoring…" : "Restore Owner"}
+                                                                          </button>
+                                                                        : <button onClick={() => handleSuspend(row.voyageOwnerUserId)} disabled={vbusy} style={{ ...suspendBtn }}>
+                                                                            {vst === "suspending" ? "Suspending…" : "Suspend Owner"}
+                                                                          </button>
+                                                                    }
+                                                                </div>
+                                                                {isCancelled
+                                                                    ? <button onClick={() => handleActivateVoyage(row.reportedVoyageId)} disabled={cbusy} style={{ ...activateBtn, opacity: cbusy ? 0.5 : 1 }}>
+                                                                        {cst === "activating" ? "Activating…" : "Activate Voyage"}
+                                                                      </button>
+                                                                    : <button onClick={() => handleCancelVoyage(row.reportedVoyageId)} disabled={cbusy} style={{ ...cancelVoyageBtn, opacity: cbusy ? 0.5 : 1 }}>
+                                                                        {cst === "cancelling" ? "Cancelling…" : "Cancel Voyage"}
+                                                                      </button>
+                                                                }
+                                                            </div>
                                                         );
                                                     })()}
                                                     {/* Deleted row — restore only */}
                                                     {isDeleted && row.reportedUserId && (() => {
-                                                        const isAlreadyRestored = st === "unsuspended" || row.currentSuspensionStatus === "unsuspended";
-                                                        const isCurrentlySuspended = !isAlreadyRestored || st === "suspended";
+                                                        const isCurrentlySuspended = st === "suspended" || (st !== "unsuspended" && row.currentSuspensionStatus !== "unsuspended");
                                                         const dbusy = st === "suspending" || st === "unsuspending";
                                                         return (
-                                                            <>
+                                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                                                                 <input
                                                                     placeholder="Suspend reason…"
                                                                     value={suspendReason[row.reportedUserId] ?? ""}
@@ -314,18 +349,17 @@ export function ReportsViewer() {
                                                                     style={{ ...reasonInput, opacity: isCurrentlySuspended ? 0.4 : 1 }}
                                                                     disabled={dbusy || isCurrentlySuspended}
                                                                 />
-                                                                <button onClick={() => handleSuspend(row.reportedUserId)} disabled={dbusy || isCurrentlySuspended} style={{ ...suspendBtn, opacity: (isCurrentlySuspended || dbusy) ? 0.4 : 1, cursor: isCurrentlySuspended ? "default" : "pointer" }}>
-                                                                    {st === "suspending" ? "Suspending…" : "Suspend User"}
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleUnsuspend(row.reportedUserId)}
-                                                                    disabled={dbusy || !isCurrentlySuspended}
-                                                                    style={{ ...unsuspendBtn, opacity: (dbusy || !isCurrentlySuspended) ? 0.4 : 1, display: "flex", alignItems: "center", gap: "0.3rem", cursor: !isCurrentlySuspended ? "default" : "pointer" }}
-                                                                >
-                                                                    {st === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
-                                                                    {st === "unsuspending" ? "" : !isCurrentlySuspended ? "Restored" : "Restore"}
-                                                                </button>
-                                                            </>
+                                                                {isCurrentlySuspended
+                                                                    ? <button onClick={() => handleUnsuspend(row.reportedUserId)} disabled={dbusy} style={{ ...unsuspendBtn, display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                                                                        {st === "unsuspending" && <span style={{ width: 9, height: 9, border: "2px solid rgba(0,0,0,0.2)", borderTopColor: "#475569", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />}
+                                                                        {st === "unsuspending" ? "Restoring…" : "Restore Owner"}
+                                                                      </button>
+                                                                    : <button onClick={() => handleSuspend(row.reportedUserId)} disabled={dbusy} style={{ ...suspendBtn }}>
+                                                                        {st === "suspending" ? "Suspending…" : "Suspend Owner"}
+                                                                      </button>
+                                                                }
+
+                                                            </div>
                                                         );
                                                     })()}
                                                 </div>
@@ -421,6 +455,14 @@ const unsuspendBtn = {
 const reasonInput = {
     border: "1px solid #e2e8f0", borderRadius: 6, padding: "3px 8px",
     fontSize: "0.74rem", color: "#0f172a", width: 130, outline: "none",
+};
+const cancelVoyageBtn = {
+    backgroundColor: "#fef3c7", color: "#92400e", border: "none",
+    borderRadius: 6, padding: "3px 10px", cursor: "pointer", fontSize: "0.74rem", fontWeight: 600, whiteSpace: "nowrap", alignSelf: "flex-start",
+};
+const activateBtn = {
+    backgroundColor: "#dcfce7", color: "#15803d", border: "none",
+    borderRadius: 6, padding: "3px 10px", cursor: "pointer", fontSize: "0.74rem", fontWeight: 600, whiteSpace: "nowrap", alignSelf: "flex-start",
 };
 const pgBtn = {
     backgroundColor: "white", color: "#475569", border: "1px solid #e2e8f0",

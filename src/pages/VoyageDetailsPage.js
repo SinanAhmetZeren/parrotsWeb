@@ -465,15 +465,32 @@ function VoyageDetailsPage() {
 
           {/* Map area */}
           <div style={{ flex: 1, minWidth: 0, position: "relative", borderRadius: "1rem", overflow: "hidden" }}>
-            {(VoyageData?.voyageState === "Cancelled" || VoyageData?.voyageState === "BidsClosed") && (
+            {(VoyageData?.voyageState === "Cancelled" || VoyageData?.voyageState === "BidsClosed" || VoyageData?.isOwnerDeleted || VoyageData?.isOwnerSuspended) && (
               <div style={{
                 position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
-                zIndex: 1000, padding: "6px 16px", borderRadius: "999px",
-                fontSize: "12px", fontWeight: 700, color: "white",
-                backgroundColor: VoyageData.voyageState === "Cancelled" ? "rgba(220,38,38,0.88)" : "rgba(194,65,12,0.88)",
-                backdropFilter: "blur(6px)", whiteSpace: "nowrap", pointerEvents: "none",
+                zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                pointerEvents: "none",
               }}>
-                {VoyageData.voyageState === "Cancelled" ? "This voyage has been cancelled." : "Bids are closed for this voyage."}
+                {VoyageData?.isOwnerSuspended && (
+                  <div style={{ padding: "6px 16px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, color: "white", backgroundColor: "rgba(109,40,217,0.88)", backdropFilter: "blur(6px)", whiteSpace: "nowrap" }}>
+                    This host has been suspended.
+                  </div>
+                )}
+                {VoyageData?.isOwnerDeleted && (
+                  <div style={{ padding: "6px 16px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, color: "white", backgroundColor: "rgba(100,116,139,0.88)", backdropFilter: "blur(6px)", whiteSpace: "nowrap" }}>
+                    This host's account is no longer active.
+                  </div>
+                )}
+                {VoyageData?.voyageState === "Cancelled" && (
+                  <div style={{ padding: "6px 16px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, color: "white", backgroundColor: "rgba(220,38,38,0.88)", backdropFilter: "blur(6px)", whiteSpace: "nowrap" }}>
+                    This voyage has been cancelled.
+                  </div>
+                )}
+                {VoyageData?.voyageState === "BidsClosed" && (
+                  <div style={{ padding: "6px 16px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, color: "white", backgroundColor: "rgba(194,65,12,0.88)", backdropFilter: "blur(6px)", whiteSpace: "nowrap" }}>
+                    Bids are closed for this voyage.
+                  </div>
+                )}
               </div>
             )}
             {latLngBoundsLiteral?.east ? (
@@ -657,7 +674,7 @@ function VoyageDetailsPage() {
                     ))}
                   </div>
                   {/* Send a bid button */}
-                {!VoyageData?.isBlockedByOrganizer && VoyageData?.voyageState === "Active" && (
+                {!VoyageData?.isBlockedByOrganizer && (
                   <div style={{ marginTop: "0.75rem" }}>
                     <VoyageDetailBidButton
                       ownVoyage={false}
@@ -670,6 +687,8 @@ function VoyageDetailsPage() {
                       voyageId={voyageId}
                       refetch={refetch}
                       isOwnerDeleted={VoyageData?.isOwnerDeleted}
+                      isOwnerSuspended={VoyageData?.isOwnerSuspended}
+                      voyageState={VoyageData?.voyageState}
                       endDate={VoyageData?.endDate}
                     />
                   </div>
