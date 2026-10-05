@@ -22,7 +22,7 @@ const usersSlice = createSlice({
     isDarkMode: localStorage.getItem("storedIsDarkMode") === "true",
     isLegacyView: localStorage.getItem("storedIsLegacyView") !== null ? localStorage.getItem("storedIsLegacyView") === "true" : true,
     bgImageVariant: localStorage.getItem("storedBgImageVariant") || "old",
-    requiresTermsAcceptance: false,
+    requiresTermsAcceptance: localStorage.getItem("storedRequiresTermsAcceptance") === "true",
     pendingChatUserId: null,
   },
   reducers: {
@@ -79,6 +79,7 @@ const usersSlice = createSlice({
         localStorage.removeItem("storedBookmarkedUserIds");
         localStorage.removeItem("storedAcknowledgedPublicProfile");
         localStorage.removeItem("storedIsAdmin");
+        localStorage.removeItem("storedRequiresTermsAcceptance");
         state.bookmarkedUserIds = [];
       } catch (err) {
         console.error("Error setting localStorage:", err);
@@ -185,6 +186,7 @@ const usersSlice = createSlice({
     },
     setRequiresTermsAcceptance: (state, action) => {
       state.requiresTermsAcceptance = action.payload;
+      localStorage.setItem("storedRequiresTermsAcceptance", String(action.payload));
     },
     setPendingChatUserId: (state, action) => {
       state.pendingChatUserId = action.payload;

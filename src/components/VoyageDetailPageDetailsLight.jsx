@@ -24,7 +24,7 @@ export function VoyageDetailPageDetailsLight({ voyageData }) {
     voyageData.vehicle?.name === "Walk" ||
     voyageData.vehicle?.name === "Train"
       ? null
-      : navigate(`/vehicle-details/${voyageData.vehicle.id}`);
+      : navigate(`/vehicle-details/${voyageData.vehicleId}`);
 
   const handleGoToUser = (user) => {
     navigate(`/profile-public/${user.publicId}/${user.userName}`);

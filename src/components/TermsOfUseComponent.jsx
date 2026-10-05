@@ -43,7 +43,7 @@ const TermsOfUseComponent = ({ open: controlledOpen, onClose, onAccept, isDarkMo
     return (
         <>
             {!isControlled && (
-                <button style={asMenuItem ? menuItemBtn : navigationButton} onClick={toggleModal}>
+                <button style={asMenuItem ? menuItemBtn : navigationButton} onClick={toggleModal} onMouseDown={e => e.stopPropagation()}>
                     {asMenuItem && (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 15, height: 15, flexShrink: 0 }}><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h6M10 16h6"/></svg>
                     )}
