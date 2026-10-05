@@ -563,6 +563,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
+    submitRating: builder.mutation({
+      query: ({ publicId, stars }) => ({
+        url: `/api/Rating/${publicId}`,
+        method: "POST",
+        body: { stars },
+      }),
+    }),
     isBlocked: builder.query({
       query: (publicId) => `/api/Moderation/isBlocked/${publicId}`,
       transformResponse: (res) => res.data,
@@ -615,4 +622,5 @@ export const {
   useBlockUserMutation,
   useUnblockUserMutation,
   useIsBlockedQuery,
+  useSubmitRatingMutation,
 } = extendedApiSlice;

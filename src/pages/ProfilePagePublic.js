@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaAngleDoubleDown } from "react-icons/fa";
 import { TopBarMenu } from "../components/TopBarMenu";
 import { TopLeftComponent } from "../components/TopLeftComponent";
-import { useGetUserByPublicIdQuery, useReportUserMutation, useBlockUserMutation, useUnblockUserMutation, useIsBlockedQuery } from "../slices/UserSlice";
+import { useGetUserByPublicIdQuery, useReportUserMutation, useBlockUserMutation, useUnblockUserMutation, useIsBlockedQuery, useSubmitRatingMutation } from "../slices/UserSlice";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
@@ -150,11 +150,16 @@ function ProfilePagePublic() {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingStars, setRatingStars] = useState(0);
+  const [ratingHover, setRatingHover] = useState(0);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
+  const [submitRating] = useSubmitRatingMutation();
   const moreRef = useRef(null);
   const bioRef = useRef(null);
   const [bioOverflow, setBioOverflow] = useState(false);
 
-  const { data: userData, isLoading, isError, isSuccess } = useGetUserByPublicIdQuery(publicId);
+  const { data: userData, isLoading, isError, isSuccess, refetch: refetchUser } = useGetUserByPublicIdQuery(publicId);
   const [addBookmark] = useAddBookmarkMutation();
   const [removeBookmark] = useRemoveBookmarkMutation();
   const [reportUser] = useReportUserMutation();
@@ -339,9 +344,28 @@ function ProfilePagePublic() {
 
             {/* ── Identity ── */}
             <div style={{ ...panel, ...identCell }}>
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "8px 14px" }}>
-                <h1 style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.02em", lineHeight: 1.1, color: blueDk }}>{userData?.userName}</h1>
-                {userData?.title && <span style={{ fontSize: 15.5, fontWeight: 800, color: blueDk }}>{userData?.title}</span>}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "8px 14px" }}>
+                  <h1 style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.02em", lineHeight: 1.1, color: blueDk }}>{userData?.userName}</h1>
+                  {userData?.title && <span style={{ fontSize: 15.5, fontWeight: 800, color: blueDk }}>{userData?.title}</span>}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <svg key={s} viewBox="0 0 24 24"
+                        fill={s <= Math.round(userData?.averageRating ?? 0) ? "#F5A623" : "none"}
+                        stroke="#F5A623" strokeWidth="1.8"
+                        style={{ width: 18, height: 18, cursor: userData?.canRate ? "pointer" : "default" }}
+                        onClick={() => { if (userData?.canRate) { setRatingStars(s); setRatingSubmitted(false); setRatingModalOpen(true); } }}
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    ))}
+                    <span style={{ fontSize: 12.5, fontWeight: 800, color: mid, marginLeft: 2 }}>
+                      {userData?.averageRating != null ? `${userData.averageRating} (${userData.ratingCount})` : "0 (0)"}
+                    </span>
+                  </div>
+                </div>
               </div>
               {userData?.bio && (
                 <div style={{ position: "relative" }}>
@@ -434,6 +458,55 @@ function ProfilePagePublic() {
                 {isBlocked ? "Unblock" : "Block"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rating modal */}
+      {ratingModalOpen && (
+        <div style={modalOverlay} onClick={() => setRatingModalOpen(false)}>
+          <div style={modalBox} onClick={e => e.stopPropagation()}>
+            {ratingSubmitted ? (
+              <>
+                <div style={modalTitle}>Rating submitted</div>
+                <div style={modalSubtitle}>Thank you for your feedback.</div>
+                <button onClick={() => setRatingModalOpen(false)} style={modalPrimaryBtn}>Close</button>
+              </>
+            ) : (
+              <>
+                <div style={modalTitle}>Rate {userData?.userName}</div>
+                <div style={modalSubtitle}>Your rating is anonymous.</div>
+                <div style={{ display: "flex", gap: 8, margin: "1.2rem 0", justifyContent: "center" }}>
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <svg key={s} viewBox="0 0 24 24"
+                      fill={s <= (ratingHover || ratingStars) ? "#F5A623" : "none"}
+                      stroke="#F5A623" strokeWidth="1.8"
+                      style={{ width: 36, height: 36, cursor: "pointer", transition: "transform .1s", transform: s <= (ratingHover || ratingStars) ? "scale(1.15)" : "scale(1)" }}
+                      onClick={() => setRatingStars(s)}
+                      onMouseEnter={() => setRatingHover(s)}
+                      onMouseLeave={() => setRatingHover(0)}
+                    >
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: "0.75rem" }}>
+                  <button onClick={() => setRatingModalOpen(false)} style={modalCancelBtn}>Cancel</button>
+                  <button disabled={!ratingStars} style={{ ...modalPrimaryBtn, opacity: ratingStars ? 1 : 0.4 }}
+                    onClick={async () => {
+                      try {
+                        await submitRating({ publicId, stars: ratingStars }).unwrap();
+                        setRatingSubmitted(true);
+                        refetchUser();
+                      } catch (err) {
+                        console.error("Rating failed:", err);
+                      }
+                    }}>
+                    Submit
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -576,6 +649,20 @@ const railCell = {
   padding: "16px 16px 18px",
   display: "flex", flexDirection: "column", gap: 11, minHeight: 0,
   overflowY: "auto",
+};
+
+const ratingCell = {
+  padding: "14px 18px",
+  flexShrink: 0,
+};
+
+const rateBtn = {
+  fontFamily: "Nunito, sans-serif",
+  fontSize: 13, fontWeight: 800, color: "#fff",
+  background: blue, border: "none", borderRadius: 99,
+  padding: "8px 18px", cursor: "pointer",
+  boxShadow: "0 3px 10px rgba(10,119,234,.35)",
+  whiteSpace: "nowrap",
 };
 
 const sec = { fontSize: 10, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", color: mid };
