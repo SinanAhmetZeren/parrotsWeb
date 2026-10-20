@@ -2,6 +2,17 @@ import React from "react";
 import parrotsLogo from "../assets/images/ParrotsLogo.png";
 import { parrotTextDarkBlue } from "../styles/colors";
 
+const API_URL = window.location.hostname === "localhost" ? "https://localhost:7151" : "https://api.parrotsvoyages.com";
+
+function postClientError({ message, stack, source }) {
+  try {
+    navigator.sendBeacon(
+      `${API_URL}/api/ClientError`,
+      new Blob([JSON.stringify({ message, stack, source, platform: "web" })], { type: "application/json" })
+    );
+  } catch (_) {}
+}
+
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -14,6 +25,7 @@ export class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     console.error("❌ ErrorBoundary caught:", error, info);
+    postClientError({ message: error?.message, stack: error?.stack, source: "ErrorBoundary" });
   }
 
   render() {
