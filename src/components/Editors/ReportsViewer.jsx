@@ -31,6 +31,7 @@ export function ReportsViewer() {
 
     const [queryParams, setQueryParams] = useState({ status: [], page: 1, pageSize: PAGE_SIZE, from: toLocal(oneWeekAgo), to: toLocal(now) });
     const [fetching, setFetching] = useState(false);
+    const [infoOpen, setInfoOpen] = useState(false);
 
     const { data, isLoading, isError, refetch } = useGetModerationFeedQuery(queryParams, { refetchOnMountOrArgChange: false });
 
@@ -154,6 +155,9 @@ export function ReportsViewer() {
                     <span style={{ color: "#64748b", fontSize: "0.78rem", marginBottom: 2 }}>
                         {data ? `${data.totalCount} item${data.totalCount !== 1 ? "s" : ""}` : ""}
                     </span>
+                    <button onClick={() => setInfoOpen(true)} title="How this works" style={{ marginBottom: 1, background: "none", border: "1px solid #e2e8f0", borderRadius: "50%", width: 24, height: 24, cursor: "pointer", color: "#64748b", fontSize: "0.8rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}>
+                        i
+                    </button>
                 </div>
             </div>
 
@@ -380,6 +384,36 @@ export function ReportsViewer() {
                     </div>
                 )}
             </div>
+
+            {infoOpen && (
+                <div onClick={() => setInfoOpen(false)} style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+                    <div onClick={e => e.stopPropagation()} style={{ backgroundColor: "#fff", borderRadius: 14, padding: "1.75rem 2rem", maxWidth: 480, width: "90%", fontFamily: "sans-serif", boxShadow: "0 12px 40px rgba(0,0,0,0.2)" }}>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>How the Moderation Feed works</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem", fontSize: "0.82rem", color: "#334155", lineHeight: 1.6 }}>
+                            <div><strong>Row types</strong><br />
+                                <b>User</b> — a user was reported by another user.<br />
+                                <b>Voyage</b> — a voyage was reported by another user.
+                            </div>
+                            <div><strong>How rows are created</strong><br />
+                                1. A user reports another user.<br />
+                                2. A user reports a voyage.<br />
+                                3. An admin suspends a user (via Suspend Owner on a report row).<br />
+                                4. A user self-deletes their account.
+                            </div>
+                            <div><strong>Status</strong> (Pending / Reviewed)<br />
+                                Tracks whether the admin has reviewed the report. Independent of suspension.
+                            </div>
+                            <div><strong>Suspended</strong> (Yes / No)<br />
+                                Whether the reported user is currently suspended. Can be toggled independently of status.
+                            </div>
+                            <div><strong>Deleted filter</strong><br />
+                                Shows users who were admin-suspended or self-deleted. Restored users are excluded.
+                            </div>
+                        </div>
+                        <button onClick={() => setInfoOpen(false)} style={{ marginTop: "1.25rem", padding: "6px 20px", border: "none", borderRadius: 8, backgroundColor: "#0f2744", color: "#fff", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer" }}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
