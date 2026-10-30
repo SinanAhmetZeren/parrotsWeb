@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import parrotsLogo from "../assets/images/parrotsreallife.jpg";
 
 const sections = [
     {
@@ -82,7 +83,7 @@ export default function AdminSelector({ selected, setSelected }) {
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* ── TOP BAR ── */}
             <div style={{
-                backgroundColor: "#0f1f35",
+                backgroundColor: "#0A2540",
                 display: "grid",
                 gridTemplateColumns: "11rem 1fr auto",
                 alignItems: "center",
@@ -92,14 +93,14 @@ export default function AdminSelector({ selected, setSelected }) {
             }}>
                 {/* Logo + brand */}
                 <div id="admin-logo" style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginRight: "1rem", flexShrink: 0 }}>
-                    <img src="/logo192.png" alt="Parrots" style={{ width: 28, height: 28, borderRadius: "50%" }} />
-                    <span style={{ color: "white", fontWeight: 700, fontSize: "0.95rem", whiteSpace: "nowrap" }}>
-                        Parrots Admin
+                    <img src={parrotsLogo} alt="Parrots" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                    <span style={{ color: "white", fontWeight: 800, fontSize: "0.95rem", whiteSpace: "nowrap", fontFamily: "Nunito, sans-serif" }}>
+                        Parrots <em style={{ fontStyle: "normal", color: "#2AC898" }}>Admin</em>
                     </span>
                 </div>
 
                 {/* Section tabs */}
-                <div style={{ display: "flex", alignItems: "flex-end", gap: 0, height: "100%", flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flex: 1 }}>
                     {sections.map(section => {
                         const isActive = section.label === activeSection;
                         return (
@@ -107,19 +108,18 @@ export default function AdminSelector({ selected, setSelected }) {
                                 key={section.label}
                                 onClick={() => setSelected(section.items[0].key)}
                                 style={{
-                                    background: "transparent",
-                                    border: "none",
-                                    borderBottom: isActive ? "3px solid #4ade80" : "3px solid transparent",
-                                    color: isActive ? "white" : "rgba(255,255,255,0.55)",
+                                    background: isActive ? "white" : "transparent",
+                                    border: "1px solid rgba(255,255,255,0.3)",
+                                    borderRadius: "999px",
+                                    color: isActive ? "#0A2540" : "rgba(255,255,255,0.85)",
                                     fontWeight: isActive ? 700 : 500,
-                                    fontSize: "0.72rem",
-                                    letterSpacing: "0.08em",
-                                    textTransform: "uppercase",
+                                    fontSize: "0.75rem",
+                                    letterSpacing: "0.04em",
                                     cursor: "pointer",
-                                    padding: "0 1rem",
-                                    height: "100%",
+                                    padding: "5px 14px",
                                     whiteSpace: "nowrap",
-                                    transition: "color 0.15s",
+                                    fontFamily: "Nunito, sans-serif",
+                                    transition: "background 0.15s, color 0.15s",
                                 }}
                             >
                                 {section.label}
@@ -171,7 +171,7 @@ export default function AdminSelector({ selected, setSelected }) {
                                 fontSize: "0.82rem",
                                 fontWeight: isActive ? 700 : 500,
                                 cursor: "pointer",
-                                backgroundColor: isActive ? "#0f1f35" : "white",
+                                backgroundColor: isActive ? "#0A2540" : "white",
                                 color: isActive ? "white" : "#374151",
                                 transition: "background 0.15s, color 0.15s",
                                 whiteSpace: "nowrap",

@@ -4,7 +4,9 @@ import {
     useMarkReportReviewedMutation,
     useSuspendUserMutation,
     useUnsuspendUserMutation,
+    useLazyGetSuspensionStatusQuery,
 } from "../../slices/MetricsSlice";
+import { useLazyGetUsersByUsernameQuery } from "../../slices/UserSlice";
 import { useSetVoyageStateMutation } from "../../slices/VoyageSlice";
 
 const PAGE_SIZE = 50;
@@ -32,6 +34,48 @@ export function ReportsViewer() {
     const [queryParams, setQueryParams] = useState({ status: [], page: 1, pageSize: PAGE_SIZE, from: toLocal(oneWeekAgo), to: toLocal(now) });
     const [fetching, setFetching] = useState(false);
     const [infoOpen, setInfoOpen] = useState(false);
+    const [findUserOpen, setFindUserOpen] = useState(false);
+    const [findUserQuery, setFindUserQuery] = useState("");
+    const [findUserResult, setFindUserResult] = useState(null);
+    const [findUserSuspensionStatus, setFindUserSuspensionStatus] = useState(null);
+    const [findUserError, setFindUserError] = useState("");
+    const [findUserSuspendReason, setFindUserSuspendReason] = useState("");
+    const [findUserActionStatus, setFindUserActionStatus] = useState("");
+    const [searchUsers] = useLazyGetUsersByUsernameQuery();
+    const [fetchSuspensionStatus] = useLazyGetSuspensionStatusQuery();
+    const [suspendUserDirect] = useSuspendUserMutation();
+    const [unsuspendUserDirect] = useUnsuspendUserMutation();
+
+    async function handleFindUser() {
+        setFindUserError("");
+        setFindUserResult(null);
+        setFindUserSuspensionStatus(null);
+        setFindUserActionStatus("");
+        if (!findUserQuery.trim()) return;
+        const res = await searchUsers(findUserQuery.trim());
+        const users = res?.data;
+        if (!users || users.length === 0) { setFindUserError("No users found."); return; }
+        const user = users[0];
+        setFindUserResult(user);
+        const statusRes = await fetchSuspensionStatus(user.id);
+        setFindUserSuspensionStatus(statusRes?.data ?? null);
+    }
+
+    async function handleFindUserSuspend() {
+        if (!findUserResult) return;
+        setFindUserActionStatus("suspending");
+        await suspendUserDirect({ userId: findUserResult.id, reason: findUserSuspendReason });
+        setFindUserActionStatus("done");
+        setFindUserSuspensionStatus({ isSuspended: true, latestAction: "suspended-by-admin" });
+    }
+
+    async function handleFindUserUnsuspend() {
+        if (!findUserResult) return;
+        setFindUserActionStatus("unsuspending");
+        await unsuspendUserDirect(findUserResult.id);
+        setFindUserActionStatus("done");
+        setFindUserSuspensionStatus({ isSuspended: false, latestAction: "unsuspended" });
+    }
 
     const { data, isLoading, isError, refetch } = useGetModerationFeedQuery(queryParams, { refetchOnMountOrArgChange: false });
 
@@ -155,6 +199,9 @@ export function ReportsViewer() {
                     <span style={{ color: "#64748b", fontSize: "0.78rem", marginBottom: 2 }}>
                         {data ? `${data.totalCount} item${data.totalCount !== 1 ? "s" : ""}` : ""}
                     </span>
+                    <button onClick={() => { setFindUserOpen(true); setFindUserQuery(""); setFindUserResult(null); setFindUserError(""); setFindUserActionStatus(""); setFindUserSuspendReason(""); }} style={{ marginBottom: 1, padding: "4px 12px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: "0.75rem", color: "#0f2744", backgroundColor: "white", cursor: "pointer", fontWeight: 600, flexShrink: 0 }}>
+                        Find User
+                    </button>
                     <button onClick={() => setInfoOpen(true)} title="How this works" style={{ marginBottom: 1, background: "none", border: "1px solid #e2e8f0", borderRadius: "50%", width: 24, height: 24, cursor: "pointer", color: "#64748b", fontSize: "0.8rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}>
                         i
                     </button>
@@ -384,6 +431,66 @@ export function ReportsViewer() {
                     </div>
                 )}
             </div>
+
+            {findUserOpen && (
+                <div onClick={() => setFindUserOpen(false)} style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+                    <div onClick={e => e.stopPropagation()} style={{ backgroundColor: "#fff", borderRadius: 14, padding: "1.75rem 2rem", maxWidth: 420, width: "90%", fontFamily: "sans-serif", boxShadow: "0 12px 40px rgba(0,0,0,0.2)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>Find User</div>
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <input
+                                value={findUserQuery}
+                                onChange={e => setFindUserQuery(e.target.value)}
+                                onKeyDown={e => e.key === "Enter" && handleFindUser()}
+                                placeholder="Username…"
+                                style={{ flex: 1, padding: "6px 10px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: "0.82rem", outline: "none" }}
+                            />
+                            <button onClick={handleFindUser} style={{ padding: "6px 14px", border: "none", borderRadius: 6, backgroundColor: "#0f2744", color: "white", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer" }}>Search</button>
+                        </div>
+                        {findUserError && <div style={{ color: "#dc2626", fontSize: "0.78rem" }}>{findUserError}</div>}
+                        {findUserResult && (
+                            <div style={{ border: "1px solid #e2e8f0", borderRadius: 10, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                    {findUserResult.profileImageThumbnailUrl && <img src={findUserResult.profileImageThumbnailUrl} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover" }} />}
+                                    <div>
+                                        <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.9rem" }}>{findUserResult.userName}</div>
+                                        {findUserResult.title && <div style={{ fontSize: "0.75rem", color: "#64748b" }}>{findUserResult.title}</div>}
+                                        <div style={{ fontSize: "0.7rem", color: "#94a3b8", fontFamily: "monospace" }}>{findUserResult.id}</div>
+                                    </div>
+                                </div>
+                                {findUserSuspensionStatus !== null && (
+                                    <div style={{ fontSize: "0.78rem", fontWeight: 700, color: findUserSuspensionStatus.isSuspended ? "#dc2626" : "#16a34a" }}>
+                                        Status: {findUserSuspensionStatus.isSuspended ? `Suspended (${findUserSuspensionStatus.latestAction})` : "Active"}
+                                    </div>
+                                )}
+                                <input
+                                    placeholder="Suspend reason…"
+                                    value={findUserSuspendReason}
+                                    onChange={e => setFindUserSuspendReason(e.target.value)}
+                                    disabled={findUserSuspensionStatus?.isSuspended}
+                                    style={{ padding: "6px 10px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: "0.82rem", outline: "none", opacity: findUserSuspensionStatus?.isSuspended ? 0.4 : 1 }}
+                                />
+                                <div style={{ display: "flex", gap: "0.5rem" }}>
+                                    <button
+                                        onClick={handleFindUserSuspend}
+                                        disabled={findUserActionStatus === "suspending" || findUserSuspensionStatus?.isSuspended}
+                                        style={{ flex: 1, padding: "7px", border: "none", borderRadius: 6, backgroundColor: "#fca5a5", color: "#7f1d1d", fontWeight: 700, fontSize: "0.8rem", cursor: findUserSuspensionStatus?.isSuspended ? "not-allowed" : "pointer", opacity: findUserSuspensionStatus?.isSuspended ? 0.4 : 1 }}
+                                    >
+                                        {findUserActionStatus === "suspending" ? "Suspending…" : "Suspend"}
+                                    </button>
+                                    <button
+                                        onClick={handleFindUserUnsuspend}
+                                        disabled={findUserActionStatus === "unsuspending" || findUserSuspensionStatus?.isSuspended === false}
+                                        style={{ flex: 1, padding: "7px", border: "none", borderRadius: 6, backgroundColor: "#bbf7d0", color: "#14532d", fontWeight: 700, fontSize: "0.8rem", cursor: findUserSuspensionStatus?.isSuspended === false ? "not-allowed" : "pointer", opacity: findUserSuspensionStatus?.isSuspended === false ? 0.4 : 1 }}
+                                    >
+                                        {findUserActionStatus === "unsuspending" ? "Restoring…" : "Restore"}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        <button onClick={() => setFindUserOpen(false)} style={{ alignSelf: "flex-end", padding: "6px 20px", border: "none", borderRadius: 8, backgroundColor: "#0f2744", color: "#fff", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer" }}>Close</button>
+                    </div>
+                </div>
+            )}
 
             {infoOpen && (
                 <div onClick={() => setInfoOpen(false)} style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
