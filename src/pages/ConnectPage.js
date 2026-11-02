@@ -475,6 +475,8 @@ const segBtn = {
   border: "none", background: "none", cursor: "pointer",
   fontSize: 12.5, fontWeight: 800, color: mid,
   padding: "7px 0", borderRadius: 99, whiteSpace: "nowrap",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  lineHeight: 1,
 };
 
 const segBtnOn = { backgroundColor: blue, color: "#fff" };

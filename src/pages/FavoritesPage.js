@@ -12,6 +12,7 @@ import { useGetBookmarksQuery } from "../slices/UserSlice";
 import he from "he";
 import DOMPurify from "dompurify";
 import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, FaMotorcycle, FaBicycle, FaHouse, FaPlane, FaTrain } from "react-icons/fa6";
+import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 const blue = "#0A77EA";
@@ -88,9 +89,15 @@ function Skeleton() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
       {[1, 2, 3].map((i) => (
-        <div key={i} style={{ height: 80, borderRadius: 11, background: line, flexShrink: 0, animation: "pulse 1.4s ease-in-out infinite" }} />
+        <div key={i} style={{
+          height: 80, borderRadius: 11,
+          background: "rgba(10,36,64,0.07)",
+          flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <PulsatingParrotLogo size={36} />
+        </div>
       ))}
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}`}</style>
     </div>
   );
 }
@@ -131,8 +138,25 @@ export default function FavoritePage() {
   if (isHealthCheckError) return <SomethingWentWrong />;
   if (isFavoriteVoyagesError || isFavoriteVehiclesError) return <SomethingWentWrong />;
 
+  const isLoading = isFavoriteVehiclesLoading || isFavoriteVoyagesLoading || isBookmarksLoading;
   const vehicles = FavoriteVehiclesData ?? [];
   const voyages = FavoriteVoyagesData ?? [];
+
+  if (isLoading) return (
+    <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100vh", overflow: "hidden", fontFamily: "Nunito, sans-serif", backgroundColor: deep }}>
+      <div className="flex mainpage_TopRow">
+        <TopLeftComponent />
+        <div className="flex mainpage_TopRight"><TopBarMenu /></div>
+      </div>
+      <div style={{ ...wrap }}>
+        {[1, 2, 3].map(i => (
+          <div key={i} style={{ borderRadius: 14, backgroundColor: "rgba(255,255,255,0.07)", boxShadow: "0 8px 24px rgba(0,14,30,.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <PulsatingParrotLogo size={100} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="App">
