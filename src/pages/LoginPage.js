@@ -15,7 +15,7 @@ import { updateAsLoggedIn, setRequiresTermsAcceptance } from "../slices/UserSlic
 import { useNavigate } from "react-router-dom";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
-import { TERMS_VERSION } from "../constants/TermsVersion";
+
 import TermsOfUseComponent from "../components/TermsOfUseComponent";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { toast } from "react-toastify";
@@ -159,7 +159,7 @@ function LoginPage() {
     if (!pwOk) { toast.error("Password must be 8+ chars with uppercase, lowercase, and a number."); return; }
     try {
       setBusy(true);
-      const r = await registerUser({ Email: emailReg, UserName: usernameReg, Password: passwordReg, TermsVersion: TERMS_VERSION }).unwrap();
+      const r = await registerUser({ Email: emailReg, UserName: usernameReg, Password: passwordReg }).unwrap();
       if (r?.token) { setUsernameReg(""); setPasswordReg(""); setPasswordReg2(""); setPage("Register2"); }
       else toast.error("Registration failed: No token received.");
     } catch (err) {

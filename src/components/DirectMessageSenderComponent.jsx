@@ -170,10 +170,12 @@ const fldStyle = {
   width: "100%",
   fontFamily: "Nunito, sans-serif",
   fontSize: 14, fontWeight: 600, color: navy,
-  borderRadius: 10, padding: "9px 14px",
+  borderRadius: 10, padding: "0 14px",
   height: "3rem", maxHeight: "10rem",
+  lineHeight: "3rem",
   overflowY: "hidden", resize: "none",
   outline: "none",
+  display: "block",
   transition: "border-color 0.15s, background 0.15s, box-shadow 0.15s",
 };
 

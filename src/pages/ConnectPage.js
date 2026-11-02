@@ -36,7 +36,7 @@ import {
   unregister_ReceiveGroupMessage,
 } from "../signalr/signalRHub";
 import { useDispatch, useSelector } from "react-redux";
-import { setUnreadMessages, markMessagesRead, setPendingChatUserId, useGetBookmarksQuery } from "../slices/UserSlice";
+import { setUnreadMessages, markMessagesRead, setPendingChatUserId, useGetBookmarksQuery, setAcknowledgedGroupHistory, useAcknowledgeGroupHistoryMutation } from "../slices/UserSlice";
 import { useGetMyBidsQuery } from "../slices/VoyageSlice";
 import { BidPillList } from "../components/BidPill";
 import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
@@ -79,6 +79,16 @@ function ConnectPage() {
   const [bidFilter, setBidFilter] = useState("All");
   const { data: myBids } = useGetMyBidsQuery(undefined, { skip: activeTab !== "Bids" });
   const [createGroup] = useCreateGroupMutation();
+  const hasAcknowledgedGroupHistory = useSelector((state) => state.users.hasAcknowledgedGroupHistory);
+  const [acknowledgeGroupHistory] = useAcknowledgeGroupHistoryMutation();
+  const [showGroupHistoryModal, setShowGroupHistoryModal] = useState(false);
+  const [pendingGroupName, setPendingGroupName] = useState(null);
+  const handleAcknowledgeGroupHistory = async () => {
+    setShowGroupHistoryModal(false);
+    dispatch(setAcknowledgedGroupHistory());
+    try { await acknowledgeGroupHistory().unwrap(); } catch { }
+    if (pendingGroupName) { setPendingGroupName(null); handleCreateGroup(pendingGroupName); }
+  };
 
   useEffect(() => {
     const delay = setTimeout(() => setHubState(getHubState()), 4000);
@@ -146,6 +156,7 @@ function ConnectPage() {
   }, [users, triggerGetMessages, refetchMessagePreviews]);
 
   const handleCreateGroup = async (groupName) => {
+    if (!hasAcknowledgedGroupHistory) { setPendingGroupName(groupName); setShowGroupHistoryModal(true); return; }
     const result = await createGroup({ name: groupName, creatorId: currentUserId });
     if (result.data) {
       setActiveGroupData(result.data);
@@ -418,6 +429,15 @@ function ConnectPage() {
           </div>
         </div>
       </header>
+      {showGroupHistoryModal && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ backgroundColor: "#fff", borderRadius: 12, padding: "2rem", maxWidth: 480, width: "90%", boxShadow: "0 8px 32px rgba(0,0,0,0.25)", textAlign: "center" }}>
+            <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1e3a5f", marginBottom: "1rem", fontFamily: "Nunito, sans-serif" }}>Group Message History</div>
+            <p style={{ fontSize: "0.95rem", color: "#374151", lineHeight: 1.6, marginBottom: "1.5rem", fontFamily: "Nunito, sans-serif" }}>You have access to the full message history of this group. All future members who join will also be able to see all previous messages.</p>
+            <button style={{ backgroundColor: blue, color: "white", border: "none", borderRadius: 8, padding: "0.65rem 2rem", fontSize: "1rem", fontWeight: 600, cursor: "pointer", fontFamily: "Nunito, sans-serif" }} onClick={handleAcknowledgeGroupHistory}>Got it</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
