@@ -130,14 +130,9 @@ function VoyageDetailsPage() {
   const ownVoyage = userId === VoyageData?.userId;
   const username = localStorage.getItem("storedUserName");
 
-  const DUMMY_BIDS = [
-    { id: "dummy-1", userId: "dummy-u1", userPublicId: "dummy-pub1", userName: "Alice Wanderer", userProfileImage: "https://i.pravatar.cc/80?img=47", personCount: 2, offerPrice: 240, currency: "€", accepted: false, message: "We are very excited to join!" },
-    { id: "dummy-2", userId: "dummy-u2", userPublicId: "dummy-pub2", userName: "Captain Rodrigo", userProfileImage: "https://i.pravatar.cc/80?img=12", personCount: 4, offerPrice: 380, currency: "€", accepted: true, message: "" },
-  ];
-
   // Sync bidsData from server
   useEffect(() => {
-    if (VoyageData?.bids) setBidsData([...DUMMY_BIDS, ...VoyageData.bids]);
+    if (VoyageData?.bids) setBidsData([...VoyageData.bids]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [VoyageData?.bids]);
 
