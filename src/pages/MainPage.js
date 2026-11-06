@@ -256,16 +256,18 @@ export default MainPage;
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 const EmptyState = ({ navigate }) => (
-  <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: "3px", padding: "22px 20px 30px" }}>
-    <PulsatingParrotLogo size={112} style={{ animation: "none", opacity: 0.55, marginBottom: "8px" }} />
+  <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: "6px", padding: "22px 20px 30px" }}>
+    <PulsatingParrotLogo size={112} style={{ animation: "none", opacity: 0.9, marginBottom: "8px" }} />
     <div style={{ fontFamily: "Nunito", fontSize: "17px", fontWeight: 800, color: navy, letterSpacing: "-.01em" }}>
       No voyages here
     </div>
-    <div style={{ fontFamily: "Nunito", fontSize: "15px", fontWeight: 800, color: blue, lineHeight: 1.4 }}>
-      Why not post one —{" "}
-      <span style={{ color: "#E8622A", cursor: "pointer", textDecoration: "none" }} onClick={() => navigate("/NewVoyage")}>
-        New Voyage
-      </span>
+    <div style={{ fontFamily: "Nunito", fontSize: "15px", fontWeight: 800, lineHeight: 1.4 }}>
+      <span style={{ color: navy }}>Why not create a </span>
+      <span style={{ color: blue, cursor: "pointer" }} onClick={() => navigate("/NewVoyage")}>New Voyage</span>
+    </div>
+    <div style={{ fontFamily: "Nunito", fontSize: "15px", fontWeight: 800, lineHeight: 1.4 }}>
+      <span style={{ color: navy }}>or </span>
+      <span style={{ color: "#E8622A", cursor: "pointer" }} onClick={() => navigate("/AskParrots")}>Ask Parrots</span>
     </div>
   </div>
 );
