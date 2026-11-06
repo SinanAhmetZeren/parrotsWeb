@@ -393,7 +393,7 @@ function ProfilePage() {
       {/* Image enlarge modal */}
       {enlargedImg && (
         <div style={modalOverlay} onClick={() => setEnlargedImg(null)}>
-          <img src={enlargedImg} alt="" style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: 14, boxShadow: "0 16px 48px rgba(0,0,0,.5)", objectFit: "contain" }} onClick={e => e.stopPropagation()} />
+          <img src={enlargedImg} alt="" style={{ height: "70vh", width: "auto", borderRadius: 14, boxShadow: "0 16px 48px rgba(0,0,0,.5)", objectFit: "contain" }} onClick={e => e.stopPropagation()} />
         </div>
       )}
 
