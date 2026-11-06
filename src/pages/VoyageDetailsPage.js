@@ -32,6 +32,9 @@ import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
 import { EMOJI_CATEGORIES, EMOJIS_BY_CATEGORY, EMOJI_NAMES } from "../constants/emojiData";
 import parrotEmojiIcon from "../assets/images/emojipickerparrot.jpg";
+import walkImage from "../assets/images/walk1.jpeg";
+import runImage from "../assets/images/run1.jpeg";
+import trainImage from "../assets/images/train.jpeg";
 import parrotEmojiIconBlue from "../assets/images/emojipickerblueparrot.jpg";
 import { IoPeopleOutline, IoPersonOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
@@ -414,18 +417,25 @@ function VoyageDetailsPage() {
                     <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.user?.userName}</span>
                   </span>
                 </div>
-                {VoyageData.vehicleId && (
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", overflow: "hidden", cursor: "pointer" }}
-                    onClick={() => navigate(`/vehicle-details/${VoyageData.vehicleId}`)}
-                  >
-                    {VoyageData.vehicle && <img src={VoyageData.vehicle.profileImageUrl} alt="" style={avatarSpec} />}
-                    <span style={{ minWidth: 0 }}>
-                      <span style={specLabel}>Vehicle</span>
-                      <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.vehicle?.name}</span>
-                    </span>
-                  </div>
-                )}
+                {VoyageData.vehicleId && (() => {
+                  const specialImages = { Walk: walkImage, Run: runImage, Train: trainImage };
+                  const specialImg = specialImages[VoyageData.vehicle?.name];
+                  const isSpecial = !!specialImg;
+                  return (
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: "8px", maxWidth: "12rem", overflow: "hidden", cursor: isSpecial ? "default" : "pointer" }}
+                      onClick={() => !isSpecial && navigate(`/vehicle-details/${VoyageData.vehicleId}`)}
+                    >
+                      {(specialImg || VoyageData.vehicle) && (
+                        <img src={specialImg || VoyageData.vehicle.profileImageUrl} alt="" style={avatarSpec} />
+                      )}
+                      <span style={{ minWidth: 0 }}>
+                        <span style={specLabel}>Vehicle</span>
+                        <span style={{ ...specValue, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", maxWidth: "7rem" }}>{VoyageData.vehicle?.name}</span>
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Stats — 5-column grid with Duration */}
