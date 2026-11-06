@@ -20,7 +20,10 @@ export function SearchUserComponent({ inputValue, setInputValue, onSearch, isLoa
         disabled={!isEnabled || isLoading}
         onClick={() => isEnabled && !isLoading && onSearch()}
       >
-        {isLoading ? <span style={spinner} /> : "Search"}
+        <span style={{ display: "grid", placeItems: "center" }}>
+          <span style={{ gridArea: "1/1", opacity: isLoading ? 0 : 1 }}>Search</span>
+          {isLoading && <span style={{ gridArea: "1/1", ...spinner }} />}
+        </span>
       </button>
     </div>
   );

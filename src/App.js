@@ -65,13 +65,8 @@ function App() {
   }, [userName]);
 
   useEffect(() => {
-    const image = bgImageVariant === "new"
-      ? require("./assets/images/seafromabove1.jpg")
-      : require("./assets/images/seafromsky.jpg");
-    document.body.style.backgroundImage = `url(${image})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.backgroundImage = "none";
+    document.body.style.backgroundColor = "#0A2540";
   }, [bgImageVariant]);
 
   useEffect(() => {
