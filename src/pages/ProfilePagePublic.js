@@ -8,6 +8,7 @@ import { useGetUserByPublicIdQuery, useReportUserMutation, useBlockUserMutation,
 import { SomethingWentWrong } from "../components/SomethingWentWrong";
 import { useHealthCheckQuery } from "../slices/HealthSlice";
 import { LoadingProfilePage } from "../components/LoadingProfilePage";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 import { useSelector, useDispatch } from "react-redux";
 import { useAddBookmarkMutation, useRemoveBookmarkMutation } from "../slices/UserSlice";
 import { addBookmarkedUserId, removeBookmarkedUserId, setPendingChatUserId } from "../slices/UserSlice";
@@ -151,6 +152,7 @@ function ProfilePagePublic() {
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [blockModalOpen, setBlockModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingInfoModalOpen, setRatingInfoModalOpen] = useState(false);
   const [ratingStars, setRatingStars] = useState(0);
   const [ratingHover, setRatingHover] = useState(0);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
@@ -330,9 +332,12 @@ function ProfilePagePublic() {
                   <MapPanner target={panTarget} />
                 </MapContainer>
               ) : (
-                <div style={{ width: "100%", height: "100%", backgroundColor: "#d4e6f1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: mid }}>No voyage pins yet</span>
-                </div>
+                <MapContainer center={mapCenter} zoom={2} style={{ width: "100%", height: "100%" }} zoomControl={false} scrollWheelZoom>
+                  <TileLayer
+                    url={`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${process.env.REACT_APP_MAPTILER_KEY}`}
+                    attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                  />
+                </MapContainer>
               )}
               {pins.length > 0 && (
                 <span style={mapCount}>
@@ -355,8 +360,11 @@ function ProfilePagePublic() {
                       <svg key={s} viewBox="0 0 24 24"
                         fill={s <= Math.round(userData?.averageRating ?? 0) ? "#F5A623" : "none"}
                         stroke="#F5A623" strokeWidth="1.8"
-                        style={{ width: 18, height: 18, cursor: userData?.canRate ? "pointer" : "default" }}
-                        onClick={() => { if (userData?.canRate) { setRatingStars(s); setRatingSubmitted(false); setRatingModalOpen(true); } }}
+                        style={{ width: 18, height: 18, cursor: "pointer" }}
+                        onClick={() => {
+                          if (userData?.canRate) { setRatingStars(s); setRatingSubmitted(false); setRatingModalOpen(true); }
+                          else { setRatingInfoModalOpen(true); }
+                        }}
                       >
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                       </svg>
@@ -398,7 +406,11 @@ function ProfilePagePublic() {
                     </span>
                   </div>
                 ))}
-                {contacts.length === 0 && <span style={{ fontSize: 13, color: mid, fontWeight: 600 }}>No contacts added yet.</span>}
+                {contacts.length === 0 && (
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={parrotLogo} alt="" style={{ width: "10rem", height: "10rem", objectFit: "contain", opacity: 0.2 }} />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -423,9 +435,8 @@ function ProfilePagePublic() {
                   </>
                 )}
                 {totalCount === 0 && (
-                  <div style={{ border: `1.5px dashed ${line}`, borderRadius: 12, padding: "24px 16px", textAlign: "center", flexShrink: 0 }}>
-                    <div style={{ fontSize: 14.5, fontWeight: 800, color: navy }}>Nothing here yet</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: mid, marginTop: 4 }}>This user hasn't added any vehicles or voyages.</div>
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={parrotLogo} alt="" style={{ width: "14rem", height: "14rem", objectFit: "contain", opacity: 0.2 }} />
                   </div>
                 )}
               </div>
@@ -463,6 +474,17 @@ function ProfilePagePublic() {
       )}
 
       {/* Rating modal */}
+      {/* Rating ineligible info modal */}
+      {ratingInfoModalOpen && (
+        <div style={modalOverlay} onClick={() => setRatingInfoModalOpen(false)}>
+          <div style={modalBox} onClick={e => e.stopPropagation()}>
+            <div style={modalTitle}>Rating not available</div>
+            <div style={modalSubtitle}>You can rate a user after completing a voyage together.</div>
+            <button onClick={() => setRatingInfoModalOpen(false)} style={modalPrimaryBtn}>OK</button>
+          </div>
+        </div>
+      )}
+
       {ratingModalOpen && (
         <div style={modalOverlay} onClick={() => setRatingModalOpen(false)}>
           <div style={modalBox} onClick={e => e.stopPropagation()}>

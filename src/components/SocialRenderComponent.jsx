@@ -7,6 +7,7 @@ import tiktok from "../assets/images/tiktok_logo.png";
 import email from "../assets/images/email_logo.png";
 import phone from "../assets/images/phone_logo.jpeg";
 import { parrotTextDarkBlue } from "../styles/colors";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 import { useEffect, useState } from "react";
 
 export function SocialRenderComponent({ userData, isDarkMode = false }) {
@@ -83,7 +84,9 @@ export function SocialRenderComponent({ userData, isDarkMode = false }) {
       </div>
 
       {contactDataArray.length === 0 && (
-        <div style={{ backgroundColor: dark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.2)", height: "100%", width: "100%", borderRadius: "1.5rem" }} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", width: "100%" }}>
+          <img src={parrotLogo} alt="" style={{ width: "10rem", height: "10rem", objectFit: "contain", opacity: 0.2 }} />
+        </div>
       )}
     </>
   );

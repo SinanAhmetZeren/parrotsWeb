@@ -13,6 +13,7 @@ import he from "he";
 import DOMPurify from "dompurify";
 import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, FaMotorcycle, FaBicycle, FaHouse, FaPlane, FaTrain } from "react-icons/fa6";
 import { PulsatingParrotLogo } from "../components/PulsatingParrotLogo";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 
 // ── Tokens ────────────────────────────────────────────────────────────────────
 const blue = "#0A77EA";
@@ -186,7 +187,7 @@ export default function FavoritePage() {
                 {isFavoriteVehiclesLoading ? (
                   <Skeleton />
                 ) : isFavoriteVehiclesSuccess && vehicles.length === 0 ? (
-                  <EmptyState label="No favorite vehicles yet." />
+                  <EmptyState />
                 ) : (
                   vehicles.map((v, i) => <VehicleCard key={v?.id ?? i} vehicle={v} />)
                 )}
@@ -207,7 +208,7 @@ export default function FavoritePage() {
                 {isFavoriteVoyagesLoading ? (
                   <Skeleton />
                 ) : isFavoriteVoyagesSuccess && voyages.length === 0 ? (
-                  <EmptyState label="No favorite voyages yet." />
+                  <EmptyState />
                 ) : (
                   voyages.map((v, i) => (
                     <MainPageV2VoyageCard key={v?.id ?? i} cardData={v} panToLocation={() => { }} hideSeeOnMap />
@@ -226,7 +227,7 @@ export default function FavoritePage() {
                 {isBookmarksLoading ? (
                   <Skeleton />
                 ) : bookmarks.length === 0 ? (
-                  <EmptyState label="No bookmarked users yet." />
+                  <EmptyState />
                 ) : (
                   bookmarks.map((b) => (
                     <BookmarkCard key={b.id} user={b} navigate={navigate} />
@@ -298,11 +299,10 @@ function BookmarkCard({ user, navigate }) {
   );
 }
 
-function EmptyState({ label }) {
+function EmptyState() {
   return (
-    <div style={{ border: `1.5px dashed ${line}`, borderRadius: 12, padding: "24px 16px", textAlign: "center", flexShrink: 0 }}>
-      <div style={{ fontSize: 14.5, fontWeight: 800, color: navy }}>Nothing here yet</div>
-      <div style={{ fontSize: 13, fontWeight: 600, color: mid, marginTop: 4 }}>{label}</div>
+    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <img src={parrotLogo} alt="" style={{ width: "14rem", height: "14rem", objectFit: "contain", opacity: 0.2 }} />
     </div>
   );
 }

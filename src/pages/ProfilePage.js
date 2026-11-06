@@ -27,6 +27,7 @@ import { FaSailboat, FaCar, FaCaravan, FaBus, FaPersonWalking, FaPersonRunning, 
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from "react-leaflet";
 import { MainPageV2VoyageCard } from "../components/MainPageV2VoyageCard";
 import "leaflet/dist/leaflet.css";
+import parrotLogo from "../assets/images/parrotsiconpaddedtransparent.webp";
 
 function FitBoundsWithPadding({ bounds }) {
   const map = useMap();
@@ -291,9 +292,12 @@ function ProfilePage() {
                   <MapPanner target={panTarget} />
                 </MapContainer>
               ) : (
-                <div style={{ width: "100%", height: "100%", backgroundColor: "#d4e6f1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: mid }}>No voyage pins yet</span>
-                </div>
+                <MapContainer center={mapCenter} zoom={2} style={{ width: "100%", height: "100%" }} zoomControl={false} scrollWheelZoom>
+                  <TileLayer
+                    url={`https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key=${process.env.REACT_APP_MAPTILER_KEY}`}
+                    attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                  />
+                </MapContainer>
               )}
               {pins.length > 0 && (
                 <span style={mapCount}>
@@ -340,7 +344,11 @@ function ProfilePage() {
                     </span>
                   </div>
                 ))}
-                {contacts.length === 0 && <span style={{ fontSize: 13, color: mid, fontWeight: 600 }}>No contacts added yet.</span>}
+                {contacts.length === 0 && (
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={parrotLogo} alt="" style={{ width: "10rem", height: "10rem", objectFit: "contain", opacity: 0.2 }} />
+                  </div>
+                )}
               </div>
             </div>
 

@@ -365,7 +365,15 @@ function ConnectPage() {
                 <>
                   {conversationUserId && (
                     <div style={convHeader}>
-                      <div style={convHeaderAv}>
+                      <div style={{ ...convHeaderAv, cursor: "pointer" }} onClick={() => {
+                          const preview = safeMessagePreviewsData.find(m =>
+                            (m.receiverId === currentUserId ? m.senderId : m.receiverId) === conversationUserId
+                          );
+                          if (preview) {
+                            const publicId = preview.receiverId === currentUserId ? preview.senderPublicId : preview.receiverPublicId;
+                            handleGoToUser(conversationUserId, conversationUserUsername, publicId);
+                          }
+                        }}>
                         {(() => {
                           const preview = safeMessagePreviewsData.find(m =>
                             (m.receiverId === currentUserId ? m.senderId : m.receiverId) === conversationUserId
