@@ -47,6 +47,8 @@ export function ParrotCrackerPage() {
   const [displayState, setDisplayState] = useState("purchases");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [purchaseBanner, setPurchaseBanner] = useState(null);
+  const [isWaitingForBalance, setIsWaitingForBalance] = useState(false);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 640);
@@ -66,18 +68,30 @@ export function ParrotCrackerPage() {
         setCurrentBalance(response.balance);
         setPurchases(response.purchases);
         setTransactions(response.transactions);
-      }).catch(console.error);
+        setIsLoadingBalance(false);
+      }).catch((e) => { console.error(e); setIsLoadingBalance(false); });
     }
   }, [userId, getParrotCrackerBalance]);
 
   const handlePaymentSuccess = async (opt) => {
-    setTimeout(async () => {
-      const response = await getParrotCrackerBalance(userId).unwrap();
-      setCurrentBalance(response.balance);
-      setPurchases(response.purchases);
-      setTransactions(response.transactions);
-      setPurchaseBanner({ label: opt.label, crackers: opt.crackers });
-    }, 3000);
+    setIsWaitingForBalance(true);
+    const prevBalance = currentBalance;
+    const maxAttempts = 10;
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      try {
+        const response = await getParrotCrackerBalance(userId).unwrap();
+        if (response.balance !== prevBalance) {
+          setCurrentBalance(response.balance);
+          setPurchases(response.purchases);
+          setTransactions(response.transactions);
+          setPurchaseBanner({ label: opt.label, crackers: opt.crackers });
+          setIsWaitingForBalance(false);
+          return;
+        }
+      } catch { /* ignore, keep polling */ }
+    }
+    setIsWaitingForBalance(false);
   };
 
   const handleBuy = async (opt, i) => {
@@ -170,7 +184,10 @@ export function ParrotCrackerPage() {
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
                       <span style={{ fontSize: "1.5rem", fontWeight: 800, color: textPrimary }}>You have</span>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontSize: "3.6rem", fontWeight: 900, color: parrotGreen, lineHeight: 1, WebkitTextStroke: "2px " + parrotGreen }}>{currentBalance}</span>
+                        <div style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: "3.6rem", fontWeight: 900, color: parrotGreen, lineHeight: 1, WebkitTextStroke: "2px " + parrotGreen, opacity: (isWaitingForBalance || isLoadingBalance) ? 0 : 1 }}>{currentBalance}</span>
+                          {(isWaitingForBalance || isLoadingBalance) && <div style={{ position: "absolute", width: "3rem", height: "3rem", border: "7px solid #e0e0e0", borderTop: `7px solid ${parrotGreen}`, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />}
+                        </div>
                         <img src={parrotCracker} alt="cracker" style={{ width: "3rem", height: "3rem" }} />
                       </div>
                     </div>

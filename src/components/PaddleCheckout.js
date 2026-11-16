@@ -2,9 +2,9 @@ import { initializePaddle } from "@paddle/paddle-js";
 
 const CLIENT_TOKEN = process.env.REACT_APP_PADDLE_CLIENT_TOKEN;
 export const PADDLE_PRICE_IDS = {
-  "NEST PACK":   process.env.REACT_APP_PADDLE_PRICE_NEST,
-  "FLOCK PACK":  process.env.REACT_APP_PADDLE_PRICE_FLOCK,
-  "COLONY PACK": process.env.REACT_APP_PADDLE_PRICE_COLONY,
+  "Nest Pack":   process.env.REACT_APP_PADDLE_PRICE_NEST,
+  "Flock Pack":  process.env.REACT_APP_PADDLE_PRICE_FLOCK,
+  "Colony Pack": process.env.REACT_APP_PADDLE_PRICE_COLONY,
 };
 
 let paddleInstance = null;
