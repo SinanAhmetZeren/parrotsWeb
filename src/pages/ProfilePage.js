@@ -236,7 +236,7 @@ function ProfilePage() {
                   .pcb.pri:hover{background:#0A5FBF!important}
                 `}</style>
                 <button className="pcb" data-tip={`${userData?.parrotCrackerBalance ?? "..."} ParrotCrackers`} style={{ ...cbtn, background: "#fff", padding: 0 }} onClick={() => navigate("/parrotCrackerPage")}>
-                  <span style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex" }}>
+                  <span style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "block" }}>
                     <img src={parrotCracker} alt="ParrotCracker" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </span>
                 </button>
@@ -378,9 +378,8 @@ function ProfilePage() {
                   </>
                 )}
                 {totalCount === 0 && (
-                  <div style={{ border: `1.5px dashed ${line}`, borderRadius: 12, padding: "24px 16px", textAlign: "center", flexShrink: 0 }}>
-                    <div style={{ fontSize: 14.5, fontWeight: 800, color: navy }}>Nothing here yet</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: mid, marginTop: 4 }}>Add a vehicle or create a voyage to get started.</div>
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img src={parrotLogo} alt="" style={{ width: "14rem", height: "14rem", objectFit: "contain", opacity: 0.2 }} />
                   </div>
                 )}
               </div>
