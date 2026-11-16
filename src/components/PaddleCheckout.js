@@ -14,7 +14,7 @@ let didComplete = false;
 export async function getPaddle() {
   if (paddleInstance) return paddleInstance;
   paddleInstance = await initializePaddle({
-    environment: "sandbox", // switch to "live" when domain approved
+    environment: "sandbox",
     token: CLIENT_TOKEN,
     eventCallback: (event) => {
       if (event.name === "checkout.completed") {
